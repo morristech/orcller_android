@@ -12,5 +12,6 @@ public class APIApplicationVersion extends APIResult {
     public class Entity {
         public boolean is_release;
         public String version;
+        public String version_description;
     }
 }
