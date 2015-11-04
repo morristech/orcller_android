@@ -12,10 +12,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
+import com.orcller.app.orcllermodules.model.ApplicationResource;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -37,6 +40,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ApplicationLauncher.getInstance()
+                .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
+                .launch();
 
         setContentView(R.layout.activity_main);
 
