@@ -1,10 +1,8 @@
 package com.orcller.app.orcllermodules.proxy;
 
-import com.orcller.app.orcllermodules.model.APIApplicationVersion;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiApplication;
+
 import retrofit.Call;
-import retrofit.Converter;
-import retrofit.GsonConverterFactory;
 import retrofit.http.GET;
 
 /**
@@ -12,13 +10,8 @@ import retrofit.http.GET;
  */
 public class ApplicationDataProxy extends AbstractDataProxy {
     @Override
-    protected Class<ApplicationService> createServiceClass() {
-        return ApplicationService.class;
-    }
-
-    @Override
-    protected Converter.Factory createConverterFactory() {
-        return GsonConverterFactory.create();
+    protected Class<Service> createServiceClass() {
+        return Service.class;
     }
 
     @Override
@@ -26,8 +19,8 @@ public class ApplicationDataProxy extends AbstractDataProxy {
         return "https://www.orcller.com/apis/app/";
     }
 
-    public interface ApplicationService {
+    public interface Service {
         @GET("version")
-        Call<APIApplicationVersion> loadVersion();
+        Call<ApiApplication.Version> loadVersion();
     }
 }

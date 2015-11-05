@@ -1,18 +1,19 @@
 package com.orcller.app.orcllermodules.proxy;
 
-import android.os.AsyncTask;
-import android.util.Log;
+import android.webkit.CookieSyncManager;
 
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.model.APIResult;
-import com.orcller.app.orcllermodules.utils.GSonUtil;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.util.HashSet;
+import java.util.prefs.Preferences;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -65,7 +66,7 @@ abstract public class AbstractDataProxy<T> {
     // ================================================================================================
 
     protected Converter.Factory createConverterFactory() {
-        return null;
+        return GsonConverterFactory.create();
     }
 
     protected Class<T> createServiceClass() {
@@ -86,7 +87,7 @@ abstract public class AbstractDataProxy<T> {
             @Override
             public Response intercept(Interceptor.Chain chain) throws IOException {
                 Request original = chain.request();
-                Request request = ApplicationLauncher.getInstance()
+                Request request = ApplicationLauncher.getDefault()
                       .syncHeaders(original.newBuilder())
                       .method(original.method(), original.body())
                       .build();

@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.ext.Application;
-import com.orcller.app.orcllermodules.model.APIApplicationVersion;
+import com.orcller.app.orcllermodules.model.ApiApplication;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.proxy.ApplicationDataProxy;
 import com.squareup.okhttp.Headers;
@@ -42,7 +43,7 @@ public class ApplicationLauncher {
     //  Public
     // ================================================================================================
 
-    public static ApplicationLauncher getInstance() {
+    public static ApplicationLauncher getDefault() {
         if(uniqueInstance == null) {
             synchronized(ApplicationLauncher.class) {
                 if(uniqueInstance == null) {
@@ -54,8 +55,7 @@ public class ApplicationLauncher {
     }
 
     public ApplicationLauncher() {
-        SharedPreferences preferences = Application.applicationContext()
-                .getSharedPreferences(APP_PREFERENCE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreference();
         currentVersion = preferences.getString(CACHED_CURRENT_APP_VERSION_KEY, null);
         originAppVersion = preferences.getString(CACHED_ORIGINE_APP_VERSION_KEY, null);
         headers = new Headers.Builder();
@@ -65,6 +65,11 @@ public class ApplicationLauncher {
         return currentVersion;
     }
 
+    public SharedPreferences getSharedPreference() {
+        return Application.applicationContext()
+                .getSharedPreferences(APP_PREFERENCE_KEY, Context.MODE_PRIVATE);
+    }
+
     public void launch() {
         if (resource == null || resource.getIdentifier() == null || initialized)
             return;
@@ -72,34 +77,35 @@ public class ApplicationLauncher {
         setHeaders();
         removeCachesAfterVersionChecking();
 
-        if (originAppVersion != null) {
+        if (currentVersion != null) {
             initComplete();
 
-            getVersion(new Callback<APIApplicationVersion>() {
+            loadVersion(new Callback<ApiApplication.Version>() {
                 @Override
-                public void onResponse(retrofit.Response<APIApplicationVersion> response, Retrofit retrofit) {
+                public void onResponse(retrofit.Response<ApiApplication.Version> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
-                        APIApplicationVersion.Entity entity = response.body().entity;
-
-                        if (entity != null) {
+                        if (response.body().isSuccess()) {
+                            ApiApplication.Version.Entity entity = response.body().entity;
                             currentVersion = entity.version;
 
                             if (Application.isLower(currentVersion))
                                 EventBus.getDefault().post(new ApplicationHasNewVersion(entity));
 
                             cacheAppVersion();
+                        } else {
+                            processErrorState(APIError.newInstance(response.body()));
                         }
                     } else {
-                        processErrorState(null);
+                        processErrorState(APIError.newInstance(response.code(), response.message()));
                     }
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    processErrorState(null);
+                    processErrorState(APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
                 }
             });
-        }else {
+        } else {
             initialVersionChecking();
         }
     }
@@ -127,9 +133,7 @@ public class ApplicationLauncher {
     // ================================================================================================
 
     private void cacheAppVersion() {
-        SharedPreferences preferences = Application.applicationContext()
-                .getSharedPreferences(APP_PREFERENCE_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        SharedPreferences.Editor editor = getSharedPreference().edit();
         editor.putString(CACHED_ORIGINE_APP_VERSION_KEY, Application.getPackageVersionName());
 
         if (currentVersion != null)
@@ -138,31 +142,21 @@ public class ApplicationLauncher {
         editor.commit();
     }
 
-    private void getVersion(Callback<APIApplicationVersion> callback) {
-        ApplicationDataProxy proxy = new ApplicationDataProxy();
-        ApplicationDataProxy.ApplicationService service = (ApplicationDataProxy.ApplicationService) proxy.getCurrentService();
-        Call<APIApplicationVersion> call = service.loadVersion();
-        proxy.enqueueCall(call, callback);
-    }
-
-    private void processErrorState(Error error) {
-        initComplete();
-    }
-
     private void initComplete() {
         initialized = true;
+
+        AuthenticationCenter.getDefault().synchorinze();
 
         EventBus.getDefault().post(new ApplicationInitialized());
     }
 
     private void initialVersionChecking() {
-        getVersion(new Callback<APIApplicationVersion>() {
+        loadVersion(new Callback<ApiApplication.Version>() {
             @Override
-            public void onResponse(retrofit.Response<APIApplicationVersion> response, Retrofit retrofit) {
+            public void onResponse(retrofit.Response<ApiApplication.Version> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    APIApplicationVersion.Entity entity = response.body().entity;
-
-                    if (entity != null) {
+                    if (response.body().isSuccess()) {
+                        ApiApplication.Version.Entity entity = response.body().entity;
                         currentVersion = entity.version;
 
                         if (Application.isLower(currentVersion))
@@ -170,17 +164,31 @@ public class ApplicationLauncher {
 
                         initComplete();
                         cacheAppVersion();
+                    } else {
+                        processErrorState(APIError.newInstance(response.body()));
                     }
                 } else {
-                    processErrorState(null);
+                    processErrorState(APIError.newInstance(response.code(), response.message()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                processErrorState(null);
+                processErrorState(APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
+    }
+
+    private void loadVersion(Callback<ApiApplication.Version> callback) {
+        ApplicationDataProxy proxy = new ApplicationDataProxy();
+        ApplicationDataProxy.Service service = (ApplicationDataProxy.Service) proxy.getCurrentService();
+        Call<ApiApplication.Version> call = service.loadVersion();
+        proxy.enqueueCall(call, callback);
+    }
+
+    private void processErrorState(APIError error) {
+        initComplete();
+        EventBus.getDefault().post(new OnFailure(error));
     }
 
     private void removeCaches() {
@@ -210,10 +218,21 @@ public class ApplicationLauncher {
         }
     }
     public class ApplicationHasNewVersion {
-        private APIApplicationVersion.Entity entity;
+        private ApiApplication.Version.Entity entity;
 
-        public ApplicationHasNewVersion(APIApplicationVersion.Entity entity) {
+        public ApplicationHasNewVersion(ApiApplication.Version.Entity entity) {
             this.entity = entity;
+        }
+    }
+    public class OnFailure {
+        private APIError error;
+
+        public OnFailure(APIError error) {
+            this.error = error;
+        }
+
+        public APIError getError() {
+            return error;
         }
     }
 }

@@ -8,16 +8,26 @@ import com.google.gson.Gson;
 
 public class APIResult {
     public enum APIResultCode {
-        APIResultCodeFailed,
-        APIResultCodeOk
+        APIResultCodeFailed(0),
+        APIResultCodeOk(1);
+
+        private int value;
+
+        private APIResultCode(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
-    public APIResultCode code;
+    public int code;
     public int error_code;
     public String code_message;
     public String error_message;
 
     public boolean isSuccess() {
-        return this.code == APIResultCode.APIResultCodeOk;
+        return this.code == APIResultCode.APIResultCodeOk.getValue();
     }
 }
