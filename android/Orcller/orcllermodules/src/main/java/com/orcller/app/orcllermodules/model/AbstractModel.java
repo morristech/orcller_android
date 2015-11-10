@@ -1,8 +1,12 @@
 package com.orcller.app.orcllermodules.model;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.orcller.app.orcllermodules.utils.GSonUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 
@@ -31,6 +35,10 @@ public class AbstractModel {
         }
 
         return true;
+    }
+
+    public Map<String, String> map() {
+        return GSonUtil.toMap(this);
     }
 
     public void synchronize(AbstractModel other) {

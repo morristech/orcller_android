@@ -16,8 +16,8 @@ public class UserDataProxy extends AbstractDataProxy {
     }
 
     @Override
-    protected String createBaseUrl() {
-        return "http://192.168.10.100/apis/users/";
+    protected String createSuffixUrl() {
+        return "/users/";
     }
 
     public interface Service {

@@ -3,6 +3,7 @@ package com.orcller.app.orcllermodules.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Log;
 
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.ext.Application;
@@ -27,7 +28,6 @@ public class ApplicationLauncher {
     private static final String DEVICE_NAME_KEY = "Device-Name";
     private static final String DEVIE_MODEL_KEY = "Device-Model";
     private static final String SYSTEM_NAME_KEY = "System-Name";
-    private static final String SYSTEM_NAME_VALUE = "Android OS";
     private static final String SYSTEM_VERSION_KEY = "System-Version";
     private static final String CACHED_CURRENT_APP_VERSION_KEY = "Current-Application-Version";
     private static final String CACHED_ORIGINE_APP_VERSION_KEY = "Origin-Application-Version";
@@ -111,7 +111,8 @@ public class ApplicationLauncher {
     }
 
     public boolean initialized() {
-        return initialized;
+        return true;
+//        return initialized;
     }
 
     public Request.Builder syncHeaders(Request.Builder builder) {
@@ -204,14 +205,18 @@ public class ApplicationLauncher {
         try {
             headers.add(APP_ID_KEY, resource.getIdentifier());
             headers.add(APP_VERSION_KEY, Application.getPackageVersionName());
-            headers.add(DEVICE_NAME_KEY, Build.MODEL);
-            headers.add(DEVIE_MODEL_KEY, Build.DEVICE);
-            headers.add(SYSTEM_NAME_KEY, SYSTEM_NAME_VALUE);
+            headers.add(DEVICE_NAME_KEY, Build.DEVICE);
+            headers.add(DEVIE_MODEL_KEY, Build.MODEL);
+            headers.add(SYSTEM_NAME_KEY, DeviceManager.SYSTEM_NAME);
             headers.add(SYSTEM_VERSION_KEY, Build.VERSION.RELEASE);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    // ================================================================================================
+    //  Events
+    // ================================================================================================
 
     public class ApplicationInitialized {
         public ApplicationInitialized() {

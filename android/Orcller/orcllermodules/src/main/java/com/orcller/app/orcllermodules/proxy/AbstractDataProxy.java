@@ -25,7 +25,8 @@ import retrofit.Retrofit;
  * Created by pisces on 11/4/15.
  */
 abstract public class AbstractDataProxy<T> {
-    private String baseUrl;
+    private static final String BASE_URL = "http://192.168.10.100/apis";
+    private String suffixUrl;
     private Class<T> serviceClass;
     private Converter.Factory converterFactory;
     private Retrofit retrofit;
@@ -36,7 +37,7 @@ abstract public class AbstractDataProxy<T> {
     // ================================================================================================
 
     public AbstractDataProxy() {
-        this.baseUrl = this.createBaseUrl();
+        this.suffixUrl = this.createSuffixUrl();
         this.converterFactory = this.createConverterFactory();
         this.serviceClass = this.createServiceClass();
         this.setUp();
@@ -69,13 +70,9 @@ abstract public class AbstractDataProxy<T> {
         return GsonConverterFactory.create();
     }
 
-    protected Class<T> createServiceClass() {
-        return null;
-    }
+    abstract protected Class<T> createServiceClass();
 
-    protected String createBaseUrl() {
-        return null;
-    }
+    abstract protected String createSuffixUrl();
 
     // ================================================================================================
     //  Private
@@ -96,7 +93,7 @@ abstract public class AbstractDataProxy<T> {
         });
 
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(this.baseUrl)
+                .baseUrl(BASE_URL + this.suffixUrl)
                 .client(httpClient);
 
         if (this.converterFactory != null)

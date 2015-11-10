@@ -2,15 +2,18 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
         <item name="android:actionBarDivider">@null</item>
         <item name="android:actionBarTabBarStyle">@style/AppTheme.ActionBar.TabBar</item>
         <item name="android:actionBarTabStyle">@style/AppTheme.ActionBar.TabView</item>
         <item name="android:actionBarTabTextStyle">@style/AppTheme.ActionBar.TabText</item>
+    </style>
+
+    <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+    </style>
+
+    <style name="MemberTheme" parent="@android:style/Theme.Holo.NoActionBar">
+        <item name="colorPrimaryDark">@color/actionbar_purple</item>
     </style>
 
     <!-- ActionBar styles -->
@@ -39,6 +42,6 @@
     </style>
 
     <style name="AppTheme.ActionBar.TabView" parent="android:style/Widget.Holo.ActionBar.TabView">
-        <item name="android:background">@drawable/tab_bar_background</item>
+        <item name="android:background">@drawable/main_tabbar_background</item>
     </style>
 </resources>

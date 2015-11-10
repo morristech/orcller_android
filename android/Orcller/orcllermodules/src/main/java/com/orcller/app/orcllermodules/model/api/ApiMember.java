@@ -1,7 +1,21 @@
 package com.orcller.app.orcllermodules.model.api;
 
+import android.accounts.AccountManager;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.os.Build;
+import android.telephony.TelephonyManager;
+
+import com.google.android.gms.plus.Account;
 import com.google.gson.annotations.SerializedName;
+import com.orcller.app.orcllermodules.ext.Application;
+import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.AbstractModel;
+import com.orcller.app.orcllermodules.utils.DeviceUtils;
+import com.orcller.app.orcllermodules.utils.Log;
+
+import java.util.Locale;
 
 /**
  * Created by pisces on 11/5/15.
@@ -11,14 +25,14 @@ public class ApiMember {
         Facebook(1),
         Instagram(2);
 
-        private IDProviderType(int type) {
-            this.type = type;
+        private IDProviderType(int value) {
+            this.value = value;
         }
 
-        private int type;
+        private int value;
 
-        public int getType() {
-            return type;
+        public int getValue() {
+            return value;
         }
     }
 
@@ -31,28 +45,38 @@ public class ApiMember {
         }
     }
 
-    public class Behavior {
+    public static class Behavior extends AbstractModel {
         public String device_locale;
         public String device_name;
         public String device_model;
         public String device_system_name;
         public String device_system_version;
         public String device_token;
+
+        public Behavior() {
+            Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
+            device_locale = locale.toLanguageTag();
+            device_name = Build.DEVICE;
+            device_model = DeviceUtils.getDeviceModel();
+            device_token = DeviceManager.getDefault().getDeviceToken();
+            device_system_name = DeviceManager.SYSTEM_NAME;
+            device_system_version = Build.VERSION.RELEASE;
+        }
     }
 
-    public class ChangePasswordReq {
+    public static class ChangePasswordReq {
         public String current_password;
         public String change_password;
     }
 
-    public class JoinWithEmailReq extends Behavior {
+    public static class JoinWithEmailReq extends Behavior {
         public String user_id;
         public String user_password;
         public String user_email;
     }
 
-    public class JoinWithIdpReq extends Behavior {
-        public IDProviderType idp_type;
+    public static class JoinWithIdpReq extends Behavior {
+        public int idp_type;
         public String idp_user_id;
         public String user_id;
         public String user_link;
@@ -61,22 +85,22 @@ public class ApiMember {
         public String user_picture;
     }
 
-    public class LoginReq extends Behavior {
+    public static class LoginReq extends Behavior {
         public String user_id;
         public String user_password;
     }
 
-    public class LoginWithIdpReq extends Behavior {
-        public IDProviderType idp_type;
+    public static class LoginWithIdpReq extends Behavior {
+        public int idp_type;
         public String idp_user_id;
     }
 
-    public class SyncWithIdpReq {
-        public IDProviderType idp_type;
+    public static class SyncWithIdpReq {
+        public int idp_type;
         public String idp_user_id;
     }
 
-    public class UpdateUserOptionsReq {
+    public static class UpdateUserOptionsReq {
         public int user_options_album_permission;
         public int user_options_pns_types;
     }

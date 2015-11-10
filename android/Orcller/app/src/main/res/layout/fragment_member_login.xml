@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="54dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+    <com.orcller.app.orcllermodules.ext.ClearableEditText
+        android:id="@+id/idEditText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@android:color/transparent"
+        android:cursorVisible="true"
+        android:hint="User Name"
+        android:inputType="textVisiblePassword|textNoSuggestions"
+        android:nextFocusDown="@+id/pwEditText"
+        android:textColor="@color/black"
+        android:textColorHint="@color/textcolot_hint"
+        android:textCursorDrawable="@drawable/member_cursor"
+        android:textSize="14dp" />
+
+    <View android:id="@+id/separator"
+        android:background="@color/hairline"
+        android:layout_width = "fill_parent"
+        android:layout_height="1dip"
+        android:layout_gravity="center_vertical" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.orcller.app.orcllermodules.ext.ClearableEditText
+            android:id="@+id/pwEditText"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@android:color/transparent"
+            android:cursorVisible="true"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textColorHint="@color/textcolot_hint"
+            android:textCursorDrawable="@drawable/member_cursor"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/goButton"
+            android:layout_width="45dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right|center_vertical"
+            android:background="@drawable/button_blue_radius3dp"
+            android:text="GO"
+            android:textColor="@android:color/white"
+            android:textSize="10dp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:layout_marginBottom="15dp"
+        android:gravity="center|bottom"
+        android:orientation="vertical">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="11dp">
+            <View android:id="@+id/separator"
+                android:background="@color/hairline"
+                android:layout_width = "fill_parent"
+                android:layout_height="1dip"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/orTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginTop="-1dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="@color/white"
+                android:textColor="@android:color/darker_gray"
+                android:text="OR"
+                android:textAlignment="center"
+                android:textSize="10dp" />
+        </FrameLayout>
+        <Button
+            android:id="@+id/facebookButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@null"
+            android:drawableLeft="@drawable/button_fb_icon"
+            android:drawablePadding="5dp"
+            android:text="Login with Facebook"
+            android:textColor="@drawable/button_fb_textcolor"
+            android:textSize="14dp" />
+    </LinearLayout>
+</LinearLayout>

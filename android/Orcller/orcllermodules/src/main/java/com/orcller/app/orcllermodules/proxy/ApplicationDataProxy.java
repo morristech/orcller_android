@@ -15,8 +15,8 @@ public class ApplicationDataProxy extends AbstractDataProxy {
     }
 
     @Override
-    protected String createBaseUrl() {
-        return "https://www.orcller.com/apis/app/";
+    protected String createSuffixUrl() {
+        return "/app/";
     }
 
     public interface Service {
