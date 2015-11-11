@@ -90,6 +90,10 @@ public class AuthenticationCenter {
         // TODO: Impl JoinWithIdp
     }
 
+    public void login(ApiMember.LoginReq req, final Api.CompleteHandler completeHandler) {
+        // TODO: Impl JoinWithIdp
+    }
+
     public void login(ApiMember.LoginWithIdpReq req, final Api.CompleteHandler completeHandler) {
         MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
         Call<ApiMember.LoginRes> call = service.loginByIdp(req.map());

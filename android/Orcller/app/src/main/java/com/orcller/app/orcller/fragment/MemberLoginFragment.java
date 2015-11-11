@@ -19,7 +19,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.mobsandgeeks.saripaar.annotation.Min;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.error.APIError;
@@ -28,14 +29,13 @@ import com.orcller.app.orcllermodules.ext.ClearableEditText;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
+import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
-import de.greenrobot.event.EventBus;
-
-import com.mobsandgeeks.saripaar.*;
-
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by pisces on 11/7/15.
@@ -152,7 +152,16 @@ public class MemberLoginFragment extends Fragment {
 //    }
 
     private void login() {
-        validator.validate();
+        ApiMember.LoginReq req = new ApiMember.LoginReq();
+        req.user_id = idEditText.getText().toString().trim();
+        req.user_password = pwEditText.getText().toString().trim();
+
+        AuthenticationCenter.getDefault().login(req, new Api.CompleteHandler() {
+            @Override
+            public void onComplete(Object result, APIError err) {
+
+            }
+        });
     }
 
     private void loginWithFacebook() {
@@ -213,14 +222,14 @@ public class MemberLoginFragment extends Fragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == event.KEYCODE_ENTER)
-                    login();
+                    validator.validate();
                 return false;
             }
         });
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                login();
+                validator.validate();
             }
         });
         getView().setOnTouchListener(new View.OnTouchListener() {
@@ -234,7 +243,7 @@ public class MemberLoginFragment extends Fragment {
         validator.setValidationListener(new Validator.ValidationListener() {
             @Override
             public void onValidationSucceeded() {
-
+                login();
             }
 
             @Override
@@ -242,8 +251,6 @@ public class MemberLoginFragment extends Fragment {
                 for (ValidationError error : errors) {
                     View view = error.getView();
                     String message = error.getCollatedErrorMessage(getContext());
-
-                    // Display error messages ;)
                     if (view instanceof EditText) {
                         ((EditText) view).setError(message);
                     } else {

@@ -17,9 +17,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
@@ -31,17 +36,23 @@ import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.Log;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 
 /**
  * Created by pisces on 11/7/15.
  */
 public class MemberJoinFragment extends Fragment {
+    @NotEmpty
+    @Email
     private ClearableEditText editText;
+
     private Button facebookButton;
     private Button nextButton;
     private TextWatcher textWatcher;
     private TextView orTextView;
+    private Validator validator;
 
     /**
      * @constructor
@@ -82,6 +93,8 @@ public class MemberJoinFragment extends Fragment {
             }
         };
 
+        validator = new Validator(this);
+
         setListeners();
     }
 
@@ -113,32 +126,7 @@ public class MemberJoinFragment extends Fragment {
     //  Private
     // ================================================================================================
 
-    private boolean invalidateEmail() {
-        String value = editText.getText().toString().trim();
-
-        if (TextUtils.isEmpty(value) ||
-            !Patterns.EMAIL_ADDRESS.matcher(value).matches()) {
-
-            String text = TextUtils.isEmpty(value) ?
-                    "Email address is required!" :
-                    "Not the letter of the email address form!";
-
-            Toast toast = Toast.makeText(
-                    getActivity().getApplicationContext(),
-                    text, Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.TOP, 0, 0);
-            toast.show();
-
-            return true;
-        }
-
-        return false;
-    }
-
     private void joinByEmail() {
-        if (invalidateEmail())
-            return;
-
         SoftKeyboardUtils.hide(getView());
         ProgressBarManager.show(getActivity());
 
@@ -155,6 +143,7 @@ public class MemberJoinFragment extends Fragment {
                                     alertDialog.setMessage("It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification.");
                                     alertDialog.setPositiveButton("Ok", null);
                                     alertDialog.show();
+                                    editText.setText(null);
                                 }
                             });
                         } else {
@@ -209,7 +198,7 @@ public class MemberJoinFragment extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                joinByEmail();
+                validator.validate();
             }
         });
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -222,7 +211,7 @@ public class MemberJoinFragment extends Fragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == event.KEYCODE_ENTER)
-                    joinByEmail();
+                    validator.validate();
                 return false;
             }
         });
@@ -234,6 +223,26 @@ public class MemberJoinFragment extends Fragment {
                 return false;
             }
         });
+        validator.setValidationListener(new Validator.ValidationListener() {
+            @Override
+            public void onValidationSucceeded() {
+                joinByEmail();
+            }
+
+            @Override
+            public void onValidationFailed(List<ValidationError> errors) {
+                for (ValidationError error : errors) {
+                    View view = error.getView();
+                    String message = error.getCollatedErrorMessage(getContext());
+                    if (view instanceof EditText) {
+                        ((EditText) view).setError(message);
+                    } else {
+                        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+
         editText.addTextChangedListener(textWatcher);
         EventBus.getDefault().register(this);
     }
