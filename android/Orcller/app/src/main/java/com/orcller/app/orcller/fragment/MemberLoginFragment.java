@@ -23,6 +23,7 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.ext.ClearableEditText;
@@ -31,8 +32,10 @@ import com.orcller.app.orcllermodules.managers.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
+import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
+import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -103,10 +106,16 @@ public class MemberLoginFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        EventBus.getDefault().unregister(this);
         ProgressBarManager.hide(getActivity());
         idEditText.removeTextChangedListener(textWatcher);
         pwEditText.removeTextChangedListener(textWatcher);
-        EventBus.getDefault().unregister(this);
+        facebookButton.setOnClickListener(null);
+        idEditText.setOnFocusChangeListener(null);
+        pwEditText.setOnFocusChangeListener(null);
+        pwEditText.setOnKeyListener(null);
+        goButton.setOnClickListener(null);
+        getView().setOnTouchListener(null);
 
         idEditText = null;
         pwEditText = null;
@@ -114,6 +123,7 @@ public class MemberLoginFragment extends Fragment {
         goButton = null;
         textWatcher = null;
         bottomContainer = null;
+        validator = null;
     }
 
     @Override
@@ -129,65 +139,34 @@ public class MemberLoginFragment extends Fragment {
     //  Private
     // ================================================================================================
 
-//    private boolean invalidateEmail() {
-//        String value = editText.getText().toString().trim();
-//
-//        if (TextUtils.isEmpty(value) ||
-//                !Patterns.EMAIL_ADDRESS.matcher(value).matches()) {
-//
-//            String text = TextUtils.isEmpty(value) ?
-//                    "Email address is required!" :
-//                    "Not the letter of the email address form!";
-//
-//            Toast toast = Toast.makeText(
-//                    getActivity().getApplicationContext(),
-//                    text, Toast.LENGTH_LONG);
-//            toast.setGravity(Gravity.TOP, 0, 0);
-//            toast.show();
-//
-//            return true;
-//        }
-//
-//        return false;
-//    }
-
     private void login() {
+        SoftKeyboardUtils.hide(getView());
+        ProgressBarManager.show(getActivity());
+
         ApiMember.LoginReq req = new ApiMember.LoginReq();
         req.user_id = idEditText.getText().toString().trim();
         req.user_password = pwEditText.getText().toString().trim();
 
         AuthenticationCenter.getDefault().login(req, new Api.CompleteHandler() {
             @Override
-            public void onComplete(Object result, APIError err) {
-
-            }
-        });
-    }
-
-    private void loginWithFacebook() {
-        SoftKeyboardUtils.hide(getView());
-        ProgressBarManager.show(getActivity());
-
-        AuthenticationCenter.getDefault().loginWithFacebook(this, new Api.CompleteHandler() {
-            @Override
-            public void onComplete(Object result, APIError error) {
+            public void onComplete(Object result, final APIError error) {
                 if (error != null) {
-                    ProgressBarManager.hide(getActivity());
-
-                    if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
-                        openMemberJoinInputActivity(result);
-                    } else {
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-                        alertDialog.setMessage("It failed to login.\nPlease try again.");
-                        alertDialog.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                loginWithFacebook();
+                    ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
+                        @Override
+                        public void onDismiss() {
+                            String message = error.getMessage();
+                            if (message != null) {
+                                AlertDialogUtils.show(getContext(), message,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (which == AlertDialog.BUTTON_POSITIVE)
+                                                    login();
+                                            }
+                                        }, "Dismiss", "Retry");
                             }
-                        });
-                        alertDialog.setNegativeButton("Dismiss", null);
-                        alertDialog.show();
-                    }
+                        }
+                    });
                 } else {
                     ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_COMPLETE);
                 }
@@ -195,8 +174,34 @@ public class MemberLoginFragment extends Fragment {
         });
     }
 
-    private void openMemberJoinInputActivity(Object object) {
+    private void loginWithFacebook() {
+        SoftKeyboardUtils.hide(getView());
 
+        AuthenticationCenter.getDefault().loginWithFacebook(this, new Api.CompleteHandler() {
+            @Override
+            public void onComplete(Object result, APIError error) {
+                if (error != null) {
+                    if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
+                        openMemberJoinInputActivity(result);
+                    } else {
+                        AlertDialogUtils.show(getContext(), error.getMessage(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == AlertDialog.BUTTON_POSITIVE)
+                                            loginWithFacebook();
+                                    }
+                                }, "Dismiss", "Retry");
+                    }
+                }
+            }
+        });
+    }
+
+    private void openMemberJoinInputActivity(Object object) {
+        Intent intent = new Intent(getActivity(), MemberJoinInputActivity.class);
+        intent.putExtra("user", (Serializable) object);
+        startActivity(intent);
     }
 
     private void setListeners() {

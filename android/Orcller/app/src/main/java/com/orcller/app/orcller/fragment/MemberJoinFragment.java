@@ -9,8 +9,6 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Patterns;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,16 +24,21 @@ import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.ext.ClearableEditText;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
+import com.orcller.app.orcllermodules.model.facebook.FBUser;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
+import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import com.orcller.app.orcllermodules.utils.GSonUtil;
 import com.orcller.app.orcllermodules.utils.Log;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
+import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -102,15 +105,21 @@ public class MemberJoinFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        EventBus.getDefault().unregister(this);
         ProgressBarManager.hide(getActivity());
         editText.removeTextChangedListener(textWatcher);
-        EventBus.getDefault().unregister(this);
+        facebookButton.setOnClickListener(null);
+        nextButton.setOnClickListener(null);
+        editText.setOnFocusChangeListener(null);
+        editText.setOnKeyListener(null);
+        getView().setOnTouchListener(null);
 
         editText = null;
         facebookButton = null;
         nextButton = null;
         orTextView = null;
         textWatcher = null;
+        validator = null;
     }
 
     @Override
@@ -126,66 +135,34 @@ public class MemberJoinFragment extends Fragment {
     //  Private
     // ================================================================================================
 
-    private void joinByEmail() {
-        SoftKeyboardUtils.hide(getView());
-        ProgressBarManager.show(getActivity());
-
-        AuthenticationCenter.getDefault().sendCertificationEmail(
-                editText.getText().toString().trim(),
-                new Api.CompleteHandler() {
-                    @Override
-                    public void onComplete(Object result, APIError error) {
-                        if (error == null) {
-                            ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_COMPLETE, new ProgressBarManager.DismissHandler() {
-                                @Override
-                                public void onDismiss() {
-                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-                                    alertDialog.setMessage("It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification.");
-                                    alertDialog.setPositiveButton("Ok", null);
-                                    alertDialog.show();
-                                    editText.setText(null);
-                                }
-                            });
-                        } else {
-                            ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_ERROR);
-                        }
-                    }
-                });
-    }
-
     private void loginWithFacebook() {
         SoftKeyboardUtils.hide(getView());
-        ProgressBarManager.show(getActivity());
 
         AuthenticationCenter.getDefault().loginWithFacebook(this, new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
                 if (error != null) {
-                    ProgressBarManager.hide(getActivity());
-
                     if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
                         openMemberJoinInputActivity(result);
                     } else {
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-                        alertDialog.setMessage("It failed to login.\nPlease try again.");
-                        alertDialog.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                loginWithFacebook();
-                            }
-                        });
-                        alertDialog.setNegativeButton("Dismiss", null);
-                        alertDialog.show();
+                        AlertDialogUtils.show(getContext(), error.getMessage(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == AlertDialog.BUTTON_POSITIVE)
+                                            loginWithFacebook();
+                                    }
+                                }, "Dismiss", "Retry");
                     }
-                } else {
-                    ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_COMPLETE);
                 }
             }
         });
     }
 
     private void openMemberJoinInputActivity(Object object) {
-
+        Intent intent = new Intent(getActivity(), MemberJoinInputActivity.class);
+        intent.putExtra("user", (Serializable) object);
+        startActivity(intent);
     }
 
     private void setListeners() {
@@ -226,7 +203,7 @@ public class MemberJoinFragment extends Fragment {
         validator.setValidationListener(new Validator.ValidationListener() {
             @Override
             public void onValidationSucceeded() {
-                joinByEmail();
+                sendCertificationEmail();
             }
 
             @Override
@@ -245,6 +222,33 @@ public class MemberJoinFragment extends Fragment {
 
         editText.addTextChangedListener(textWatcher);
         EventBus.getDefault().register(this);
+    }
+
+    private void sendCertificationEmail() {
+        SoftKeyboardUtils.hide(getView());
+        ProgressBarManager.show(getActivity());
+
+        AuthenticationCenter.getDefault().sendCertificationEmail(
+                editText.getText().toString().trim(),
+                new Api.CompleteHandler() {
+                    @Override
+                    public void onComplete(Object result, APIError error) {
+                        if (error == null) {
+                            ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_COMPLETE, new ProgressBarManager.DismissHandler() {
+                                @Override
+                                public void onDismiss() {
+                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                                    alertDialog.setMessage("It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification.");
+                                    alertDialog.setPositiveButton("Ok", null);
+                                    alertDialog.show();
+                                    editText.setText(null);
+                                }
+                            });
+                        } else {
+                            ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_ERROR);
+                        }
+                    }
+                });
     }
 
     // ================================================================================================

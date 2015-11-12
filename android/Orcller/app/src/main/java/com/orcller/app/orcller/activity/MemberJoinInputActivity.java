@@ -1,0 +1,300 @@
+package com.orcller.app.orcller.activity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.method.LinkMovementMethod;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.facebook.login.widget.ProfilePictureView;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Max;
+import com.mobsandgeeks.saripaar.annotation.Min;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.orcller.app.orcller.R;
+import com.orcller.app.orcllermodules.activity.PSActionBarActivity;
+import com.orcller.app.orcllermodules.error.APIError;
+import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import com.orcller.app.orcllermodules.ext.ClearableEditText;
+import com.orcller.app.orcllermodules.ext.FBProfilePictureView;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+import com.orcller.app.orcllermodules.managers.ProgressBarManager;
+import com.orcller.app.orcllermodules.model.api.Api;
+import com.orcller.app.orcllermodules.model.api.ApiMember;
+import com.orcller.app.orcllermodules.model.facebook.FBUser;
+import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+
+import java.io.Serializable;
+import java.util.List;
+
+import de.greenrobot.event.EventBus;
+
+/**
+ * Created by pisces on 11/12/15.
+ */
+public class MemberJoinInputActivity extends PSActionBarActivity {
+    @NotEmpty @Min(6) @Max(16)
+    private ClearableEditText idEditText;
+
+    @NotEmpty @Min(6) @Max(16)
+    private ClearableEditText pwEditText;
+
+    private LinearLayout container;
+    private Button joinButton;
+    private TextView extraTextView;
+    private TextView descTextView;
+    private FBProfilePictureView profilePictureView;
+    private Validator validator;
+    private FBUser user;
+    private String email;
+
+    // ================================================================================================
+    //  Overridden: Activity
+    // ================================================================================================
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_memeber_joininput);
+
+        container = (LinearLayout) findViewById(R.id.container);
+        joinButton = (Button) findViewById(R.id.joinButton);
+        descTextView = (TextView) findViewById(R.id.descTextView);
+        extraTextView = (TextView) findViewById(R.id.extraTextView);
+        profilePictureView = (FBProfilePictureView) findViewById(R.id.profilePictureView);
+        idEditText = (ClearableEditText) findViewById(R.id.idEditText);
+        pwEditText = (ClearableEditText) findViewById(R.id.pwEditText);
+        validator = new Validator(this);
+
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle("Sign up");
+        setUser(getIntent().getSerializableExtra("user"));
+        setEmail(getIntent().getStringExtra("email"));
+        setListeners();
+        descTextView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        SoftKeyboardNotifier.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
+        idEditText.setOnFocusChangeListener(null);
+        pwEditText.setOnFocusChangeListener(null);
+        pwEditText.setOnKeyListener(null);
+        joinButton.setOnClickListener(null);
+        container.setOnTouchListener(null);
+
+        container = null;
+        joinButton = null;
+        descTextView = null;
+        extraTextView = null;
+        profilePictureView = null;
+        idEditText = null;
+        pwEditText = null;
+        validator = null;
+    }
+
+    // ================================================================================================
+    //  Private
+    // ================================================================================================
+
+    private void join() {
+        SoftKeyboardUtils.hide(container);
+
+        if (user != null) {
+            joinWithIdp();
+        } else if (email != null) {
+            joinWithEmail();
+        }
+    }
+
+    private void joinWithEmail() {
+        ProgressBarManager.show(this);
+
+        final Activity activity = this;
+
+        AuthenticationCenter.getDefault().join(getJoinWithEmailReq(), new Api.CompleteHandler() {
+            @Override
+            public void onComplete(Object result, final APIError error) {
+                if (error != null) {
+                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
+                        @Override
+                        public void onDismiss() {
+                            String message = error.getMessage();
+                            if (message != null) {
+                                AlertDialogUtils.show(activity, message,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (which == AlertDialog.BUTTON_POSITIVE)
+                                                    joinWithEmail();
+                                            }
+                                        }, "Dismiss", "Retry");
+                            }
+                        }
+                    });
+                } else {
+                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_COMPLETE);
+                }
+            }
+        });
+    }
+
+    private void joinWithIdp() {
+        ProgressBarManager.show(this);
+
+        final Activity activity = this;
+
+        AuthenticationCenter.getDefault().join(getJoinWithIdpReq(), new Api.CompleteHandler() {
+            @Override
+            public void onComplete(Object result, final APIError error) {
+                if (error != null) {
+                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
+                        @Override
+                        public void onDismiss() {
+                            String message = error.getMessage();
+                            if (message != null) {
+                                AlertDialogUtils.show(activity, message,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (which == AlertDialog.BUTTON_POSITIVE)
+                                                    joinWithIdp();
+                                            }
+                                        }, "Dismiss", "Retry");
+                            }
+                        }
+                    });
+                } else {
+                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_COMPLETE);
+                }
+            }
+        });
+    }
+
+    private void setListeners() {
+        idEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                idEditText.setCursorVisible(hasFocus);
+            }
+        });
+        pwEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                pwEditText.setCursorVisible(hasFocus);
+            }
+        });
+        pwEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == event.KEYCODE_ENTER)
+                    validator.validate();
+                return false;
+            }
+        });
+        joinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validator.validate();
+            }
+        });
+        container.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN)
+                    SoftKeyboardUtils.hide(v);
+                return false;
+            }
+        });
+        validator.setValidationListener(new Validator.ValidationListener() {
+            @Override
+            public void onValidationSucceeded() {
+                join();
+            }
+
+            @Override
+            public void onValidationFailed(List<ValidationError> errors) {
+                for (ValidationError error : errors) {
+                    View view = error.getView();
+                    String message = error.getCollatedErrorMessage(getBaseContext());
+                    if (view instanceof EditText) {
+                        ((EditText) view).setError(message);
+                    } else {
+                        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+
+        SoftKeyboardNotifier.getDefault().register(this);
+        EventBus.getDefault().register(this);
+    }
+
+    private ApiMember.JoinWithEmailReq getJoinWithEmailReq() {
+        ApiMember.JoinWithEmailReq req = new ApiMember.JoinWithEmailReq();
+        req.user_id = idEditText.getText().toString().trim();
+        req.user_password = pwEditText.getText().toString().trim();
+        req.user_email = email;
+        return req;
+    }
+
+    private ApiMember.JoinWithIdpReq getJoinWithIdpReq() {
+        ApiMember.JoinWithIdpReq req = new ApiMember.JoinWithIdpReq();
+        req.user_id = idEditText.getText().toString().trim();
+        req.user_password = pwEditText.getText().toString().trim();
+        req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
+        req.idp_user_id = user.id;
+        req.user_link = user.link;
+        req.user_name = user.name;
+        req.user_picture = user.picture.data.url;
+        return req;
+    }
+
+    private void setEmail(String email) {
+        this.email = email;
+
+        if (email != null)
+            extraTextView.setText(email);
+    }
+
+    private void setUser(Serializable user) {
+        this.user = user != null ? (FBUser) user : null;
+
+        if (this.user != null)
+            extraTextView.setText(this.user.name);
+    }
+
+    // ================================================================================================
+    //  Event Handler
+    // ================================================================================================
+
+    public void onEventMainThread(Object event) {
+        if (event instanceof SoftKeyboardEvent.Show) {
+            if (idEditText.hasFocus())
+                idEditText.setCursorVisible(true);
+
+            if (pwEditText.hasFocus())
+                pwEditText.setCursorVisible(true);
+        } else if (event instanceof SoftKeyboardEvent.Hide) {
+            idEditText.setCursorVisible(false);
+            pwEditText.setCursorVisible(false);
+        }
+    }
+}

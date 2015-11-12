@@ -40,6 +40,7 @@ public class ProgressBarManager {
             final ViewGroup layout = (ViewGroup) viewInfo.activity.findViewById(android.R.id.content).getRootView();
 
             viewInfo.progressBar.dismiss();
+            viewInfo.relativeLayout.removeView(viewInfo.progressBar);
 
             final Animation.AnimationListener animationListener = new Animation.AnimationListener() {
                 @Override

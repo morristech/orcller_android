@@ -12,15 +12,18 @@
     <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
     </style>
 
-    <style name="MemberTheme" parent="@android:style/Theme.Holo.NoActionBar">
-        <item name="colorPrimaryDark">@color/actionbar_purple</item>
+    <style name="PurpleToobarTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/actionbar_purple</item>
+        <item name="colorAccent">@color/actionbar_purple_light</item>
     </style>
 
-    <!-- ActionBar styles -->
     <style name="AppTheme.ActionBar"
         parent="android:style/Widget.Holo.Light.ActionBar" >
         <item name="android:background">@color/actionbar_purple</item>
         <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
+        <!--<item name="android:homeAsUpIndicator">@android:drawable/btn_dropdown</item>-->
 
         <!-- Support library compatibility -->
         <item name="background">@color/actionbar_purple</item>
@@ -43,5 +46,11 @@
 
     <style name="AppTheme.ActionBar.TabView" parent="android:style/Widget.Holo.ActionBar.TabView">
         <item name="android:background">@drawable/main_tabbar_background</item>
+    </style>
+
+    <style name="PurpleToobarTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="titleTextColor">@android:color/white</item>
     </style>
 </resources>

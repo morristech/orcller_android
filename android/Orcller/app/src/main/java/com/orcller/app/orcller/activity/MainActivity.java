@@ -16,6 +16,7 @@ import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
     private SectionsPagerAdapter mSectionsPagerAdapter;

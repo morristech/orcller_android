@@ -1,11 +1,9 @@
 package com.orcller.app.orcllermodules.model;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.orcller.app.orcllermodules.utils.GSonUtil;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
@@ -13,7 +11,8 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by pisces on 11/6/15.
  */
-public class AbstractModel {
+@SuppressWarnings("serial")
+public class AbstractModel implements Serializable {
     // ================================================================================================
     //  Public
     // ================================================================================================

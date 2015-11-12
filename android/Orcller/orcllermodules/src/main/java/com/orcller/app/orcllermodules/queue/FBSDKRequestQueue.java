@@ -110,18 +110,15 @@ public class FBSDKRequestQueue {
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
-                    Log.i("onSuccess", loginResult.toString());
                     dequeue();
                 }
 
                 @Override
                 public void onCancel() {
-                    Log.i("onCancel");
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-                    Log.i("onError");
                 }
             });
 

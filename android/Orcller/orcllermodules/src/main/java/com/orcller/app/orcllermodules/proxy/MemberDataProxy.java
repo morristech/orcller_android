@@ -1,8 +1,11 @@
 package com.orcller.app.orcllermodules.proxy;
 
+import com.orcller.app.orcllermodules.R;
+import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
+import com.orcller.app.orcllermodules.utils.Log;
 
 import java.util.Map;
 
@@ -28,8 +31,8 @@ public class MemberDataProxy extends AbstractDataProxy {
     }
 
     @Override
-    protected String createSuffixUrl() {
-        return "/member/";
+    protected String createBaseUrl() {
+        return Application.applicationContext().getString(R.string.server_base_url) + "/member/";
     }
 
     public static MemberDataProxy getDefault() {
@@ -44,15 +47,25 @@ public class MemberDataProxy extends AbstractDataProxy {
     }
 
     public interface Service {
-        @FormUrlEncoded
-        @POST("login_idp")
+        @FormUrlEncoded @POST("login")
+        Call<ApiMember.LoginRes> login(@FieldMap Map<String, String> parameters);
+
+        @FormUrlEncoded @POST("login_idp")
         Call<ApiMember.LoginRes> loginByIdp(@FieldMap Map<String, String> parameters);
 
-        @POST("join_email")
-        Call<ApiMember.LoginRes> joinByEmail(String json);
+        @GET("logout")
+        Call<APIResult> logout();
 
-        @FormUrlEncoded
-        @POST("send_certification_email")
+        @FormUrlEncoded @POST("join_email")
+        Call<ApiMember.LoginRes> joinByEmail(@FieldMap Map<String, String> parameters);
+
+        @FormUrlEncoded @POST("join_idp")
+        Call<ApiMember.LoginRes> joinByIdp(@FieldMap Map<String, String> parameters);
+
+        @FormUrlEncoded @POST("send_certification_email")
         Call<APIResult> sendCertificationEmail(@Field("email")String email);
+
+        @FormUrlEncoded @POST("device")
+        Call<ApiMember> updateDevice(@FieldMap Map<String, String> parameters);
     }
 }

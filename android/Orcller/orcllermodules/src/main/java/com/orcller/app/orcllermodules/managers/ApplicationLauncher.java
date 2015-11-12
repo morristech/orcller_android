@@ -3,13 +3,14 @@ package com.orcller.app.orcllermodules.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.ApiApplication;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.proxy.ApplicationDataProxy;
+import com.orcller.app.orcllermodules.utils.GSonUtil;
+import com.orcller.app.orcllermodules.utils.Log;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 
@@ -111,8 +112,7 @@ public class ApplicationLauncher {
     }
 
     public boolean initialized() {
-        return true;
-//        return initialized;
+        return initialized;
     }
 
     public Request.Builder syncHeaders(Request.Builder builder) {
@@ -147,7 +147,6 @@ public class ApplicationLauncher {
         initialized = true;
 
         AuthenticationCenter.getDefault().synchorinze();
-
         EventBus.getDefault().post(new ApplicationInitialized());
     }
 

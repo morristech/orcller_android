@@ -2,6 +2,7 @@ package com.orcller.app.orcller.activity;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.fragment.MemberJoinFragment;
 import com.orcller.app.orcller.fragment.MemberLoginFragment;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
@@ -84,10 +86,17 @@ public class MemberActivity extends FragmentActivity {
 
         SoftKeyboardNotifier.getDefault().unregister(this);
         EventBus.getDefault().unregister(this);
+        tabHost.setOnTabChangedListener(null);
+        viewPager.setOnPageChangeListener(null);
+        container.setOnTouchListener(null);
 
-        titleContainer = null;
         tabHost = null;
         viewPager = null;
+        container = null;
+        titleContainer = null;
+        titleLinear = null;
+        titleTextView = null;
+        subtitleTextView = null;
     }
 
     // ================================================================================================
@@ -176,7 +185,11 @@ public class MemberActivity extends FragmentActivity {
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (event instanceof SoftKeyboardEvent.Show) {
+        if (event instanceof AuthenticationCenter.LoginComplete) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else if (event instanceof SoftKeyboardEvent.Show) {
             animateTitleContainer(R.dimen.member_title_height_selected);
             animateTitleLiner(R.dimen.member_title_margin_bottom_selected);
             titleLinear.setOrientation(LinearLayout.HORIZONTAL);

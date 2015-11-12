@@ -1,6 +1,7 @@
 package com.orcller.app.orcllermodules.managers;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -36,12 +37,10 @@ public class GooglePlayServiceManager {
         return uniqueInstance;
     }
 
-    public boolean checkPlayServices(Activity activity) {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+    public boolean checkPlayServices(Context context) {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, activity,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
                 Log.i("This device is not supported.");
             }

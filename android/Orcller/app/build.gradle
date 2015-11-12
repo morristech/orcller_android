@@ -28,7 +28,7 @@ android {
 
         dev {
             applicationId "com.orcller.app.orcller.dev"
-            buildConfigField 'String', 'HOST', '"http://192.168.10.100"'
+            buildConfigField 'String', 'HOST', '"http://192.168.10.103"'
         }
 
         qa {

@@ -1,5 +1,7 @@
 package com.orcller.app.orcllermodules.proxy;
 
+import com.orcller.app.orcllermodules.R;
+import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
 
 import retrofit.Call;
@@ -16,8 +18,8 @@ public class UserDataProxy extends AbstractDataProxy {
     }
 
     @Override
-    protected String createSuffixUrl() {
-        return "/users/";
+    protected String createBaseUrl() {
+        return Application.applicationContext().getString(R.string.server_base_url) + "/users/";
     }
 
     public interface Service {

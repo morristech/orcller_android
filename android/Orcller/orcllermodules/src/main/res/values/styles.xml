@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="WebView.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="titleTextColor">@android:color/white</item>
+    </style>
+</resources>

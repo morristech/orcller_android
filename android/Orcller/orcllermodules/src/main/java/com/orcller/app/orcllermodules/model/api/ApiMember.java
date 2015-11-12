@@ -1,19 +1,13 @@
 package com.orcller.app.orcllermodules.model.api;
 
-import android.accounts.AccountManager;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
 import android.os.Build;
-import android.telephony.TelephonyManager;
 
-import com.google.android.gms.plus.Account;
 import com.google.gson.annotations.SerializedName;
 import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.model.AbstractModel;
 import com.orcller.app.orcllermodules.utils.DeviceUtils;
-import com.orcller.app.orcllermodules.utils.Log;
 
 import java.util.Locale;
 
@@ -45,7 +39,7 @@ public class ApiMember {
         }
     }
 
-    public static class Behavior extends AbstractModel {
+    public static class BaseReq extends AbstractModel {
         public String device_locale;
         public String device_name;
         public String device_model;
@@ -53,7 +47,7 @@ public class ApiMember {
         public String device_system_version;
         public String device_token;
 
-        public Behavior() {
+        public BaseReq() {
             Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
             device_locale = locale.toLanguageTag();
             device_name = Build.DEVICE;
@@ -69,13 +63,13 @@ public class ApiMember {
         public String change_password;
     }
 
-    public static class JoinWithEmailReq extends Behavior {
+    public static class JoinWithEmailReq extends BaseReq {
         public String user_id;
         public String user_password;
         public String user_email;
     }
 
-    public static class JoinWithIdpReq extends Behavior {
+    public static class JoinWithIdpReq extends BaseReq {
         public int idp_type;
         public String idp_user_id;
         public String user_id;
@@ -85,12 +79,12 @@ public class ApiMember {
         public String user_picture;
     }
 
-    public static class LoginReq extends Behavior {
+    public static class LoginReq extends BaseReq {
         public String user_id;
         public String user_password;
     }
 
-    public static class LoginWithIdpReq extends Behavior {
+    public static class LoginWithIdpReq extends BaseReq {
         public int idp_type;
         public String idp_user_id;
     }

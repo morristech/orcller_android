@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="actionbar_purple">#762866</color>
+    <color name="actionbar_purple_light">#C54694</color>
     <color name="main_tabbar_normal">#282828</color>
     <color name="main_tabbar_selected">#000000</color>
     <color name="member_tab_text_normal">#B4B4B4</color>
@@ -12,4 +13,5 @@
     <color name="textcolot_hint">#AFAFB7</color>
     <color name="textcolor_fb_normal">#0091ED</color>
     <color name="textcolor_fb_selected">#96DDFE</color>
+    <color name="textcolor_dark_blue">#284D76</color>
 </resources>
