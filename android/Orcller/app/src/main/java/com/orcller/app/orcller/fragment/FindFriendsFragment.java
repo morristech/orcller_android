@@ -13,23 +13,13 @@ import com.orcller.app.orcller.R;
 /**
  * Created by pisces on 11/3/15.
  */
-@SuppressLint("ValidFragment")
 public class FindFriendsFragment extends Fragment {
-    Context mContext;
-
     public FindFriendsFragment() {
-    }
-
-    public FindFriendsFragment(Context context) {
-        mContext = context;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_findfrineds, null);
-
-
-        return view;
+        return inflater.inflate(R.layout.fragment_findfrineds, null);
     }
 }

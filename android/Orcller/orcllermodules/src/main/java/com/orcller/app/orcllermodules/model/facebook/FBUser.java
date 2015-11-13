@@ -1,15 +1,14 @@
 package com.orcller.app.orcllermodules.model.facebook;
 
-import com.orcller.app.orcllermodules.model.AbstractModel;
 
-import java.util.Date;
+import pisces.psfoundation.model.AbstractModel;
 
 /**
  * Created by pisces on 11/12/15.
  */
 public class FBUser extends AbstractModel {
-    public int timezone;
     public boolean verified;
+    public int timezone;
     public String first_name;
     public String gender;
     public String id;
@@ -20,14 +19,14 @@ public class FBUser extends AbstractModel {
     public String updated_time;
     public Picture picture;
 
-    public class Picture {
+    public static class Picture extends AbstractModel {
         public Data data;
     }
 
-    public class Data {
-        boolean is_silhouette;
-        int height;
-        int width;
+    public static class Data extends AbstractModel {
+        public boolean is_silhouette;
+        public int height;
+        public int width;
         public String url;
     }
 }

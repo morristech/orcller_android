@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.orcller.app.orcllermodules.ext.Application;
-
 /**
  * Created by pisces on 11/11/15.
  */

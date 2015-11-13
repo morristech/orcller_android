@@ -13,11 +13,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.model.api.ApiMember;
-import com.orcller.app.orcllermodules.utils.GSonUtil;
-import com.orcller.app.orcllermodules.utils.Log;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

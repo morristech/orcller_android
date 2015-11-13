@@ -1,8 +1,6 @@
 package com.orcller.app.orcllermodules.model;
 
-import android.content.Context;
-
-import com.orcller.app.orcllermodules.ext.Application;
+import pisces.psfoundation.ext.Application;
 
 /**
  * Created by pisces on 11/4/15.

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- properties -->
     <string name="app_name">Orcller</string>
     <string name="app_scheme">orcller</string>
     <string name="external_web">web</string>
@@ -7,10 +8,27 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">470721986412373</string>
-    <string name="title_facebook_login">Facebook</string>
+    <string name="instagram_client_id">44f7da449746424a87add98948d85bba</string>
+    <string name="instagram_client_secret">786fe9d225c248bc970aa251c6fd4771</string>
+    <string name="instagram_redirect_url">ig786fe9d225c248bc970aa251c6fd4771://authorize</string>
 
-    <string name="private_policy_url"></string>
-    <string name="member_joininput_desc">
+    <!-- words -->
+    <string name="w_dismiss">Dismiss</string>
+    <string name="w_facebook">Facebook</string>
+    <string name="w_login_with_facebook">Login with Facebook</string>
+    <string name="w_login_up">Log in</string>
+    <string name="w_ok">Ok</string>
+    <string name="w_retry">Retry</string>
+    <string name="w_sign_up">Sign up</string>
+    <string name="w_sign_up_with_email">Sign up with email</string>
+    <string name="w_user_name">User Name</string>
+    <string name="w_password">Password</string>
+
+    <!-- messages -->
+    <string name="m_send_email_result">
+        "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
+    </string>
+    <string name="m_member_joininput_desc">
         By tapping to continue, you are indicating that you have read the
         <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>
          and agree to <a href="orcller://web?url=https://www.orcller.com/site/policy/terms&amp;title=Term of service"><b>Terms of Service</b></a>.

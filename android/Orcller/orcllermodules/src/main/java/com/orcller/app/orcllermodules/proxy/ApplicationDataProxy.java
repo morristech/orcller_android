@@ -1,10 +1,9 @@
 package com.orcller.app.orcllermodules.proxy;
 
-import com.orcller.app.orcllermodules.BuildConfig;
 import com.orcller.app.orcllermodules.R;
-import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.ApiApplication;
 
+import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.http.GET;
 

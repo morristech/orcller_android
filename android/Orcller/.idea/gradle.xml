@@ -9,8 +9,13 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/InstagramSDK" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/lib.orcller.com" />
+            <option value="$PROJECT_DIR$/mylibrary" />
             <option value="$PROJECT_DIR$/orcllermodules" />
+            <option value="$PROJECT_DIR$/psfoundation" />
+            <option value="$PROJECT_DIR$/psuikit" />
           </set>
         </option>
       </GradleProjectSettings>

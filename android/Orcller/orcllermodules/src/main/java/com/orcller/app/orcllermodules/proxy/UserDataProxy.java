@@ -1,9 +1,9 @@
 package com.orcller.app.orcllermodules.proxy;
 
 import com.orcller.app.orcllermodules.R;
-import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
 
+import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;

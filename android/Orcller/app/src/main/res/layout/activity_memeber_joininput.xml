@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/tools"
+    xmlns:app1="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -23,15 +24,14 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:background="@android:color/white">
-        <com.orcller.app.orcllermodules.ext.FBProfilePictureView
+        <com.orcller.app.orcllermodules.widget.FBProfilePictureView
             android:id="@+id/profilePictureView"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
             app:is_cropped="true"
-            app:borderWidth="1dp"
-
-            app:cornerRadius="30dp" />
+            app1:borderWidth="1dp"
+            app1:cornerRadius="30dp" />
 
         <TextView
             android:id="@+id/extraTextView"
@@ -42,7 +42,7 @@
             android:textAlignment="center"
             android:textColor="@color/textcolor_dark_blue" />
 
-        <com.orcller.app.orcllermodules.ext.ClearableEditText
+        <pisces.psuikit.widget.ClearableEditText
             android:id="@+id/idEditText"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -51,7 +51,7 @@
             android:layout_marginTop="15dp"
             android:background="@android:color/transparent"
             android:cursorVisible="true"
-            android:hint="User Name"
+            android:hint="@string/w_user_name"
             android:inputType="textVisiblePassword|textNoSuggestions"
             android:nextFocusDown="@+id/pwEditText"
             android:textColor="@color/black"
@@ -65,18 +65,20 @@
             android:layout_height="1dip"
             android:layout_gravity="center_vertical" />
 
-        <FrameLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.orcller.app.orcllermodules.ext.ClearableEditText
+            <pisces.psuikit.widget.ClearableEditText
                 android:id="@+id/pwEditText"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="20dp"
                 android:background="@android:color/transparent"
                 android:cursorVisible="true"
-                android:hint="Password"
+                android:hint="@string/w_password"
                 android:inputType="textPassword"
                 android:textColor="@color/black"
                 android:textColorHint="@color/textcolot_hint"
@@ -87,13 +89,13 @@
                 android:id="@+id/joinButton"
                 android:layout_width="45dp"
                 android:layout_height="30dp"
-                android:layout_gravity="right|center_vertical"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/button_blue_radius3dp"
                 android:text="JOIN"
                 android:textColor="@android:color/white"
                 android:textSize="10dp"
-                android:visibility="gone" />
-        </FrameLayout>
+                android:visibility="gone"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/descTextView"
@@ -102,7 +104,7 @@
             android:layout_marginTop="20dp"
             android:clickable="true"
             android:linksClickable="true"
-            android:text="@string/member_joininput_desc"
+            android:text="@string/m_member_joininput_desc"
             android:textAlignment="center"
             android:textColor="#828282"
             android:textColorLink="#828282"

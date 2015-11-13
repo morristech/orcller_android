@@ -5,16 +5,14 @@ import android.content.SharedPreferences;
 import android.os.Build;
 
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.ApiApplication;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.proxy.ApplicationDataProxy;
-import com.orcller.app.orcllermodules.utils.GSonUtil;
-import com.orcller.app.orcllermodules.utils.Log;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Retrofit;

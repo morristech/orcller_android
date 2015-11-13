@@ -3,7 +3,6 @@ package com.orcller.app.orcllermodules.queue;
 import android.os.Bundle;
 
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.model.AbstractModel;
 
 import org.json.JSONObject;
 

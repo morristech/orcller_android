@@ -1,23 +1,18 @@
 package com.orcller.app.orcllermodules.proxy;
 
 import com.orcller.app.orcllermodules.R;
-import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
-import com.orcller.app.orcllermodules.model.api.ApiUser;
-import com.orcller.app.orcllermodules.utils.Log;
 
 import java.util.Map;
 
+import pisces.psfoundation.ext.Application;
 import retrofit.Call;
-import retrofit.http.Body;
 import retrofit.http.Field;
 import retrofit.http.FieldMap;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
-import retrofit.http.Headers;
 import retrofit.http.POST;
-import retrofit.http.Path;
 
 /**
  * Created by pisces on 11/6/15.

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,16 +26,17 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.ext.ClearableEditText;
+import pisces.psuikit.widget.ClearableEditText;
+import pisces.psuikit.ext.PSFragment;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import com.orcller.app.orcllermodules.managers.ProgressBarManager;
+import pisces.psuikit.manager.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
-import com.orcller.app.orcllermodules.model.facebook.FBUser;
+import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.GSonUtil;
-import com.orcller.app.orcllermodules.utils.Log;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.List;
@@ -46,7 +46,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by pisces on 11/7/15.
  */
-public class MemberJoinFragment extends Fragment {
+public class MemberJoinFragment extends PSFragment {
     @NotEmpty
     @Email
     private ClearableEditText editText;
@@ -105,8 +105,6 @@ public class MemberJoinFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        EventBus.getDefault().unregister(this);
-        ProgressBarManager.hide(getActivity());
         editText.removeTextChangedListener(textWatcher);
         facebookButton.setOnClickListener(null);
         nextButton.setOnClickListener(null);
@@ -136,11 +134,23 @@ public class MemberJoinFragment extends Fragment {
     // ================================================================================================
 
     private void loginWithFacebook() {
+        if (invalidDataLoading())
+            return;
+
         SoftKeyboardUtils.hide(getView());
 
-        AuthenticationCenter.getDefault().loginWithFacebook(this, new Api.CompleteHandler() {
+        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler() {
+            @Override
+            public void onComplete(JSONObject result, APIError error) {
+                if (error == null)
+                    ProgressBarManager.show(getActivity());
+            }
+        }, new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
+                ProgressBarManager.hide(getActivity());
+                endDataLoading();
+
                 if (error != null) {
                     if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
                         openMemberJoinInputActivity(result);
@@ -152,7 +162,10 @@ public class MemberJoinFragment extends Fragment {
                                         if (which == AlertDialog.BUTTON_POSITIVE)
                                             loginWithFacebook();
                                     }
-                                }, "Dismiss", "Retry");
+                                },
+                                getResources().getString(R.string.w_dismiss),
+                                getResources().getString(R.string.w_retry)
+                        );
                     }
                 }
             }
@@ -225,6 +238,9 @@ public class MemberJoinFragment extends Fragment {
     }
 
     private void sendCertificationEmail() {
+        if (invalidDataLoading())
+            return;
+
         SoftKeyboardUtils.hide(getView());
         ProgressBarManager.show(getActivity());
 
@@ -233,14 +249,17 @@ public class MemberJoinFragment extends Fragment {
                 new Api.CompleteHandler() {
                     @Override
                     public void onComplete(Object result, APIError error) {
+                        endDataLoading();
+
                         if (error == null) {
                             ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_COMPLETE, new ProgressBarManager.DismissHandler() {
                                 @Override
                                 public void onDismiss() {
-                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-                                    alertDialog.setMessage("It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification.");
-                                    alertDialog.setPositiveButton("Ok", null);
-                                    alertDialog.show();
+                                    AlertDialogUtils.show(
+                                            getContext(),
+                                            getResources().getString(R.string.m_send_email_result),
+                                            getResources().getString(R.string.w_ok)
+                                    );
                                     editText.setText(null);
                                 }
                             });

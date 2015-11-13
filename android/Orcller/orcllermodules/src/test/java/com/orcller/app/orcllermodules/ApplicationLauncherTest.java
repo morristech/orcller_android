@@ -5,6 +5,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
+import com.orcller.app.orcllermodules.model.ApplicationResource;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by pisces on 11/3/15.
@@ -20,7 +23,7 @@ public class ApplicationLauncherTest {
         final CountDownLatch signal = new CountDownLatch(1);
 
         try {
-            ApplicationLauncher.getDefault().setResource(new ApplicationLauncher.ApplicationResource
+            ApplicationLauncher.getDefault().setResource(new ApplicationResource
                     ("orcller"))
                     .launch();
             assertTrue(true);
@@ -30,6 +33,10 @@ public class ApplicationLauncherTest {
             signal.countDown();
         }
 
-        signal.wait();
+        try {
+            signal.wait();
+        } catch (Exception e) {
+
+        }
     }
 }

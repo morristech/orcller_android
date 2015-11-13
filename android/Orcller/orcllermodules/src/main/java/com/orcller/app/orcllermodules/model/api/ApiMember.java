@@ -3,13 +3,14 @@ package com.orcller.app.orcllermodules.model.api;
 import android.os.Build;
 
 import com.google.gson.annotations.SerializedName;
-import com.orcller.app.orcllermodules.ext.Application;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.APIResult;
-import com.orcller.app.orcllermodules.model.AbstractModel;
 import com.orcller.app.orcllermodules.utils.DeviceUtils;
 
 import java.util.Locale;
+
+import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.AbstractModel;
 
 /**
  * Created by pisces on 11/5/15.

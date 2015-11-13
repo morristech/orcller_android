@@ -1,1 +1,1 @@
-include ':app', ':orcllermodules'
+include ':app', ':orcllermodules', ':lib.orcller.com', ':mylibrary', ':InstagramSDK', ':psfoundation', ':psuikit'

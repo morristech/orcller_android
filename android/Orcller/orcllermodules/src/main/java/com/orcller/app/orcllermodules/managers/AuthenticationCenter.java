@@ -15,8 +15,6 @@ import com.orcller.app.orcllermodules.proxy.MemberDataProxy;
 import com.orcller.app.orcllermodules.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.GSonUtil;
-import com.orcller.app.orcllermodules.utils.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.utils.GSonUtil;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -99,7 +98,10 @@ public class AuthenticationCenter {
         requestLogin(call, completeHandler);
     }
 
-    public void loginWithFacebook(Object target, final Api.CompleteHandler completeHandler) {
+    public void loginWithFacebook(
+            Object target,
+            final FBSDKRequest.CompleteHandler fbCompleteHandler,
+            final Api.CompleteHandler completeHandler) {
         final Api.CompleteHandler handler = new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
@@ -118,6 +120,9 @@ public class AuthenticationCenter {
                 new FBSDKRequest.CompleteHandler() {
                     @Override
                     public void onComplete(final JSONObject result, APIError error) {
+                        if (fbCompleteHandler != null)
+                            fbCompleteHandler.onComplete(result, error);
+
                         if (error == null) {
                             try {
                                 ApiMember.LoginWithIdpReq req = new ApiMember.LoginWithIdpReq();
@@ -131,7 +136,6 @@ public class AuthenticationCenter {
                                             handler.onComplete(rs, err);
                                         } else {
                                             try {
-                                                Log.i("result.toString()", result.toString());
                                                 handler.onComplete(GSonUtil.objectFromGSonString(result.toString(), FBUser.class), err);
                                             } catch (Exception e) {
                                                 handler.onComplete(null, err);

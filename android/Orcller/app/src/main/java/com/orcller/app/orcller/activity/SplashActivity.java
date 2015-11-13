@@ -11,10 +11,13 @@ import com.orcller.app.orcller.service.ApplicationService;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
-import com.orcller.app.orcllermodules.utils.GSonUtil;
-import com.orcller.app.orcllermodules.utils.Log;
 
 import de.greenrobot.event.EventBus;
+import pisces.instagram.sdk.InstagramApplicationCenter;
+import pisces.instagram.sdk.error.InstagramSDKError;
+import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.utils.GSonUtil;
+import pisces.psfoundation.utils.Log;
 
 public class SplashActivity extends Activity {
 
@@ -93,9 +96,22 @@ public class SplashActivity extends Activity {
     // ================================================================================================
 
     private void startMainActivity() {
-        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
-                MainActivity.class : MemberActivity.class;
-        startActivity(new Intent(this, activityClass));
-        finish();
+//        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
+//                MainActivity.class : MemberActivity.class;
+//        startActivity(new Intent(this, activityClass));
+//        finish();
+
+
+        InstagramApplicationCenter.getDefault().login(this, new InstagramApplicationCenter.CompleteHandler() {
+            @Override
+            public void onError(InstagramSDKError error) {
+
+            }
+
+            @Override
+            public void onComplete(AbstractModel model) {
+
+            }
+        });
     }
 }

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -26,14 +25,18 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.ext.ClearableEditText;
+import pisces.psuikit.widget.ClearableEditText;
+import pisces.psuikit.ext.PSFragment;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import com.orcller.app.orcllermodules.managers.ProgressBarManager;
+import pisces.psuikit.manager.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
+import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.List;
@@ -43,7 +46,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by pisces on 11/7/15.
  */
-public class MemberLoginFragment extends Fragment {
+public class MemberLoginFragment extends PSFragment {
     @NotEmpty
     private ClearableEditText idEditText;
 
@@ -81,7 +84,7 @@ public class MemberLoginFragment extends Fragment {
         facebookButton = (Button) getView().findViewById(R.id.facebookButton);
         goButton = (Button) getView().findViewById(R.id.goButton);
         bottomContainer = (LinearLayout) getView().findViewById(R.id.bottomContainer);
-
+        validator = new Validator(this);
         textWatcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
             }
@@ -97,8 +100,6 @@ public class MemberLoginFragment extends Fragment {
             }
         };
 
-        validator = new Validator(this);
-
         setListeners();
     }
 
@@ -106,8 +107,6 @@ public class MemberLoginFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        EventBus.getDefault().unregister(this);
-        ProgressBarManager.hide(getActivity());
         idEditText.removeTextChangedListener(textWatcher);
         pwEditText.removeTextChangedListener(textWatcher);
         facebookButton.setOnClickListener(null);
@@ -140,6 +139,9 @@ public class MemberLoginFragment extends Fragment {
     // ================================================================================================
 
     private void login() {
+        if (invalidDataLoading())
+            return;
+
         SoftKeyboardUtils.hide(getView());
         ProgressBarManager.show(getActivity());
 
@@ -150,6 +152,8 @@ public class MemberLoginFragment extends Fragment {
         AuthenticationCenter.getDefault().login(req, new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, final APIError error) {
+                endDataLoading();
+
                 if (error != null) {
                     ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
                         @Override
@@ -163,7 +167,10 @@ public class MemberLoginFragment extends Fragment {
                                                 if (which == AlertDialog.BUTTON_POSITIVE)
                                                     login();
                                             }
-                                        }, "Dismiss", "Retry");
+                                        },
+                                        getResources().getString(R.string.w_dismiss),
+                                        getResources().getString(R.string.w_retry)
+                                );
                             }
                         }
                     });
@@ -175,11 +182,23 @@ public class MemberLoginFragment extends Fragment {
     }
 
     private void loginWithFacebook() {
+        if (invalidDataLoading())
+            return;
+
         SoftKeyboardUtils.hide(getView());
 
-        AuthenticationCenter.getDefault().loginWithFacebook(this, new Api.CompleteHandler() {
+        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler() {
+            @Override
+            public void onComplete(JSONObject result, APIError error) {
+                if (error == null)
+                    ProgressBarManager.show(getActivity());
+            }
+        }, new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
+                ProgressBarManager.hide(getActivity());
+                endDataLoading();
+
                 if (error != null) {
                     if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
                         openMemberJoinInputActivity(result);
@@ -191,7 +210,10 @@ public class MemberLoginFragment extends Fragment {
                                         if (which == AlertDialog.BUTTON_POSITIVE)
                                             loginWithFacebook();
                                     }
-                                }, "Dismiss", "Retry");
+                                },
+                                getResources().getString(R.string.w_dismiss),
+                                getResources().getString(R.string.w_retry)
+                        );
                     }
                 }
             }

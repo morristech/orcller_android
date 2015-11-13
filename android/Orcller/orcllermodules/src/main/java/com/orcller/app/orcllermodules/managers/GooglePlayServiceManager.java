@@ -1,12 +1,11 @@
 package com.orcller.app.orcllermodules.managers;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.orcller.app.orcllermodules.ext.Application;
-import com.orcller.app.orcllermodules.utils.Log;
+
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/11/15.

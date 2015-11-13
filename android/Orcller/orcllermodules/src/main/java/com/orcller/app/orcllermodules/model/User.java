@@ -2,6 +2,8 @@ package com.orcller.app.orcllermodules.model;
 
 import java.util.Date;
 
+import pisces.psfoundation.model.AbstractModel;
+
 /**
  * Created by pisces on 11/5/15.
  */

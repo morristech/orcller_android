@@ -2,10 +2,12 @@ package com.orcller.app.orcller.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -16,20 +18,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.login.widget.ProfilePictureView;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Max;
 import com.mobsandgeeks.saripaar.annotation.Min;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcllermodules.activity.PSActionBarActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.ext.ClearableEditText;
-import com.orcller.app.orcllermodules.ext.FBProfilePictureView;
+import pisces.psuikit.widget.ClearableEditText;
+import pisces.psuikit.ext.PSActionBarActivity;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import com.orcller.app.orcllermodules.managers.ProgressBarManager;
+import pisces.psuikit.manager.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.model.facebook.FBUser;
@@ -46,20 +46,24 @@ import de.greenrobot.event.EventBus;
  * Created by pisces on 11/12/15.
  */
 public class MemberJoinInputActivity extends PSActionBarActivity {
-    @NotEmpty @Min(6) @Max(16)
+    @NotEmpty
+    @Max(value = 16)
+    @Min(value = 6)
     private ClearableEditText idEditText;
 
-    @NotEmpty @Min(6) @Max(16)
+    @NotEmpty
+    @Max(value = 16)
+    @Min(value = 6)
     private ClearableEditText pwEditText;
 
+    private String email;
     private LinearLayout container;
     private Button joinButton;
     private TextView extraTextView;
     private TextView descTextView;
-    private FBProfilePictureView profilePictureView;
+    private TextWatcher textWatcher;
     private Validator validator;
     private FBUser user;
-    private String email;
 
     // ================================================================================================
     //  Overridden: Activity
@@ -75,17 +79,29 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         joinButton = (Button) findViewById(R.id.joinButton);
         descTextView = (TextView) findViewById(R.id.descTextView);
         extraTextView = (TextView) findViewById(R.id.extraTextView);
-        profilePictureView = (FBProfilePictureView) findViewById(R.id.profilePictureView);
         idEditText = (ClearableEditText) findViewById(R.id.idEditText);
         pwEditText = (ClearableEditText) findViewById(R.id.pwEditText);
         validator = new Validator(this);
+        textWatcher = new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                boolean isEmptyId = TextUtils.isEmpty(idEditText.getText().toString().trim());
+                boolean isEmptyPw = TextUtils.isEmpty(pwEditText.getText().toString().trim());
+                joinButton.setVisibility(isEmptyId || isEmptyPw ? View.GONE : View.VISIBLE);
+            }
+        };
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle("Sign up");
+        getSupportActionBar().setTitle(getResources().getString(R.string.w_sign_up));
+        descTextView.setMovementMethod(LinkMovementMethod.getInstance());
         setUser(getIntent().getSerializableExtra("user"));
         setEmail(getIntent().getStringExtra("email"));
         setListeners();
-        descTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
@@ -93,7 +109,6 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         super.onDestroy();
 
         SoftKeyboardNotifier.getDefault().unregister(this);
-        EventBus.getDefault().unregister(this);
         idEditText.setOnFocusChangeListener(null);
         pwEditText.setOnFocusChangeListener(null);
         pwEditText.setOnKeyListener(null);
@@ -104,9 +119,9 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         joinButton = null;
         descTextView = null;
         extraTextView = null;
-        profilePictureView = null;
         idEditText = null;
         pwEditText = null;
+        textWatcher = null;
         validator = null;
     }
 
@@ -125,6 +140,9 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
     }
 
     private void joinWithEmail() {
+        if (invalidDataLoading())
+            return;
+
         ProgressBarManager.show(this);
 
         final Activity activity = this;
@@ -132,6 +150,8 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         AuthenticationCenter.getDefault().join(getJoinWithEmailReq(), new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, final APIError error) {
+                endDataLoading();
+
                 if (error != null) {
                     ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
                         @Override
@@ -145,7 +165,10 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                                                 if (which == AlertDialog.BUTTON_POSITIVE)
                                                     joinWithEmail();
                                             }
-                                        }, "Dismiss", "Retry");
+                                        },
+                                        getResources().getString(R.string.w_dismiss),
+                                        getResources().getString(R.string.w_retry)
+                                );
                             }
                         }
                     });
@@ -157,6 +180,9 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
     }
 
     private void joinWithIdp() {
+        if (invalidDataLoading())
+            return;
+
         ProgressBarManager.show(this);
 
         final Activity activity = this;
@@ -164,6 +190,8 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         AuthenticationCenter.getDefault().join(getJoinWithIdpReq(), new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, final APIError error) {
+                endDataLoading();
+
                 if (error != null) {
                     ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
                         @Override
@@ -177,7 +205,10 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                                                 if (which == AlertDialog.BUTTON_POSITIVE)
                                                     joinWithIdp();
                                             }
-                                        }, "Dismiss", "Retry");
+                                        },
+                                        getResources().getString(R.string.w_dismiss),
+                                        getResources().getString(R.string.w_retry)
+                                );
                             }
                         }
                     });
@@ -242,7 +273,8 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                 }
             }
         });
-
+        idEditText.addTextChangedListener(textWatcher);
+        pwEditText.addTextChangedListener(textWatcher);
         SoftKeyboardNotifier.getDefault().register(this);
         EventBus.getDefault().register(this);
     }

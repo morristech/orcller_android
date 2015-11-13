@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,6 +31,7 @@ import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 
 /**
  * Created by pisces on 11/6/15.
@@ -42,8 +42,6 @@ public class MemberActivity extends FragmentActivity {
     private LinearLayout titleLinear;
     private FragmentTabHost tabHost;
     private ViewPager viewPager;
-    private TextView titleTextView;
-    private TextView subtitleTextView;
 
     // ================================================================================================
     //  Overridden: FragmentActivity
@@ -73,8 +71,6 @@ public class MemberActivity extends FragmentActivity {
         container = (LinearLayout) findViewById(R.id.container);
         titleContainer = (RelativeLayout) findViewById(R.id.titleContainer);
         titleLinear = (LinearLayout) findViewById(R.id.titleLinear);
-        titleTextView = (TextView) findViewById(R.id.titleTextView);
-        subtitleTextView = (TextView) findViewById(R.id.subtitleTextView);
 
         setStausBarColor();
         setListeners();
@@ -95,8 +91,6 @@ public class MemberActivity extends FragmentActivity {
         container = null;
         titleContainer = null;
         titleLinear = null;
-        titleTextView = null;
-        subtitleTextView = null;
     }
 
     // ================================================================================================
@@ -206,7 +200,7 @@ public class MemberActivity extends FragmentActivity {
 
     public class MemberFragmentPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"Sign up", "Log in"};
+        final private int tabTitles[] = new int[]{R.string.w_sign_up, R.string.w_login_up};
         private FragmentManager fm;
 
         public MemberFragmentPagerAdapter(FragmentManager fm) {
@@ -231,7 +225,7 @@ public class MemberActivity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return tabTitles[position];
+            return Application.applicationContext().getResources().getString(tabTitles[position]);
         }
     }
 }
