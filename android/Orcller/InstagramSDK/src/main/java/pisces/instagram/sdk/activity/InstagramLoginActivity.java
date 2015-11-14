@@ -1,5 +1,6 @@
 package pisces.instagram.sdk.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -80,11 +81,13 @@ public class InstagramLoginActivity extends PSActionBarActivity {
     // ================================================================================================
 
     private class InstagramLoginWebViewClient extends WebViewClient {
+        private Context context;
         private ProgressDialog progressBarDialog;
 
         public InstagramLoginWebViewClient(Context context) {
             super();
 
+            this.context = context;
             progressBarDialog = new ProgressDialog(context);
             progressBarDialog.setMessage("Loading ...");
         }
@@ -92,8 +95,7 @@ public class InstagramLoginActivity extends PSActionBarActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith(resource.getRedirectURI())) {
                 EventBus.getDefault().post(
-                        new InstagramLoginComplete(Uri.parse(url).getQueryParameter("code")));
-                finish();
+                        new InstagramLoginComplete((Activity) context, Uri.parse(url).getQueryParameter("code")));
                 return false;
             }
 
@@ -117,10 +119,16 @@ public class InstagramLoginActivity extends PSActionBarActivity {
     }
 
     public static class InstagramLoginComplete {
+        private Activity activity;
         private String code;
 
-        public InstagramLoginComplete(String code) {
+        public InstagramLoginComplete(Activity activity, String code) {
+            this.activity = activity;
             this.code = code;
+        }
+
+        public Activity getActivity() {
+            return activity;
         }
 
         public String getCode() {

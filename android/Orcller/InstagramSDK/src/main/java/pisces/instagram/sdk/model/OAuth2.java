@@ -46,16 +46,15 @@ public class OAuth2 implements Serializable {
         }
     }
 
-    private static final String ACCESS_TOKEN_KEY = "access_token";
-    private static final String CLIENT_ID_KEY = "client_id";
-    private static final String CLIENT_SECRET_KEY = "client_secret";
-    private static final String CODE_KEY = "code";
-    private static final String GRANT_KEY = "grant_type";
-    private static final String REDIRECT_TYPE_KEY = "redirect_uri";
-    private static final String RESPONSE_TYPE_KEY = "response_type";
-    private static final String SCOPE_KEY = "scope";
-
-    private static final String[] SCOPE_TYPES = {"basic", "comments", "relationships", "likes"};
+    public static final String ACCESS_TOKEN_KEY = "access_token";
+    public static final String CLIENT_ID_KEY = "client_id";
+    public static final String CLIENT_SECRET_KEY = "client_secret";
+    public static final String CODE_KEY = "code";
+    public static final String GRANT_KEY = "grant_type";
+    public static final String REDIRECT_TYPE_KEY = "redirect_uri";
+    public static final String RESPONSE_TYPE_KEY = "response_type";
+    public static final String SCOPE_KEY = "scope";
+    public static final String[] SCOPE_TYPES = {"basic", "comments", "relationships", "likes"};
     private InstagramLoginScope scope;
     private String clientId;
     private String clientSecret;
@@ -75,9 +74,9 @@ public class OAuth2 implements Serializable {
             parameters = new HashMap<String, String>();
             parameters.put(CLIENT_ID_KEY, clientId);
             parameters.put(CLIENT_SECRET_KEY, clientSecret);
+            parameters.put(GRANT_KEY, "authorization_code");
             parameters.put(REDIRECT_TYPE_KEY, redirectURI);
-            parameters.put(RESPONSE_TYPE_KEY, "authorization_code");
-            parameters.put(CODE_KEY,InstagramApplicationCenter.getDefault().getCode());
+            parameters.put(CODE_KEY, InstagramApplicationCenter.getDefault().getCode());
         }
 
         return parameters;

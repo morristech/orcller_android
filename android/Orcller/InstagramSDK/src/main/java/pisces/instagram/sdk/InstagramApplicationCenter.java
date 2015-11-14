@@ -1,5 +1,6 @@
 package pisces.instagram.sdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,13 +14,12 @@ import java.util.Map;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.activity.InstagramLoginActivity;
 import pisces.instagram.sdk.error.InstagramSDKError;
-import pisces.instagram.sdk.model.InstagramAuth;
+import pisces.instagram.sdk.model.ApiInstagram;
+import pisces.instagram.sdk.model.ApiInstagramResult;
 import pisces.instagram.sdk.model.OAuth2;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.model.AbstractModel;
 import pisces.psfoundation.utils.GSonUtil;
-import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -28,27 +28,28 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 11/13/15.
  */
-public class InstagramApplicationCenter {
+public class InstagramApplicationCenter<T> {
     private static InstagramApplicationCenter uniqueInstance;
     private static final String APP_PREFERENCE_KEY = "Application-Preferences";
-    private static final String CACHED_INSTAGRAM_AUTH_INFO = "kCachedInstagramAuthInfo";
+    private static final String CACHED_INSTAGRAM_AUTH_INFO_KEY = "CachedInstagramAuthInfo";
     private static final String CLIENT_ID_KEY = "pisces.instagram.sdk.ClientId";
     private static final String CLIENT_SECRET_KEY = "pisces.instagram.sdk.ClientSecret";
     private static final String REDIRECT_URL_KEY = "pisces.instagram.sdk.RedirectUrl";
     private String accessToken;
     private String code;
     private ArrayList<CallCommand> commandQueue = new ArrayList<CallCommand>();
-    private InstagramAuth cachedAuthInfo;
+    private ApiInstagram.AccessTokenRes cachedAccessTokenRes;
     private OAuth2 resource;
-    private CompleteHandler completeHandler;
+    private Activity activity;
+    private InstagramApiProxy.CompleteHandler completeHandler;
 
     /**
      * @constructor
      **/
     public InstagramApplicationCenter() {
-        cachedAuthInfo = getCachedAuthInfo();
-        accessToken = cachedAuthInfo != null ? cachedAuthInfo.getAccessToken() : null;
-        code = cachedAuthInfo != null ? cachedAuthInfo.getCode() : null;
+        cachedAccessTokenRes = getCachedAccessTokenRes();
+        accessToken = cachedAccessTokenRes != null ? cachedAccessTokenRes.access_token : null;
+        code = cachedAccessTokenRes != null ? cachedAccessTokenRes.code : null;
 
         try {
             Context context = Application.applicationContext();
@@ -82,30 +83,36 @@ public class InstagramApplicationCenter {
         return uniqueInstance;
     }
 
+    public CallCommand enqueueCall(
+            Activity activity,
+            Call<ApiInstagramResult> call,
+            InstagramApiProxy.CompleteHandler completeHandler) {
+        CallCommand command = new CallCommand(activity, call, completeHandler);
+        commandQueue.add(command);
+        dequeueCommand();
+        return command;
+    }
+
     public boolean hasSession() {
         return accessToken != null;
     }
 
-    public void login(Context context, CompleteHandler completeHandler) {
+    public void login(Activity activity, InstagramApiProxy.CompleteHandler completeHandler) {
         if (invalidateResource(completeHandler))
             return;
 
         if (code != null) {
             refresh(completeHandler);
         } else {
+            this.activity = activity;
             this.completeHandler = completeHandler;
 
             EventBus.getDefault().register(this);
 
-            Intent intent = new Intent(context, InstagramLoginActivity.class);
+            Intent intent = new Intent(activity, InstagramLoginActivity.class);
             intent.putExtra("resource", resource);
-            context.startActivity(intent);
+            activity.startActivity(intent);
         }
-    }
-
-    private void refresh(CompleteHandler completeHandler) {
-        if (!invalidateCode(completeHandler))
-            requestAccessToken(completeHandler);
     }
 
     public String getAccessToken() {
@@ -132,10 +139,14 @@ public class InstagramApplicationCenter {
         if (event instanceof InstagramLoginActivity.InstagramLoginComplete) {
             EventBus.getDefault().unregister(this);
 
-            code = ((InstagramLoginActivity.InstagramLoginComplete) event).getCode();
+            InstagramLoginActivity.InstagramLoginComplete casted = (InstagramLoginActivity.InstagramLoginComplete) event;
+            casted.getActivity().finish();
+            code = casted.getCode();
 
             if (code != null) {
                 requestAccessToken(completeHandler);
+                completeHandler = null;
+                activity = null;
             }
         }
     }
@@ -144,52 +155,58 @@ public class InstagramApplicationCenter {
     //  Private
     // ================================================================================================
 
-    private void requestAccessToken(CompleteHandler completeHandler) {
-        Log.i("requestAccessToken");
-
-        if (invalidateCode(completeHandler))
+    private void dequeueCommand() {
+        if (commandQueue.size() < 1)
             return;
 
-        Log.i("requestAccessToken valid");
+        final CallCommand command = commandQueue.get(0);
 
-        InstagramApiProxy.Service service = (InstagramApiProxy.Service) InstagramApiProxy.getDefault().getCurrentService();
-        Call<Object> call = service.accessToken(resource.getParameters(OAuth2.InstagramParametersType.AccessToken));
-        
-        InstagramApiProxy.getDefault().enqueueCall(call, new Callback<Object>() {
-            @Override
-            public void onResponse(Response<Object> response, Retrofit retrofit) {
-                Log.i("onResponse", GSonUtil.toGSonString(response.body()));
-            }
+        if (hasSession()) {
+            executeCommand(command);
+        } else {
+            login(activity, new InstagramApiProxy.CompleteHandler() {
+                @Override
+                public void onError(InstagramSDKError error) {
+                    commandQueue.remove(command);
+                    command.completeHandler.onError(error);
+                }
 
-            @Override
-            public void onFailure(Throwable t) {
-                Log.i("onFailure");
-                t.printStackTrace();
-            }
-        });
+                @Override
+                public void onComplete(ApiInstagramResult result) {
+                    executeCommand(command);
+                }
+            });
+        }
     }
 
-//    - (void)accessToken:(SuccessBlock)success error:(ErrorBlock)error {
-//        if ([self invalidateCode:error])
-//        return;
-//
-//        [[HTTPActionManager sharedInstance] doAction:@"token" param:[self.model paramWithType:InstagramParametersTypeAccessToken] body:nil headers:nil success:^(id result) {
-//            if (result) {
-//                _accessToken = result[kOAuthProeprtyAccessTokenKey];
-//                self.cachedAuthModel = [CachedAuthModel modelWithCode:self.code accessToken:self.accessToken];
-//
-//                if (success)
-//                    success(result);
-//
-//                [self dequeueAPICallCommand];
-//            }
-//        } error:^(NSError *err) {
-//            if (error)
-//                error(err);
-//        }];
-//    }
+    private void executeCommand(final CallCommand command) {
+        if (command != null) {
+            commandQueue.remove(command);
 
-    private boolean invalidateCode(CompleteHandler completeHandler) {
+            InstagramApiProxy.getDefault().enqueueCall(command.getCall(), new Callback<ApiInstagramResult>() {
+                @Override
+                public void onResponse(Response<ApiInstagramResult> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        command.getCompleteHandler().onComplete(response.body());
+                    } else {
+                        command.getCompleteHandler().onError(new InstagramSDKError(
+                                InstagramSDKError.Code.UnknownAPIError.getValue(),
+                                response.message()));
+                    }
+                    command.clear();
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    command.getCompleteHandler().onError(new InstagramSDKError(
+                            InstagramSDKError.Code.UnknownAPIError.getValue(), t.getMessage()));
+                    command.clear();
+                }
+            });
+        }
+    }
+
+    private boolean invalidateCode(InstagramApiProxy.CompleteHandler completeHandler) {
         if (code != null)
             return false;
 
@@ -199,7 +216,7 @@ public class InstagramApplicationCenter {
         return true;
     }
 
-    private boolean invalidateResource(CompleteHandler completeHandler) {
+    private boolean invalidateResource(InstagramApiProxy.CompleteHandler completeHandler) {
         InstagramSDKError error = null;
 
         if (resource == null) {
@@ -233,20 +250,71 @@ public class InstagramApplicationCenter {
         return false;
     }
 
-    private InstagramAuth getCachedAuthInfo() {
-        String cachedUser = getSharedPreference().getString(CACHED_INSTAGRAM_AUTH_INFO, null);
+    private void refresh(InstagramApiProxy.CompleteHandler completeHandler) {
+        if (!invalidateCode(completeHandler))
+            requestAccessToken(completeHandler);
+    }
+
+    private void requestAccessToken(final InstagramApiProxy.CompleteHandler completeHandler) {
+        if (invalidateCode(completeHandler))
+            return;
+
+        InstagramApiProxy.Service service = (InstagramApiProxy.Service) InstagramApiProxy.getDefault().getCurrentService();
+        Map <String, String> parameters = resource.getParameters(OAuth2.InstagramParametersType.AccessToken);
+        Call<ApiInstagram.AccessTokenRes> call = service.accessToken(parameters);
+
+        final InstagramApiProxy.CompleteHandler handler = new InstagramApiProxy.CompleteHandler() {
+            @Override
+            public void onError(InstagramSDKError error) {
+                if (completeHandler != null)
+                    completeHandler.onError(error);
+            }
+
+            @Override
+            public void onComplete(ApiInstagramResult result) {
+                if (completeHandler != null)
+                    completeHandler.onComplete(result);
+            }
+        };
+
+        InstagramApiProxy.getDefault().enqueueCall(call, new Callback<ApiInstagram.AccessTokenRes>() {
+            @Override
+            public void onResponse(Response<ApiInstagram.AccessTokenRes> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    ApiInstagram.AccessTokenRes result = response.body();
+                    accessToken = result.access_token;
+
+                    setCachedAccessTokenRes(result);
+                    handler.onComplete(result);
+                } else {
+                    handler.onError(new InstagramSDKError(
+                            InstagramSDKError.Code.UnknownAPIError.getValue(),
+                            response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                handler.onError(new InstagramSDKError(
+                        InstagramSDKError.Code.UnknownAPIError.getValue(), t.getMessage()));
+            }
+        });
+    }
+
+    private ApiInstagram.AccessTokenRes getCachedAccessTokenRes() {
+        String cachedUser = getSharedPreference().getString(CACHED_INSTAGRAM_AUTH_INFO_KEY, null);
         if (cachedUser != null)
-            return (InstagramAuth) GSonUtil.objectFromGSonString(cachedUser, InstagramAuth.class);
+            return (ApiInstagram.AccessTokenRes) GSonUtil.objectFromGSonString(cachedUser, ApiInstagram.AccessTokenRes.class);
         return null;
     }
 
-    private void setCachedAuthInfo(InstagramAuth authInfo) {
+    private void setCachedAccessTokenRes(ApiInstagram.AccessTokenRes authInfo) {
         SharedPreferences.Editor editor = getSharedPreference().edit();
 
         if (authInfo != null)
-            editor.putString(CACHED_INSTAGRAM_AUTH_INFO, GSonUtil.toGSonString(authInfo));
+            editor.putString(CACHED_INSTAGRAM_AUTH_INFO_KEY, GSonUtil.toGSonString(authInfo));
         else
-            editor.remove(CACHED_INSTAGRAM_AUTH_INFO);
+            editor.remove(CACHED_INSTAGRAM_AUTH_INFO_KEY);
 
         editor.commit();
     }
@@ -261,29 +329,35 @@ public class InstagramApplicationCenter {
     // ================================================================================================
 
     private class CallCommand {
-        private String path;
-        private Map<String, Object> parameters;
-        CompleteHandler completeHandler;
+        private Activity activity;
+        private Call<ApiInstagramResult> call;
+        private InstagramApiProxy.CompleteHandler completeHandler;
 
-        public CallCommand(String path, Map<String, Object> parameters, CompleteHandler completeHandler) {
-            this.path = path;
-            this.parameters = parameters;
+        public CallCommand(
+                Activity activity,
+                Call<ApiInstagramResult> call,
+                InstagramApiProxy.CompleteHandler completeHandler) {
+            this.activity = activity;
+            this.call = call;
             this.completeHandler = completeHandler;
         }
 
         public void clear() {
-            path = null;
-            parameters = null;
+            activity = null;
+            call = null;
             completeHandler = null;
         }
-    }
 
-    // ================================================================================================
-    //  Interface: CompleteHandler
-    // ================================================================================================
+        public Activity getActivity() {
+            return activity;
+        }
 
-    public interface CompleteHandler {
-        void onError(InstagramSDKError error);
-        void onComplete(AbstractModel model);
+        public Call<ApiInstagramResult> getCall() {
+            return call;
+        }
+
+        public InstagramApiProxy.CompleteHandler getCompleteHandler() {
+            return completeHandler;
+        }
     }
 }

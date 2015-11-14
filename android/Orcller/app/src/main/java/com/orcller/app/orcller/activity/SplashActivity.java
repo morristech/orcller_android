@@ -15,9 +15,16 @@ import com.orcller.app.orcllermodules.model.ApplicationResource;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.instagram.sdk.error.InstagramSDKError;
+import pisces.instagram.sdk.model.ApiInstagram;
+import pisces.instagram.sdk.model.ApiInstagramResult;
+import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.model.AbstractModel;
 import pisces.psfoundation.utils.GSonUtil;
 import pisces.psfoundation.utils.Log;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 public class SplashActivity extends Activity {
 
@@ -101,16 +108,17 @@ public class SplashActivity extends Activity {
 //        startActivity(new Intent(this, activityClass));
 //        finish();
 
+        Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().service().recentMedia("self", 20, null);
 
-        InstagramApplicationCenter.getDefault().login(this, new InstagramApplicationCenter.CompleteHandler() {
+        InstagramApplicationCenter.getDefault().enqueueCall(this, call, new InstagramApiProxy.CompleteHandler() {
             @Override
             public void onError(InstagramSDKError error) {
-
+                Log.i("onError", GSonUtil.toGSonString(error));
             }
 
             @Override
-            public void onComplete(AbstractModel model) {
-
+            public void onComplete(ApiInstagramResult result) {
+                Log.i("onComplete", GSonUtil.toGSonString(result));
             }
         });
     }

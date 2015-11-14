@@ -31,8 +31,7 @@ public class ApiMember {
         }
     }
 
-    public class LoginRes extends APIResult {
-        @SerializedName("entity")
+    public static class LoginRes extends APIResult {
         public LoginRes.Entity entity;
 
         public class Entity {
