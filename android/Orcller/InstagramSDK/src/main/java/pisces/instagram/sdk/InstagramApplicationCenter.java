@@ -40,7 +40,6 @@ public class InstagramApplicationCenter<T> {
     private ArrayList<CallCommand> commandQueue = new ArrayList<CallCommand>();
     private ApiInstagram.AccessTokenRes cachedAccessTokenRes;
     private OAuth2 resource;
-    private Activity activity;
     private InstagramApiProxy.CompleteHandler completeHandler;
 
     /**
@@ -84,10 +83,9 @@ public class InstagramApplicationCenter<T> {
     }
 
     public CallCommand enqueueCall(
-            Activity activity,
             Call<ApiInstagramResult> call,
             InstagramApiProxy.CompleteHandler completeHandler) {
-        CallCommand command = new CallCommand(activity, call, completeHandler);
+        CallCommand command = new CallCommand(call, completeHandler);
         commandQueue.add(command);
         dequeueCommand();
         return command;
@@ -97,21 +95,20 @@ public class InstagramApplicationCenter<T> {
         return accessToken != null;
     }
 
-    public void login(Activity activity, InstagramApiProxy.CompleteHandler completeHandler) {
+    public void login(InstagramApiProxy.CompleteHandler completeHandler) {
         if (invalidateResource(completeHandler))
             return;
 
         if (code != null) {
             refresh(completeHandler);
         } else {
-            this.activity = activity;
             this.completeHandler = completeHandler;
 
             EventBus.getDefault().register(this);
 
-            Intent intent = new Intent(activity, InstagramLoginActivity.class);
+            Intent intent = new Intent(Application.applicationContext(), InstagramLoginActivity.class);
             intent.putExtra("resource", resource);
-            activity.startActivity(intent);
+            Application.applicationContext().startActivity(intent);
         }
     }
 
@@ -146,7 +143,6 @@ public class InstagramApplicationCenter<T> {
             if (code != null) {
                 requestAccessToken(completeHandler);
                 completeHandler = null;
-                activity = null;
             }
         }
     }
@@ -164,7 +160,7 @@ public class InstagramApplicationCenter<T> {
         if (hasSession()) {
             executeCommand(command);
         } else {
-            login(activity, new InstagramApiProxy.CompleteHandler() {
+            login(new InstagramApiProxy.CompleteHandler() {
                 @Override
                 public void onError(InstagramSDKError error) {
                     commandQueue.remove(command);
@@ -329,27 +325,19 @@ public class InstagramApplicationCenter<T> {
     // ================================================================================================
 
     private class CallCommand {
-        private Activity activity;
         private Call<ApiInstagramResult> call;
         private InstagramApiProxy.CompleteHandler completeHandler;
 
         public CallCommand(
-                Activity activity,
                 Call<ApiInstagramResult> call,
                 InstagramApiProxy.CompleteHandler completeHandler) {
-            this.activity = activity;
             this.call = call;
             this.completeHandler = completeHandler;
         }
 
         public void clear() {
-            activity = null;
             call = null;
             completeHandler = null;
-        }
-
-        public Activity getActivity() {
-            return activity;
         }
 
         public Call<ApiInstagramResult> getCall() {

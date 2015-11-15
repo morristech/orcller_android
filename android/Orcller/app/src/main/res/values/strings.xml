@@ -23,14 +23,16 @@
     <string name="w_sign_up_with_email">Sign up with email</string>
     <string name="w_user_name">User Name</string>
     <string name="w_password">Password</string>
+    <string name="w_update">Update</string>
 
     <!-- messages -->
-    <string name="m_send_email_result">
-        "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
-    </string>
     <string name="m_member_joininput_desc">
         By tapping to continue, you are indicating that you have read the
         <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>
          and agree to <a href="orcller://web?url=https://www.orcller.com/site/policy/terms&amp;title=Term of service"><b>Terms of Service</b></a>.
+    </string>
+    <string name="m_has_new_version">There is a new version on the App Store.</string>
+    <string name="m_send_email_result">
+        "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
 </resources>

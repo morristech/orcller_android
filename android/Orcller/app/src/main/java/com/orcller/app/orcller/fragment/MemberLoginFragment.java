@@ -160,7 +160,7 @@ public class MemberLoginFragment extends PSFragment {
                         public void onDismiss() {
                             String message = error.getMessage();
                             if (message != null) {
-                                AlertDialogUtils.show(getContext(), message,
+                                AlertDialogUtils.show(message,
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -203,7 +203,7 @@ public class MemberLoginFragment extends PSFragment {
                     if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
                         openMemberJoinInputActivity(result);
                     } else {
-                        AlertDialogUtils.show(getContext(), error.getMessage(),
+                        AlertDialogUtils.show(error.getMessage(),
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {

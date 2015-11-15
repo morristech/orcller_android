@@ -1,7 +1,9 @@
 package com.orcller.app.orcllermodules.managers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 
 import com.orcller.app.orcllermodules.error.APIError;
@@ -13,6 +15,7 @@ import com.squareup.okhttp.Request;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GSonUtil;
 import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
@@ -85,6 +88,7 @@ public class ApplicationLauncher {
                 public void onResponse(retrofit.Response<ApiApplication.Version> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
                         if (response.body().isSuccess()) {
+                            Log.i("response.body()", GSonUtil.toGSonString(response.body()));
                             ApiApplication.Version.Entity entity = response.body().entity;
                             currentVersion = entity.version;
 
@@ -117,6 +121,21 @@ public class ApplicationLauncher {
     public Request.Builder syncHeaders(Request.Builder builder) {
         builder.headers(headers.build());
         return builder;
+    }
+
+    public void openPlayStore() {
+        final String appPackageName = Application.applicationContext().getPackageName();
+        try {
+            Uri uri = Uri.parse("market://details?id=" + appPackageName);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            Application.applicationContext().startActivity(intent);
+        } catch (android.content.ActivityNotFoundException anfe) {
+            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            Application.applicationContext().startActivity(intent);
+        }
     }
 
     public ApplicationResource getResource() {
@@ -225,6 +244,10 @@ public class ApplicationLauncher {
 
         public ApplicationHasNewVersion(ApiApplication.Version.Entity entity) {
             this.entity = entity;
+        }
+
+        public ApiApplication.Version.Entity getEntity() {
+            return entity;
         }
     }
     public class OnFailure {

@@ -1,8 +1,11 @@
 package pisces.psuikit.ext;
 
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
+
+import pisces.psfoundation.ext.Application;
 
 /**
  * Created by pisces on 11/12/15.
@@ -10,6 +13,20 @@ import android.support.v7.widget.Toolbar;
 public class PSActionBarActivity extends ActionBarActivity {
     private boolean dataLoading;
     private Toolbar toolbar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Application.setTopActivity(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Application.setTopActivity(this);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

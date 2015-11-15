@@ -1,30 +1,25 @@
 package com.orcller.app.orcller.activity;
 
-
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextWatcher;
-import android.widget.LinearLayout;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 
 import de.greenrobot.event.EventBus;
+import pisces.psuikit.ext.PSFragmentActivity;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+public class MainActivity extends PSFragmentActivity implements ActionBar.TabListener {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private TextWatcher textWatcher;
@@ -92,11 +87,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (event instanceof AuthenticationCenter.LogoutComplete) {
-            Intent intent = new Intent(this, MemberActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
     }
 
     /**

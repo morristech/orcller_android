@@ -1,5 +1,6 @@
 package pisces.psfoundation.ext;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager;
  */
 public class Application extends android.app.Application {
     private static Context context;
+    private static Activity topActivity;
 
     // ================================================================================================
     //  Overridden: android.app.Application
@@ -64,6 +66,14 @@ public class Application extends android.app.Application {
 
     public static String getPackageVersionName() {
         return getPackageInfo().versionName;
+    }
+
+    public static Activity getTopActivity() {
+        return topActivity;
+    }
+
+    public static void setTopActivity(Activity topActivity) {
+        Application.topActivity = topActivity;
     }
 
     public static boolean isEquals(String version) {

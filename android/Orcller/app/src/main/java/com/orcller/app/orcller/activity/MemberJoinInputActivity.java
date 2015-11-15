@@ -158,7 +158,7 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                         public void onDismiss() {
                             String message = error.getMessage();
                             if (message != null) {
-                                AlertDialogUtils.show(activity, message,
+                                AlertDialogUtils.show(message,
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -198,7 +198,7 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                         public void onDismiss() {
                             String message = error.getMessage();
                             if (message != null) {
-                                AlertDialogUtils.show(activity, message,
+                                AlertDialogUtils.show(message,
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {

@@ -1,14 +1,14 @@
-package com.orcller.app.orcller.activity;
+package pisces.psuikit.ext;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
 
-import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.service.ApplicationService;
+import pisces.psfoundation.ext.Application;
 
-import pisces.psuikit.ext.PSActivity;
-
-public class SplashActivity extends PSActivity {
+/**
+ * Created by pisces on 11/15/15.
+ */
+public class PSActivity extends Activity {
 
     // ================================================================================================
     //  Overridden: Activity
@@ -18,13 +18,14 @@ public class SplashActivity extends PSActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_splash);
-        startService(new Intent(this, ApplicationService.class));
+        Application.setTopActivity(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        Application.setTopActivity(this);
     }
 
     @Override

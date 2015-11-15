@@ -155,7 +155,7 @@ public class MemberJoinFragment extends PSFragment {
                     if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
                         openMemberJoinInputActivity(result);
                     } else {
-                        AlertDialogUtils.show(getContext(), error.getMessage(),
+                        AlertDialogUtils.show(error.getMessage(),
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -256,7 +256,6 @@ public class MemberJoinFragment extends PSFragment {
                                 @Override
                                 public void onDismiss() {
                                     AlertDialogUtils.show(
-                                            getContext(),
                                             getResources().getString(R.string.m_send_email_result),
                                             getResources().getString(R.string.w_ok)
                                     );
