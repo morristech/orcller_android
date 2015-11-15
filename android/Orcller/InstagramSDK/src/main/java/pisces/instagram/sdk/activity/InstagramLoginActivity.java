@@ -23,6 +23,7 @@ import pisces.instagram.sdk.model.OAuth2;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.MapUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/13/15.
@@ -82,14 +83,11 @@ public class InstagramLoginActivity extends PSActionBarActivity {
 
     private class InstagramLoginWebViewClient extends WebViewClient {
         private Context context;
-        private ProgressDialog progressBarDialog;
 
         public InstagramLoginWebViewClient(Context context) {
             super();
 
             this.context = context;
-            progressBarDialog = new ProgressDialog(context);
-            progressBarDialog.setMessage("Loading ...");
         }
 
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -107,13 +105,13 @@ public class InstagramLoginActivity extends PSActionBarActivity {
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            if (!progressBarDialog.isShowing()) {
-                progressBarDialog.show();
+            if (!ProgressBarManager.isShowing()) {
+                ProgressBarManager.show((Activity) context);
             }
         }
 
         public void onPageFinished(WebView view, String url) {
-            progressBarDialog.hide();
+            ProgressBarManager.hide((Activity) context);
             getSupportActionBar().setTitle(view.getTitle());
         }
     }

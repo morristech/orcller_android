@@ -125,6 +125,23 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         validator = null;
     }
 
+    @Override
+    public void endDataLoading() {
+        super.endDataLoading();
+
+        ProgressBarManager.hide(this);
+    }
+
+    @Override
+    public boolean invalidDataLoading() {
+        boolean result = super.invalidDataLoading();
+
+        if (!result)
+            ProgressBarManager.show(this, true);
+
+        return result;
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -143,8 +160,6 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show(this);
-
         final Activity activity = this;
 
         AuthenticationCenter.getDefault().join(getJoinWithEmailReq(), new Api.CompleteHandler() {
@@ -153,27 +168,20 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                 endDataLoading();
 
                 if (error != null) {
-                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
-                        @Override
-                        public void onDismiss() {
-                            String message = error.getMessage();
-                            if (message != null) {
-                                AlertDialogUtils.show(message,
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                if (which == AlertDialog.BUTTON_POSITIVE)
-                                                    joinWithEmail();
-                                            }
-                                        },
-                                        getResources().getString(R.string.w_dismiss),
-                                        getResources().getString(R.string.w_retry)
-                                );
-                            }
-                        }
-                    });
-                } else {
-                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_COMPLETE);
+                    String message = error.getMessage();
+                    if (message != null) {
+                        AlertDialogUtils.show(message,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == AlertDialog.BUTTON_POSITIVE)
+                                            joinWithEmail();
+                                    }
+                                },
+                                getResources().getString(R.string.w_dismiss),
+                                getResources().getString(R.string.w_retry)
+                        );
+                    }
                 }
             }
         });
@@ -183,37 +191,26 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show(this);
-
-        final Activity activity = this;
-
         AuthenticationCenter.getDefault().join(getJoinWithIdpReq(), new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, final APIError error) {
                 endDataLoading();
 
                 if (error != null) {
-                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_ERROR, new ProgressBarManager.DismissHandler() {
-                        @Override
-                        public void onDismiss() {
-                            String message = error.getMessage();
-                            if (message != null) {
-                                AlertDialogUtils.show(message,
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                if (which == AlertDialog.BUTTON_POSITIVE)
-                                                    joinWithIdp();
-                                            }
-                                        },
-                                        getResources().getString(R.string.w_dismiss),
-                                        getResources().getString(R.string.w_retry)
-                                );
-                            }
-                        }
-                    });
-                } else {
-                    ProgressBarManager.hide(activity, ProgressBarManager.DISMISS_MODE_COMPLETE);
+                    String message = error.getMessage();
+                    if (message != null) {
+                        AlertDialogUtils.show(message,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == AlertDialog.BUTTON_POSITIVE)
+                                            joinWithIdp();
+                                    }
+                                },
+                                getResources().getString(R.string.w_dismiss),
+                                getResources().getString(R.string.w_retry)
+                        );
+                    }
                 }
             }
         });

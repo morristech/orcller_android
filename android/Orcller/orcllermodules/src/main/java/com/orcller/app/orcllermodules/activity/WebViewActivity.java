@@ -1,14 +1,19 @@
 package com.orcller.app.orcllermodules.activity;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.orcller.app.orcllermodules.R;
 
 import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/12/15.
@@ -32,7 +37,7 @@ public class WebViewActivity extends PSActionBarActivity {
         setProperties();
 
         webView = (WebView) findViewById(R.id.webView);
-        webView.setWebChromeClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient(this));
 
         if (!titleEnabled)
             getSupportActionBar().setTitle(title);
@@ -70,13 +75,26 @@ public class WebViewActivity extends PSActionBarActivity {
         }
     }
 
-    private class WebViewClient extends WebChromeClient {
-        @Override
-        public void onReceivedTitle(WebView view, String title) {
-            super.onReceivedTitle(view, title);
+    private class WebViewClient extends android.webkit.WebViewClient {
+        private Context context;
+
+        public WebViewClient(Context context) {
+            super();
+
+            this.context = context;
+        }
+
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            if (!ProgressBarManager.isShowing()) {
+                ProgressBarManager.show((Activity) context);
+            }
+        }
+
+        public void onPageFinished(WebView view, String url) {
+            ProgressBarManager.hide((Activity) context);
 
             if (titleEnabled)
-                getSupportActionBar().setTitle(title);
+                getSupportActionBar().setTitle(view.getTitle());
         }
     }
 }

@@ -129,6 +129,13 @@ public class MemberJoinFragment extends PSFragment {
                 .onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void endDataLoading() {
+        super.endDataLoading();
+
+        ProgressBarManager.hide(getActivity());
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -143,12 +150,11 @@ public class MemberJoinFragment extends PSFragment {
             @Override
             public void onComplete(JSONObject result, APIError error) {
                 if (error == null)
-                    ProgressBarManager.show(getActivity());
+                    ProgressBarManager.show(getActivity(), true);
             }
         }, new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
-                ProgressBarManager.hide(getActivity());
                 endDataLoading();
 
                 if (error != null) {
@@ -242,7 +248,7 @@ public class MemberJoinFragment extends PSFragment {
             return;
 
         SoftKeyboardUtils.hide(getView());
-        ProgressBarManager.show(getActivity());
+        ProgressBarManager.show(getActivity(), true);
 
         AuthenticationCenter.getDefault().sendCertificationEmail(
                 editText.getText().toString().trim(),
@@ -252,18 +258,11 @@ public class MemberJoinFragment extends PSFragment {
                         endDataLoading();
 
                         if (error == null) {
-                            ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_COMPLETE, new ProgressBarManager.DismissHandler() {
-                                @Override
-                                public void onDismiss() {
-                                    AlertDialogUtils.show(
-                                            getResources().getString(R.string.m_send_email_result),
-                                            getResources().getString(R.string.w_ok)
-                                    );
-                                    editText.setText(null);
-                                }
-                            });
-                        } else {
-                            ProgressBarManager.hide(getActivity(), ProgressBarManager.DISMISS_MODE_ERROR);
+                            AlertDialogUtils.show(
+                                    getResources().getString(R.string.m_send_email_result),
+                                    getResources().getString(R.string.w_ok)
+                            );
+                            editText.setText(null);
                         }
                     }
                 });
