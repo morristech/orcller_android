@@ -1,12 +1,12 @@
 package com.orcller.app.orcllermodules.model.facebook;
 
 
-import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.model.Model;
 
 /**
  * Created by pisces on 11/12/15.
  */
-public class FBUser extends AbstractModel {
+public class FBUser extends Model {
     public boolean verified;
     public int timezone;
     public String first_name;
@@ -19,11 +19,11 @@ public class FBUser extends AbstractModel {
     public String updated_time;
     public Picture picture;
 
-    public static class Picture extends AbstractModel {
+    public static class Picture extends Model {
         public Data data;
     }
 
-    public static class Data extends AbstractModel {
+    public static class Data extends Model {
         public boolean is_silhouette;
         public int height;
         public int width;

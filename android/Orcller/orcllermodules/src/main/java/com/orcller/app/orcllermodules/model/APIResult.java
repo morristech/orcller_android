@@ -1,12 +1,12 @@
 package com.orcller.app.orcllermodules.model;
 
-import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.model.Model;
 
 /**
  * Created by pisces on 11/4/15.
  */
 
-public class APIResult extends AbstractModel {
+public class APIResult extends Model {
     public enum APIResultCode {
         APIResultCodeFailed(0),
         APIResultCodeOk(1);

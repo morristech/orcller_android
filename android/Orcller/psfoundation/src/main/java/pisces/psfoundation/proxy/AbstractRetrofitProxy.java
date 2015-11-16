@@ -19,7 +19,7 @@ abstract public class AbstractRetrofitProxy<T> {
     private Class<T> serviceClass;
     private Converter.Factory converterFactory;
     private Retrofit retrofit;
-    private T service;
+    protected T service;
 
     // ================================================================================================
     //  Public

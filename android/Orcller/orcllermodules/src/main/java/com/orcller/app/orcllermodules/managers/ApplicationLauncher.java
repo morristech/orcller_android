@@ -15,8 +15,6 @@ import com.squareup.okhttp.Request;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GSonUtil;
-import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Retrofit;
@@ -88,7 +86,6 @@ public class ApplicationLauncher {
                 public void onResponse(retrofit.Response<ApiApplication.Version> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
                         if (response.body().isSuccess()) {
-                            Log.i("response.body()", GSonUtil.toGSonString(response.body()));
                             ApiApplication.Version.Entity entity = response.body().entity;
                             currentVersion = entity.version;
 

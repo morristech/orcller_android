@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 
 /**
  * Created by pisces on 11/5/15.
@@ -86,6 +87,16 @@ public class Application extends android.app.Application {
 
     public static boolean isLower(String version) {
         return compareVersions(getPackageVersionName(), version) == -1;
+    }
+
+    public static Thread runOnBackgroundThread(Runnable runnable) {
+        Thread thread = new Thread(runnable, "Background");
+        thread.start();
+        return thread;
+    }
+
+    public static void runOnMainThread(Runnable runnable) {
+        new Handler(applicationContext().getMainLooper()).post(runnable);
     }
 
     // ================================================================================================

@@ -2,7 +2,7 @@ package pisces.instagram.sdk.model;
 
 import java.util.List;
 
-import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.model.Model;
 
 /**
  * Created by pisces on 11/13/15.
@@ -28,30 +28,30 @@ public class ApiInstagram {
         public User data;
     }
 
-    public class Media extends AbstractModel {
+    public class Media extends Model {
         public String type;
         public int created_time;
         public Images images;
     }
 
-    public class Pageination extends AbstractModel {
+    public class Pageination extends Model {
         public String next_max_id;
         public String next_url;
     }
 
-    public class Images extends AbstractModel {
+    public class Images extends Model {
         public Image low_resolution;
         public Image thumbnail;
         public Image standard_resolution;
     }
 
-    public class Image extends AbstractModel {
+    public class Image extends Model {
         public int width;
         public int height;
         public String url;
     }
 
-    public class User extends AbstractModel {
+    public class User extends Model {
         public long id;
         public String bio;
         public String full_name;

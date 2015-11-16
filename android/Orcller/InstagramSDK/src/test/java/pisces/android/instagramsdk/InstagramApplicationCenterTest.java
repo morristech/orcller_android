@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 
 import pisces.instagram.sdk.error.InstagramSDKError;
-import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.model.Model;
 
 /**
  * Created by pisces on 11/13/15.
@@ -19,7 +19,7 @@ public class InstagramApplicationCenterTest {
 
         InstagramApplicationCenter.getDefault().login(new InstagramApplicationCenter.CompleteHandler() {
             @Override
-            public void onComplete(AbstractModel model) {
+            public void onComplete(Model model) {
                 assertTrue(true);
                 signal.countDown();
             }

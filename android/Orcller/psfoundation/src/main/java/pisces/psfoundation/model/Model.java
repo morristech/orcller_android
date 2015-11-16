@@ -12,12 +12,24 @@ import pisces.psfoundation.utils.GSonUtil;
  * Created by pisces on 11/6/15.
  */
 @SuppressWarnings("serial")
-public class AbstractModel implements Serializable {
+public class Model implements Serializable {
     // ================================================================================================
     //  Public
     // ================================================================================================
 
-    public boolean equals(AbstractModel other) {
+    public static boolean equasl(Model model, Model other) {
+        if (model != null && other != null)
+            return model.equals(other);
+        if (model == null && other == null)
+            return true;
+        return false;
+    }
+
+    public void didChangeProperties() {
+        EventBus.getDefault().post(new ModelDidChange(this));
+    }
+
+    public boolean equals(Model other) {
         try {
             Field[] fields = other.getClass().getDeclaredFields();
 
@@ -40,7 +52,7 @@ public class AbstractModel implements Serializable {
         return GSonUtil.toMap(this);
     }
 
-    public void synchronize(AbstractModel other) {
+    public void synchronize(Model other) {
         if (!this.getClass().equals(other.getClass()))
             return;
 
@@ -76,17 +88,33 @@ public class AbstractModel implements Serializable {
     }
 
     // ================================================================================================
+    //  Class: ModelDidChange
+    // ================================================================================================
+
+    public class ModelDidChange {
+        private Model model;
+
+        public ModelDidChange(Model model) {
+            this.model = model;
+        }
+
+        public Model getObject() {
+            return model;
+        }
+    }
+
+    // ================================================================================================
     //  Class: ModelDidSynchronize
     // ================================================================================================
 
     public class ModelDidSynchronize {
-        private AbstractModel model;
+        private Model model;
 
-        public ModelDidSynchronize(AbstractModel model) {
+        public ModelDidSynchronize(Model model) {
             this.model = model;
         }
 
-        public AbstractModel getObject() {
+        public Model getObject() {
             return model;
         }
     }

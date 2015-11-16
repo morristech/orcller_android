@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">OrcllerModules</string>
-    <string name="server_base_url"><![CDATA[http://192.168.10.100/apis]]></string>
+    <string name="server_base_url"><![CDATA[https://www.orcller.com/apis]]></string>
 </resources>

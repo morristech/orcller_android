@@ -160,8 +160,6 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         if (invalidDataLoading())
             return;
 
-        final Activity activity = this;
-
         AuthenticationCenter.getDefault().join(getJoinWithEmailReq(), new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, final APIError error) {

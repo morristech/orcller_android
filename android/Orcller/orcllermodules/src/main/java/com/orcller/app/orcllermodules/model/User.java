@@ -1,13 +1,15 @@
 package com.orcller.app.orcllermodules.model;
 
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+
 import java.util.Date;
 
-import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.model.Model;
 
 /**
  * Created by pisces on 11/5/15.
  */
-public class User extends AbstractModel {
+public class User extends Model {
     public boolean following;
     public int created_time;
     public int updated_time;
@@ -32,10 +34,12 @@ public class User extends AbstractModel {
     }
 
     public boolean isMe() {
-        return false;
+        if (AuthenticationCenter.getDefault().getUser() == null)
+            return false;
+        return AuthenticationCenter.getDefault().getUser().user_uid == user_uid;
     }
 
-    public class UserOptions extends AbstractModel {
+    public class UserOptions extends Model {
         public boolean following;
         public int album_permission;
         public int follow_count;

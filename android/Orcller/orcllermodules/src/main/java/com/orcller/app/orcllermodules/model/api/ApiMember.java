@@ -2,7 +2,6 @@ package com.orcller.app.orcllermodules.model.api;
 
 import android.os.Build;
 
-import com.google.gson.annotations.SerializedName;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.utils.DeviceUtils;
@@ -10,7 +9,7 @@ import com.orcller.app.orcllermodules.utils.DeviceUtils;
 import java.util.Locale;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.model.AbstractModel;
+import pisces.psfoundation.model.Model;
 
 /**
  * Created by pisces on 11/5/15.
@@ -39,7 +38,7 @@ public class ApiMember {
         }
     }
 
-    public static class BaseReq extends AbstractModel {
+    public static class BaseReq extends Model {
         public String device_locale;
         public String device_name;
         public String device_model;

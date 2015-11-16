@@ -20,10 +20,28 @@ android {
         }
     }
 
-    productFlavors {
+    sourceSets {
+        uitest {
+            java.srcDirs = ['src/main/java', 'src/uitest/java']
+        }
+
+        dev {
+            java.srcDirs = ['src/main/java', 'src/dev/java']
+        }
+
+        qa {
+            java.srcDirs = ['src/main/java', 'src/qa/java']
+        }
+
         production {
-            applicationId "com.orcller.app.orcller.production"
-            buildConfigField 'String', 'HOST', '"https://www.orcller.com"'
+            java.srcDirs = ['src/main/java', 'src/production/java']
+        }
+    }
+
+    productFlavors {
+        uitest {
+            applicationId "com.orcller.app.orcller.uitest"
+            buildConfigField 'String', 'HOST', '"http://192.168.10.103"'
         }
 
         dev {
@@ -33,6 +51,11 @@ android {
 
         qa {
             applicationId "com.orcller.app.orcller.qa"
+            buildConfigField 'String', 'HOST', '"https://www.orcller.com"'
+        }
+
+        production {
+            applicationId "com.orcller.app.orcller"
             buildConfigField 'String', 'HOST', '"https://www.orcller.com"'
         }
     }
@@ -47,6 +70,7 @@ dependencies {
 //    compile 'com.amazonaws:aws-android-sdk-ddb:2.+'
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.facebook.android:facebook-android-sdk:4.7.0'
+    compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.google.code.gson:gson:1.7.2'
     compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.mobsandgeeks:android-saripaar:2.0.3'
@@ -57,7 +81,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-analytics:8.1.0'
     compile 'com.google.android.gms:play-services-identity:8.1.0'
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
-    compile project(':orcllermodules')
+    productionCompile project(':orcllermodules')
     devCompile project(':orcllermodules')
-    devCompile project(':psuikit')
+    uitestCompile project(':orcllermodules')
+    qaCompile project(':orcllermodules')
 }
