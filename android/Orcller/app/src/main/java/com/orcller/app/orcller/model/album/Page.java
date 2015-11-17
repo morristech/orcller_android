@@ -7,8 +7,8 @@ import java.util.Date;
  */
 public class Page extends AlbumInfo {
     public int order;
+    public long updated_time;
     public String desc;
-    public Date updated_time;
     public Media media;
     public Comments comments;
     public Likes likes;

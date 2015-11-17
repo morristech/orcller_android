@@ -47,11 +47,11 @@ public class Album extends AlbumInfo {
 
     public boolean page_replace_enabled;
     public int default_page_index;
-    public Permission permission;
+    public int permission;
+    public long updated_time;
     public String desc;
     public String encrypted_id;
     public String name;
-    public Date updated_time;
     public Contributors contributors;
     public Favorites favorites;
     public Likes likes;

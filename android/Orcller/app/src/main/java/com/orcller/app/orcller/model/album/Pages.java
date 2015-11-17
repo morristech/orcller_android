@@ -13,6 +13,6 @@ public class Pages extends ListEntity {
     }
 
     public Page getPageAtIndex(int index) {
-        return null;
+        return data.get(index);
     }
 }

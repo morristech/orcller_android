@@ -37,13 +37,13 @@ public class Media extends Model {
         }
     }
 
+    public int type;
+    public int origin_type;
     public long id;
     public long origin_id;
-    public Type type;
-    public OriginType origin_type;
     public Images images;
 
     public boolean isVideo() {
-        return type.equals(Type.Video);
+        return type == Type.Video.getValue();
     }
 }

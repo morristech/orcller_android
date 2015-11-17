@@ -11,6 +11,7 @@
     <string name="instagram_client_id">44f7da449746424a87add98948d85bba</string>
     <string name="instagram_client_secret">786fe9d225c248bc970aa251c6fd4771</string>
     <string name="instagram_redirect_url">ig786fe9d225c248bc970aa251c6fd4771://authorize</string>
+    <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
     <!-- words -->
     <string name="w_dismiss">Dismiss</string>

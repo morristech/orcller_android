@@ -2,8 +2,8 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -11,17 +11,21 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.album.Media;
 
 import java.io.File;
-import java.net.URI;
+import java.net.URL;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
 
 /**
@@ -53,25 +57,26 @@ abstract public class MediaView extends RelativeLayout {
 
     public MediaView(Context context) {
         super(context);
+
+        init(context, null, 0, 0);
     }
 
     public MediaView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        init(context, attrs, 0, 0);
     }
 
     public MediaView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        init(context, attrs, defStyleAttr, 0);
     }
 
     public MediaView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
-        final TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
-
-        setImageLoadType(a.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
-        setPlaceholder(a.getDrawable(R.styleable.MediaView_placeholder));
-        init();
+        init(context, attrs, defStyleAttr, defStyleRes);
     }
 
     // ================================================================================================
@@ -116,6 +121,10 @@ abstract public class MediaView extends RelativeLayout {
         this.delegate = delegate;
     }
 
+    public void onEventMainThread(Object event) {
+
+    }
+
     // ================================================================================================
     //  Protected
     // ================================================================================================
@@ -124,6 +133,21 @@ abstract public class MediaView extends RelativeLayout {
      * @abstract
      */
     abstract protected void loadImages();
+
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        emptyImageView = new ImageView(this.getContext());
+        imageView = new ImageView(this.getContext());
+        TypedArray typedArray = context.obtainStyledAttributes(
+                attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
+
+        setImageLoadType(typedArray.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
+        setPlaceholder(typedArray.getDrawable(R.styleable.MediaView_placeholder));
+        imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        emptyImageView.setVisibility(GONE);
+        addView(imageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
 
     protected void loadImages(CompleteHandler completeHandler) {
         if (canLoadThumbnail()) {
@@ -151,15 +175,6 @@ abstract public class MediaView extends RelativeLayout {
         return (imageLoadType & ImageLoadType.Thumbnail.getValue()) == ImageLoadType.Thumbnail.getValue();
     }
 
-    private void init() {
-        emptyImageView = new ImageView(this.getContext());
-        imageView = new ImageView(this.getContext());
-
-        emptyImageView.setVisibility(GONE);
-        addView(imageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        addView(emptyImageView, null);
-    }
-
     private void loadImage(String url, final CompleteHandler completeHandler) {
         if (TextUtils.isEmpty(url)) {
             completeHandler.onError();
@@ -184,23 +199,35 @@ abstract public class MediaView extends RelativeLayout {
             }
         };
 
-        Object source = URLUtils.checkURL(url) ? URI.create(url) : new File(url);
+        try {
+            Object source = URLUtils.isLocal(url) ? new File(url) : new URL(SharedObject.toFullMediaUrl(url));
 
-        Glide.with(getContext())
-                .load(source)
-                .placeholder(placeholder)
-                .into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        if (resource != null)
+            Glide.with(getContext())
+                    .load(source)
+                    .placeholder(placeholder)
+                    .dontAnimate()
+                    .listener(new RequestListener<Object, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            handler.onError();
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             imageView.setImageDrawable(resource);
 
-                        if (resource != null)
-                            handler.onComplete();
-                        else
-                            handler.onError();
-                    }
-                });
+                            if (resource != null)
+                                handler.onComplete();
+                            else
+                                handler.onError();
+                            return false;
+                        }
+                    })
+                    .into(imageView);
+        } catch (Exception e) {
+            handler.onError();
+        }
     }
 
     private void loadLowResolution(final CompleteHandler completeHandler) {

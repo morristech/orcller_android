@@ -19,6 +19,8 @@ import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.ImageMediaView;
+import com.orcller.app.orcller.widget.MediaView;
+import com.orcller.app.orcller.widget.VideoMediaView;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
@@ -86,7 +88,6 @@ public class ApplicationService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("onBind");
         return null;
     }
 
@@ -94,7 +95,6 @@ public class ApplicationService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        Log.i("onDestroy");
         EventBus.getDefault().unregister(this);
     }
 
@@ -118,27 +118,42 @@ public class ApplicationService extends Service {
     // ================================================================================================
 
     private void runTestSuite() {
-        testImageMediaView();
+//        testImageMediaView();
+        testVideoMediaView();
     }
 
     private void testImageMediaView() {
-
         AlbumDataProxy.getDefault().view(31, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                Log.i("onResponse", GSonUtil.toGSonString(response.body()));
+                ImageMediaView view = new ImageMediaView(Application.applicationContext());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setMedia(response.body().entity.pages.getPageAtIndex(0).media);
+
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.i("onFailure", GSonUtil.toGSonString(t));
             }
         });
+    }
 
 
-        ImageMediaView view = new ImageMediaView(Application.applicationContext());
-        view.setBackgroundColor(Color.BLACK);
+    private void testVideoMediaView() {
+        AlbumDataProxy.getDefault().view(56, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                VideoMediaView view = new VideoMediaView(Application.applicationContext());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setMedia(response.body().entity.pages.getPageAtIndex(4).media);
 
-        Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(320, 320));
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 }

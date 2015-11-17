@@ -1,20 +1,32 @@
 package com.orcller.app.orcller.proxy;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.album.ImageMedia;
+import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Pages;
+import com.orcller.app.orcller.model.album.VideoMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
+import retrofit.Converter;
+import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
@@ -36,6 +48,14 @@ public class AlbumDataProxy extends AbstractDataProxy {
     // ================================================================================================
     //  Overridden: AbstractDataProxy
     // ================================================================================================
+
+    @Override
+    protected Converter.Factory createConverterFactory() {
+        Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(Media.class, new MediaDeserializer())
+                        .create();
+        return GsonConverterFactory.create(gson);
+    }
 
     @Override
     protected Class<Service> createServiceClass() {
@@ -239,6 +259,24 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
     private Service service() {
         return (Service) getCurrentService();
+    }
+
+    // ================================================================================================
+    //  Class: MediaDeserializer
+    // ================================================================================================
+
+    private static class MediaDeserializer implements JsonDeserializer<Media> {
+        @Override
+        public Media deserialize(JsonElement je, Type type, JsonDeserializationContext jdc)
+                throws JsonParseException {
+            int _type = je.getAsJsonObject().get("type").getAsInt();
+
+            if (_type == Media.Type.Video.getValue())
+                return new Gson().fromJson(je, VideoMedia.class);
+            else if (_type == Media.Type.Image.getValue())
+                return new Gson().fromJson(je, ImageMedia.class);
+            return null;
+        }
     }
 
     // ================================================================================================

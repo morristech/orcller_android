@@ -1,5 +1,6 @@
 package pisces.instagram.sdk.model;
 
+import java.util.Date;
 import java.util.List;
 
 import pisces.psfoundation.model.Model;
@@ -29,8 +30,8 @@ public class ApiInstagram {
     }
 
     public class Media extends Model {
+        public long created_time;
         public String type;
-        public int created_time;
         public Images images;
     }
 

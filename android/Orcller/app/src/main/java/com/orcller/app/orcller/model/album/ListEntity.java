@@ -10,7 +10,7 @@ import pisces.psfoundation.model.Model;
 public class ListEntity extends Model {
     public int count;
     public int total_count;
+    public long time;
     public String after;
     public String prev;
-    public Date time;
 }

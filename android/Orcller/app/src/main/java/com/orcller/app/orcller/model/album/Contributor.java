@@ -13,6 +13,6 @@ public class Contributor extends User {
         Accept
     };
 
-    public int contributor_id;
+    public String contributor_id;
     public Status contributor_status;
 }

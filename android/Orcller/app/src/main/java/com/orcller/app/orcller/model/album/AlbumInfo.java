@@ -11,11 +11,11 @@ import pisces.psfoundation.model.Model;
  */
 public class AlbumInfo extends Model {
     public long id;
-    public int user_uid;
+    public long user_uid;
+    public long created_time;
     public String user_id;
     public String user_link;
     public String user_name;
     public String user_picture;
-    public Date created_time;
     public User user;
 }

@@ -11,8 +11,8 @@ import pisces.psfoundation.model.Model;
  */
 public class User extends Model {
     public boolean following;
-    public int created_time;
-    public int updated_time;
+    private long created_time;
+    private long updated_time;
     public long user_uid;
     public String user_id;
     public String user_link;
@@ -20,14 +20,6 @@ public class User extends Model {
     public String user_picture;
     public String user_profile_message;
     public UserOptions user_options;
-
-    public Date getCreatedTime() {
-        return new Date(created_time*1000L);
-    }
-
-    public Date getUpdatedTime() {
-        return new Date(updated_time*1000L);
-    }
 
     public String getUserUID() {
         return isMe() ? "me" : String.valueOf(user_uid);
