@@ -2,18 +2,15 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -25,13 +22,13 @@ import java.net.URL;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
+import pisces.psuikit.ext.PSView;
 
 /**
  * Created by pisces on 11/16/15.
  */
-abstract public class MediaView extends RelativeLayout {
+abstract public class MediaView extends PSView {
     public enum ImageLoadType {
         Thumbnail(1<<0),
         LowResolution(1<<1),
@@ -48,40 +45,81 @@ abstract public class MediaView extends RelativeLayout {
         }
     }
 
+    private boolean allowsTapGesture;
+    private boolean modelChanged;
     private int imageLoadType;
     private Drawable placeholder;
     private ImageView emptyImageView;
-    private Media media;
+    private Media model;
     protected ImageView imageView;
     protected MediaViewDelegate delegate;
 
     public MediaView(Context context) {
         super(context);
-
-        init(context, null, 0, 0);
     }
 
     public MediaView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        init(context, attrs, 0, 0);
     }
 
     public MediaView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, 0);
     }
 
     public MediaView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+    // ================================================================================================
+    //  Overridden: PSView
+    // ================================================================================================
 
-        init(context, attrs, defStyleAttr, defStyleRes);
+    @Override
+    protected void commitProperties() {
+        if (modelChanged) {
+            modelChanged = false;
+            modelChanged();
+        }
+    }
+
+    @Override
+    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        emptyImageView = new ImageView(this.getContext());
+        imageView = new ImageView(this.getContext());
+        TypedArray typedArray = context.obtainStyledAttributes(
+                attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
+
+        setImageLoadType(typedArray.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
+        setPlaceholder(typedArray.getDrawable(R.styleable.MediaView_placeholder));
+        imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        emptyImageView.setVisibility(GONE);
+    }
+
+    @Override
+    protected void setUpSubviews(Context context) {
+        addView(imageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (allowsTapGesture && delegate != null && event.getAction() == MotionEvent.ACTION_DOWN)
+            delegate.onTap(this);
+
+        return super.onTouchEvent(event);
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isAllowsTapGesture() {
+        return allowsTapGesture;
+    }
+
+    public void setAllowsTapGesture(boolean allowsTapGesture) {
+        this.allowsTapGesture = allowsTapGesture;
+    }
 
     public int getImageLoadType() {
         return imageLoadType;
@@ -91,22 +129,23 @@ abstract public class MediaView extends RelativeLayout {
         this.imageLoadType = imageLoadType;
     }
 
-    public Media getMedia() {
-        return media;
+    public Media getModel() {
+        return model;
     }
 
-    public void setMedia(Media media) {
-        if (Model.equasl(this.media, media))
+    public void setModel(Media model) {
+        if (Model.equasl(this.model, model))
             return;
 
         EventBus.getDefault().unregister(this);
 
-        this.media = media;
+        this.model = model;
+        modelChanged = true;
 
-        if (this.media != null)
+        if (this.model != null)
             EventBus.getDefault().register(this, MediaManager.DidChangeImages.class);
 
-        modelChanged();
+        invalidateProperties();
     }
 
     public Drawable getPlaceholder() {
@@ -121,8 +160,18 @@ abstract public class MediaView extends RelativeLayout {
         this.delegate = delegate;
     }
 
-    public void onEventMainThread(Object event) {
+    // ================================================================================================
+    //  Listener
+    // ================================================================================================
 
+    public void onEventMainThread(Object event) {
+        if (model != null && event instanceof MediaManager.DidChangeImages) {
+            Media media = ((MediaManager.DidChangeImages) event).getMedia();
+            if (media.id == model.id) {
+                model.images = media.images;
+                modelChanged();
+            }
+        }
     }
 
     // ================================================================================================
@@ -133,21 +182,6 @@ abstract public class MediaView extends RelativeLayout {
      * @abstract
      */
     abstract protected void loadImages();
-
-    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        emptyImageView = new ImageView(this.getContext());
-        imageView = new ImageView(this.getContext());
-        TypedArray typedArray = context.obtainStyledAttributes(
-                attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
-
-        setImageLoadType(typedArray.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
-        setPlaceholder(typedArray.getDrawable(R.styleable.MediaView_placeholder));
-        imageView.setAdjustViewBounds(true);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        emptyImageView.setVisibility(GONE);
-        addView(imageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-    }
 
     protected void loadImages(CompleteHandler completeHandler) {
         if (canLoadThumbnail()) {
@@ -231,13 +265,13 @@ abstract public class MediaView extends RelativeLayout {
     }
 
     private void loadLowResolution(final CompleteHandler completeHandler) {
-        if (media.images.low_resolution.isEmpty()) {
+        if (model.images.low_resolution.isEmpty()) {
             if (completeHandler != null)
                 completeHandler.onError();
             return;
         }
 
-        loadImage(media.images.low_resolution.url, new CompleteHandler() {
+        loadImage(model.images.low_resolution.url, new CompleteHandler() {
             @Override
             public void onError() {
                 if (completeHandler != null)
@@ -256,13 +290,13 @@ abstract public class MediaView extends RelativeLayout {
     }
 
     private void loadStandardResolution(final CompleteHandler completeHandler) {
-        if (media.images.standard_resolution.isEmpty()) {
+        if (model.images.standard_resolution.isEmpty()) {
             if (completeHandler != null)
                 completeHandler.onError();
             return;
         }
 
-        loadImage(media.images.standard_resolution.url, new CompleteHandler() {
+        loadImage(model.images.standard_resolution.url, new CompleteHandler() {
             @Override
             public void onError() {
                 if (completeHandler != null)
@@ -278,13 +312,13 @@ abstract public class MediaView extends RelativeLayout {
     }
 
     private void loadThumnail(final CompleteHandler completeHandler) {
-        if (media.images.thumbnail.isEmpty()) {
+        if (model.images.thumbnail.isEmpty()) {
             if (completeHandler != null)
                 completeHandler.onError();
             return;
         }
 
-        loadImage(media.images.thumbnail.url, new CompleteHandler() {
+        loadImage(model.images.thumbnail.url, new CompleteHandler() {
             @Override
             public void onError() {
                 if (completeHandler != null)
@@ -316,7 +350,8 @@ abstract public class MediaView extends RelativeLayout {
     }
 
     public interface MediaViewDelegate {
-        void onComplete(Drawable image);
-        void onError();
+        void onCompleteImageLoad(MediaView view, Drawable image);
+        void onError(MediaView view);
+        void onTap(MediaView view);
     }
 }

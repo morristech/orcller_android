@@ -1,31 +1,37 @@
 package com.orcller.app.orcller.widget;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
-import pisces.psfoundation.utils.Log;
+import de.greenrobot.event.EventBus;
 import pisces.psuikit.widget.PSVideoView;
 
 /**
  * Created by pisces on 11/17/15.
  */
 public class VideoMediaView extends MediaView implements PSVideoView.PlayStateListener {
-    private boolean activity;
+    private enum ControlButtonState {
+        Pause,
+        Play
+    }
+
+    private boolean allowsShowProgressBar;
+    private boolean controlEnabled;
+    private ControlButtonState controlButtonState;
+    private Point controlButtonSize;
     private Button controlButton;
     private PSVideoView videoView;
-    private Point controlButtonSize;
+    private ProgressBar progressBar;
 
     public VideoMediaView(Context context) {
         super(context);
@@ -48,25 +54,30 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     // ================================================================================================
 
     @Override
-    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super.init(context, attrs, defStyleAttr, defStyleRes);
+    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super.initProperties(context, attrs, defStyleAttr, defStyleRes);
 
-        activity = true;
+        controlEnabled = true;
+        controlButtonState = ControlButtonState.Pause;
         controlButtonSize = new Point(
                 (int) getResources().getDimension(R.dimen.videomediaview_controlbutton_width),
                 (int) getResources().getDimension(R.dimen.videomediaview_controlbutton_height));
 
         controlButton = new Button(context);
+        controlButton.setBackgroundResource(R.drawable.video_control_button);
         controlButton.setVisibility(GONE);
-        controlButton.setBackgroundColor(Color.BLACK);
 
         videoView = new PSVideoView(getContext());
         videoView.setBackgroundResource(android.R.color.transparent);
         videoView.setVisibility(GONE);
         videoView.setPlayStateListener(this);
 
+        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+        progressBar.setVisibility(GONE);
+
         addView(videoView);
         addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
+        addView(progressBar);
 
         controlButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -78,22 +89,25 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
     @Override
     protected void loadImages() {
-        controlButton.setVisibility(getMedia() != null ? VISIBLE : GONE);
+        allowsShowProgressBar = true;
+        controlButton.setVisibility(getModel() != null ? VISIBLE : GONE);
         videoView.setVideoPath(getVideo().videos.standard_resolution.url);
+
+        final MediaView self = this;
 
         loadImages(new CompleteHandler() {
             @Override
             public void onComplete() {
                 if (delegate != null)
-                    delegate.onComplete(imageView.getDrawable());
+                    delegate.onCompleteImageLoad(self, imageView.getDrawable());
             }
 
             @Override
             public void onError() {
                 if (delegate != null)
-                    delegate.onError();
+                    delegate.onError(self);
 
-                if (activity)
+                if (controlEnabled)
                     controlButton.setVisibility(GONE);
             }
         });
@@ -103,90 +117,130 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        controlButton.setLayoutParams(getControlButtonLayoutParams());
+        Point point = getControlButtonPoint(controlButtonState.equals(ControlButtonState.Play));
+        controlButton.setX(point.x);
+        controlButton.setY(point.y);
+        progressBar.setX((getMeasuredWidth() - progressBar.getMeasuredWidth()) / 2);
+        progressBar.setY((getMeasuredHeight() - progressBar.getMeasuredHeight()) / 2);
     }
 
     // ================================================================================================
-    //  Handler
+    //  Listener
     // ================================================================================================
 
     public void onComplete(MediaPlayer mp) {
-        Log.i("onComplete");
-        videoView.stopPlayback();
+        videoView.requestFocus();
         videoView.seekTo(0);
-        layoutControlButton(false, true);
+        layoutControlButton(ControlButtonState.Pause, true);
     }
 
     public void onError(MediaPlayer mp, int what, int extra) {
-        Log.i("onError");
     }
 
     public void onPause() {
-        Log.i("onPause");
     }
 
     public void onPlay() {
-        Log.i("onPlay");
     }
 
     public void onPrepare(MediaPlayer mp) {
-        Log.i("onPrepare");
+        progressBar.setVisibility(GONE);
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
 
-    public void setActivity(boolean activity) {
-        if (activity == this.activity)
+    public void pause() {
+        progressBar.setVisibility(GONE);
+        videoView.pause();
+        layoutControlButton(ControlButtonState.Pause, true);
+        EventBus.getDefault().post(new VideoMediaViewEvent(this, VideoMediaViewEvent.DID_END_VIDEO_PLAYING));
+    }
+
+    public void play() {
+        if (!videoView.isPlaying()) {
+            if (allowsShowProgressBar)
+                progressBar.setVisibility(VISIBLE);
+
+            imageView.setVisibility(GONE);
+            videoView.setVisibility(VISIBLE);
+            videoView.requestFocus();
+            videoView.start();
+            layoutControlButton(ControlButtonState.Play, true);
+            EventBus.getDefault().post(new VideoMediaViewEvent(this, VideoMediaViewEvent.DID_START_VIDEO_PLAYING));
+        }
+    }
+
+    public void playOrPause() {
+        if (!controlEnabled)
             return;
 
-        this.activity = activity;
+        if (videoView.isPlaying()) {
+            pause();
+        } else {
+            play();
+        }
+    }
 
-        setActivated(activity);
+    public void setControlEnabled(boolean controlEnabled) {
+        if (controlEnabled == this.controlEnabled)
+            return;
+
+        this.controlEnabled = controlEnabled;
+
+        if (!controlEnabled) {
+            imageView.setVisibility(VISIBLE);
+            videoView.setVisibility(GONE);
+        }
+
+        Point point = getControlButtonPoint(controlEnabled && controlButtonState.equals(ControlButtonState.Play));
         controlButton.setScaleX(getControlButtonScale());
         controlButton.setScaleY(getControlButtonScale());
-        controlButton.setLayoutParams(getControlButtonLayoutParams());
+        controlButton.setX(point.x);
+        controlButton.setY(point.y);
+        controlButton.setEnabled(controlEnabled);
+        videoView.setEnabled(controlEnabled);
+    }
+
+    public void stop() {
+        videoView.stopPlayback();
+        videoView.requestFocus();
+        videoView.seekTo(0);
+        videoView.setVisibility(GONE);
+        imageView.setVisibility(VISIBLE);
+        controlButton.animate().cancel();
+        layoutControlButton(ControlButtonState.Pause, false);
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
-    private ViewGroup.LayoutParams getControlButtonLayoutParams() {
-        LayoutParams params = (LayoutParams) controlButton.getLayoutParams();
-        int buttonWidth = Math.round(controlButtonSize.x * getControlButtonScale());
-        int buttonHeight = Math.round(controlButtonSize.y * getControlButtonScale());
-
-        if (activity) {
-            params.setMargins(
-                    (int) (getMeasuredWidth() - buttonWidth)/2,
-                    (int) (getMeasuredHeight() - buttonHeight)/2, 0, 0);
-        } else {
-            int margin = (int) getResources().getDimension(R.dimen.videomediaview_controlbutton_margin);
-            params.setMargins(
-                    getMeasuredWidth() - buttonWidth - margin,
-                    getMeasuredHeight() - buttonHeight - margin, 0, 0);
-        }
-
-        return params;
-    }
-
-    private float getControlButtonScale() {
-        return activity ? 1.0f : 0.4f;
-    }
-
-    private VideoMedia getVideo() {
-        return (VideoMedia) getMedia();
-    }
-
-    private void layoutControlButton(boolean isPlaying, boolean animated) {
+    private Point getControlButtonPoint(boolean isPlaying) {
         int buttonWidth = Math.round(controlButtonSize.x * getControlButtonScale());
         int buttonHeight = Math.round(controlButtonSize.y * getControlButtonScale());
         int margin = (int) getResources().getDimension(R.dimen.videomediaview_controlbutton_margin);
+        return new Point(isPlaying ? getMeasuredWidth() - buttonWidth - margin : (getMeasuredWidth() - buttonWidth)/2,
+                isPlaying ? getMeasuredHeight() - buttonHeight - margin : (getMeasuredHeight() - buttonHeight)/2);
+    }
+
+    private float getControlButtonScale() {
+        return controlEnabled ? 1.0f : 0.4f;
+    }
+
+    private VideoMedia getVideo() {
+        return (VideoMedia) getModel();
+    }
+
+    private void layoutControlButton(final ControlButtonState controlButtonState, boolean animated) {
+        if (controlButtonState.equals(this.controlButtonState))
+            return;
+
+        final VideoMediaView self = this;
+        final boolean isPlaying = controlButtonState.equals(ControlButtonState.Play);
+        final Point point = getControlButtonPoint(!isPlaying);
         final float scale = isPlaying ? 0.6f : getControlButtonScale();
-        final float x = isPlaying ? getMeasuredWidth() - buttonWidth - margin : (getMeasuredWidth() - buttonWidth)/2;
-        final float y = isPlaying ? getMeasuredHeight() - buttonHeight - margin : (getMeasuredHeight() - buttonHeight)/2;
 
         if (animated) {
             controlButton
@@ -203,9 +257,10 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            controlButton.setX(x);
-                            controlButton.setY(y);
-
+                            Point point = getControlButtonPoint(isPlaying);
+                            controlButton.setSelected(isPlaying);
+                            controlButton.setX(point.x);
+                            controlButton.setY(point.y);
                             controlButton
                                     .animate()
                                     .setListener(null)
@@ -215,6 +270,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
                                     .scaleY(scale)
                                     .alpha(1)
                                     .start();
+                            self.controlButtonState = controlButtonState;
                         }
 
                         @Override
@@ -227,34 +283,26 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
                     })
                     .start();
         } else {
-            controlButton.setX(x);
-            controlButton.setY(y);
+            controlButton.setSelected(isPlaying);
+            controlButton.setX(point.x);
+            controlButton.setY(point.y);
             controlButton.setScaleX(scale);
             controlButton.setScaleY(scale);
             controlButton.setAlpha(1);
+
+            this.controlButtonState = controlButtonState;
         }
     }
 
-    private void playOrPause() {
-        if (videoView.isPlaying()) {
-            pause();
-        } else {
-            play();
-        }
-    }
+    public static class VideoMediaViewEvent {
+        public static final String DID_START_VIDEO_PLAYING = "didStartVideoPlaying";
+        public static final String DID_END_VIDEO_PLAYING = "didEndVideoPlaying";
+        private String type;
+        private VideoMediaView target;
 
-    public void pause() {
-        videoView.pause();
-        layoutControlButton(false, true);
-    }
-
-    public void play() {
-        if (!videoView.isPlaying()) {
-            videoView.requestFocus();
-            videoView.start();
-            videoView.setVisibility(VISIBLE);
-            imageView.setVisibility(GONE);
-            layoutControlButton(true, true);
+        public VideoMediaViewEvent(VideoMediaView target, String type) {
+            this.target = target;
+            this.type = type;
         }
     }
 }
