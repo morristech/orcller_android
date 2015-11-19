@@ -27,7 +27,7 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         Right
     }
 
-    public static final int FLIP_DURATION = 25000;
+    public static final int FLIP_DURATION = 250;
     private boolean imageLoadTypeChanged;
     private boolean pagesChanged;
     private int imageLoadType;
@@ -79,7 +79,7 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         backPageView = new PageView(context);
         backPageView.setDelegate(this);
         backPageView.setScaleX(-1.0f);
-        backPageView.setVisibility(GONE);
+        backPageView.setVisibility(INVISIBLE);
 
         shadowImageView = new ImageView(context);
         shadowImageView.setAlpha(0.7f);
@@ -154,12 +154,12 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
     }
 
     public Direction getDirection() {
-        return getRotationX() == -180 ? Direction.Left : Direction.Right;
+        return getRotationY() == -180 ? Direction.Left : Direction.Right;
     }
 
     public void setDirection(Direction direction) {
-        frontPageView.setVisibility(direction.equals(Direction.Left) ? VISIBLE : GONE);
-        backPageView.setVisibility(direction.equals(Direction.Right) ? VISIBLE : GONE);
+        frontPageView.setVisibility(direction.equals(Direction.Left) ? INVISIBLE : VISIBLE);
+        backPageView.setVisibility(direction.equals(Direction.Right) ? INVISIBLE : VISIBLE);
         setRotationY(direction.equals(Direction.Left) ? -180 : 0);
     }
 
@@ -201,6 +201,10 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         rotateAnimated(rotation, FLIP_DURATION, null, null);
     }
 
+    public void rotateAnimated(float rotation, int duration) {
+        rotateAnimated(rotation, duration, null, null);
+    }
+
     public void rotateAnimated(float rotation, Runnable runnable) {
         rotateAnimated(rotation, FLIP_DURATION, null, runnable);
     }
@@ -217,11 +221,11 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         if (pages == null || pages.size() < 2)
             return;
 
-        animate().cancel();
         setPageVisibility();
+        animate().cancel();
         animate().setDuration(duration)
                 .setInterpolator(interpolator)
-                .rotationYBy(rotation)
+                .rotationY(rotation)
                 .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
@@ -283,8 +287,8 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
     }
 
     private void setPageVisibility() {
-        frontPageView.setVisibility(getRotationY() <= -90 ? GONE : VISIBLE);
-        backPageView.setVisibility(getRotationY() > -90 ? GONE : VISIBLE);
+        frontPageView.setVisibility(getRotationY() <= -90 ? INVISIBLE : VISIBLE);
+        backPageView.setVisibility(getRotationY() > -90 ? INVISIBLE : VISIBLE);
     }
 
     public interface CompleteHandler {

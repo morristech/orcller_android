@@ -2,6 +2,7 @@ package pisces.psuikit.ext;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import pisces.psfoundation.utils.Log;
@@ -9,7 +10,7 @@ import pisces.psfoundation.utils.Log;
 /**
  * Created by pisces on 11/19/15.
  */
-abstract public class PSView extends RelativeLayout {
+abstract public class PSView extends FrameLayout {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
