@@ -2,20 +2,20 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +23,12 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSView;
+import pisces.psuikit.ext.PSFrameLayout;
 
 /**
  * Created by pisces on 11/19/15.
  */
-public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, View.OnTouchListener {
+public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDelegate {
 
     public static final int CENTER_INDEX_OF_VISIBLE_VIEWS = 2;
     public static final int COUNT_OF_VISIBLE_VIEWS = 5;
@@ -49,12 +48,14 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
     private int pageIndex;
     private float originRotation;
     private float xPanningOffset;
+    private View background;
     private FrameLayout container;
+    private ProgressBar progressBar;
     private AlbumFlipViewDelegate delegate;
     private List<FlipView> visibleViews;
     private FlipView targetFlipView;
     private Album model;
-//    AlbumPageCountView *pageCountView;
+    private AlbumPageCountView pageCountView;
 
     public AlbumFlipView(Context context) {
         super(context);
@@ -91,22 +92,32 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        visibleViews = new ArrayList<FlipView>();
         allowsShowPageCount = true;
         pageIndex = -1;
         imageLoadType = MediaView.ImageLoadType.LowResolution.getValue();
+        visibleViews = new ArrayList<FlipView>();
+        background = new View(context);
         container = new FrameLayout(context);
+        pageCountView = new AlbumPageCountView(context);
+        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
 
-        setBackgroundColor(Color.BLACK);
-        setOnTouchListener(this);
+        background.setBackgroundColor(Color.BLACK);
+        addView(background);
+        addView(container, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public boolean onTouch(View v, MotionEvent event) {
-        float rotation = 0.0f;
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                xPanningOffset = event.getX();
+                xPanningOffset = event.getRawX();
 
                 if (delegate != null)
                     delegate.onStartPanning(this);
@@ -116,30 +127,29 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
                 break;
 
             case MotionEvent.ACTION_UP:
-                rotation = targetFlipView.getRotationY();
+                if (targetFlipView != null) {
+                    FlipView.Direction originDirection = FlipView.rotationToDirection(originRotation);
+                    FlipView.Direction direction = targetFlipView.getRotationY() < -90 ? FlipView.Direction.Left : FlipView.Direction.Right;
 
-                if (originRotation != rotation) {
-                    if (rotation > -180)
-                        targetFlipView.doFlip(FlipView.Direction.Left, new DecelerateInterpolator());
-                    else
-                        targetFlipView.doFlip(FlipView.Direction.Right, new DecelerateInterpolator());
+                    if (direction.equals(originDirection)) {
+                        targetFlipView.rotateAnimated(FlipView.directionToRotation(direction));
+                    } else {
+                        if (targetFlipView.getRotationY() > -90)
+                            targetFlipView.doFlip(FlipView.Direction.Left, new DecelerateInterpolator());
+                        else
+                            targetFlipView.doFlip(FlipView.Direction.Right, new DecelerateInterpolator());
+                    }
                 } else {
-                    targetFlipView.rotateAnimated(rotation);
+                    FlipView flipView = xPanningOffset > pageWidth ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    onTap(flipView, flipView.getCurrentPageView());
                 }
 
                 xPanningOffset = 0;
                 targetFlipView = null;
-                break;
-
-            case MotionEvent.ACTION_POINTER_DOWN:
-                break;
-
-            case MotionEvent.ACTION_POINTER_UP:
-                break;
+                return false;
 
             case MotionEvent.ACTION_MOVE:
-                float p = event.getX();
-                float dx = xPanningOffset - p;
+                float dx = xPanningOffset - event.getRawX();
 
                 if (dx == 0)
                     break;
@@ -148,11 +158,14 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
                     targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     originRotation = targetFlipView.getRotationY();
                     targetFlipView.bringToFront();
+                    targetFlipView.invalidate();
                 }
 
-                float mx = pageWidth * 0.65f;
-                rotation = Math.min(0, Math.max(-180, originRotation + (180 * dx / mx * -1)));
-                targetFlipView.rotateAnimated(rotation, 0);
+                if (targetFlipView != null) {
+                    float mx = pageWidth * 0.65f;
+                    float rotation = Math.min(0, Math.max(-180, originRotation + (180 * dx / mx * -1)));
+                    targetFlipView.rotate(rotation);
+                }
                 break;
         }
 
@@ -161,7 +174,6 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
 
     @Override
     protected void setUpSubviews(Context context) {
-        addView(container);
         readyPages();
         EventBus.getDefault().register(this, VideoMediaView.VideoMediaViewEvent.class);
     }
@@ -171,11 +183,94 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
     // ================================================================================================
 
     public void loadRemainPages() {
+        if (model == null || dataLoading || model.pages.count >= model.pages.total_count)
+            return;
 
+        dataLoading = true;
+        final AlbumFlipView self = this;
+        addView(progressBar);
+
+        if (delegate != null)
+            delegate.onStartLoadRemainPages(this);
+
+        AlbumDataProxy.getDefault().remainPages(model, new AlbumDataProxy.CompleteHandler() {
+            @Override
+            public void onComplete(boolean isSuccess) {
+                dataLoading = false;
+                removeView(progressBar);
+
+                if (delegate != null)
+                    delegate.onLoadRemainPages(self);
+            }
+        });
+    }
+
+    public PageView getPageViewWithIndex(int index) {
+        Page model = this.model.pages.getPageAtIndex(index);
+
+        if (model != null) {
+            PageView pageView;
+
+            for (int i=0; i<visibleViews.size(); i++) {
+                FlipView flipView = visibleViews.get(i);
+                pageView = flipView.getPageView(model);
+
+                if (pageView != null)
+                    return pageView;
+            }
+        }
+
+        return null;
     }
 
     public void pause() {
+        pause(true);
+    }
 
+    public void pause(boolean callable) {
+        if (!playing)
+            return;
+
+        if (targetFlipView != null) {
+            targetFlipView.rotate(targetFlipView.getRotationY() < -90 ? -180 : 0);
+            targetFlipView.animate().cancel();
+        }
+
+        targetFlipView = null;
+        playing = false;
+
+        if (callable && delegate != null)
+            delegate.onPause(this);
+    }
+
+    public void play() {
+        if (playing || model == null)
+            return;
+
+        playing = true;
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                flipRight();
+            }
+        }, 1500);
+    }
+
+    public void reload() {
+        pageIndexChanged();
+    }
+
+    public void stop() {
+        if (!playing)
+            return;
+
+        pause();
+        container.setVisibility(VISIBLE);
+        setPageIndex(model.default_page_index);
+
+        if (delegate != null)
+            delegate.onStop(this);
     }
 
     public boolean isAllowsAutoSlide() {
@@ -282,23 +377,28 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
     // ================================================================================================
 
     public void onChangeDirection(FlipView view, FlipView.Direction direction) {
-
+        updatePageCountView();
     }
 
     public void onCompleteImageLoad(FlipView view, PageView pageView, Drawable image) {
-
     }
 
     public void onError(FlipView view, PageView pageView) {
-
     }
 
     public void onTap(FlipView view, PageView pageView) {
+        if (!allowsAutoSlide) {
+            pause();
+            loadRemainPages();
+        }
 
+        if (delegate != null)
+            delegate.onTap(this, view, pageView);
     }
 
     public void willChangeDirection(FlipView view, FlipView.Direction direction, int duration, Interpolator interpolator) {
         FlipView reuseView;
+        FlipView flipView;
 
         if (direction.equals(FlipView.Direction.Left)) {
             pageIndex--;
@@ -308,66 +408,71 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
             visibleViews.add(0, reuseView);
 
             for (int i=visibleViews.size() - 1; i>=0; i--) {
-                FlipView view = visibleViews.get(i);
+                flipView = visibleViews.get(i);
 
-                if (view.getCurrentPageView().hasVideoMediaView())
-                    view.getCurrentPageView().getVideoMediaView().pause();
+                if (flipView.getCurrentPageView().hasVideoMediaView())
+                    flipView.getCurrentPageView().getVideoMediaView().pause();
 
                 if (i <= 1) {
                     int currentIndex = pageIndex - (2 - i);
 
-                    view.setDirection(FlipView.Direction.Left);
-                    view.setImageLoadType(imageLoadType);
-                    view.setPages(getPages(currentIndex));
-
-//                    [self.containerView sendSubviewToBack:view];
+                    flipView.setDirection(FlipView.Direction.Left);
+                    flipView.setImageLoadType(imageLoadType);
+                    flipView.setPages(getPages(currentIndex));
+                    moveChildToBack(flipView);
                 } else {
-                    view.bringToFront();
+                    flipView.bringToFront();
+                    flipView.invalidate();
                 }
 
-                view.setVisibility(view.getPages().size() < 1 ? INVISIBLE : VISIBLE);
+                flipView.setVisibility(view.getPages().size() < 1 ? INVISIBLE : VISIBLE);
             }
         } else {
-            _pageIndex++;
+            pageIndex++;
+            reuseView = visibleViews.get(0);
 
-            reuseView = visibleViews.firstObject;
+            visibleViews.remove(reuseView);
+            visibleViews.add(reuseView);
 
-            [visibleViews removeObject:reuseView];
-            [visibleViews addObject:reuseView];
+            int startIndex = visibleViews.size() - 2;
 
-            NSUInteger startIndex = visibleViews.count - 2;
+            for (int i=0; i<visibleViews.size(); i++) {
+                flipView = visibleViews.get(i);
 
-            for (NSUInteger i=0; i<visibleViews.count; i++) {
-                FlipView *view = visibleViews[i];
-
-                [view.currentPageView.videoMediaView pause];
+                if (flipView.getCurrentPageView().hasVideoMediaView())
+                    flipView.getCurrentPageView().getVideoMediaView().pause();
 
                 if (i >= startIndex) {
-                    NSUInteger currentIndex = self.pageIndex + (i - startIndex) + 1;
-                    view.direction = FlipViewDirectionRight;
-                    view.imageLoadType = self.imageLoadType;
-                    view.pages = [self pageModelsWithPageIndex:currentIndex];
+                    int currentIndex = pageIndex + (i - startIndex) + 1;
 
-                    [self.containerView sendSubviewToBack:view];
+                    flipView.setDirection(FlipView.Direction.Right);
+                    flipView.setImageLoadType(imageLoadType);
+                    flipView.setPages(getPages(currentIndex));
+                    moveChildToBack(flipView);
                 } else {
-                    [self.containerView bringSubviewToFront:view];
+                    flipView.bringToFront();
+                    flipView.invalidate();
                 }
 
-                view.hidden = view.pages.count < 1;
+                flipView.setVisibility(view.getPages().size() < 1 ? INVISIBLE : VISIBLE);
             }
         }
 
-        if (targetFlipView)
-        [self.containerView bringSubviewToFront:targetFlipView];
+        if (targetFlipView != null) {
+            targetFlipView.bringToFront();
+            targetFlipView.invalidate();
+        }
 
-        [self alignWithPageIndex:self.pageIndex duration:duration options:options animated:YES];
+        alignContainer(pageIndex, duration, interpolator, true);
 
-        if ([self.delegate respondsToSelector:@selector(albumFlipView:didChangePageIndex:)])
-        [self.delegate albumFlipView:self didChangePageIndex:self.pageIndex];
+        if (delegate != null)
+            delegate.onChangePageIndex(this, pageIndex);
     }
 
     public void onEventMainThread(Object event) {
-
+        if (event instanceof VideoMediaView.VideoMediaViewEvent &&
+                ((VideoMediaView.VideoMediaViewEvent) event).getType() == VideoMediaView.VideoMediaViewEvent.DID_START_VIDEO_PLAYING)
+            pause();
     }
 
     // ================================================================================================
@@ -396,6 +501,40 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
         } else {
             container.setX(x);
         }
+    }
+
+    private void flipRight() {
+        if (!playing)
+            return;
+
+        targetFlipView = getSelectedFlipView();
+        originRotation = targetFlipView.getRotationY();
+
+        targetFlipView.bringToFront();
+        targetFlipView.invalidate();
+
+        targetFlipView.doFlip(FlipView.Direction.Right, new DecelerateInterpolator(), 1500, new FlipView.CompleteHandler() {
+            @Override
+            public void onComplete() {
+                if ((getSelectedFlipView() != null && getSelectedFlipView().getPages().size() < 2)) {
+                    slideFinished = true;
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            stop();
+                        }
+                    }, 1500);
+                } else {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            flipRight();
+                        }
+                    }, 1500);
+                }
+            }
+        });
     }
 
     private List<Page> getPages(int pageIndex) {
@@ -441,6 +580,9 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
 
                             if (view.getDirection().equals(FlipView.Direction.Left)) {
                                 view.bringToFront();
+                                view.invalidate();
+                            } else {
+                                moveChildToBack(view);
                             }
                         }
                     });
@@ -473,20 +615,25 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
             view.setDirection(FlipView.Direction.Right);
             view.setImageLoadType(imageLoadType);
             view.setTag(i);
-            container.addView(view, 0, new LayoutParams(pageWidth, pageHeight));
+            container.addView(view, 0, new ViewGroup.LayoutParams(pageWidth, pageHeight));
             visibleViews.add(view);
             view.setX(pageWidth);
         }
     }
 
     private void resizePages() {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) container.getLayoutParams();
-        params.height = pageHeight;
+        ViewGroup.LayoutParams params = getLayoutParams();
         params.width = pageWidth * PAGE_COUNT;
-        container.setLayoutParams(params);
+        params.height = pageHeight + 120;
+        setLayoutParams(params);
+
+        ViewGroup.LayoutParams bgparams = background.getLayoutParams();
+        bgparams.width = params.width;
+        bgparams.height = pageHeight;
+        background.setLayoutParams(bgparams);
 
         for (FlipView view : visibleViews) {
-            params = (FrameLayout.LayoutParams) view.getLayoutParams();
+            params = view.getLayoutParams();
             params.width = pageWidth;
             params.height = pageHeight;
             view.setLayoutParams(params);
@@ -495,10 +642,51 @@ public class AlbumFlipView extends PSView implements FlipView.FlipViewDelegate, 
     }
 
     private void updatePageCountView() {
+        if (!allowsShowPageCount)
+            return;
 
+        Application.runOnBackgroundThread(new Runnable() {
+            @Override
+            public void run() {
+                final FlipView selectedFlipView = getSelectedFlipView();
+
+                if (pageIndex == model.default_page_index &&
+                        selectedFlipView != null &&
+                        selectedFlipView.getPages().size() > 0) {
+                    final int index = model.pages.data.indexOf(selectedFlipView.getPages().get(0));
+
+                    Application.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int count = model.pages.total_count - index - 1;
+
+                            if (count > 0) {
+                                pageCountView.setText("+" + String.valueOf(count));
+                                pageCountView.show(selectedFlipView.getCurrentPageView());
+                            } else {
+                                pageCountView.hide();
+                            }
+                        }
+                    });
+                } else {
+                    Application.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pageCountView.hide();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public interface AlbumFlipViewDelegate {
+        void onChangePageIndex(AlbumFlipView view, int pageIndex);
+        void onLoadRemainPages(AlbumFlipView view);
+        void onPause(AlbumFlipView view);
+        void onStartLoadRemainPages(AlbumFlipView view);
         void onStartPanning(AlbumFlipView view);
+        void onStop(AlbumFlipView view);
+        void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

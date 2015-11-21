@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import com.orcller.app.orcller.model.album.Page;
 
 import pisces.psfoundation.model.Model;
-import pisces.psuikit.ext.PSView;
+import pisces.psuikit.ext.PSFrameLayout;
 
 /**
  * Created by pisces on 11/19/15.
  */
-public class PageView extends PSView implements MediaView.MediaViewDelegate {
+public class PageView extends PSFrameLayout implements MediaView.MediaViewDelegate {
     private boolean controlEnabled;
     private boolean controlEnabledChanged;
     private boolean modelChanged;
@@ -147,11 +147,6 @@ public class PageView extends PSView implements MediaView.MediaViewDelegate {
             delegate.onError(this);
     }
 
-    public void onTap(MediaView view) {
-        if (delegate != null)
-            delegate.onTap(this);
-    }
-
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -163,13 +158,15 @@ public class PageView extends PSView implements MediaView.MediaViewDelegate {
     }
 
     private void modelChanged() {
+        if (model == null)
+            return;
+
         if (mediaView == null || model.media.type != mediaView.getModel().type) {
             removeMediaView();
 
             mediaView = createMediaView();
-            mediaView.setAllowsTapGesture(true);
             mediaView.setDelegate(this);
-            addView(mediaView, 0, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            addView(mediaView, 0, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         }
 
         if (hasVideoMediaView())
@@ -187,6 +184,5 @@ public class PageView extends PSView implements MediaView.MediaViewDelegate {
     public interface PageViewDelegate {
         void onCompleteImageLoad(PageView view, Drawable image);
         void onError(PageView view);
-        void onTap(PageView view);
     }
 }

@@ -6,7 +6,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.orcller.app.orcller.activity.SplashActivity"
-    android:background="@color/actionbar_purple">
+    android:background="@color/actionbar_purple"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <ImageView
         android:layout_centerHorizontal="true"

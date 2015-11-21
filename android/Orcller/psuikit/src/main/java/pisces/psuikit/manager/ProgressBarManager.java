@@ -1,20 +1,14 @@
 package pisces.psuikit.manager;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import java.util.HashMap;
-
-import pisces.android.R;
-import pisces.psuikit.widget.PSProgressBar;
 
 /**
  * Created by pisces on 11/9/15.
@@ -48,12 +42,16 @@ public class ProgressBarManager {
     }
 
     public static void show(Activity activity, boolean modal) {
+        show(activity, modal, 0);
+    }
+
+    public static void show(Activity activity, boolean modal, int progressStyle) {
         String key = String.valueOf(activity.hashCode());
 
         if (!viewInfoMap.containsKey(key)) {
             ViewGroup layout = (ViewGroup) activity.findViewById(android.R.id.content).getRootView();
 
-            ProgressBar progressBar = new ProgressBar(activity);
+            ProgressBar progressBar = new ProgressBar(activity, null, progressStyle);
             progressBar.setVisibility(View.VISIBLE);
 
             RelativeLayout.LayoutParams params = new

@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -14,6 +16,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.widget.PSVideoView;
 
 /**
@@ -76,8 +79,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         progressBar.setVisibility(GONE);
 
         addView(videoView);
-        addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
-        addView(progressBar);
 
         controlButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -124,6 +125,14 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         progressBar.setY((getMeasuredHeight() - progressBar.getMeasuredHeight()) / 2);
     }
 
+    @Override
+    protected void setUpSubviews(Context context) {
+        super.setUpSubviews(context);
+
+        addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
+        addView(progressBar);
+    }
+
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -152,6 +161,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     // ================================================================================================
 
     public void pause() {
+        allowsShowProgressBar = false;
         progressBar.setVisibility(GONE);
         videoView.pause();
         layoutControlButton(ControlButtonState.Pause, true);
@@ -303,6 +313,14 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         public VideoMediaViewEvent(VideoMediaView target, String type) {
             this.target = target;
             this.type = type;
+        }
+
+        public VideoMediaView getTarget() {
+            return target;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }

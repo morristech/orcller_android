@@ -3,9 +3,13 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -21,14 +25,16 @@ import java.io.File;
 import java.net.URL;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
-import pisces.psuikit.ext.PSView;
+import pisces.psuikit.ext.PSFrameLayout;
 
 /**
  * Created by pisces on 11/16/15.
  */
-abstract public class MediaView extends PSView {
+abstract public class MediaView extends PSFrameLayout {
     public enum ImageLoadType {
         Thumbnail(1<<0),
         LowResolution(1<<1),
@@ -45,7 +51,6 @@ abstract public class MediaView extends PSView {
         }
     }
 
-    private boolean allowsTapGesture;
     private boolean modelChanged;
     private int imageLoadType;
     private Drawable placeholder;
@@ -101,25 +106,9 @@ abstract public class MediaView extends PSView {
         addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (allowsTapGesture && delegate != null && event.getAction() == MotionEvent.ACTION_DOWN)
-            delegate.onTap(this);
-
-        return super.onTouchEvent(event);
-    }
-
     // ================================================================================================
     //  Public
     // ================================================================================================
-
-    public boolean isAllowsTapGesture() {
-        return allowsTapGesture;
-    }
-
-    public void setAllowsTapGesture(boolean allowsTapGesture) {
-        this.allowsTapGesture = allowsTapGesture;
-    }
 
     public int getImageLoadType() {
         return imageLoadType;
@@ -173,6 +162,16 @@ abstract public class MediaView extends PSView {
             }
         }
     }
+
+//    public boolean onTouch(View v, MotionEvent event) {
+//        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+//            case MotionEvent.ACTION_UP:
+//                if (allowsTapGesture && delegate != null)
+//                    delegate.onTap(this);
+//                return true;
+//        }
+//        return false;
+//    }
 
     // ================================================================================================
     //  Protected
@@ -352,6 +351,5 @@ abstract public class MediaView extends PSView {
     public interface MediaViewDelegate {
         void onCompleteImageLoad(MediaView view, Drawable image);
         void onError(MediaView view);
-        void onTap(MediaView view);
     }
 }

@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -206,12 +208,15 @@ public class ApplicationService extends Service {
         AlbumDataProxy.getDefault().view(56, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                int pw = w/2;
                 AlbumFlipView view = new AlbumFlipView(Application.applicationContext());
-                view.setPageWidth(480);
-                view.setPageHeight(480);
+                view.setPageWidth(pw);
+                view.setPageHeight(pw);
                 view.setModel(response.body().entity);
                 view.setPageIndex(0);
-                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(960, 480));
+
+                Application.getTopActivity().addContentView(view, new LinearLayout.LayoutParams(w, pw));
             }
 
             @Override

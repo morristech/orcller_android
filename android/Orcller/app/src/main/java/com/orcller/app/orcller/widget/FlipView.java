@@ -3,7 +3,6 @@ package com.orcller.app.orcller.widget;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -15,13 +14,13 @@ import com.orcller.app.orcller.model.album.Page;
 
 import java.util.List;
 
-import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSView;
+import pisces.psfoundation.model.Model;
+import pisces.psuikit.ext.PSFrameLayout;
 
 /**
  * Created by pisces on 11/19/15.
  */
-public class FlipView extends PSView implements PageView.PageViewDelegate {
+public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate {
     public enum Direction {
         Left,
         Right
@@ -85,6 +84,8 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         shadowImageView.setAlpha(0.7f);
         shadowImageView.setImageResource(R.drawable.img_page_shadow);
         shadowImageView.setScaleX(-1.0f);
+        shadowImageView.setAdjustViewBounds(true);
+        shadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         setPivotX(0);
     }
@@ -93,8 +94,8 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        setCameraDistance(50 * heightMeasureSpec);
-        shadowImageView.getLayoutParams().height = heightMeasureSpec;
+        setCameraDistance(45 * getMeasuredHeight());
+        shadowImageView.getLayoutParams().height = getMeasuredHeight();
     }
 
     @Override
@@ -107,6 +108,14 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public static float directionToRotation(Direction direction) {
+        return direction.equals(Direction.Left) ? -180 : 0;
+    }
+
+    public static Direction rotationToDirection(float rotation) {
+        return rotation == -180 ? FlipView.Direction.Left : FlipView.Direction.Right;
+    }
 
     public void doFlip(Direction direction) {
         doFlip(direction, null);
@@ -197,6 +206,20 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         invalidateProperties();
     }
 
+    public PageView getPageView(Page model) {
+        if (Model.equasl(frontPageView.getModel(), model))
+            return frontPageView;
+        if (Model.equasl(backPageView.getModel(), model))
+            return backPageView;
+        return null;
+    }
+
+    public void rotate(float rotation) {
+        animate().cancel();
+        setRotationY(rotation);
+        setPageVisibility();
+    }
+
     public void rotateAnimated(float rotation) {
         rotateAnimated(rotation, FLIP_DURATION, null, null);
     }
@@ -272,11 +295,6 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
             delegate.onError(this, view);
     }
 
-    public void onTap(PageView view) {
-        if (delegate != null)
-            delegate.onTap(this, view);
-    }
-
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -299,7 +317,6 @@ public class FlipView extends PSView implements PageView.PageViewDelegate {
         void onChangeDirection(FlipView view, Direction direction);
         void onCompleteImageLoad(FlipView view, PageView pageView, Drawable image);
         void onError(FlipView view, PageView pageView);
-        void onTap(FlipView view, PageView pageView);
         void willChangeDirection(FlipView view, Direction direction, int duration, Interpolator interpolator);
     }
 }
