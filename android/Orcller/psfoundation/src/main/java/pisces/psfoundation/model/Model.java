@@ -17,9 +17,9 @@ public class Model implements Serializable {
     //  Public
     // ================================================================================================
 
-    public static boolean equasl(Model model, Model other) {
+    public static boolean equalsModel(Model model, Model other) {
         if (model != null && other != null)
-            return model.equals(other);
+            return model.equalsModel(other);
         if (model == null && other == null)
             return true;
         return false;
@@ -29,7 +29,7 @@ public class Model implements Serializable {
         EventBus.getDefault().post(new ModelDidChange(this));
     }
 
-    public boolean equals(Model other) {
+    public boolean equalsModel(Model other) {
         try {
             Field[] fields = other.getClass().getDeclaredFields();
 

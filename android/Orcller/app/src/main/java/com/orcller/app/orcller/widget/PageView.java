@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.orcller.app.orcller.model.album.Page;
 
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -116,7 +117,7 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
     }
 
     public void setModel(Page model) {
-        if (Model.equasl(model, this.model))
+        if (ObjectUtils.equals(this.model, model))
             return;
 
         this.model = model;

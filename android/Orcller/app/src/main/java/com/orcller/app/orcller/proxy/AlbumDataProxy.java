@@ -52,8 +52,8 @@ public class AlbumDataProxy extends AbstractDataProxy {
     @Override
     protected Converter.Factory createConverterFactory() {
         Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(Media.class, new MediaDeserializer())
-                        .create();
+                .registerTypeAdapter(Media.class, new MediaDeserializer())
+                .create();
         return GsonConverterFactory.create(gson);
     }
 

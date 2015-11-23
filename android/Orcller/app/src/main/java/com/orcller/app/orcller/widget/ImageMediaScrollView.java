@@ -16,7 +16,10 @@ import android.widget.ImageView;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 
+import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -158,7 +161,7 @@ public class ImageMediaScrollView extends PSFrameLayout {
     }
 
     public void setModel(ImageMedia model) {
-        if (Model.equasl(this.model, model))
+        if (ObjectUtils.equals(this.model, model))
             return;
 
         this.model = model;
@@ -170,6 +173,15 @@ public class ImageMediaScrollView extends PSFrameLayout {
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private void endScale() {
+        endScalingNextUp = true;
+        isScaling = false;
+        touchPoint = null;
+
+        EventBus.getDefault().post(
+                new ImageMediaScrollViewEvent(ImageMediaScrollViewEvent.SCALE_END, scale));
+    }
 
     private PointF getTranslationPoint() {
         ImageView imageView = mediaView.getImageView();
@@ -207,9 +219,7 @@ public class ImageMediaScrollView extends PSFrameLayout {
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            endScalingNextUp = true;
-                            isScaling = false;
-                            touchPoint = null;
+                            endScale();
                         }
 
                         @Override
@@ -239,13 +249,15 @@ public class ImageMediaScrollView extends PSFrameLayout {
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public void onScaleEnd(ScaleGestureDetector detector) {
-            endScalingNextUp = true;
+            endScale();
         }
 
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
             isScaling = true;
             endScalingNextUp = false;
+            EventBus.getDefault().post(
+                    new ImageMediaScrollViewEvent(ImageMediaScrollViewEvent.SCALE_BEGIN, scale));
             return true;
         }
 
@@ -305,6 +317,26 @@ public class ImageMediaScrollView extends PSFrameLayout {
 
         public boolean onContextClick(MotionEvent e) {
             return false;
+        }
+    }
+
+    public static class ImageMediaScrollViewEvent {
+        public static final String SCALE_BEGIN = "scaleBegin";
+        public static final String SCALE_END = "scaleEnd";
+        private String type;
+        private float scaleFactor;
+
+        public ImageMediaScrollViewEvent(String type, float scaleFactor) {
+            this.type = type;
+            this.scaleFactor = scaleFactor;
+        }
+
+        public float getScaleFactor() {
+            return scaleFactor;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }

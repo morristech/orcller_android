@@ -143,6 +143,23 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
     }
 
     // ================================================================================================
+    //  Listener
+    // ================================================================================================
+
+    public void onEventMainThread(Object event) {
+        if (event instanceof SoftKeyboardEvent.Show) {
+            if (idEditText.hasFocus())
+                idEditText.setCursorVisible(true);
+
+            if (pwEditText.hasFocus())
+                pwEditText.setCursorVisible(true);
+        } else if (event instanceof SoftKeyboardEvent.Hide) {
+            idEditText.setCursorVisible(false);
+            pwEditText.setCursorVisible(false);
+        }
+    }
+
+    // ================================================================================================
     //  Private
     // ================================================================================================
 
@@ -306,22 +323,5 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
 
         if (this.user != null)
             extraTextView.setText(this.user.name);
-    }
-
-    // ================================================================================================
-    //  Event Handler
-    // ================================================================================================
-
-    public void onEventMainThread(Object event) {
-        if (event instanceof SoftKeyboardEvent.Show) {
-            if (idEditText.hasFocus())
-                idEditText.setCursorVisible(true);
-
-            if (pwEditText.hasFocus())
-                pwEditText.setCursorVisible(true);
-        } else if (event instanceof SoftKeyboardEvent.Hide) {
-            idEditText.setCursorVisible(false);
-            pwEditText.setCursorVisible(false);
-        }
     }
 }

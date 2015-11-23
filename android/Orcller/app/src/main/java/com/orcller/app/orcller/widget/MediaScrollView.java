@@ -14,6 +14,7 @@ import com.orcller.app.orcller.model.album.VideoMedia;
 
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.Log;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -88,7 +89,7 @@ public class MediaScrollView extends PSFrameLayout {
     }
 
     public void setModel(Media model) {
-        if (Model.equasl(this.model, model))
+        if (ObjectUtils.equals(this.model, model))
             return;
 
         this.model = model;

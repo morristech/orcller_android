@@ -63,6 +63,11 @@
                 <data android:host="@string/external_web" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.MediaListActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
 
         <!-- Facebook SDK -->
         <activity

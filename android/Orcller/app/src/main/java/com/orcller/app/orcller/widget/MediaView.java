@@ -21,6 +21,8 @@ import java.net.URL;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psfoundation.utils.URLUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -121,7 +123,7 @@ abstract public class MediaView extends PSFrameLayout {
     }
 
     public void setModel(Media model) {
-        if (Model.equasl(this.model, model))
+        if (ObjectUtils.equals(this.model, model))
             return;
 
         EventBus.getDefault().unregister(this);
@@ -258,6 +260,7 @@ abstract public class MediaView extends PSFrameLayout {
             return;
         }
 
+        Log.i("model.images.low_resolution.url", model.images.low_resolution.url);
         loadImage(model.images.low_resolution.url, new CompleteHandler() {
             @Override
             public void onError() {

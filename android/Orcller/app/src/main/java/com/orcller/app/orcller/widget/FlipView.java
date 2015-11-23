@@ -15,6 +15,7 @@ import com.orcller.app.orcller.model.album.Page;
 import java.util.List;
 
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -207,9 +208,9 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
     }
 
     public PageView getPageView(Page model) {
-        if (Model.equasl(frontPageView.getModel(), model))
+        if (ObjectUtils.equals(frontPageView.getModel(), model))
             return frontPageView;
-        if (Model.equasl(backPageView.getModel(), model))
+        if (ObjectUtils.equals(backPageView.getModel(), model))
             return backPageView;
         return null;
     }

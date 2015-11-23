@@ -23,6 +23,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -355,7 +356,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     public void setModel(Album model) {
-        if (Model.equasl(model, this.model))
+        if (ObjectUtils.equals(this.model, model))
             return;
 
         this.model = model;
