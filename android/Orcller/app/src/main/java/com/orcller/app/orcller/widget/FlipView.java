@@ -215,6 +215,9 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
     }
 
     public void rotate(float rotation) {
+        if (pages == null || pages.size() < 2)
+            return;
+
         animate().cancel();
         setRotationY(rotation);
         setPageVisibility();

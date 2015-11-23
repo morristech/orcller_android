@@ -8,6 +8,7 @@ import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -79,6 +80,8 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         progressBar.setVisibility(GONE);
 
         addView(videoView);
+        addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
+        addView(progressBar, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         controlButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -127,10 +130,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
     @Override
     protected void setUpSubviews(Context context) {
-        super.setUpSubviews(context);
-
-        addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
-        addView(progressBar);
     }
 
     // ================================================================================================

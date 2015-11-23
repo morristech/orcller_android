@@ -18,12 +18,15 @@ import com.google.gson.Gson;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.model.album.ImageMedia;
+import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.FlipView;
+import com.orcller.app.orcller.widget.ImageMediaScrollView;
 import com.orcller.app.orcller.widget.ImageMediaView;
+import com.orcller.app.orcller.widget.MediaScrollView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcller.widget.VideoMediaView;
@@ -130,7 +133,9 @@ public class ApplicationService extends Service {
 //        testVideoMediaView();
 //        testPageView();
 //        testFlipView();
-        testAlbumFlipView();
+//        testAlbumFlipView();
+//        testImageMediaScrollView();
+        testMediaScrollView();
     }
 
     private void testImageMediaView() {
@@ -217,6 +222,42 @@ public class ApplicationService extends Service {
                 view.setPageIndex(0);
 
                 Application.getTopActivity().addContentView(view, new LinearLayout.LayoutParams(w, pw));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testImageMediaScrollView() {
+        AlbumDataProxy.getDefault().view(31, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                int h = Application.getTopActivity().getWindow().getDecorView().getHeight();
+                ImageMedia media = (ImageMedia) response.body().entity.pages.getPageAtIndex(4).media;
+                ImageMediaScrollView view = new ImageMediaScrollView(Application.applicationContext());
+                view.setModel(media);
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, h));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testMediaScrollView() {
+        AlbumDataProxy.getDefault().view(56, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                int h = Application.getTopActivity().getWindow().getDecorView().getHeight();
+                Media media = response.body().entity.pages.getPageAtIndex(4).media;
+                MediaScrollView view = new MediaScrollView(Application.applicationContext());
+                view.setModel(media);
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, h));
             }
 
             @Override

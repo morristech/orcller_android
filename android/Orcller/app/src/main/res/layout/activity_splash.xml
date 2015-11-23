@@ -13,7 +13,7 @@
     <ImageView
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_width="53dp"
-        android:layout_height="44dp"
-        android:background="@color/white"/>
+        android:layout_width="54dp"
+        android:layout_height="45dp"
+        android:src="@drawable/img_logo"/>
 </RelativeLayout>
