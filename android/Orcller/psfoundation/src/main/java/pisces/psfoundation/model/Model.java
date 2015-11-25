@@ -1,6 +1,8 @@
 package pisces.psfoundation.model;
 
 
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Map;

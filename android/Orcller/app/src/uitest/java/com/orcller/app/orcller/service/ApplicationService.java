@@ -1,27 +1,20 @@
 package com.orcller.app.orcller.service;
 
-import android.app.AlertDialog;
 import android.app.Service;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.IBinder;
-import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.google.gson.Gson;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
-import com.orcller.app.orcller.model.album.VideoMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
@@ -37,20 +30,15 @@ import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.managers.GooglePlayServiceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GSonUtil;
-import pisces.psfoundation.utils.Log;
+import pisces.psuikit.imagepicker.ImagePickerActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -146,7 +134,18 @@ public class ApplicationService extends Service {
 //        testAlbumFlipView();
 //        testImageMediaScrollView();
 //        testMediaScrollView();
-        testMediaListActivity();
+//        testMediaListActivity();
+        testImagePicker();
+    }
+
+    private void testActivity(Class activityClass, Interceptor interceptor) {
+        Intent intent = new Intent(this, activityClass);
+
+        if (interceptor != null)
+            interceptor.intercept(intent);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.applicationContext().startActivity(intent);
     }
 
     // ================================================================================================
@@ -246,12 +245,12 @@ public class ApplicationService extends Service {
     }
 
     private void testImageMediaScrollView() {
-        AlbumDataProxy.getDefault().view(31, new Callback<ApiAlbum.AlbumRes>() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
                 int h = Application.getTopActivity().getWindow().getDecorView().getHeight();
-                ImageMedia media = (ImageMedia) response.body().entity.pages.getPageAtIndex(4).media;
+                ImageMedia media = (ImageMedia) response.body().entity.pages.getPageAtIndex(1).media;
                 ImageMediaScrollView view = new ImageMediaScrollView(Application.applicationContext());
                 view.setModel(media);
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, h));
@@ -282,22 +281,16 @@ public class ApplicationService extends Service {
     }
 
     private void testMediaListActivity() {
-        AlbumDataProxy.getDefault().view(56, new Callback<ApiAlbum.AlbumRes>() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 final ArrayList<Media> items = new ArrayList<Media>();
 
                 for (Page page : response.body().entity.pages.data) {
-                    Log.i("page.media.id", page.media.id);
                     items.add(page.media);
                 }
 
-                testActivity(MediaListActivity.class, new Interceptor() {
-                    @Override
-                    public void intercept(Intent intent) {
-                        intent.putExtra("items", items);
-                    }
-                });
+                MediaListActivity.startActivity(items, 0);
             }
 
             @Override
@@ -306,10 +299,7 @@ public class ApplicationService extends Service {
         });
     }
 
-    private void testActivity(Class activityClass, Interceptor interceptor) {
-        Intent intent = new Intent(this, activityClass);
-        interceptor.intercept(intent);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        Application.applicationContext().startActivity(intent);
+    private void testImagePicker() {
+        testActivity(ImagePickerActivity.class, null);
     }
 }

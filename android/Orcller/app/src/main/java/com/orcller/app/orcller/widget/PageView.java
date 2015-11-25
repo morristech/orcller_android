@@ -138,14 +138,17 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
     //  Listener
     // ================================================================================================
 
-    public void onCompleteImageLoad(MediaView view, Drawable image) {
+    public void onCompleteImageLoad(MediaView view) {
         if (delegate != null)
-            delegate.onCompleteImageLoad(this, image);
+            delegate.onCompleteImageLoad(this);
     }
 
     public void onError(MediaView view) {
         if (delegate != null)
             delegate.onError(this);
+    }
+
+    public void onStartImageLoad(MediaView view) {
     }
 
     // ================================================================================================
@@ -183,7 +186,7 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
     }
 
     public interface PageViewDelegate {
-        void onCompleteImageLoad(PageView view, Drawable image);
+        void onCompleteImageLoad(PageView view);
         void onError(PageView view);
     }
 }

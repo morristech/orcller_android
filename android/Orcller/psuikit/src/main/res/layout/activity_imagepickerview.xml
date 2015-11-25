@@ -5,24 +5,34 @@
     android:layout_height="match_parent">
     <com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
         android:id="@+id/recyclerView"
-        android:background="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         lsjwzh:flingFactor="2.0"
-        lsjwzh:singlePageFling="true" />
+        lsjwzh:singlePageFling="true"/>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@color/imagepicker_toolbar_color"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/BlackTheme.Toolbar">
+        android:theme="@style/ImagePickerTheme.Toolbar">
         <TextView
             android:id="@+id/toolbarTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textColor="@android:color/black"
             android:textSize="18dp"/>
     </android.support.v7.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/pagerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_gravity="bottom"
+        android:background="@color/imagepicker_toolbar_color"
+        android:gravity="center_vertical"
+        android:textAlignment="center"
+        android:textColor="@color/imagepicker_toolbar_button_title_color"/>
 </FrameLayout>

@@ -2,24 +2,36 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
+import com.orcller.app.orcller.model.album.Image;
 import com.orcller.app.orcller.model.album.Media;
 
 import java.io.File;
 import java.net.URL;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
@@ -46,12 +58,15 @@ abstract public class MediaView extends PSFrameLayout {
         }
     }
 
+    private boolean scaleAspectFill = true;
     private boolean modelChanged;
     private int imageLoadType;
     private Drawable placeholder;
     private ImageView emptyImageView;
     private Media model;
+    protected Point imageSize;
     protected ImageView imageView;
+    protected ProgressBar progressBar;
     protected MediaViewDelegate delegate;
 
     public MediaView(Context context) {
@@ -70,7 +85,7 @@ abstract public class MediaView extends PSFrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
     // ================================================================================================
-    //  Overridden: PSView
+    //  Overridden: PSFrameLayout
     // ================================================================================================
 
     @Override
@@ -83,19 +98,25 @@ abstract public class MediaView extends PSFrameLayout {
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        emptyImageView = new ImageView(this.getContext());
-        imageView = new ImageView(this.getContext());
+        emptyImageView = new ImageView(context);
+        imageView = new ImageView(context);
+        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+
         TypedArray typedArray = context.obtainStyledAttributes(
                 attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
 
+        LayoutParams progressBarParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        progressBarParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+
         setImageLoadType(typedArray.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
         setPlaceholder(typedArray.getDrawable(R.styleable.MediaView_placeholder));
+        progressBar.setVisibility(GONE);
         imageView.setAdjustViewBounds(true);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
         emptyImageView.setVisibility(GONE);
-        addView(imageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(imageView);
         addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(progressBar, progressBarParams);
     }
 
     @Override
@@ -105,6 +126,26 @@ abstract public class MediaView extends PSFrameLayout {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isScaleAspectFill() {
+        return scaleAspectFill;
+    }
+
+    public void setScaleAspectFill(boolean scaleAspectFill) {
+        if (scaleAspectFill == this.scaleAspectFill)
+            return;;
+
+        this.scaleAspectFill = scaleAspectFill;
+
+        if (scaleAspectFill)
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        else
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+    }
+
+    public void setDelegate(MediaViewDelegate delegate) {
+        this.delegate = delegate;
+    }
 
     public int getImageLoadType() {
         return imageLoadType;
@@ -145,10 +186,6 @@ abstract public class MediaView extends PSFrameLayout {
         this.placeholder = placeholder;
     }
 
-    public void setDelegate(MediaViewDelegate delegate) {
-        this.delegate = delegate;
-    }
-
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -182,6 +219,14 @@ abstract public class MediaView extends PSFrameLayout {
         }
     }
 
+    protected void onCompleteImageLoad(GlideDrawable drawable) {
+        imageView.setImageDrawable(drawable);
+    }
+
+    protected void onStartImageLoad() {
+        Glide.clear(imageView);
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -198,8 +243,8 @@ abstract public class MediaView extends PSFrameLayout {
         return (imageLoadType & ImageLoadType.Thumbnail.getValue()) == ImageLoadType.Thumbnail.getValue();
     }
 
-    private void loadImage(String url, final CompleteHandler completeHandler) {
-        if (TextUtils.isEmpty(url)) {
+    private void loadImage(Image image, final CompleteHandler completeHandler) {
+        if (TextUtils.isEmpty(image.url)) {
             completeHandler.onError();
             return;
         }
@@ -223,28 +268,32 @@ abstract public class MediaView extends PSFrameLayout {
         };
 
         try {
-            Object source = URLUtils.isLocal(url) ? new File(url) : new URL(SharedObject.toFullMediaUrl(url));
+            onStartImageLoad();
+
+            Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
 
             Glide.with(getContext())
                     .load(source)
                     .placeholder(placeholder)
                     .dontAnimate()
+                    .override(imageSize.x, imageSize.y)
                     .listener(new RequestListener<Object, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
                             handler.onError();
-                            return false;
+                            Log.i("e.getMessage()", e.getMessage());
+                            return true;
                         }
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            imageView.setImageDrawable(resource);
+                            onCompleteImageLoad(resource);
 
                             if (resource != null)
                                 handler.onComplete();
                             else
                                 handler.onError();
-                            return false;
+                            return true;
                         }
                     })
                     .into(imageView);
@@ -260,8 +309,7 @@ abstract public class MediaView extends PSFrameLayout {
             return;
         }
 
-        Log.i("model.images.low_resolution.url", model.images.low_resolution.url);
-        loadImage(model.images.low_resolution.url, new CompleteHandler() {
+        loadImage(model.images.low_resolution, new CompleteHandler() {
             @Override
             public void onError() {
                 if (completeHandler != null)
@@ -286,7 +334,7 @@ abstract public class MediaView extends PSFrameLayout {
             return;
         }
 
-        loadImage(model.images.standard_resolution.url, new CompleteHandler() {
+        loadImage(model.images.standard_resolution, new CompleteHandler() {
             @Override
             public void onError() {
                 if (completeHandler != null)
@@ -308,7 +356,7 @@ abstract public class MediaView extends PSFrameLayout {
             return;
         }
 
-        loadImage(model.images.thumbnail.url, new CompleteHandler() {
+        loadImage(model.images.thumbnail, new CompleteHandler() {
             @Override
             public void onError() {
                 if (completeHandler != null)
@@ -330,6 +378,11 @@ abstract public class MediaView extends PSFrameLayout {
     }
 
     private void modelChanged() {
+        float rate = (float) Math.min(Application.getWindowWidth(), Application.getWindowHeight()) / Math.min(model.images.thumbnail.width, model.images.thumbnail.height);
+        int w = Math.round(model.images.thumbnail.width * rate);
+        int h = Math.round(model.images.thumbnail.width * rate);
+        imageSize = new Point(w, h);
+
         emptyImageView.setVisibility(GONE);
         loadImages();
     }
@@ -340,7 +393,8 @@ abstract public class MediaView extends PSFrameLayout {
     }
 
     public interface MediaViewDelegate {
-        void onCompleteImageLoad(MediaView view, Drawable image);
+        void onCompleteImageLoad(MediaView view);
         void onError(MediaView view);
+        void onStartImageLoad(MediaView view);
     }
 }

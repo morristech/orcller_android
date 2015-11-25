@@ -9,11 +9,16 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="23" />
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
     <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <android:uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,6 +27,7 @@
         android:name="pisces.psfoundation.ext.Application"
         android:allowBackup="true"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:launchMode="singleTask"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Holo.NoActionBar" >
@@ -66,8 +72,14 @@
         <activity
             android:name=".activity.MediaListActivity"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/BlackTheme">
         </activity>
+
+        <!-- psuikit -->
+        <activity
+            android:name="pisces.psuikit.imagepicker.ImagePickerActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/ImagePickerTheme" />
 
         <!-- Facebook SDK -->
         <activity

@@ -1,46 +1,24 @@
 package com.orcller.app.orcller.widget;
 
-import android.animation.Animator;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 
-import com.orcller.app.orcller.model.album.ImageMedia;
-import com.orcller.app.orcller.model.album.Media;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import de.greenrobot.event.EventBus;
-import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
-import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSFrameLayout;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by pisces on 11/22/15.
  */
-public class ImageMediaScrollView extends PSFrameLayout {
-    private static float MIN_ZOOM = 1f;
-    private static float MAX_ZOOM = 5f;
-
-    private boolean isScaling;
-    private boolean endScalingNextUp;
-    private boolean modelChanged;
-    private float scale = 1;
-    private PointF beginPoint = new PointF();
-    private PointF panPoint = new PointF();
-    private PointF touchPoint;
-    private GestureDetector gestureDetector;
-    private ScaleGestureDetector scaleGestureDetector;
-    private ImageMedia model;
-    private ImageMediaView mediaView;
-    private MediaView.MediaViewDelegate mediaViewDelegate;
+public class ImageMediaScrollView extends MediaView {
+    private boolean scaleEnabled;
+    private WeakReference<SubsamplingScaleImageView> scaleImageView;
 
     public ImageMediaScrollView(Context context) {
         super(context);
@@ -59,76 +37,72 @@ public class ImageMediaScrollView extends PSFrameLayout {
     }
 
     // ================================================================================================
-    //  Overridden: PSFrameLayout
+    //  Overridden: MediaView
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-        if (modelChanged) {
-            modelChanged = false;
-            modelChanged();
-        }
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        scaleGestureDetector = new ScaleGestureDetector(context, new ScaleListener());
-        gestureDetector = new GestureDetector(context, new GestureListener());
-        mediaView = new ImageMediaView(context);
+        super.initProperties(context, attrs, defStyleAttr, defStyleRes);
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        params.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
+        scaleImageView = new WeakReference<SubsamplingScaleImageView>(new SubsamplingScaleImageView(context));
 
-        setClipChildren(false);
-        mediaView.setLayoutParams(params);
-        mediaView.setImageLoadType(MediaView.ImageLoadType.LowResolution.getValue() |
-                MediaView.ImageLoadType.StandardResoultion.getValue());
-        addView(mediaView);
+        scaleImageView.get().setDoubleTapZoomScale(2f);
+        scaleImageView.get().setMaxScale(3f);
+        setImageLoadType(ImageLoadType.StandardResoultion.getValue());
+        removeView(imageView);
+        addView(scaleImageView.get(), 0);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        ViewGroup.LayoutParams params = mediaView.getLayoutParams();
-        params.width = params.height = getMeasuredWidth();
-        mediaView.setLayoutParams(params);
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        scaleGestureDetector.onTouchEvent(event);
+    protected void loadImages() {
+        final MediaView self = this;
 
-        int action = event.getActionMasked();
+        if (delegate != null)
+            delegate.onStartImageLoad(this);
 
-        if (scale != 1 && !isScaling) {
-            float x = event.getRawX();
-            float y = event.getRawY();
-
-            if (action == MotionEvent.ACTION_DOWN) {
-                ImageView imageView = mediaView.getImageView();
-                touchPoint = new PointF(x, y);
-                beginPoint.set(imageView.getTranslationX(), imageView.getTranslationY());
-            } else if (action == MotionEvent.ACTION_MOVE && touchPoint != null) {
-                panPoint.x = x - touchPoint.x;
-                panPoint.y = y - touchPoint.y;
-                pan();
+        loadImages(new CompleteHandler() {
+            @Override
+            public void onComplete() {
+                if (delegate != null)
+                    delegate.onCompleteImageLoad(self);
             }
-        }
 
-        if (isScaling && endScalingNextUp && action == MotionEvent.ACTION_POINTER_UP) {
-            endScalingNextUp = false;
-            isScaling = false;
-            touchPoint = null;
-        }
-
-        return true;
+            @Override
+            public void onError() {
+                if (delegate != null)
+                    delegate.onError(self);
+            }
+        });
     }
 
     @Override
-    protected void setUpSubviews(Context context) {
+    protected void onCompleteImageLoad(GlideDrawable drawable) {
+        Bitmap bitmap = ((GlideBitmapDrawable) drawable).getBitmap();
+        float scale = bitmap.getWidth() / getWidth();
+
+        scaleImageView.get().setImage(ImageSource.cachedBitmap(bitmap));
+
+        if (isScaleAspectFill()) {
+            scaleImageView.get().setScaleAndCenter(scale, new PointF(bitmap.getWidth() / 2, bitmap.getHeight() / 2));
+            scaleImageView.get().setMinScale(scale);
+        }
+
+        progressBar.setVisibility(GONE);
+        updateScaleEnabled();
+    }
+
+    @Override
+    protected void onStartImageLoad() {
+        super.onStartImageLoad();
+
+        scaleImageView.get().recycle();
+        scaleImageView.get().resetScaleAndCenter();
+        progressBar.setVisibility(VISIBLE);
     }
 
     // ================================================================================================
@@ -136,207 +110,24 @@ public class ImageMediaScrollView extends PSFrameLayout {
     // ================================================================================================
 
     public void reset() {
-        scale = 1;
-        panPoint = new PointF(0, 0);
-        scale(false);
-        isScaling = false;
+        scaleImageView.get().resetScaleAndCenter();
     }
 
-    public ImageMediaView getMediaView() {
-        return mediaView;
-    }
-
-    public MediaView.MediaViewDelegate getMediaViewDelegate() {
-        return mediaViewDelegate;
-    }
-
-    public void setMediaViewDelegate(MediaView.MediaViewDelegate mediaViewDelegate) {
-        this.mediaViewDelegate = mediaViewDelegate;
-
-        mediaView.setDelegate(mediaViewDelegate);
-    }
-
-    public Media getModel() {
-        return model;
-    }
-
-    public void setModel(ImageMedia model) {
-        if (ObjectUtils.equals(this.model, model))
+    public void setScaleEnabled(boolean scaleEnabled) {
+        if (scaleEnabled == this.scaleEnabled)
             return;
 
-        this.model = model;
-        modelChanged = true;
+        this.scaleEnabled = scaleEnabled;
 
-        invalidateProperties();
+        updateScaleEnabled();
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
-    private void endScale() {
-        endScalingNextUp = true;
-        isScaling = false;
-        touchPoint = null;
-
-        EventBus.getDefault().post(
-                new ImageMediaScrollViewEvent(ImageMediaScrollViewEvent.SCALE_END, scale));
-    }
-
-    private PointF getTranslationPoint() {
-        ImageView imageView = mediaView.getImageView();
-        float xmin = (imageView.getWidth() - (imageView.getWidth() * scale))/2;
-        float ymin = (imageView.getHeight() - (imageView.getHeight() * scale))/2;
-        float x = Math.max(xmin, Math.min(xmin * -1, beginPoint.x + panPoint.x));
-        float y = Math.max(ymin, Math.min(ymin * -1, beginPoint.y + panPoint.y));
-        return new PointF(x, y);
-    }
-
-    private void modelChanged() {
-        reset();
-        mediaView.setModel(model);
-    }
-
-    private void pan() {
-        ImageView imageView = mediaView.getImageView();
-        PointF point = getTranslationPoint();
-        imageView.setTranslationX(point.x);
-        imageView.setTranslationY(point.y);
-    }
-
-    private void scale(boolean animated) {
-        ImageView imageView = mediaView.getImageView();
-        PointF point = getTranslationPoint();
-
-        if (animated) {
-            imageView.animate()
-                    .setDuration(250)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            endScale();
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-                        }
-                    })
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .translationX(point.x)
-                    .translationY(point.y);
-        } else {
-            imageView.setScaleX(scale);
-            imageView.setScaleY(scale);
-            imageView.setTranslationX(point.x);
-            imageView.setTranslationY(point.y);
-        }
-    }
-
-    // ================================================================================================
-    //  Class: ScaleListener
-    // ================================================================================================
-
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            endScale();
-        }
-
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            isScaling = true;
-            endScalingNextUp = false;
-            EventBus.getDefault().post(
-                    new ImageMediaScrollViewEvent(ImageMediaScrollViewEvent.SCALE_BEGIN, scale));
-            return true;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            isScaling = true;
-            endScalingNextUp = false;
-            scale *= detector.getScaleFactor();
-            scale = Math.min(Math.max(MIN_ZOOM, scale), MAX_ZOOM);
-            scale(false);
-            return true;
-        }
-    }
-
-    // ================================================================================================
-    //  Class: GestureListener
-    // ================================================================================================
-
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-        public boolean onSingleTapUp(MotionEvent e) {
-            return false;
-        }
-
-        public void onLongPress(MotionEvent e) {
-        }
-
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            return false;
-        }
-
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            return false;
-        }
-
-        public void onShowPress(MotionEvent e) {
-        }
-
-        public boolean onDown(MotionEvent e) {
-            return false;
-        }
-
-        public boolean onDoubleTap(MotionEvent e) {
-            isScaling = true;
-            endScalingNextUp = false;
-            scale = scale > 1 ? MIN_ZOOM : MAX_ZOOM;
-            scale(true);
-            return true;
-        }
-
-        public boolean onDoubleTapEvent(MotionEvent e) {
-            return false;
-        }
-
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            return false;
-        }
-
-        public boolean onContextClick(MotionEvent e) {
-            return false;
-        }
-    }
-
-    public static class ImageMediaScrollViewEvent {
-        public static final String SCALE_BEGIN = "scaleBegin";
-        public static final String SCALE_END = "scaleEnd";
-        private String type;
-        private float scaleFactor;
-
-        public ImageMediaScrollViewEvent(String type, float scaleFactor) {
-            this.type = type;
-            this.scaleFactor = scaleFactor;
-        }
-
-        public float getScaleFactor() {
-            return scaleFactor;
-        }
-
-        public String getType() {
-            return type;
-        }
+    private void updateScaleEnabled() {
+        scaleImageView.get().setPanEnabled(scaleEnabled);
+        scaleImageView.get().setZoomEnabled(scaleEnabled);
     }
 }

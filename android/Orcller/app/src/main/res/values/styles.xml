@@ -19,6 +19,11 @@
         <item name="colorAccent">@color/actionbar_purple_light</item>
     </style>
 
+    <style name="BlackTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
     <style name="AppTheme.ActionBar"
         parent="android:style/Widget.Holo.Light.ActionBar" >
         <item name="android:background">@color/actionbar_purple</item>
@@ -32,7 +37,7 @@
 
     <style name="AppTheme.ActionBar.Title"
         parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="AppTheme.ActionBar.TabBar"
@@ -41,7 +46,7 @@
 
     <style name="AppTheme.ActionBar.TabText"
         parent="android:style/Widget.Holo.ActionBar.TabText">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="AppTheme.ActionBar.TabView" parent="android:style/Widget.Holo.ActionBar.TabView">
@@ -51,6 +56,12 @@
     <style name="PurpleToobarTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:titleTextStyle">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
+        <item name="titleTextColor">@android:color/white</item>
+    </style>
+
+    <style name="BlackTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@color/blacktheme_blue_primary</item>
+        <item name="colorControlNormal">@color/blacktheme_blue_primary</item>
         <item name="titleTextColor">@android:color/white</item>
     </style>
 </resources>

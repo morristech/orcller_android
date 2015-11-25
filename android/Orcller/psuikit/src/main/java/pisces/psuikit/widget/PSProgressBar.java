@@ -30,7 +30,7 @@ public class PSProgressBar extends ProgressBar {
             }
         };
 
-        animation = AnimationUtils.loadAnimation(context, R.anim.psprogressbar_show_ani);
+        animation = AnimationUtils.loadAnimation(context, R.animator.psprogressbar_show_ani);
         animation.setInterpolator(interpolator);
     }
 

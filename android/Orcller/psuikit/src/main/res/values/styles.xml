@@ -1,0 +1,14 @@
+<resources>>
+    <style name="ImagePickerTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorAccent">@android:color/white</item>
+    </style>
+
+    <style name="ImagePickerTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@android:color/black</item>
+        <item name="colorControlNormal">@color/imagepicker_toolbar_button_title_color</item>
+        <item name="titleTextColor">@android:color/black</item>
+    </style>
+</resources>

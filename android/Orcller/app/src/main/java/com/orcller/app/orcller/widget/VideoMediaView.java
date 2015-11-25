@@ -4,20 +4,15 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Point;
 import android.media.MediaPlayer;
-import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.widget.PSVideoView;
 
 /**
@@ -35,7 +30,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     private Point controlButtonSize;
     private Button controlButton;
     private PSVideoView videoView;
-    private ProgressBar progressBar;
 
     public VideoMediaView(Context context) {
         super(context);
@@ -76,13 +70,8 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         videoView.setVisibility(GONE);
         videoView.setPlayStateListener(this);
 
-        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
-        progressBar.setVisibility(GONE);
-
         addView(videoView);
         addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
-        addView(progressBar, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
         controlButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,11 +88,14 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
         final MediaView self = this;
 
+        if (delegate != null)
+            delegate.onStartImageLoad(this);
+
         loadImages(new CompleteHandler() {
             @Override
             public void onComplete() {
                 if (delegate != null)
-                    delegate.onCompleteImageLoad(self, imageView.getDrawable());
+                    delegate.onCompleteImageLoad(self);
             }
 
             @Override
@@ -124,8 +116,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         Point point = getControlButtonPoint(controlButtonState.equals(ControlButtonState.Play));
         controlButton.setX(point.x);
         controlButton.setY(point.y);
-        progressBar.setX((getMeasuredWidth() - progressBar.getMeasuredWidth()) / 2);
-        progressBar.setY((getMeasuredHeight() - progressBar.getMeasuredHeight()) / 2);
     }
 
     @Override
@@ -159,6 +149,26 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     //  Public
     // ================================================================================================
 
+    public void setControlEnabled(boolean controlEnabled) {
+        if (controlEnabled == this.controlEnabled)
+            return;
+
+        this.controlEnabled = controlEnabled;
+
+        if (!controlEnabled) {
+            imageView.setVisibility(VISIBLE);
+            videoView.setVisibility(GONE);
+        }
+
+        Point point = getControlButtonPoint(controlEnabled && controlButtonState.equals(ControlButtonState.Play));
+        controlButton.setScaleX(getControlButtonScale());
+        controlButton.setScaleY(getControlButtonScale());
+        controlButton.setX(point.x);
+        controlButton.setY(point.y);
+        controlButton.setEnabled(controlEnabled);
+        videoView.setEnabled(controlEnabled);
+    }
+
     public void pause() {
         allowsShowProgressBar = false;
         progressBar.setVisibility(GONE);
@@ -190,26 +200,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         } else {
             play();
         }
-    }
-
-    public void setControlEnabled(boolean controlEnabled) {
-        if (controlEnabled == this.controlEnabled)
-            return;
-
-        this.controlEnabled = controlEnabled;
-
-        if (!controlEnabled) {
-            imageView.setVisibility(VISIBLE);
-            videoView.setVisibility(GONE);
-        }
-
-        Point point = getControlButtonPoint(controlEnabled && controlButtonState.equals(ControlButtonState.Play));
-        controlButton.setScaleX(getControlButtonScale());
-        controlButton.setScaleY(getControlButtonScale());
-        controlButton.setX(point.x);
-        controlButton.setY(point.y);
-        controlButton.setEnabled(controlEnabled);
-        videoView.setEnabled(controlEnabled);
     }
 
     public void stop() {

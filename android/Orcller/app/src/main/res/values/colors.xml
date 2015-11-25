@@ -8,10 +8,11 @@
     <color name="member_tab_text_selected">#762866</color>
 
     <color name="hairline">#C8C7CC</color>
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
     <color name="textcolot_hint">#AFAFB7</color>
     <color name="textcolor_fb_normal">#0091ED</color>
     <color name="textcolor_fb_selected">#96DDFE</color>
     <color name="textcolor_dark_blue">#284D76</color>
+
+    <color name="blacktheme_blue_primary">#146FDF</color>
+    <color name="blacktheme_blue_accent">#8ABEFE</color>
 </resources>

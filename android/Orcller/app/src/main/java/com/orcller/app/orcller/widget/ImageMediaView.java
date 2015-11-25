@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.orcller.app.orcller.R;
 
 /**
@@ -35,11 +36,14 @@ public class ImageMediaView extends MediaView {
     protected void loadImages() {
         final MediaView self = this;
 
+        if (delegate != null)
+            delegate.onStartImageLoad(this);
+
         loadImages(new CompleteHandler() {
             @Override
             public void onComplete() {
                 if (delegate != null)
-                    delegate.onCompleteImageLoad(self, imageView.getDrawable());
+                    delegate.onCompleteImageLoad(self);
             }
 
             @Override

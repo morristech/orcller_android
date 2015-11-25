@@ -89,7 +89,7 @@ public class ApplicationLauncher {
                             ApiApplication.Version.Entity entity = response.body().entity;
                             currentVersion = entity.version;
 
-                            if (Application.isLower(currentVersion))
+                            if (Application.isLowerAppVersion(currentVersion))
                                 EventBus.getDefault().post(new ApplicationHasNewVersion(entity));
 
                             cacheAppVersion();
@@ -174,7 +174,7 @@ public class ApplicationLauncher {
                         ApiApplication.Version.Entity entity = response.body().entity;
                         currentVersion = entity.version;
 
-                        if (Application.isLower(currentVersion))
+                        if (Application.isLowerAppVersion(currentVersion))
                             EventBus.getDefault().post(new ApplicationHasNewVersion(entity));
 
                         initComplete();
@@ -211,7 +211,7 @@ public class ApplicationLauncher {
     }
 
     private void removeCachesAfterVersionChecking() {
-        if (originAppVersion != null && !Application.isEquals(originAppVersion))
+        if (originAppVersion != null && !Application.equalsAppVersion(originAppVersion))
             removeCaches();
     }
 

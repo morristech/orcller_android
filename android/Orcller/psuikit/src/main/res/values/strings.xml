@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">psuikit</string>
+
+    <!-- words -->
+    <string name="imagepicker_menu_select">Select</string>
+    <string name="imagepicker_title">Photo Gallery</string>
 </resources>

@@ -289,9 +289,9 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
     //  Listener
     // ================================================================================================
 
-    public void onCompleteImageLoad(PageView view, Drawable image) {
+    public void onCompleteImageLoad(PageView view) {
         if (delegate != null)
-            delegate.onCompleteImageLoad(this, view, image);
+            delegate.onCompleteImageLoad(this, view);
     }
 
     public void onError(PageView view) {
@@ -319,7 +319,7 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
 
     public interface FlipViewDelegate {
         void onChangeDirection(FlipView view, Direction direction);
-        void onCompleteImageLoad(FlipView view, PageView pageView, Drawable image);
+        void onCompleteImageLoad(FlipView view, PageView pageView);
         void onError(FlipView view, PageView pageView);
         void willChangeDirection(FlipView view, Direction direction, int duration, Interpolator interpolator);
     }

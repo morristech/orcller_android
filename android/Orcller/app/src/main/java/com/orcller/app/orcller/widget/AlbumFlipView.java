@@ -376,7 +376,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         updatePageCountView();
     }
 
-    public void onCompleteImageLoad(FlipView view, PageView pageView, Drawable image) {
+    public void onCompleteImageLoad(FlipView view, PageView pageView) {
     }
 
     public void onError(FlipView view, PageView pageView) {

@@ -1,45 +1,38 @@
-package com.orcller.app.orcller.activity;
+package pisces.psuikit.imagepicker;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
-import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.widget.ImageMediaScrollView;
-import com.orcller.app.orcller.widget.MediaScrollView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.android.R;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
-import pisces.psuikit.event.ImageViewScaleEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.imagepicker.OnScrollListener;
 
 /**
- * Created by pisces on 11/23/15.
+ * Created by pisces on 11/25/15.
  */
-public class MediaListActivity extends PSActionBarActivity implements RecyclerViewPager.OnPageChangedListener {
+public class ImagePickerViewActivity extends PSActionBarActivity
+        implements RecyclerViewPager.OnPageChangedListener {
     public static final String ITEMS_KEY = "items";
     public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private int selectedIndex = -1;
     private List<Media> items;
+    private TextView pagerTextView;
     private TextView toolbarTextView;
     private RecyclerViewPager recyclerView;
-    private MediaScrollView selectedView;
     private Adapter adapter;
+    private ImagePickerImageView selectedView;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -49,12 +42,13 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_medialist);
+        setContentView(R.layout.activity_imagepickerview);
 
         items = (List<Media>) getIntent().getSerializableExtra(ITEMS_KEY);
 
         recyclerView = (RecyclerViewPager) findViewById(R.id.recyclerView);
         toolbarTextView = (TextView) findViewById(R.id.toolbarTextView);
+        pagerTextView = (TextView) findViewById(R.id.pagerTextView);
         adapter = new Adapter(items);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -63,23 +57,24 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnPageChangedListener(this);
         recyclerView.addOnScrollListener(new OnScrollListener());
         setSelectedIndex(getIntent().getIntExtra(SELECTED_INDEX_KEY, 0));
+        recyclerView.scrollToPosition(selectedIndex);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        stopSelectedVideoMediaView();
         recyclerView.removeOnPageChangedListener(this);
-        recyclerView.removeAllViews();
 
+        adapter = null;
         items = null;
         recyclerView = null;
-        adapter = null;
+        pagerTextView = null;
         selectedView = null;
     }
 
@@ -96,7 +91,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
             RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(selectedIndex);
 
             if (viewHolder != null)
-                selectedView = (MediaScrollView) viewHolder.itemView;
+                selectedView = (ImagePickerImageView) viewHolder.itemView;
 
             if (!initialSelection)
                 EventBus.getDefault().post(new OnChangeSelectedIndex(selectedIndex, selectedView));
@@ -108,7 +103,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
     // ================================================================================================
 
     public static void startActivity(ArrayList<Media> items, int selectedIndex) {
-        Intent intent = new Intent(Application.applicationContext(), MediaListActivity.class);
+        Intent intent = new Intent(Application.applicationContext(), ImagePickerViewActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ITEMS_KEY, items);
         intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
@@ -126,27 +121,18 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
         this.selectedIndex = selectedIndex;
 
         if (selectedView != null) {
-            if (selectedView.getImageMediaScrollView() != null)
-                selectedView.getImageMediaScrollView().reset();
+            selectedView.reset();
 
             selectedView = null;
         }
 
-        stopSelectedVideoMediaView();
-        recyclerView.scrollToPosition(selectedIndex);
-        updateTitle();
+        updateInfo();
     }
 
-    private void stopSelectedVideoMediaView() {
-        if (selectedView != null) {
-            if (selectedView.getVideoMediaView() != null)
-                selectedView.getVideoMediaView().stop();
-        }
-    }
-
-    private void updateTitle() {
+    private void updateInfo() {
         String text = String.valueOf(selectedIndex + 1) + " of " + String.valueOf(items.size());
-        toolbarTextView.setText(text);
+        toolbarTextView.setText(items.get(selectedIndex).getDateString());
+        pagerTextView.setText(text);
     }
 
     // ================================================================================================
@@ -162,7 +148,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            View view = new MediaScrollView(viewGroup.getContext());
+            View view = new ImagePickerImageView(viewGroup.getContext());
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(viewGroup.getWidth(), viewGroup.getHeight());
             view.setLayoutParams(params);
             return new ViewHolder(view);
@@ -170,9 +156,8 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            MediaScrollView mediaScrollView = (MediaScrollView) viewHolder.itemView;
-            Media model = items.get(position);
-            mediaScrollView.setModel(model);
+            ImagePickerImageView imagePickerImageView = (ImagePickerImageView) viewHolder.itemView;
+            imagePickerImageView.setMedia(items.get(position));
         }
 
         @Override
@@ -192,14 +177,14 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
     }
 
     // ================================================================================================
-    //  Class: DividerItemDecoration
+    //  Class: OnChangeSelectedIndex
     // ================================================================================================
 
     public static class OnChangeSelectedIndex {
         private int selectedIndex;
-        private MediaScrollView selectedView;
+        private ImagePickerImageView selectedView;
 
-        public OnChangeSelectedIndex(int selectedIndex, MediaScrollView selectedView) {
+        public OnChangeSelectedIndex(int selectedIndex, ImagePickerImageView selectedView) {
             this.selectedIndex = selectedIndex;
             this.selectedView = selectedView;
         }
@@ -208,7 +193,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
             return selectedIndex;
         }
 
-        public MediaScrollView getSelectedView() {
+        public ImagePickerImageView getSelectedView() {
             return selectedView;
         }
     }

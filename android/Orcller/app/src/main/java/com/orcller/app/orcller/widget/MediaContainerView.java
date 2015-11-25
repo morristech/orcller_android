@@ -3,6 +3,7 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.widget.ImageView;
 
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
@@ -12,26 +13,29 @@ import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
- * Created by pisces on 11/23/15.
+ * Created by pisces on 11/24/15.
  */
-public class MediaScrollView extends PSFrameLayout implements MediaContainer {
+public class MediaContainerView extends PSFrameLayout implements MediaContainer {
+    private boolean controlEnabled = true;
+    private boolean controlEnabledChanged;
     private boolean modelChanged;
+    private int imageLoadType = MediaView.ImageLoadType.Thumbnail.getValue();
     private Media model;
     private MediaView mediaView;
 
-    public MediaScrollView(Context context) {
+    public MediaContainerView(Context context) {
         super(context);
     }
 
-    public MediaScrollView(Context context, AttributeSet attrs) {
+    public MediaContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MediaScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MediaContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public MediaScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public MediaContainerView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -45,19 +49,17 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
             modelChanged = false;
             modelChanged();
         }
+
+        if (controlEnabledChanged) {
+            controlEnabledChanged = false;
+
+            if (getVideoMediaView() != null)
+                getVideoMediaView().setControlEnabled(controlEnabled);
+        }
     }
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        if (mediaView instanceof VideoMediaView) {
-            mediaView.getLayoutParams().height = getMeasuredWidth();
-        }
     }
 
     @Override
@@ -68,10 +70,30 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     //  Public
     // ================================================================================================
 
-    public ImageMediaScrollView getImageMediaScrollView() {
-        if (mediaView instanceof ImageMediaScrollView)
-            return (ImageMediaScrollView) mediaView;
-        return null;
+    public boolean isControlEnabled() {
+        return controlEnabled;
+    }
+
+    public void setControlEnabled(boolean controlEnabled) {
+        if (controlEnabled == this.controlEnabled)
+            return;
+
+        this.controlEnabled = controlEnabled;
+        controlEnabledChanged = true;
+
+        invalidateProperties();
+    }
+
+    public int getImageLoadType() {
+        return imageLoadType;
+    }
+
+    public void setImageLoadType(int imageLoadType) {
+        this.imageLoadType = imageLoadType;
+    }
+
+    public ImageView getImageView() {
+        return null;//mediaView.getImageView();
     }
 
     public MediaView getMediaView() {
@@ -103,23 +125,16 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     // ================================================================================================
 
     private MediaView createMediaView(Media model) {
-        if (model instanceof ImageMedia) {
-            ImageMediaScrollView view = new ImageMediaScrollView(getContext());
-            view.setScaleAspectFill(false);
-            view.setScaleEnabled(true);
-            return view;
-        }
-        if (model instanceof VideoMedia) {
-            VideoMediaView view = new VideoMediaView(getContext());
-            view.setImageLoadType(MediaView.ImageLoadType.LowResolution.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
-            return view;
-        }
+        if (model instanceof ImageMedia)
+            return new ImageMediaView(getContext());
+        if (model instanceof VideoMedia)
+            return new VideoMediaView(getContext());
         return null;
     }
 
     private Media getMediaModel() {
         if (mediaView != null)
-            return mediaView.getModel();
+            mediaView.getModel();
         return null;
     }
 
@@ -139,7 +154,12 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
             }
         }
 
-        if (mediaView != null)
+        if (mediaView != null) {
+            if (getVideoMediaView() != null)
+                getVideoMediaView().setControlEnabled(controlEnabled);
+
+            mediaView.setImageLoadType(imageLoadType);
             mediaView.setModel(model);
+        }
     }
 }

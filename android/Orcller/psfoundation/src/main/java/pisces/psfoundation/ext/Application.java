@@ -2,6 +2,7 @@ package pisces.psfoundation.ext;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -77,15 +78,23 @@ public class Application extends android.app.Application {
         Application.topActivity = topActivity;
     }
 
-    public static boolean isEquals(String version) {
+    public static int getWindowHeight() {
+        return getTopActivity().getWindow().getDecorView().getHeight();
+    }
+
+    public static int getWindowWidth() {
+        return getTopActivity().getWindow().getDecorView().getWidth();
+    }
+
+    public static boolean equalsAppVersion(String version) {
         return compareVersions(getPackageVersionName(), version) == 0;
     }
 
-    public static boolean isHigher(String version) {
+    public static boolean isHigherAppVersion(String version) {
         return compareVersions(getPackageVersionName(), version) == 1;
     }
 
-    public static boolean isLower(String version) {
+    public static boolean isLowerAppVersion(String version) {
         return compareVersions(getPackageVersionName(), version) == -1;
     }
 
@@ -97,6 +106,11 @@ public class Application extends android.app.Application {
 
     public static void runOnMainThread(Runnable runnable) {
         new Handler(applicationContext().getMainLooper()).post(runnable);
+    }
+
+    public static void startActivity(Intent intent, int enterAnim, int exitAnim) {
+        topActivity.startActivity(intent);
+        topActivity.overridePendingTransition(enterAnim, exitAnim);
     }
 
     // ================================================================================================

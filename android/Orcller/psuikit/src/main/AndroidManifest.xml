@@ -3,6 +3,11 @@
     <application android:allowBackup="true" android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <activity
+            android:name="pisces.psuikit.imagepicker.ImagePickerViewActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/ImagePickerTheme">
+        </activity>
     </application>
 
 </manifest>
