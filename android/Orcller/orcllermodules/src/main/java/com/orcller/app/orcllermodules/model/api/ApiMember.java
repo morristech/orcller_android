@@ -57,7 +57,7 @@ public class ApiMember {
         }
     }
 
-    public static class ChangePasswordReq {
+    public static class ChangePasswordReq extends Model {
         public String current_password;
         public String change_password;
     }
@@ -88,7 +88,7 @@ public class ApiMember {
         public String idp_user_id;
     }
 
-    public static class SyncWithIdpReq {
+    public static class SyncWithIdpReq extends Model {
         public int idp_type;
         public String idp_user_id;
     }

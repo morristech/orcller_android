@@ -1,6 +1,5 @@
 package pisces.instagram.sdk;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +18,7 @@ import pisces.instagram.sdk.model.ApiInstagramResult;
 import pisces.instagram.sdk.model.OAuth2;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GSonUtil;
+import pisces.psfoundation.utils.GsonUtil;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -300,7 +299,7 @@ public class InstagramApplicationCenter<T> {
     private ApiInstagram.AccessTokenRes getCachedAccessTokenRes() {
         String cachedUser = getSharedPreference().getString(CACHED_INSTAGRAM_AUTH_INFO_KEY, null);
         if (cachedUser != null)
-            return (ApiInstagram.AccessTokenRes) GSonUtil.objectFromGSonString(cachedUser, ApiInstagram.AccessTokenRes.class);
+            return GsonUtil.fromJson(cachedUser, ApiInstagram.AccessTokenRes.class);
         return null;
     }
 
@@ -308,7 +307,7 @@ public class InstagramApplicationCenter<T> {
         SharedPreferences.Editor editor = getSharedPreference().edit();
 
         if (authInfo != null)
-            editor.putString(CACHED_INSTAGRAM_AUTH_INFO_KEY, GSonUtil.toGSonString(authInfo));
+            editor.putString(CACHED_INSTAGRAM_AUTH_INFO_KEY, GsonUtil.toGsonString(authInfo));
         else
             editor.remove(CACHED_INSTAGRAM_AUTH_INFO_KEY);
 

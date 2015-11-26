@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 
 /**
@@ -96,6 +97,25 @@ public class Application extends android.app.Application {
 
     public static boolean isLowerAppVersion(String version) {
         return compareVersions(getPackageVersionName(), version) == -1;
+    }
+
+    public static void run(final Runnable doInBackground, final Runnable onPostExecute) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (doInBackground != null)
+                    doInBackground.run();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+
+                if (onPostExecute != null)
+                    onPostExecute.run();
+            }
+        }.execute();
     }
 
     public static Thread runOnBackgroundThread(Runnable runnable) {

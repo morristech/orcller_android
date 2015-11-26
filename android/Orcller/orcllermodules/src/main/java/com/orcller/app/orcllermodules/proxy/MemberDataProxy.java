@@ -60,6 +60,9 @@ public class MemberDataProxy extends AbstractDataProxy {
         @FormUrlEncoded @POST("send_certification_email")
         Call<APIResult> sendCertificationEmail(@Field("email")String email);
 
+        @FormUrlEncoded @POST("sync_idp")
+        Call<APIResult> syncByIdp(@FieldMap Map<String, String> parameters);
+
         @FormUrlEncoded @POST("device")
         Call<ApiMember> updateDevice(@FieldMap Map<String, String> parameters);
     }

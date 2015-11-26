@@ -3,5 +3,5 @@
     <color name="imagepicker_toolbar_color">#32FFFFFF</color>
     <color name="imagepicker_toolbar_button_title_color">#146FDF</color>
     <color name="imagepicker_toolbar_button_title_selected_color">#8ABEFE</color>
-    <color name="itemview_imagepicker_selection_indicator">#33FFFFFF</color>
+    <color name="itemview_imagepicker_selection_indicator">#59000000</color>
 </resources>

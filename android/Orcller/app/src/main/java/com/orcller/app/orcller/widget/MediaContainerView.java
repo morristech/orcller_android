@@ -1,14 +1,17 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.ImageView;
 
+import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -18,7 +21,6 @@ import pisces.psuikit.ext.PSFrameLayout;
 public class MediaContainerView extends PSFrameLayout implements MediaContainer {
     private boolean controlEnabled = true;
     private boolean controlEnabledChanged;
-    private boolean modelChanged;
     private int imageLoadType = MediaView.ImageLoadType.Thumbnail.getValue();
     private Media model;
     private MediaView mediaView;
@@ -45,11 +47,6 @@ public class MediaContainerView extends PSFrameLayout implements MediaContainer 
 
     @Override
     protected void commitProperties() {
-        if (modelChanged) {
-            modelChanged = false;
-            modelChanged();
-        }
-
         if (controlEnabledChanged) {
             controlEnabledChanged = false;
 
@@ -60,6 +57,9 @@ public class MediaContainerView extends PSFrameLayout implements MediaContainer 
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        TypedArray typedArray = context.obtainStyledAttributes(
+                attrs, R.styleable.MediaContainerView, defStyleAttr, defStyleRes);
+        controlEnabled = typedArray.getBoolean(R.styleable.MediaContainerView_controlEnabled, true);
     }
 
     @Override
@@ -115,9 +115,7 @@ public class MediaContainerView extends PSFrameLayout implements MediaContainer 
             return;
 
         this.model = model;
-        modelChanged = true;
-
-        invalidateProperties();
+        modelChanged();
     }
 
     // ================================================================================================

@@ -16,9 +16,6 @@ import com.orcller.app.orcllermodules.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
@@ -27,7 +24,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.utils.GSonUtil;
+import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GsonUtil;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -116,39 +114,32 @@ public class AuthenticationCenter {
                 target,
                 "me",
                 parameters,
-                null,
-                new FBSDKRequest.CompleteHandler() {
+                FBUser.class,
+                new FBSDKRequest.CompleteHandler<FBUser>() {
                     @Override
-                    public void onComplete(final JSONObject result, APIError error) {
+                    public void onComplete(final FBUser result, APIError error) {
                         if (fbCompleteHandler != null)
                             fbCompleteHandler.onComplete(result, error);
 
                         if (error == null) {
-                            try {
-                                ApiMember.LoginWithIdpReq req = new ApiMember.LoginWithIdpReq();
-                                req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
-                                req.idp_user_id = result.getString("id");
+                            ApiMember.LoginWithIdpReq req = new ApiMember.LoginWithIdpReq();
+                            req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
+                            req.idp_user_id = result.id;
 
-                                login(req, new Api.CompleteHandler() {
-                                    @Override
-                                    public void onComplete(Object rs, APIError err) {
-                                        if (err == null) {
-                                            handler.onComplete(rs, err);
-                                        } else {
-                                            try {
-                                                handler.onComplete(GSonUtil.objectFromGSonString(result.toString(), FBUser.class), err);
-                                            } catch (Exception e) {
-                                                handler.onComplete(null, err);
-                                            }
+                            login(req, new Api.CompleteHandler() {
+                                @Override
+                                public void onComplete(Object rs, APIError err) {
+                                    if (err == null) {
+                                        handler.onComplete(rs, err);
+                                    } else {
+                                        try {
+                                            handler.onComplete(result, err);
+                                        } catch (Exception e) {
+                                            handler.onComplete(null, err);
                                         }
                                     }
-                                });
-                            } catch (JSONException e) {
-                                APIError err = APIError.newInstance(
-                                        APIError.APIErrorCodeUnknown,
-                                        e.getMessage());
-                                handler.onComplete(null, err);
-                            }
+                                }
+                            });
                         } else {
                             handler.onComplete(null, error);
                         }
@@ -182,16 +173,16 @@ public class AuthenticationCenter {
                             EventBus.getDefault().post(new LogoutComplete());
                         }
                     } else {
-                        handler.onComplete(null, APIError.newInstance(response.body()));
+                        handler.onComplete(null, APIError.create(response.body()));
                     }
                 } else {
-                    handler.onComplete(null, APIError.newInstance(response.code(), response.message()));
+                    handler.onComplete(null, APIError.create(response.code(), response.message()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                handler.onComplete(null, APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
+                handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }
@@ -207,16 +198,16 @@ public class AuthenticationCenter {
                     if (response.body().isSuccess()) {
                         completeHandler.onComplete(response.body(), null);
                     } else {
-                        completeHandler.onComplete(null, APIError.newInstance(response.body()));
+                        completeHandler.onComplete(null, APIError.create(response.body()));
                     }
                 } else {
-                    completeHandler.onComplete(null, APIError.newInstance(response.code(), response.message()));
+                    completeHandler.onComplete(null, APIError.create(response.code(), response.message()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                completeHandler.onComplete(null, APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
+                completeHandler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }
@@ -244,8 +235,13 @@ public class AuthenticationCenter {
     }
 
     public void synchorinzeUser(final User user) {
+        synchorinzeUser(user, null);
+    }
+
+    public void synchorinzeUser(final User user, final Runnable completeHandler) {
         final AuthenticationCenter self = this;
-        Thread thread = new Thread(new Runnable(){
+
+        Application.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 setCachedUser(user);
@@ -255,10 +251,86 @@ public class AuthenticationCenter {
                 } else {
                     self.user = user;
                 }
-            }
-        }, "Background");
 
-        thread.start();
+                if (completeHandler != null)
+                    Application.runOnMainThread(completeHandler);
+            }
+        });
+    }
+
+    public void syncWithFacebook(Object target, final Api.CompleteHandler completeHandler) {
+        final Api.CompleteHandler handler = new Api.CompleteHandler() {
+            @Override
+            public void onComplete(Object result, APIError error) {
+                if (completeHandler != null)
+                    completeHandler.onComplete(result, error);
+            }
+        };
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", FB_PROFILE_PARAM);
+        FBSDKRequestQueue.currentQueue().request(
+                target,
+                "me",
+                parameters,
+                FBUser.class,
+                new FBSDKRequest.CompleteHandler<FBUser>() {
+                    @Override
+                    public void onComplete(final FBUser result, APIError error) {
+                        if (error == null) {
+                            ApiMember.SyncWithIdpReq req = new ApiMember.SyncWithIdpReq();
+                            req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
+                            req.idp_user_id = result.id;
+
+                            syncWithIdp(req, new Api.CompleteHandler() {
+                                @Override
+                                public void onComplete(Object rs, APIError err) {
+                                    if (err == null) {
+                                        handler.onComplete(rs, err);
+                                    } else {
+                                        LoginManager.getInstance().logOut();
+                                        handler.onComplete(null, err);
+                                    }
+                                }
+                            });
+                        } else {
+                            LoginManager.getInstance().logOut();
+                            handler.onComplete(null, error);
+                        }
+                    }
+                });
+    }
+
+    public void syncWithIdp(ApiMember.SyncWithIdpReq req, final Api.CompleteHandler completeHandler) {
+        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
+        Call<APIResult> call = service.syncByIdp(req.map());
+        final Api.CompleteHandler handler = new Api.CompleteHandler() {
+            @Override
+            public void onComplete(Object result, APIError error) {
+                if (completeHandler != null)
+                    completeHandler.onComplete(result, error);
+            }
+        };
+
+        MemberDataProxy.getDefault().enqueueCall(call, new Callback<APIResult>() {
+            @Override
+            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    if (response.body().isSuccess()) {
+                        handler.onComplete(response.body(), null);
+                    } else {
+                        handler.onComplete(null, APIError.create(response.body()));
+                    }
+                } else {
+                    handler.onComplete(null, APIError.create(response.code(), response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
+            }
+        });
     }
 
     public void updateDevice() {
@@ -329,14 +401,14 @@ public class AuthenticationCenter {
                     if (response.body().isSuccess()) {
                         synchorinzeUser(response.body().entity);
                     } else {
-                        processErrorState(APIError.newInstance(response.body()));
+                        processErrorState(APIError.create(response.body()));
                     }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                processErrorState(APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
+                processErrorState(APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }
@@ -359,24 +431,22 @@ public class AuthenticationCenter {
             public void onResponse(Response<ApiMember.LoginRes> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if (response.body().isSuccess()) {
-                        synchronized (this) {
-                            setCachedSessionEntity(response.body().entity);
-                            loadCaches();
-                            synchorinze();
-                            handler.onComplete(response.body(), null);
-                            EventBus.getDefault().post(new LoginComplete());
-                        }
+                        setCachedSessionEntity(response.body().entity);
+                        loadCaches();
+                        synchorinze();
+                        handler.onComplete(response.body(), null);
+                        EventBus.getDefault().post(new LoginComplete());
                     } else {
-                        handler.onComplete(null, APIError.newInstance(response.body()));
+                        handler.onComplete(null, APIError.create(response.body()));
                     }
                 } else {
-                    handler.onComplete(null, APIError.newInstance(response.code(), response.message()));
+                    handler.onComplete(null, APIError.create(response.code(), response.message()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                handler.onComplete(null, APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
+                handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }
@@ -390,7 +460,7 @@ public class AuthenticationCenter {
     private ApiMember.LoginRes.Entity getCachedSessionEntity() {
         String cachedSessionEntity = ApplicationLauncher.getDefault().getSharedPreference().getString(CACHED_SESSION_ENTITY_KEY, null);
         if (cachedSessionEntity != null)
-            return (ApiMember.LoginRes.Entity) GSonUtil.objectFromGSonString(cachedSessionEntity, ApiMember.LoginRes.Entity.class);
+            return GsonUtil.fromJson(cachedSessionEntity, ApiMember.LoginRes.Entity.class);
         return null;
     }
 
@@ -398,7 +468,7 @@ public class AuthenticationCenter {
         SharedPreferences.Editor editor = ApplicationLauncher.getDefault().getSharedPreference().edit();
 
         if (entity != null)
-            editor.putString(CACHED_SESSION_ENTITY_KEY, GSonUtil.toGSonString(entity));
+            editor.putString(CACHED_SESSION_ENTITY_KEY, GsonUtil.toGsonString(entity));
         else
             editor.remove(CACHED_SESSION_ENTITY_KEY);
 
@@ -408,7 +478,7 @@ public class AuthenticationCenter {
     private User getCachedUser() {
         String cachedUser = ApplicationLauncher.getDefault().getSharedPreference().getString(CACHED_USER_KEY, null);
         if (cachedUser != null)
-            return (User) GSonUtil.objectFromGSonString(cachedUser, User.class);
+            return GsonUtil.fromJson(cachedUser, User.class);
         return null;
     }
 
@@ -416,7 +486,7 @@ public class AuthenticationCenter {
         SharedPreferences.Editor editor = ApplicationLauncher.getDefault().getSharedPreference().edit();
 
         if (cachedUser != null)
-            editor.putString(CACHED_USER_KEY, GSonUtil.toGSonString(cachedUser));
+            editor.putString(CACHED_USER_KEY, GsonUtil.toGsonString(cachedUser));
         else
             editor.remove(CACHED_USER_KEY);
 

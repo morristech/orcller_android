@@ -6,6 +6,8 @@ import com.orcller.app.orcllermodules.error.APIError;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by pisces on 11/9/15.
  */
@@ -94,7 +96,10 @@ public class FBSDKRequest {
         }
     }
 
-    public interface CompleteHandler {
-        public void onComplete(JSONObject result, APIError error);
+    public final class Result<T> {
+    }
+
+    public interface CompleteHandler<T> {
+        void onComplete(T result, APIError error);
     }
 }

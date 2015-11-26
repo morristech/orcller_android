@@ -20,7 +20,7 @@
             android:enabled="false"
             android:text="@string/imagepicker_menu_select"
             android:textColor="@drawable/textcolor_imagepicker_select_button"
-            android:textSize="13sp"/>
+            android:textSize="13dp"/>
     </android.support.v7.widget.Toolbar>
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"

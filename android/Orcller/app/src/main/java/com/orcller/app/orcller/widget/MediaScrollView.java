@@ -15,7 +15,6 @@ import pisces.psuikit.ext.PSFrameLayout;
  * Created by pisces on 11/23/15.
  */
 public class MediaScrollView extends PSFrameLayout implements MediaContainer {
-    private boolean modelChanged;
     private Media model;
     private MediaView mediaView;
 
@@ -41,10 +40,6 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
 
     @Override
     protected void commitProperties() {
-        if (modelChanged) {
-            modelChanged = false;
-            modelChanged();
-        }
     }
 
     @Override
@@ -93,9 +88,7 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
             return;
 
         this.model = model;
-        modelChanged = true;
-
-        invalidateProperties();
+        modelChanged();
     }
 
     // ================================================================================================

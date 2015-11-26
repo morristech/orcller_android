@@ -187,7 +187,7 @@ public class MemberLoginFragment extends PSFragment {
 
         SoftKeyboardUtils.hide(getView());
 
-        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler() {
+        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler<JSONObject>() {
             @Override
             public void onComplete(JSONObject result, APIError error) {
                 if (error == null)

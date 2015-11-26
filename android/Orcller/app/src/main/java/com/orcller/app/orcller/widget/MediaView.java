@@ -59,7 +59,6 @@ abstract public class MediaView extends PSFrameLayout {
     }
 
     private boolean scaleAspectFill = true;
-    private boolean modelChanged;
     private int imageLoadType;
     private Drawable placeholder;
     private ImageView emptyImageView;
@@ -90,10 +89,6 @@ abstract public class MediaView extends PSFrameLayout {
 
     @Override
     protected void commitProperties() {
-        if (modelChanged) {
-            modelChanged = false;
-            modelChanged();
-        }
     }
 
     @Override
@@ -170,12 +165,11 @@ abstract public class MediaView extends PSFrameLayout {
         EventBus.getDefault().unregister(this);
 
         this.model = model;
-        modelChanged = true;
 
         if (this.model != null)
             EventBus.getDefault().register(this, MediaManager.DidChangeImages.class);
 
-        invalidateProperties();
+        modelChanged();
     }
 
     public Drawable getPlaceholder() {
@@ -281,7 +275,6 @@ abstract public class MediaView extends PSFrameLayout {
                         @Override
                         public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
                             handler.onError();
-                            Log.i("e.getMessage()", e.getMessage());
                             return true;
                         }
 

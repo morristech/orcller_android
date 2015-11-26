@@ -25,6 +25,7 @@ import com.orcller.app.orcller.widget.MediaScrollView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcller.widget.VideoMediaView;
+import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
@@ -37,8 +38,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.instagram.sdk.InstagramApplicationCenter;
+import pisces.instagram.sdk.error.InstagramSDKError;
+import pisces.instagram.sdk.model.ApiInstagram;
+import pisces.instagram.sdk.model.ApiInstagramResult;
+import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
+import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -135,7 +143,8 @@ public class ApplicationService extends Service {
 //        testImageMediaScrollView();
 //        testMediaScrollView();
 //        testMediaListActivity();
-        testImagePicker();
+//        testImagePicker();
+        testFBImagePicker();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -301,5 +310,25 @@ public class ApplicationService extends Service {
 
     private void testImagePicker() {
         testActivity(ImagePickerActivity.class, null);
+    }
+
+    private void testFBImagePicker() {
+        testActivity(FBImagePickerActivity.class, null);
+    }
+
+    private void testInstagramRecentMedia() {
+        Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().service().recentMedia("self", 20, null);
+
+        InstagramApplicationCenter.getDefault().enqueueCall(call, new InstagramApiProxy.CompleteHandler() {
+            @Override
+            public void onError(InstagramSDKError error) {
+                Log.i("onError", error);
+            }
+
+            @Override
+            public void onComplete(ApiInstagramResult result) {
+                Log.i("onComplete", result);
+            }
+        });
     }
 }

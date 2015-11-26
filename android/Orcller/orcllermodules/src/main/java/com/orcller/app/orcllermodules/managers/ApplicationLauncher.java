@@ -94,16 +94,16 @@ public class ApplicationLauncher {
 
                             cacheAppVersion();
                         } else {
-                            processErrorState(APIError.newInstance(response.body()));
+                            processErrorState(APIError.create(response.body()));
                         }
                     } else {
-                        processErrorState(APIError.newInstance(response.code(), response.message()));
+                        processErrorState(APIError.create(response.code(), response.message()));
                     }
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    processErrorState(APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
+                    processErrorState(APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
                 }
             });
         } else {
@@ -180,16 +180,16 @@ public class ApplicationLauncher {
                         initComplete();
                         cacheAppVersion();
                     } else {
-                        processErrorState(APIError.newInstance(response.body()));
+                        processErrorState(APIError.create(response.body()));
                     }
                 } else {
-                    processErrorState(APIError.newInstance(response.code(), response.message()));
+                    processErrorState(APIError.create(response.code(), response.message()));
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                processErrorState(APIError.newInstance(APIError.APIErrorCodeUnknown, t.getMessage()));
+                processErrorState(APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }

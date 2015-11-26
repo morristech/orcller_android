@@ -1,6 +1,7 @@
 package pisces.psuikit.manager;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class ProgressBarManager {
     }
 
     public static void show(Activity activity, boolean modal) {
-        show(activity, modal, 0);
+        show(activity, modal, android.R.attr.progressBarStyleLarge);
     }
 
     public static void show(Activity activity, boolean modal, int progressStyle) {
@@ -54,8 +55,6 @@ public class ProgressBarManager {
             ProgressBar progressBar = new ProgressBar(activity, null, progressStyle);
             progressBar.setVisibility(View.VISIBLE);
 
-            RelativeLayout.LayoutParams params = new
-                    RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
             RelativeLayout relativeLayout = new RelativeLayout(activity);
 
             if (modal) {
@@ -64,8 +63,8 @@ public class ProgressBarManager {
             }
 
             relativeLayout.setGravity(Gravity.CENTER);
-            layout.addView(relativeLayout, params);
-            relativeLayout.addView(progressBar);
+            layout.addView(relativeLayout);
+            relativeLayout.addView(progressBar, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             viewInfoMap.put(key, new ProgressBarManager.ViewInfo(activity, relativeLayout, progressBar));
 
             showing = true;

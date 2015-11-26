@@ -15,8 +15,6 @@ import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.model.ApiInstagramResult;
 import pisces.instagram.sdk.model.OAuth2;
 import pisces.psfoundation.proxy.AbstractRetrofitProxy;
-import pisces.psfoundation.utils.GSonUtil;
-import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.http.FieldMap;

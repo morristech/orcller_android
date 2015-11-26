@@ -4,4 +4,9 @@
         <attr name="imageLoadType" format="integer"/>
         <attr name="placeholder" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="MediaContainerView">
+        <attr name="controlEnabled" format="boolean"/>
+        <!--<attr name="imageLoadType" format="integer"/>-->
+    </declare-styleable>
 </resources>

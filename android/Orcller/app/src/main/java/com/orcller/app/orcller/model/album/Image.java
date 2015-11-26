@@ -12,6 +12,9 @@ public class Image extends Model {
     public int height;
     public String url;
 
+    public Image() {
+    }
+
     public Image(int width, int height, String url) {
         this.width = width;
         this.height = height;

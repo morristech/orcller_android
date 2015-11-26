@@ -13,15 +13,22 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.orcller.app.orcllermodules.error.APIError;
+import com.orcller.app.orcllermodules.error.FacebookSDKError;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GsonUtil;
+import pisces.psfoundation.utils.Log;
+
 /**
  * Created by pisces on 11/9/15.
  */
-public class FBSDKRequestQueue {
+public class FBSDKRequestQueue<T> {
     public static final List<String> PERMISSIONS = Arrays.asList("user_photos", "user_videos", "user_friends");
 
     private static FBSDKRequestQueue uniqueInstance;
@@ -60,6 +67,19 @@ public class FBSDKRequestQueue {
         return callbackManager;
     }
 
+    public boolean isValidAccessToken() {
+        return AccessToken.getCurrentAccessToken() != null && !AccessToken.getCurrentAccessToken().isExpired();
+    }
+
+    public FBSDKRequest request(
+            String graphPath,
+            Bundle parameters,
+            Class mappingClass,
+            FBSDKRequest.CompleteHandler completeHandler) {
+        enqueue(null, graphPath, parameters, mappingClass, completeHandler);
+        return dequeue();
+    }
+
     public FBSDKRequest request(
             Object target, String graphPath,
             Bundle parameters,
@@ -94,13 +114,21 @@ public class FBSDKRequestQueue {
         if (arrayList.size() < 1)
             return null;
 
-        FBSDKRequest object = arrayList.get(0);
+        final FBSDKRequest object = arrayList.get(0);
 
         if (isValidAccessToken()) {
             arrayList.remove(0);
             request(object);
         } else {
             callbackManager = CallbackManager.Factory.create();
+
+            final FBSDKRequest.CompleteHandler handler = new FBSDKRequest.CompleteHandler<JSONObject>() {
+                @Override
+                public void onComplete(JSONObject result, APIError error) {
+                    if (object.getCompleteHandler() != null)
+                        object.getCompleteHandler().onComplete(result, error);
+                }
+            };
 
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
@@ -110,10 +138,20 @@ public class FBSDKRequestQueue {
 
                 @Override
                 public void onCancel() {
+                    arrayList.remove(0);
+                    APIError err = FacebookSDKError.create(
+                            FacebookSDKError.FacebookSDKErrorCancel,
+                            FacebookSDKError.FacebookSDKErrorMessageCancel);
+                    handler.onComplete(null, err);
                 }
 
                 @Override
                 public void onError(FacebookException error) {
+                    arrayList.remove(0);
+                    APIError err = APIError.create(
+                            APIError.APIErrorCodeUnknown,
+                            error.getMessage());
+                    handler.onComplete(null, err);
                 }
             });
 
@@ -121,14 +159,12 @@ public class FBSDKRequestQueue {
                 LoginManager.getInstance().logInWithReadPermissions((Activity) object.getTarget(), PERMISSIONS);
             } else if (object.getTarget() instanceof Fragment) {
                 LoginManager.getInstance().logInWithReadPermissions((Fragment) object.getTarget(), PERMISSIONS);
+            } else {
+                LoginManager.getInstance().logInWithReadPermissions(Application.getTopActivity(), PERMISSIONS);
             }
         }
 
         return object;
-    }
-
-    private boolean isValidAccessToken() {
-        return AccessToken.getCurrentAccessToken() != null && !AccessToken.getCurrentAccessToken().isExpired();
     }
 
     private void request(final FBSDKRequest object) {
@@ -142,9 +178,15 @@ public class FBSDKRequestQueue {
                     @Override
                     public void onCompleted(GraphResponse response) {
                         if (response.getError() == null) {
-                            object.getCompleteHandler().onComplete(response.getJSONObject(), null);
+                            if (object.getMappingClass() != null) {
+                                object.getCompleteHandler().onComplete(
+                                        GsonUtil.fromJson(response.getJSONObject().toString(), object.getMappingClass()),
+                                        null);
+                            } else {
+                                object.getCompleteHandler().onComplete(response.getJSONObject(), null);
+                            }
                         } else {
-                            APIError error = APIError.newInstance(
+                            APIError error = APIError.create(
                                     response.getError().getErrorCode(),
                                     response.getError().getErrorMessage());
                             object.getCompleteHandler().onComplete(null, error);

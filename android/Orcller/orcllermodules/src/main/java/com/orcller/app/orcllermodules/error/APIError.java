@@ -39,11 +39,11 @@ public class APIError extends Error {
         this.code = result.error_code;
     }
 
-    public static APIError newInstance(APIResult result) {
+    public static APIError create(APIResult result) {
         return new APIError(result);
     }
 
-    public static APIError newInstance(int code, String detailMessage) {
+    public static APIError create(int code, String detailMessage) {
         return new APIError(code, detailMessage);
     }
 

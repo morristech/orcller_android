@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">OrcllerModules</string>
     <string name="server_base_url"><![CDATA[https://www.orcller.com/apis]]></string>
+    <!-- words -->
+    <string name="w_dismiss">Dismiss</string>
+    <string name="w_retry">Retry</string>
 </resources>

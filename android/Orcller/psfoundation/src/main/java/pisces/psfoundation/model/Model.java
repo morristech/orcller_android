@@ -1,20 +1,23 @@
 package pisces.psfoundation.model;
 
 
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.utils.GSonUtil;
+import pisces.psfoundation.utils.GsonUtil;
 
 /**
  * Created by pisces on 11/6/15.
  */
 @SuppressWarnings("serial")
-public class Model implements Serializable {
+public class Model implements Cloneable, Serializable {
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
@@ -51,7 +54,7 @@ public class Model implements Serializable {
     }
 
     public Map<String, String> map() {
-        return GSonUtil.toMap(this);
+        return GsonUtil.toMap(this);
     }
 
     public void synchronize(Model other) {
@@ -74,7 +77,7 @@ public class Model implements Serializable {
     }
 
     public String toJson() {
-        return GSonUtil.toGSonString(this);
+        return GsonUtil.toGsonString(this);
     }
 
     // ================================================================================================
@@ -119,5 +122,10 @@ public class Model implements Serializable {
         public Model getObject() {
             return model;
         }
+    }
+
+    public static interface ModelUsable {
+        Model getModel();
+        void setModel(Model model);
     }
 }

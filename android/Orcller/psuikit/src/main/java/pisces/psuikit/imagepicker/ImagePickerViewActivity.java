@@ -73,6 +73,7 @@ public class ImagePickerViewActivity extends PSActionBarActivity
 
         adapter = null;
         items = null;
+        toolbarTextView = null;
         recyclerView = null;
         pagerTextView = null;
         selectedView = null;

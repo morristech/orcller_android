@@ -24,15 +24,8 @@ import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import java.io.IOException;
 
 import de.greenrobot.event.EventBus;
-import pisces.instagram.sdk.InstagramApplicationCenter;
-import pisces.instagram.sdk.error.InstagramSDKError;
-import pisces.instagram.sdk.model.ApiInstagram;
-import pisces.instagram.sdk.model.ApiInstagramResult;
-import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GSonUtil;
 import pisces.psfoundation.utils.Log;
-import retrofit.Call;
 
 /**
  * Created by pisces on 11/11/15.
@@ -135,19 +128,5 @@ public class ApplicationService extends Service {
         Intent intent = new Intent(this, activityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
-
-//        Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().service().recentMedia("self", 20, null);
-//
-//        InstagramApplicationCenter.getDefault().enqueueCall(call, new InstagramApiProxy.CompleteHandler() {
-//            @Override
-//            public void onError(InstagramSDKError error) {
-//                Log.i("onError", GSonUtil.toGSonString(error));
-//            }
-//
-//            @Override
-//            public void onComplete(ApiInstagramResult result) {
-//                Log.i("onComplete", GSonUtil.toGSonString(result));
-//            }
-//        });
     }
 }

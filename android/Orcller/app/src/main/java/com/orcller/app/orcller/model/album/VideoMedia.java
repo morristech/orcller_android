@@ -5,4 +5,8 @@ package com.orcller.app.orcller.model.album;
  */
 public class VideoMedia extends Media {
     public Videos videos;
+
+    public VideoMedia() {
+        type = Type.Video.getValue();
+    }
 }

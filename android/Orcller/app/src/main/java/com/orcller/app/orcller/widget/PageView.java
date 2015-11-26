@@ -17,7 +17,6 @@ import pisces.psuikit.ext.PSFrameLayout;
 public class PageView extends PSFrameLayout implements MediaView.MediaViewDelegate {
     private boolean controlEnabled;
     private boolean controlEnabledChanged;
-    private boolean modelChanged;
     private int imageLoadType;
     private Page model;
     private MediaView mediaView;
@@ -52,11 +51,6 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
             if (view != null) {
                 view.setControlEnabled(controlEnabled);
             }
-        }
-
-        if (modelChanged) {
-            modelChanged = false;
-            modelChanged();
         }
     }
 

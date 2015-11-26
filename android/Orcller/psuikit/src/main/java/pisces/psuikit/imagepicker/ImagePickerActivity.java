@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.android.R;
@@ -99,12 +98,6 @@ public class ImagePickerActivity extends PSActionBarActivity
             gridView.setSelection(casted.getSelectedIndex());
         }
     }
-
-    // ================================================================================================
-    //  Public
-    // ================================================================================================
-
-
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -127,7 +120,7 @@ public class ImagePickerActivity extends PSActionBarActivity
         final int count = cursor.getCount();
         final ImagePickerActivity self = this;
 
-        Application.runOnBackgroundThread(new Runnable() {
+        Application.run(new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < count; i++) {
@@ -141,15 +134,13 @@ public class ImagePickerActivity extends PSActionBarActivity
 
                     items.add(item);
                 }
-
-                Application.runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ProgressBarManager.hide(self);
-                        gridView.setVisibility(View.VISIBLE);
-                        gridView.setAdapter(new ImageAdapter(self));
-                    }
-                });
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                ProgressBarManager.hide(self);
+                gridView.setVisibility(View.VISIBLE);
+                gridView.setAdapter(new ImageAdapter(self));
             }
         });
     }
