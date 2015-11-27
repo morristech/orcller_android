@@ -71,7 +71,7 @@ public class ApiInstagram {
         public Videos videos;
 
         public boolean isVideo() {
-            return Type.Video.equals(type);
+            return Type.Video.getValue().equals(type);
         }
     }
 
