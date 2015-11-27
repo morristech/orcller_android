@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,11 +15,13 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.android.R;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
+import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 
@@ -73,7 +76,29 @@ public class ImagePickerActivity extends PSActionBarActivity
 
     @Override
     public void onClick(View v) {
-        Log.i("onClick");
+        final List<Media> list = new ArrayList<>();
+        final Object self = this;
+
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                long[] itemIds = gridView.getCheckedItemIds();
+
+                for (long postion : itemIds) {
+                    list.add(items.get((int) postion));
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(
+                        new ImagePickerEvent(
+                                ImagePickerEvent.COMPLETE_SELECTION,
+                                self,
+                                list));
+                finish();
+            }
+        });
     }
 
     @Override

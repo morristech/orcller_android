@@ -110,6 +110,12 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     @Override
+    protected void setUpSubviews(Context context) {
+        readyPages();
+        EventBus.getDefault().register(this, VideoMediaView.VideoMediaViewEvent.class);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
@@ -166,12 +172,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         }
 
         return true;
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
-        readyPages();
-        EventBus.getDefault().register(this, VideoMediaView.VideoMediaViewEvent.class);
     }
 
     // ================================================================================================

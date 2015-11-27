@@ -51,10 +51,6 @@ public class FBImagePickerItemView extends PSLinearLayout {
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_fb_imagepicker, this);
 

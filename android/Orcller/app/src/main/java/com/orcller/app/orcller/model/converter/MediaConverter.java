@@ -25,6 +25,14 @@ public class MediaConverter {
     //  Public
     // ================================================================================================
 
+    public static Media convert(Object object) {
+        if (object instanceof FBPhoto)
+            return convert((FBPhoto) object);
+        if (object instanceof FBVideo)
+            return convert((FBVideo) object);
+        return null;
+    }
+
     public static Media convert(FBPhoto photo) {
         List<FBPhotoImage> sorted = (List<FBPhotoImage>) photo.images.clone();
 

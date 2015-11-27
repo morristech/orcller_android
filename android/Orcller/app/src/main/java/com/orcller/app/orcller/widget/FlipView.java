@@ -89,6 +89,9 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         shadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         setPivotX(0);
+        addView(frontPageView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        addView(backPageView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        addView(shadowImageView, (int) getResources().getDimension(R.dimen.flipview_shadow_image_width), getMeasuredHeight());
     }
 
     @Override
@@ -97,13 +100,6 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
 
         setCameraDistance(45 * getMeasuredHeight());
         shadowImageView.getLayoutParams().height = getMeasuredHeight();
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
-        addView(frontPageView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        addView(backPageView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        addView(shadowImageView, (int) getResources().getDimension(R.dimen.flipview_shadow_image_width), getMeasuredHeight());
     }
 
     // ================================================================================================

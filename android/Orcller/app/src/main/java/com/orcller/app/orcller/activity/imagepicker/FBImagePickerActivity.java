@@ -31,6 +31,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
+import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 
@@ -108,7 +109,10 @@ public class FBImagePickerActivity extends PSActionBarActivity
     }
 
     public void onEventMainThread(Object event) {
-
+        if (event instanceof ImagePickerEvent &&
+                ((ImagePickerEvent) event).getType().equals(ImagePickerEvent.COMPLETE_SELECTION)) {
+            finish();
+        }
     }
 
     // ================================================================================================

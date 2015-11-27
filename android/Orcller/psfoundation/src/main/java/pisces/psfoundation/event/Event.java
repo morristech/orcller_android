@@ -3,20 +3,35 @@ package pisces.psfoundation.event;
 /**
  * Created by pisces on 11/25/15.
  */
-public class Event<T> {
+public class Event {
     private String type;
-    private T target;
+    private Object target;
+    private Object object;
 
-    public Event(String type, T target) {
+    public Event(Object target) {
+        this.target = target;
+    }
+
+    public Event(String type, Object target) {
         this.type = type;
         this.target = target;
+    }
+
+    public Event(String type, Object target, Object object) {
+        this.type = type;
+        this.target = target;
+        this.object = object;
     }
 
     public String getType() {
         return type;
     }
 
-    public T getTarget() {
+    public Object getTarget() {
         return target;
+    }
+
+    public Object getObject() {
+        return object;
     }
 }

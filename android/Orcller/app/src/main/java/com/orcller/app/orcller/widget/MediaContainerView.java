@@ -62,10 +62,6 @@ public class MediaContainerView extends PSFrameLayout implements MediaContainer 
         controlEnabled = typedArray.getBoolean(R.styleable.MediaContainerView_controlEnabled, true);
     }
 
-    @Override
-    protected void setUpSubviews(Context context) {
-    }
-
     // ================================================================================================
     //  Public
     // ================================================================================================

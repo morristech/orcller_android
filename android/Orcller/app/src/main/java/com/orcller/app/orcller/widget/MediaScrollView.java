@@ -39,10 +39,6 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     }
 
@@ -53,10 +49,6 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
         if (mediaView instanceof VideoMediaView) {
             mediaView.getLayoutParams().height = getMeasuredWidth();
         }
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
     }
 
     // ================================================================================================

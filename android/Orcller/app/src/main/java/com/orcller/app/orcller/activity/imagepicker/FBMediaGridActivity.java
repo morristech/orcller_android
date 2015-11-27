@@ -20,20 +20,18 @@ import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.facebook.FBAlbum;
 import com.orcller.app.orcllermodules.model.facebook.FBMediaList;
-import com.orcller.app.orcllermodules.model.facebook.FBPhoto;
 import com.orcller.app.orcllermodules.model.facebook.FBPhotos;
-import com.orcller.app.orcllermodules.model.facebook.FBVideo;
 import com.orcller.app.orcllermodules.model.facebook.FBVideoAlbum;
 import com.orcller.app.orcllermodules.model.facebook.FBVideos;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
+import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 
@@ -41,7 +39,7 @@ import pisces.psuikit.manager.ProgressBarManager;
  * Created by pisces on 11/26/15.
  */
 public class FBMediaGridActivity extends PSActionBarActivity
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
     public static final String ALBUM_KEY = "album";
     private ArrayList<Media> items = new ArrayList<>();
     private Button selectButton;
@@ -70,6 +68,7 @@ public class FBMediaGridActivity extends PSActionBarActivity
         gridView.setAdapter(gridViewAdapter);
         gridView.setOnItemClickListener(this);
         gridView.setOnItemLongClickListener(this);
+        selectButton.setOnClickListener(this);
         getSupportActionBar().setTitle(album.name);
         loadMedia(null);
         EventBus.getDefault().register(this);
@@ -88,6 +87,7 @@ public class FBMediaGridActivity extends PSActionBarActivity
         ProgressBarManager.hide(this);
         gridView.setOnItemClickListener(null);
         gridView.setOnItemLongClickListener(null);
+        selectButton.setOnClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
         FBPhotoCaches.getDefault().clear();
 
@@ -117,6 +117,33 @@ public class FBMediaGridActivity extends PSActionBarActivity
     // ================================================================================================
     //  Listener
     // ================================================================================================
+
+    @Override
+    public void onClick(View v) {
+        final List<Media> list = new ArrayList<>();
+        final Object self = this;
+
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                long[] itemIds = gridView.getCheckedItemIds();
+
+                for (long postion : itemIds) {
+                    list.add(items.get((int) postion));
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(
+                        new ImagePickerEvent(
+                                ImagePickerEvent.COMPLETE_SELECTION,
+                                self,
+                                list));
+                finish();
+            }
+        });
+    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -173,11 +200,8 @@ public class FBMediaGridActivity extends PSActionBarActivity
                         if (refresh)
                             items.clear();
 
-                        for (Object model : lastResult.getData()) {
-                            if (model instanceof FBPhoto)
-                                items.add(MediaConverter.convert((FBPhoto) model));
-                            else if (model instanceof FBVideo)
-                                items.add(MediaConverter.convert((FBVideo) model));
+                        for (Object object : lastResult.getData()) {
+                            items.add(MediaConverter.convert(object));
                         }
                     }
                 }, new Runnable() {

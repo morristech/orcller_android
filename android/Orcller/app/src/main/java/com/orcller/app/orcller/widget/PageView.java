@@ -60,10 +60,6 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
         imageLoadType = MediaView.ImageLoadType.LowResolution.getValue();
     }
 
-    @Override
-    protected void setUpSubviews(Context context) {
-    }
-
     // ================================================================================================
     //  Public
     // ================================================================================================

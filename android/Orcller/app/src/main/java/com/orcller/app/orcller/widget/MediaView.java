@@ -88,10 +88,6 @@ abstract public class MediaView extends PSFrameLayout {
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         emptyImageView = new ImageView(context);
         imageView = new ImageView(context);
@@ -112,10 +108,6 @@ abstract public class MediaView extends PSFrameLayout {
         addView(imageView);
         addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         addView(progressBar, progressBarParams);
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
     }
 
     // ================================================================================================

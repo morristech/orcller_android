@@ -49,10 +49,6 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_media_imagepicker, this);
 

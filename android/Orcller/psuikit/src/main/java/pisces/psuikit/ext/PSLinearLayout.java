@@ -57,8 +57,12 @@ abstract public class PSLinearLayout extends LinearLayout {
     // ================================================================================================
 
     abstract protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes);
-    abstract protected void commitProperties();
-    abstract protected void setUpSubviews(Context context);
+
+    protected void commitProperties() {
+    }
+
+    protected void setUpSubviews(Context context) {
+    }
 
     protected void invalidateProperties() {
         if (getParent() != null || immediatelyUpdating)
