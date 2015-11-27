@@ -1,38 +1,34 @@
-package pisces.psuikit.widget;
+package pisces.psuikit.ext;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.VideoView;
 
 /**
  * Created by pisces on 11/17/15.
  */
-public class PSVideoView extends VideoView {
+public class PSVideoView extends VideoView implements PSComponent {
+    private boolean immediatelyUpdating;
+    private boolean initializedSubviews;
     private PlayStateListener listener;
 
     public PSVideoView(Context context) {
         super(context);
 
-        setListeners();
+        initProperties(context, null, 0, 0);
     }
 
     public PSVideoView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setListeners();
+        initProperties(context, attrs, 0, 0);
     }
 
-    public PSVideoView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public PSVideoView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
-        setListeners();
-    }
-
-    public void setPlayStateListener(PlayStateListener listener) {
-        this.listener = listener;
+        initProperties(context, attrs, defStyleAttr, 0);
     }
 
     // ================================================================================================
@@ -53,6 +49,45 @@ public class PSVideoView extends VideoView {
 
         if (listener != null)
             listener.onPlay();
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public boolean isImmediatelyUpdating() {
+        return immediatelyUpdating;
+    }
+
+    public void setImmediatelyUpdating(boolean immediatelyUpdating) {
+        this.immediatelyUpdating = immediatelyUpdating;
+    }
+
+    public void setPlayStateListener(PlayStateListener listener) {
+        this.listener = listener;
+    }
+
+    public void invalidateProperties() {
+        if (isAttachedToWindow() || immediatelyUpdating)
+            commitProperties();
+    }
+
+    public void validateProperties() {
+        commitProperties();
+    }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void commitProperties() {
+    }
+
+    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        setListeners();
+    }
+
+    protected void setUpSubviews(Context context) {
     }
 
     // ================================================================================================

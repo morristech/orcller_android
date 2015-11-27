@@ -11,6 +11,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MediaListActivity;
+import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
@@ -144,7 +145,8 @@ public class ApplicationService extends Service {
 //        testMediaScrollView();
 //        testMediaListActivity();
 //        testImagePicker();
-        testFBImagePicker();
+//        testFBImagePicker();
+        testIGImagePicker();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -316,19 +318,7 @@ public class ApplicationService extends Service {
         testActivity(FBImagePickerActivity.class, null);
     }
 
-    private void testInstagramRecentMedia() {
-        Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().service().recentMedia("self", 20, null);
-
-        InstagramApplicationCenter.getDefault().enqueueCall(call, new InstagramApiProxy.CompleteHandler() {
-            @Override
-            public void onError(InstagramSDKError error) {
-                Log.i("onError", error);
-            }
-
-            @Override
-            public void onComplete(ApiInstagramResult result) {
-                Log.i("onComplete", result);
-            }
-        });
+    private void testIGImagePicker() {
+        testActivity(IGImagePickerActivity.class, null);
     }
 }

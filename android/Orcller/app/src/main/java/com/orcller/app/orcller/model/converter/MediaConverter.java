@@ -1,5 +1,7 @@
 package com.orcller.app.orcller.model.converter;
 
+import android.text.TextUtils;
+
 import com.orcller.app.orcller.model.album.Image;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Images;
@@ -16,6 +18,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import pisces.instagram.sdk.model.ApiInstagram;
+import pisces.psfoundation.utils.GsonUtil;
+import pisces.psfoundation.utils.Log;
+
 /**
  * Created by pisces on 11/26/15.
  */
@@ -30,6 +36,8 @@ public class MediaConverter {
             return convert((FBPhoto) object);
         if (object instanceof FBVideo)
             return convert((FBVideo) object);
+        if (object instanceof ApiInstagram.Media)
+            return convert((ApiInstagram.Media) object);
         return null;
     }
 
@@ -74,6 +82,22 @@ public class MediaConverter {
         media.videos = videos;
 
         return media;
+    }
+
+    public static Media convert(ApiInstagram.Media media) {
+        Media result;
+
+        if (media.isVideo()) {
+            result = new VideoMedia();
+            ((VideoMedia) result).videos = GsonUtil.fromJson(GsonUtil.toGsonString(media.videos), Videos.class);
+        } else {
+            result = new ImageMedia();
+        }
+
+        result.images = GsonUtil.fromJson(GsonUtil.toGsonString(media.images), Images.class);
+        result.origin_type = Media.OriginType.Instagram.getValue();
+
+        return result;
     }
 
     // ================================================================================================

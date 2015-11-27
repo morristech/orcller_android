@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 /**
  * Created by pisces on 11/22/15.
  */
-abstract public class PSLinearLayout extends LinearLayout {
+abstract public class PSLinearLayout extends LinearLayout implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
@@ -30,14 +30,8 @@ abstract public class PSLinearLayout extends LinearLayout {
         initProperties(context, attrs, defStyleAttr, 0);
     }
 
-    public PSLinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        initProperties(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
-    //  Overridden: RelativeLayout
+    //  Overridden: LinearLayout
     // ================================================================================================
 
     @Override
@@ -50,27 +44,6 @@ abstract public class PSLinearLayout extends LinearLayout {
         }
 
         invalidateProperties();
-    }
-
-    // ================================================================================================
-    //  Protected
-    // ================================================================================================
-
-    abstract protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes);
-
-    protected void commitProperties() {
-    }
-
-    protected void setUpSubviews(Context context) {
-    }
-
-    protected void invalidateProperties() {
-        if (getParent() != null || immediatelyUpdating)
-            commitProperties();
-    }
-
-    protected void validateProperties() {
-        commitProperties();
     }
 
     // ================================================================================================
@@ -91,5 +64,27 @@ abstract public class PSLinearLayout extends LinearLayout {
 
     public void setImmediatelyUpdating(boolean immediatelyUpdating) {
         this.immediatelyUpdating = immediatelyUpdating;
+    }
+
+    public void invalidateProperties() {
+        if (isAttachedToWindow() || immediatelyUpdating)
+            commitProperties();
+    }
+
+    public void validateProperties() {
+        commitProperties();
+    }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void commitProperties() {
+    }
+
+    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    }
+
+    protected void setUpSubviews(Context context) {
     }
 }

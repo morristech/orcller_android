@@ -17,17 +17,21 @@
     <string name="w_dismiss">Dismiss</string>
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
+    <string name="w_following">Following</string>
+    <string name="w_instagram_photos">Instagram Photos</string>
+    <string name="w_me">Me</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
     <string name="w_ok">Ok</string>
     <string name="w_retry">Retry</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>
-    <string name="w_user_name">User Name</string>
     <string name="w_password">Password</string>
+    <string name="w_popular">Popular</string>
     <string name="w_untitled">Untitled</string>
     <string name="w_video">Video</string>
     <string name="w_update">Update</string>
+    <string name="w_user_name">User Name</string>
 
     <!-- messages -->
     <string name="m_member_joininput_desc">

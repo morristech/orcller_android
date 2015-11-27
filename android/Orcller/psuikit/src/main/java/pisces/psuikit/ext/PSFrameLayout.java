@@ -11,7 +11,7 @@ import pisces.psfoundation.utils.Log;
 /**
  * Created by pisces on 11/19/15.
  */
-abstract public class PSFrameLayout extends FrameLayout {
+abstract public class PSFrameLayout extends FrameLayout implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
@@ -40,7 +40,7 @@ abstract public class PSFrameLayout extends FrameLayout {
     }
 
     // ================================================================================================
-    //  Overridden: RelativeLayout
+    //  Overridden: FrameLayout
     // ================================================================================================
 
     @Override
@@ -53,27 +53,6 @@ abstract public class PSFrameLayout extends FrameLayout {
         }
 
         invalidateProperties();
-    }
-
-    // ================================================================================================
-    //  Protected
-    // ================================================================================================
-
-    abstract protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes);
-
-    protected void commitProperties() {
-    }
-
-    protected void setUpSubviews(Context context) {
-    }
-
-    protected void invalidateProperties() {
-        if (getParent() != null || immediatelyUpdating)
-            commitProperties();
-    }
-
-    protected void validateProperties() {
-        commitProperties();
     }
 
     // ================================================================================================
@@ -94,5 +73,27 @@ abstract public class PSFrameLayout extends FrameLayout {
 
     public void setImmediatelyUpdating(boolean immediatelyUpdating) {
         this.immediatelyUpdating = immediatelyUpdating;
+    }
+
+    public void invalidateProperties() {
+        if (isAttachedToWindow() || immediatelyUpdating)
+            commitProperties();
+    }
+
+    public void validateProperties() {
+        commitProperties();
+    }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void commitProperties() {
+    }
+
+    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    }
+
+    protected void setUpSubviews(Context context) {
     }
 }

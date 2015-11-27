@@ -80,9 +80,19 @@
             android:launchMode="singleTask"
             android:theme="@style/ImagePickerTheme">
         </activity>
-
         <activity
             android:name=".activity.imagepicker.FBMediaGridActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/ImagePickerTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.imagepicker.IGImagePickerActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/ImagePickerTheme">
+        </activity>
+        <activity
+            android:name=".activity.imagepicker.IGMediaGridActivity"
             android:launchMode="singleTask"
             android:theme="@style/ImagePickerTheme">
         </activity>

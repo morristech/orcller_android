@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="9dp"
-    android:paddingTop="9dp"
-    android:paddingLeft="9dp"
-    android:paddingBottom="9dp">
-    <ImageView
+    android:paddingRight="8dp"
+    android:paddingTop="8dp"
+    android:paddingLeft="8dp"
+    android:paddingBottom="8dp">
+    <pisces.psuikit.ext.PSImageView
         android:id="@+id/imageView"
-        android:layout_width="69dp"
-        android:layout_height="69dp"
-        android:background="@drawable/bordered_imageview_background"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        app:borderColor="@color/profile_imageview_border"
+        app:borderWidth="1dp"
+        app:cornerRadius="18dp"
         android:scaleType="centerCrop"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
+        android:layout_marginLeft="8dp"
         android:layout_gravity="center_vertical">
         <TextView
             android:id="@+id/nameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16dp"/>
+            android:textColor="@android:color/black"
+            android:textSize="13dp"/>
 
         <TextView
-            android:id="@+id/countTextView"
+            android:id="@+id/idTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textSize="12dp"/>
+            android:layout_marginTop="3dp"
+            android:textColor="@color/textcolor_subtitle_dark_gray"
+            android:textSize="11dp"/>
     </LinearLayout>
 </LinearLayout>

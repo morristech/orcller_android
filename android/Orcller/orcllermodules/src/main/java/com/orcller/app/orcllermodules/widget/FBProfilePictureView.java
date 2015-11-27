@@ -22,7 +22,6 @@ public class FBProfilePictureView extends ProfilePictureView {
     private float cornerRadius;
     private int borderColor;
     private Bitmap maskBitmap;
-    private Bitmap borderBitmap;
     private Paint paint, maskPaint, borderPaint;
 
     public FBProfilePictureView(Context context) {

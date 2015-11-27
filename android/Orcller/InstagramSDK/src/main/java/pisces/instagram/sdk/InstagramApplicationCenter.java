@@ -81,36 +81,6 @@ public class InstagramApplicationCenter<T> {
         return uniqueInstance;
     }
 
-    public CallCommand enqueueCall(
-            Call<ApiInstagramResult> call,
-            InstagramApiProxy.CompleteHandler completeHandler) {
-        CallCommand command = new CallCommand(call, completeHandler);
-        commandQueue.add(command);
-        dequeueCommand();
-        return command;
-    }
-
-    public boolean hasSession() {
-        return accessToken != null;
-    }
-
-    public void login(InstagramApiProxy.CompleteHandler completeHandler) {
-        if (invalidateResource(completeHandler))
-            return;
-
-        if (code != null) {
-            refresh(completeHandler);
-        } else {
-            this.completeHandler = completeHandler;
-
-            EventBus.getDefault().register(this);
-
-            Intent intent = new Intent(Application.applicationContext(), InstagramLoginActivity.class);
-            intent.putExtra("resource", resource);
-            Application.applicationContext().startActivity(intent);
-        }
-    }
-
     public String getAccessToken() {
         return accessToken;
     }
@@ -125,6 +95,37 @@ public class InstagramApplicationCenter<T> {
 
     public void setResource(OAuth2 resource) {
         this.resource = resource;
+    }
+
+    public boolean hasSession() {
+        return accessToken != null;
+    }
+
+    public CallCommand enqueueCall(
+            Call<ApiInstagramResult> call,
+            InstagramApiProxy.CompleteHandler completeHandler) {
+        CallCommand command = new CallCommand(call, completeHandler);
+        commandQueue.add(command);
+        dequeueCommand();
+        return command;
+    }
+
+    public void login(InstagramApiProxy.CompleteHandler completeHandler) {
+        if (invalidateResource(completeHandler))
+            return;
+
+        if (code != null) {
+            refresh(completeHandler);
+        } else {
+            this.completeHandler = completeHandler;
+
+            EventBus.getDefault().register(this);
+
+            Intent intent = new Intent(Application.applicationContext(), InstagramLoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("resource", resource);
+            Application.applicationContext().startActivity(intent);
+        }
     }
 
     // ================================================================================================
@@ -159,7 +160,7 @@ public class InstagramApplicationCenter<T> {
         if (hasSession()) {
             executeCommand(command);
         } else {
-            login(new InstagramApiProxy.CompleteHandler() {
+            login(new InstagramApiProxy.CompleteHandler<ApiInstagramResult>() {
                 @Override
                 public void onError(InstagramSDKError error) {
                     commandQueue.remove(command);

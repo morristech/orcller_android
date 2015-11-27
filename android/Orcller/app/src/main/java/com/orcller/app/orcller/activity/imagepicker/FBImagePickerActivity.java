@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.itemview.FBImagePickerItemView;
 import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -23,14 +24,12 @@ import com.orcller.app.orcllermodules.model.facebook.FBVideoAlbum;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcller.itemview.FBImagePickerItemView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -53,7 +52,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_fb_imagepicker);
+        setContentView(R.layout.activity_facebook_imagepicker);
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getString(R.string.w_facebook_photos));

@@ -119,26 +119,26 @@ public class InstagramApiProxy<T> extends AbstractRetrofitProxy {
 
         @GET("v1/users/{userId}/followed-by")
         Call<ApiInstagram.UserListRes> followedBy(
-                @Path("userId") String userId,
+                @Path("userId") long userId,
                 @Query("count") int count,
-                @Query("after") String after);
+                @Query("max_id") String after);
 
         @GET("v1/users/{userId}/follows")
         Call<ApiInstagram.UserListRes> follows(
                 @Path("userId") String userId,
                 @Query("count") int count,
-                @Query("after") String after);
+                @Query("max_id") String after);
 
         @GET("v1/media/popular")
         Call<ApiInstagram.MediaListRes> popularMedia(
                 @Query("count") int count,
-                @Query("after") String after);
+                @Query("max_id") String after);
 
         @GET("v1/users/{userId}/media/recent")
         Call<ApiInstagram.MediaListRes> recentMedia(
-                @Path("userId") String userId,
+                @Path("userId") long userId,
                 @Query("count") int count,
-                @Query("after") String after);
+                @Query("max_id") String after);
 
         @GET("v1/media/search")
         Call<ApiInstagram.MediaListRes> searchMedia(
@@ -157,8 +157,8 @@ public class InstagramApiProxy<T> extends AbstractRetrofitProxy {
     //  Interface: CompleteHandler
     // ================================================================================================
 
-    public interface CompleteHandler {
+    public interface CompleteHandler<T extends ApiInstagramResult> {
         void onError(InstagramSDKError error);
-        void onComplete(ApiInstagramResult result);
+        void onComplete(T result);
     }
 }

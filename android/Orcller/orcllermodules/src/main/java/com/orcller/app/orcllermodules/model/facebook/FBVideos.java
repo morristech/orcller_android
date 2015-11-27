@@ -7,9 +7,4 @@ import java.util.List;
  */
 public class FBVideos extends FBMediaList {
     public List<FBVideo> data;
-
-    @Override
-    public List<FBVideo> getData() {
-        return data;
-    }
 }

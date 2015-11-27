@@ -7,7 +7,7 @@ import android.view.View;
 /**
  * Created by pisces on 11/19/15.
  */
-abstract public class PSView extends View {
+abstract public class PSView extends View implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
@@ -29,14 +29,8 @@ abstract public class PSView extends View {
         initProperties(context, attrs, defStyleAttr, 0);
     }
 
-    public PSView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        initProperties(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
-    //  Overridden: RelativeLayout
+    //  Overridden: View
     // ================================================================================================
 
     @Override
@@ -52,27 +46,6 @@ abstract public class PSView extends View {
     }
 
     // ================================================================================================
-    //  Protected
-    // ================================================================================================
-
-    abstract protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes);
-
-    protected void commitProperties() {
-    }
-
-    protected void setUpSubviews(Context context) {
-    }
-
-    protected void invalidateProperties() {
-        if (getParent() != null || immediatelyUpdating)
-            commitProperties();
-    }
-
-    protected void validateProperties() {
-        commitProperties();
-    }
-
-    // ================================================================================================
     //  Public
     // ================================================================================================
 
@@ -82,6 +55,28 @@ abstract public class PSView extends View {
 
     public void setImmediatelyUpdating(boolean immediatelyUpdating) {
         this.immediatelyUpdating = immediatelyUpdating;
+    }
+
+    public void invalidateProperties() {
+        if (isAttachedToWindow() || immediatelyUpdating)
+            commitProperties();
+    }
+
+    public void validateProperties() {
+        commitProperties();
+    }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void commitProperties() {
+    }
+
+    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    }
+
+    protected void setUpSubviews(Context context) {
     }
 }
 

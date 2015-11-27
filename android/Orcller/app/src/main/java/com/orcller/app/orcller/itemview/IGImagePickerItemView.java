@@ -1,8 +1,8 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -10,36 +10,33 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
-import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.model.facebook.FBAlbum;
-import com.orcller.app.orcllermodules.model.facebook.FBPhoto;
-import com.orcller.app.orcllermodules.model.facebook.FBPhotoImage;
-import com.orcller.app.orcllermodules.model.facebook.FBVideoAlbum;
-import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 
+import pisces.instagram.sdk.model.ApiInstagram;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSImageView;
 import pisces.psuikit.ext.PSLinearLayout;
 
 /**
- * Created by pisces on 11/26/15.
+ * Created by pisces on 11/27/15.
  */
-public class FBImagePickerItemView extends PSLinearLayout {
+public class IGImagePickerItemView extends PSLinearLayout {
+    private boolean allowsShowBackground = true;
+    private boolean allowsShowBackgroundChanged;
     private PSImageView imageView;
+    private TextView idTextView;
     private TextView nameTextView;
-    private TextView countTextView;
-    private FBAlbum model;
+    private ApiInstagram.User model;
 
-    public FBImagePickerItemView(Context context) {
+    public IGImagePickerItemView(Context context) {
         super(context);
     }
 
-    public FBImagePickerItemView(Context context, AttributeSet attrs) {
+    public IGImagePickerItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FBImagePickerItemView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public IGImagePickerItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -48,23 +45,47 @@ public class FBImagePickerItemView extends PSLinearLayout {
     // ================================================================================================
 
     @Override
+    protected void commitProperties() {
+        if (allowsShowBackgroundChanged) {
+            allowsShowBackgroundChanged = false;
+            setBackgroundResource(allowsShowBackground ? R.drawable.itemview_profile_background : 0);
+        }
+    }
+
+    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        inflate(context, R.layout.itemview_facebook_imagepicker, this);
+        inflate(context, R.layout.itemview_instagram_imagepicker, this);
 
         imageView = (PSImageView) findViewById(R.id.imageView);
         nameTextView = (TextView) findViewById(R.id.nameTextView);
-        countTextView = (TextView) findViewById(R.id.countTextView);
+        idTextView = (TextView) findViewById(R.id.idTextView);
+
+        setBackgroundResource(R.drawable.itemview_profile_background);
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
 
-    public FBAlbum getModel() {
+    public boolean isAllowsShowBackground() {
+        return allowsShowBackground;
+    }
+
+    public void setAllowsShowBackground(boolean allowsShowBackground) {
+        if (allowsShowBackground == this.allowsShowBackground)
+            return;
+
+        this.allowsShowBackground = allowsShowBackground;
+        allowsShowBackgroundChanged = true;
+
+        invalidateProperties();
+    }
+
+    public ApiInstagram.User getModel() {
         return model;
     }
 
-    public void setModel(FBAlbum model) {
+    public void setModel(ApiInstagram.User model) {
         if (ObjectUtils.equals(model, this.model))
             return;
 
@@ -77,9 +98,9 @@ public class FBImagePickerItemView extends PSLinearLayout {
     //  Private
     // ================================================================================================
 
-    private void loadImage(final FBPhotoImage image) {
+    private void loadImage() {
         Glide.with(getContext())
-                .load(image.source)
+                .load(model.profile_picture)
                 .dontAnimate()
                 .listener(new RequestListener<Object, GlideDrawable>() {
                     @Override
@@ -97,27 +118,12 @@ public class FBImagePickerItemView extends PSLinearLayout {
     }
 
     private void modelChanged() {
-        nameTextView.setText(model.name);
-        countTextView.setText(String.valueOf(model.count));
-        countTextView.setVisibility(model.count > 0 ? VISIBLE : GONE);
+        nameTextView.setText(model.username);
+        idTextView.setText(String.valueOf(model.full_name));
+        idTextView.setVisibility(TextUtils.isEmpty(model.full_name) ? GONE : VISIBLE);
 
         Glide.clear(imageView);
         imageView.setImageDrawable(null);
-
-        if (model instanceof FBVideoAlbum) {
-            imageView.setImageResource(R.drawable.img_fb_videos);
-        } else if (model.cover_photo == null) {
-            imageView.setImageResource(R.drawable.img_fb_empty_album);
-        } else {
-            FBPhotoCaches.getDefault().getPhoto(
-                    model.cover_photo.id, new FBSDKRequest.CompleteHandler<FBPhoto>() {
-                        @Override
-                        public void onComplete(FBPhoto result, APIError error) {
-                            if (error == null)
-                                loadImage(result.images.get(3));
-                        }
-                    }
-            );
-        }
+        loadImage();
     }
 }

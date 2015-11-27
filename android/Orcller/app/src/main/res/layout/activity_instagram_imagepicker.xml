@@ -10,7 +10,7 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ImagePickerTheme.Toolbar">
         <Button
-            android:id="@+id/selectButton"
+            android:id="@+id/popularButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -18,21 +18,15 @@
             android:layout_gravity="right"
             android:background="@null"
             android:enabled="false"
-            android:text="@string/imagepicker_menu_select"
+            android:text="@string/w_popular"
             android:textColor="@drawable/textcolor_imagepicker_select_button"
             android:textSize="17dp"/>
     </android.support.v7.widget.Toolbar>
 
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gridView"
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
-        android:choiceMode="multipleChoice"
-        android:drawSelectorOnTop="true"
-        android:horizontalSpacing="1dp"
-        android:verticalSpacing="1dp"
-        android:numColumns="3"
-        android:stretchMode="columnWidth"
-        android:gravity="center" />
+        android:divider="@null"/>
 </LinearLayout>

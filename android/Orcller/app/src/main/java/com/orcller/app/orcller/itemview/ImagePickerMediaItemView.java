@@ -40,10 +40,6 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
         super(context, attrs, defStyleAttr);
     }
 
-    public ImagePickerMediaItemView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================
@@ -55,10 +51,6 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
         selectionIndicator = (FrameLayout) findViewById(R.id.selectionIndicator);
         imageView = (ImageView) findViewById(R.id.imageView);
         videoIcon = (ImageView) findViewById(R.id.videoIcon);
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
     }
 
     // ================================================================================================
@@ -120,7 +112,7 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
         imageView.setImageDrawable(null);
 
         Glide.with(getContext())
-                .load(SharedObject.toFullMediaUrl(model.images.thumbnail.url))
+                .load(SharedObject.toFullMediaUrl(model.images.low_resolution.url))
                 .dontAnimate()
                 .listener(new RequestListener<Object, GlideDrawable>() {
                     @Override

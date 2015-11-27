@@ -11,10 +11,6 @@ import pisces.psfoundation.model.Model;
 public class FBMediaList<T extends Model> extends Model {
     public Paging paging;
 
-    public List<T> getData() {
-        return null;
-    }
-
     public static class Paging {
         public String next;
         public Cursors cursors;

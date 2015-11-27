@@ -9,9 +9,4 @@ import pisces.psfoundation.model.Model;
  */
 public class FBPhotos extends FBMediaList {
     public List<FBPhoto> data;
-
-    @Override
-    public List<FBPhoto> getData() {
-        return data;
-    }
 }

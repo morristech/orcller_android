@@ -13,7 +13,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
 import de.greenrobot.event.EventBus;
-import pisces.psuikit.widget.PSVideoView;
+import pisces.psuikit.ext.PSVideoView;
 
 /**
  * Created by pisces on 11/17/15.

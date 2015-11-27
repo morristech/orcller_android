@@ -47,8 +47,7 @@ public class InstagramLoginActivity extends PSActionBarActivity {
         resource = (OAuth2) getIntent().getSerializableExtra("resource");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle("Instagram");
 
         webView = (WebView) findViewById(R.id.webView);

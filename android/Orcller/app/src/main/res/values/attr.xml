@@ -7,6 +7,6 @@
 
     <declare-styleable name="MediaContainerView">
         <attr name="controlEnabled" format="boolean"/>
-        <!--<attr name="imageLoadType" format="integer"/>-->
+        <attr name="imageLoadType"/>
     </declare-styleable>
 </resources>
