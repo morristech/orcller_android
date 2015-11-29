@@ -22,6 +22,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -126,13 +127,16 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     final AlbumFlipView self = this;
 
                     if (direction.equals(originDirection)) {
-                        targetFlipView.rotateAnimated(FlipView.directionToRotation(direction), new Runnable() {
+                        Runnable rotateComplete = new Runnable() {
                             @Override
                             public void run() {
                                 if (delegate != null)
                                     delegate.onCancelPanning(self);
                             }
-                        });
+                        };
+
+                        if (!targetFlipView.rotateAnimated(FlipView.directionToRotation(direction), rotateComplete))
+                            rotateComplete.run();
                     } else {
                         if (targetFlipView.getRotationY() > -90)
                             targetFlipView.doFlip(FlipView.Direction.Left, new DecelerateInterpolator());

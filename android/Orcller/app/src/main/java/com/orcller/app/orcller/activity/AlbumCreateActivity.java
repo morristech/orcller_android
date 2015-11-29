@@ -228,8 +228,12 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     private void modelChanged() {
+        permissionSpinner.setSelection(clonedModel.permission - 1);
+        permissionSpinner.setVisibility(clonedModel.isMine() ? View.VISIBLE : View.GONE);
         albumFlipView.setModel(clonedModel);
-        albumGridView.setModel(clonedModel);
+        albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
         albumFlipView.setPageIndex(0);
+        albumGridView.setModel(clonedModel);
+        albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
     }
 }

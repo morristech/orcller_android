@@ -209,29 +209,29 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         setPageVisibility();
     }
 
-    public void rotateAnimated(float rotation) {
-        rotateAnimated(rotation, FLIP_DURATION, null, null);
+    public boolean rotateAnimated(float rotation) {
+        return rotateAnimated(rotation, FLIP_DURATION, null, null);
     }
 
-    public void rotateAnimated(float rotation, int duration) {
-        rotateAnimated(rotation, duration, null, null);
+    public boolean rotateAnimated(float rotation, int duration) {
+        return rotateAnimated(rotation, duration, null, null);
     }
 
-    public void rotateAnimated(float rotation, Runnable runnable) {
-        rotateAnimated(rotation, FLIP_DURATION, null, runnable);
+    public boolean rotateAnimated(float rotation, Runnable runnable) {
+        return rotateAnimated(rotation, FLIP_DURATION, null, runnable);
     }
 
-    public void rotateAnimated(float rotation, int duration, Runnable runnable) {
-        rotateAnimated(rotation, duration, null, runnable);
+    public boolean rotateAnimated(float rotation, int duration, Runnable runnable) {
+        return rotateAnimated(rotation, duration, null, runnable);
     }
 
-    public void rotateAnimated(float rotation, Interpolator interpolator) {
-        rotateAnimated(rotation, FLIP_DURATION, interpolator, null);
+    public boolean rotateAnimated(float rotation, Interpolator interpolator) {
+        return rotateAnimated(rotation, FLIP_DURATION, interpolator, null);
     }
 
-    public void rotateAnimated(float rotation, int duration, Interpolator interpolator, final Runnable runnable) {
+    public boolean rotateAnimated(float rotation, int duration, Interpolator interpolator, final Runnable runnable) {
         if (pages == null || pages.size() < 2)
-            return;
+            return false;
 
         setPageVisibility();
         animate().cancel();
@@ -268,6 +268,7 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
                     }
                 })
                 .start();
+        return true;
     }
 
     // ================================================================================================
