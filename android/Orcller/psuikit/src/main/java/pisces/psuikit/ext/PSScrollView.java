@@ -2,16 +2,17 @@ package pisces.psuikit.ext;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ScrollView;
 
 /**
  * Created by pisces on 11/22/15.
  */
-
-abstract public class PSScrollView extends ScrollView implements PSComponent {
+public class PSScrollView extends ScrollView implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
+    private boolean scrollable = true;
 
     public PSScrollView(Context context) {
         super(context);
@@ -31,12 +32,6 @@ abstract public class PSScrollView extends ScrollView implements PSComponent {
         initProperties(context, attrs, defStyleAttr, 0);
     }
 
-    public PSScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        initProperties(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: ScrollView
     // ================================================================================================
@@ -53,17 +48,28 @@ abstract public class PSScrollView extends ScrollView implements PSComponent {
         invalidateProperties();
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!scrollable)
+            return false;
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        switch (ev.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                if (scrollable)
+                    return super.onTouchEvent(ev);
+                return scrollable;
+            default:
+                return super.onTouchEvent(ev);
+        }
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
-
-    public void moveChildToBack(View child) {
-        int index = indexOfChild(child);
-        if (index > 0) {
-            detachViewFromParent(index);
-            attachViewToParent(child, 0, child.getLayoutParams());
-        }
-    }
 
     public boolean isImmediatelyUpdating() {
         return immediatelyUpdating;
@@ -73,9 +79,25 @@ abstract public class PSScrollView extends ScrollView implements PSComponent {
         this.immediatelyUpdating = immediatelyUpdating;
     }
 
+    public boolean isScrollable() {
+        return scrollable;
+    }
+
+    public void setScrollable(boolean scrollable) {
+        this.scrollable = scrollable;
+    }
+
     public void invalidateProperties() {
         if (isAttachedToWindow() || immediatelyUpdating)
             commitProperties();
+    }
+
+    public void moveChildToBack(View child) {
+        int index = indexOfChild(child);
+        if (index > 0) {
+            detachViewFromParent(index);
+            attachViewToParent(child, 0, child.getLayoutParams());
+        }
     }
 
     public void validateProperties() {

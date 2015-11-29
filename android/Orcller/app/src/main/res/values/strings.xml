@@ -14,6 +14,7 @@
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
     <!-- words -->
+    <string name="w_creation">Creation</string>
     <string name="w_dismiss">Dismiss</string>
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
@@ -28,6 +29,7 @@
     <string name="w_sign_up_with_email">Sign up with email</string>
     <string name="w_password">Password</string>
     <string name="w_popular">Popular</string>
+    <string name="w_post">Post</string>
     <string name="w_untitled">Untitled</string>
     <string name="w_video">Video</string>
     <string name="w_update">Update</string>
@@ -43,4 +45,5 @@
     <string name="m_send_email_result">
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
+    <string name="m_hint_album_description">Say something about this album...</string>
 </resources>

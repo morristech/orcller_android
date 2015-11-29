@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/actionbar_purple"
+    android:background="@color/theme_purple_primary"
     android:focusable="true"
     android:focusableInTouchMode="true">
     <RelativeLayout
@@ -69,5 +69,4 @@
             android:background="@android:color/white">
         </android.support.v4.view.ViewPager>
     </android.support.v4.app.FragmentTabHost>
-
 </LinearLayout>

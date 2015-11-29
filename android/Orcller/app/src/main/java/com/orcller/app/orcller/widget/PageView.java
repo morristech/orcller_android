@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -34,10 +35,6 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
         super(context, attrs, defStyleAttr);
     }
 
-    public PageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSView
     // ================================================================================================
@@ -58,6 +55,8 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         controlEnabled = true;
         imageLoadType = MediaView.ImageLoadType.LowResolution.getValue();
+
+        setBackgroundColor(Color.WHITE);
     }
 
     // ================================================================================================

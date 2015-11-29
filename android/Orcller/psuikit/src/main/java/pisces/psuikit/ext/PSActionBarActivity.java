@@ -12,7 +12,12 @@ import pisces.psfoundation.ext.Application;
  */
 public class PSActionBarActivity extends ActionBarActivity {
     private boolean dataLoading;
+    private boolean firstLoading = true;
     private Toolbar toolbar;
+
+    // ================================================================================================
+    //  Overridden: ActionBarActivity
+    // ================================================================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +51,9 @@ public class PSActionBarActivity extends ActionBarActivity {
         toolbar = null;
     }
 
-    public void endDataLoading() {
-        dataLoading = false;
-    }
-
-    public boolean invalidDataLoading() {
-        if (dataLoading)
-            return true;
-
-        dataLoading = true;
-
-        return false;
-    }
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
 
     protected Toolbar getToolbar() {
         return toolbar;
@@ -70,5 +66,22 @@ public class PSActionBarActivity extends ActionBarActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    public boolean isFirstLoading() {
+        return firstLoading;
+    }
+
+    public void endDataLoading() {
+        dataLoading = false;
+        firstLoading = false;
+    }
+    public boolean invalidDataLoading() {
+        if (dataLoading)
+            return true;
+
+        dataLoading = true;
+
+        return false;
     }
 }

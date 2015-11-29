@@ -50,16 +50,16 @@
         <activity
             android:name=".activity.MemberActivity"
             android:launchMode="singleTask"
-            android:theme="@style/PurpleToobarTheme">
+            android:theme="@style/PurpleTheme">
         </activity>
         <activity
             android:name=".activity.MemberJoinInputActivity"
             android:launchMode="singleTask"
-            android:theme="@style/PurpleToobarTheme">
+            android:theme="@style/PurpleTheme">
         </activity>
         <activity
             android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"
-            android:theme="@style/PurpleToobarTheme">
+            android:theme="@style/PurpleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -95,6 +95,17 @@
             android:name=".activity.imagepicker.IGMediaGridActivity"
             android:launchMode="singleTask"
             android:theme="@style/ImagePickerTheme">
+        </activity>
+        <activity
+            android:name=".activity.imagepicker.IGPopularMediaGridActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/ImagePickerTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.AlbumCreateActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/LightGrayTheme">
         </activity>
 
         <!-- psuikit -->
@@ -161,9 +172,6 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
-        <service
-            android:name=".service.ApplicationService"
-            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
 
-import pisces.psuikit.ext.PSView;
-
 /**
  * Created by pisces on 11/22/15.
  */
@@ -47,7 +45,7 @@ public class AlbumPageCountView extends TextView {
         params.gravity = Gravity.TOP | Gravity.RIGHT;
         params.setMargins(0, 0, 2, 0);
 
-        setBackgroundResource(R.drawable.albumflipview_pagecounter_background);
+        setBackgroundResource(R.drawable.background_albumflipview_pagecounter);
         setLayoutParams(params);
         setTextColor(Color.WHITE);
         setTextSize(22);

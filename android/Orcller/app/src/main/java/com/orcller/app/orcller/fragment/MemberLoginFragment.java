@@ -292,7 +292,7 @@ public class MemberLoginFragment extends PSFragment {
     }
 
     // ================================================================================================
-    //  Event Handler
+    //  Listener
     // ================================================================================================
 
     public void onEventMainThread(Object event) {

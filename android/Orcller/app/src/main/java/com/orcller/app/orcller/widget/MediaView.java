@@ -80,9 +80,6 @@ abstract public class MediaView extends PSFrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public MediaView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================
@@ -211,6 +208,9 @@ abstract public class MediaView extends PSFrameLayout {
 
     protected void onStartImageLoad() {
         Glide.clear(imageView);
+
+        if (delegate != null)
+            delegate.onStartImageLoad(this);
     }
 
     // ================================================================================================
@@ -254,8 +254,6 @@ abstract public class MediaView extends PSFrameLayout {
         };
 
         try {
-            onStartImageLoad();
-
             Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
 
             Glide.with(getContext())
@@ -369,6 +367,7 @@ abstract public class MediaView extends PSFrameLayout {
         imageSize = new Point(w, h);
 
         emptyImageView.setVisibility(GONE);
+        onStartImageLoad();
         loadImages();
     }
 

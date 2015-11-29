@@ -78,6 +78,7 @@ dependencies {
 //    compile 'com.google.android.gms:play-services:8.1.0'
 //    compile 'com.google.android.gms:play-services-analytics:8.1.0'
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
+    compile 'in.srain.cube:ultra-ptr:1.0.11'
     productionCompile project(':orcllermodules')
     devCompile project(':orcllermodules')
     uitestCompile project(':orcllermodules')

@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
@@ -12,26 +11,33 @@
     <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
     </style>
 
-    <style name="PurpleToobarTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="colorPrimary">@color/actionbar_purple</item>
-        <item name="colorAccent">@color/actionbar_purple_light</item>
-    </style>
-
     <style name="BlackTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
 
+    <style name="LightGrayTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/theme_lightgray_primary</item>
+        <item name="colorAccent">@color/theme_lightgray_accent</item>
+    </style>
+
+    <style name="PurpleTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/theme_purple_primary</item>
+        <item name="colorAccent">@color/theme_purple_accent</item>
+    </style>
+
     <style name="AppTheme.ActionBar"
         parent="android:style/Widget.Holo.Light.ActionBar" >
-        <item name="android:background">@color/actionbar_purple</item>
+        <item name="android:background">@color/theme_purple_primary</item>
         <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
         <!--<item name="android:homeAsUpIndicator">@android:drawable/btn_dropdown</item>-->
 
         <!-- Support library compatibility -->
-        <item name="background">@color/actionbar_purple</item>
+        <item name="background">@color/theme_purple_primary</item>
         <item name="titleTextStyle">@style/AppTheme.ActionBar.Title</item>
     </style>
 
@@ -50,18 +56,24 @@
     </style>
 
     <style name="AppTheme.ActionBar.TabView" parent="android:style/Widget.Holo.ActionBar.TabView">
-        <item name="android:background">@drawable/main_tabbar_background</item>
-    </style>
-
-    <style name="PurpleToobarTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@android:color/white</item>
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="titleTextColor">@android:color/white</item>
+        <item name="android:background">@drawable/background_main_tabbar</item>
     </style>
 
     <style name="BlackTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@color/blacktheme_blue_primary</item>
-        <item name="colorControlNormal">@color/blacktheme_blue_primary</item>
+        <item name="android:titleTextStyle">@color/theme_black_primary</item>
+        <item name="colorControlNormal">@color/theme_black_primary</item>
+        <item name="titleTextColor">@android:color/white</item>
+    </style>
+
+    <style name="LightGrayTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@color/theme_lightgray_toolbar_text</item>
+        <item name="colorControlNormal">@color/theme_lightgray_toolbar_control</item>
+        <item name="titleTextColor">@color/theme_lightgray_toolbar_text</item>
+    </style>
+
+    <style name="PurpleTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
         <item name="titleTextColor">@android:color/white</item>
     </style>
 </resources>

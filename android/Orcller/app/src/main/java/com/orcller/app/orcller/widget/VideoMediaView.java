@@ -43,10 +43,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         super(context, attrs, defStyleAttr);
     }
 
-    public VideoMediaView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: MediaView
     // ================================================================================================
@@ -87,9 +83,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         videoView.setVideoPath(getVideo().videos.standard_resolution.url);
 
         final MediaView self = this;
-
-        if (delegate != null)
-            delegate.onStartImageLoad(this);
 
         loadImages(new CompleteHandler() {
             @Override

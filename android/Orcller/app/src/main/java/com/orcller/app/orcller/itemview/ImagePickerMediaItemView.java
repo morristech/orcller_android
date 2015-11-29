@@ -23,10 +23,10 @@ import pisces.psuikit.ext.PSFrameLayout;
 public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable {
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
     private boolean checked;
-    private FrameLayout selectionIndicator;
     private ImageView imageView;
     private ImageView videoIcon;
     private Media model;
+    protected FrameLayout selectionIndicator;
 
     public ImagePickerMediaItemView(Context context) {
         super(context);
@@ -110,6 +110,7 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     private void modelChanged() {
         Glide.clear(imageView);
         imageView.setImageDrawable(null);
+        videoIcon.setVisibility(getModel().isVideo() ? VISIBLE : GONE);
 
         Glide.with(getContext())
                 .load(SharedObject.toFullMediaUrl(model.images.low_resolution.url))
@@ -123,7 +124,6 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         imageView.setImageDrawable(resource);
-                        videoIcon.setVisibility(getModel().isVideo() ? VISIBLE : GONE);
                         return true;
                     }
                 })

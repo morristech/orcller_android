@@ -17,22 +17,22 @@ public class URLUtils {
         return Pattern.matches(regex, input);
     }
 
-    public static boolean checkURL(CharSequence input) {
+    public static boolean isWebURL(CharSequence input) {
         if (TextUtils.isEmpty(input))
             return false;
 
         Pattern URL_PATTERN = Patterns.WEB_URL;
-        boolean isURL = URL_PATTERN.matcher(input).matches();
-        if (!isURL) {
+        boolean isWebURL = URL_PATTERN.matcher(input).matches();
+        if (!isWebURL) {
             String urlString = input + "";
             if (URLUtil.isNetworkUrl(urlString)) {
                 try {
                     new URL(urlString);
-                    isURL = true;
+                    isWebURL = true;
                 } catch (Exception e) {
                 }
             }
         }
-        return isURL;
+        return isWebURL;
     }
 }

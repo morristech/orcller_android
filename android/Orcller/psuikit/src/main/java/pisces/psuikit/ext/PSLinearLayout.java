@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 /**
  * Created by pisces on 11/22/15.
  */
-abstract public class PSLinearLayout extends LinearLayout implements PSComponent {
+public class PSLinearLayout extends LinearLayout implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 

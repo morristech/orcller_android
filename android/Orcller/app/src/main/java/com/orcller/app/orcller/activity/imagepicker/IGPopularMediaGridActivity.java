@@ -1,24 +1,26 @@
 package com.orcller.app.orcller.activity.imagepicker;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.v4.widget.SwipeRefreshLayout;
+
+import com.orcller.app.orcller.R;
 
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.instagram.sdk.error.InstagramSDKError;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
-import pisces.psfoundation.ext.Application;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Call;
 
 /**
- * Created by pisces on 11/27/15.
+ * Created by pisces on 11/28/15.
  */
-public class IGMediaGridActivity extends MediaGridActivity {
+public class IGPopularMediaGridActivity extends MediaGridActivity
+        implements SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 50;
-    public static final String USER_KEY = "user";
-    private ApiInstagram.User user;
     private ApiInstagram.MediaListRes lastRes;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     // ================================================================================================
     //  Overridden: MediaGridActivity
@@ -26,11 +28,26 @@ public class IGMediaGridActivity extends MediaGridActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        user = (ApiInstagram.User) getIntent().getSerializableExtra(USER_KEY);
-
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setTitle(user.username);
+        getSupportActionBar().setTitle(getString(R.string.w_popular));
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
+    }
+
+    @Override
+    protected @LayoutRes
+    int getLayoutRes() {
+        return R.layout.activity_instagram_popular_mediagrid;
+    }
+
+    @Override
+    public void endDataLoading() {
+        super.endDataLoading();
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -45,14 +62,12 @@ public class IGMediaGridActivity extends MediaGridActivity {
     }
 
     // ================================================================================================
-    //  Public
+    //  Listener
     // ================================================================================================
 
-    public static void startActivity(ApiInstagram.User user) {
-        Intent intent = new Intent(Application.applicationContext(), IGMediaGridActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(USER_KEY, user);
-        Application.getTopActivity().startActivity(intent);
+    @Override
+    public void onRefresh() {
+        load(null);
     }
 
     // ================================================================================================
@@ -60,14 +75,14 @@ public class IGMediaGridActivity extends MediaGridActivity {
     // ================================================================================================
 
     private void load(final String after) {
-        if (user == null)
+        if (invalidDataLoading())
             return;
 
-        if (after == null)
+        if (after == null && isFirstLoading())
             ProgressBarManager.show(this);
 
         Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().
-                service().recentMedia(user.id, LOAD_LIMIT, after);
+                service().popularMedia(LOAD_LIMIT, after);
 
         InstagramApplicationCenter.getDefault().enqueueCall(
                 call,

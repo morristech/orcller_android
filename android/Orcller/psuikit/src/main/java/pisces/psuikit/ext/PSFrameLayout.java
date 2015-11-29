@@ -11,7 +11,7 @@ import pisces.psfoundation.utils.Log;
 /**
  * Created by pisces on 11/19/15.
  */
-abstract public class PSFrameLayout extends FrameLayout implements PSComponent {
+public class PSFrameLayout extends FrameLayout implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 

@@ -2,35 +2,35 @@ package pisces.psuikit.ext;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
+import android.widget.GridView;
 
 /**
- * Created by pisces on 11/19/15.
+ * Created by pisces on 11/29/15.
  */
-public class PSView extends View implements PSComponent {
+public class PSGridView extends GridView implements PSComponent {
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
-    public PSView(Context context) {
+    public PSGridView(Context context) {
         super(context);
 
         initProperties(context, null, 0, 0);
     }
 
-    public PSView(Context context, AttributeSet attrs) {
+    public PSGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         initProperties(context, attrs, 0, 0);
     }
 
-    public PSView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PSGridView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         initProperties(context, attrs, defStyleAttr, 0);
     }
 
     // ================================================================================================
-    //  Overridden: View
+    //  Overridden: GridView
     // ================================================================================================
 
     @Override
@@ -79,4 +79,3 @@ public class PSView extends View implements PSComponent {
     protected void setUpSubviews(Context context) {
     }
 }
-

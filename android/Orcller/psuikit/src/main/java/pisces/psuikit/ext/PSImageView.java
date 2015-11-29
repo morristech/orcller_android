@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -22,7 +23,7 @@ public class PSImageView extends ImageView implements PSComponent {
     private boolean initializedSubviews;
     private float borderWidth;
     private float cornerRadius;
-    private int borderColor;
+    private @ColorInt int borderColor;
     private Bitmap maskBitmap;
     private Paint paint, maskPaint, borderPaint;
 
@@ -86,6 +87,20 @@ public class PSImageView extends ImageView implements PSComponent {
 
     public void setImmediatelyUpdating(boolean immediatelyUpdating) {
         this.immediatelyUpdating = immediatelyUpdating;
+    }
+
+    public void setBorderColor(@ColorInt int borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public void setBorderWidth(float borderWidth) {
+        this.borderWidth = borderWidth;
+    }
+
+    public void setCornerRadius(float cornerRadius) {
+        this.cornerRadius = cornerRadius;
+
+        invalidate();
     }
 
     public void invalidateProperties() {

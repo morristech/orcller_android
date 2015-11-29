@@ -24,10 +24,6 @@ public class ImageMediaView extends MediaView {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImageMediaView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: MediaView
     // ================================================================================================
@@ -35,9 +31,6 @@ public class ImageMediaView extends MediaView {
     @Override
     protected void loadImages() {
         final MediaView self = this;
-
-        if (delegate != null)
-            delegate.onStartImageLoad(this);
 
         loadImages(new CompleteHandler() {
             @Override

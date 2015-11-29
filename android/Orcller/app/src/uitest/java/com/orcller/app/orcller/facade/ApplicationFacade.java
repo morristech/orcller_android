@@ -1,8 +1,7 @@
-package com.orcller.app.orcller.service;
+package com.orcller.app.orcller.facade;
 
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -10,7 +9,11 @@ import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.AlbumCreateActivity;
+import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
+import com.orcller.app.orcller.activity.MemberActivity;
+import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
@@ -20,19 +23,21 @@ import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
+import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.ImageMediaScrollView;
 import com.orcller.app.orcller.widget.ImageMediaView;
 import com.orcller.app.orcller.widget.MediaScrollView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.UserPictureView;
 import com.orcller.app.orcller.widget.VideoMediaView;
-import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.managers.GooglePlayServiceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
+import com.orcller.app.orcllermodules.model.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,38 +45,63 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import pisces.instagram.sdk.InstagramApplicationCenter;
-import pisces.instagram.sdk.error.InstagramSDKError;
-import pisces.instagram.sdk.model.ApiInstagram;
-import pisces.instagram.sdk.model.ApiInstagramResult;
-import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
-import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by pisces on 11/15/15.
+ * Created by pisces on 11/28/15.
  */
-public class ApplicationService extends Service {
+public class ApplicationFacade {
     private static interface Interceptor {
         void intercept(Intent intent);
     }
 
-    private static final String TAG = "ApplicationService";
+    private static final String TAG = "ApplicationFacade";
+    private static ApplicationFacade uniqueInstance;
+    private Context context;
 
-    public ApplicationService() {
-        super();
+    public ApplicationFacade() {
+        context = Application.applicationContext();
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
+    public static ApplicationFacade getDefault() {
+        if(uniqueInstance == null) {
+            synchronized(ApplicationFacade.class) {
+                if(uniqueInstance == null) {
+                    uniqueInstance = new ApplicationFacade();
+                }
+            }
+        }
+        return uniqueInstance;
+    }
+
+    public void onTokenRefresh() {
+        if (GooglePlayServiceManager.getDefault().checkPlayServices(context)) {
+            InstanceID instanceID = InstanceID.getInstance(context);
+            String token = null;
+            try {
+                synchronized (TAG) {
+                    String default_senderId = context.getString(R.string.gcm_defaultSenderId);
+                    String scope = GoogleCloudMessaging.INSTANCE_ID_SCOPE;
+                    token = instanceID.getToken(default_senderId, scope, null);
+                    DeviceManager.getDefault().registerDeviceToken(token);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void run() {
+        FacebookSdk.sdkInitialize(Application.applicationContext());
         EventBus.getDefault().register(this);
 
         if (ApplicationLauncher.getDefault().initialized()) {
@@ -85,40 +115,8 @@ public class ApplicationService extends Service {
         }
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (GooglePlayServiceManager.getDefault().checkPlayServices(this)) {
-            InstanceID instanceID = InstanceID.getInstance(this);
-            String token = null;
-            try {
-                synchronized (TAG) {
-                    String default_senderId = getString(R.string.gcm_defaultSenderId);
-                    String scope = GoogleCloudMessaging.INSTANCE_ID_SCOPE;
-                    token = instanceID.getToken(default_senderId, scope, null);
-                    DeviceManager.getDefault().registerDeviceToken(token);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        EventBus.getDefault().unregister(this);
-    }
-
     // ================================================================================================
-    //  Event Handler
+    //  Listener
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
@@ -136,6 +134,17 @@ public class ApplicationService extends Service {
     //  Private
     // ================================================================================================
 
+    private void startMainActivity() {
+        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
+                MainActivity.class : MemberActivity.class;
+        Intent intent = new Intent(Application.applicationContext(), activityClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.applicationContext().startActivity(intent);
+    }
+    // ================================================================================================
+    //  Private
+    // ================================================================================================
+
     private void runTestSuite() {
 //        testImageMediaView();
 //        testVideoMediaView();
@@ -147,12 +156,15 @@ public class ApplicationService extends Service {
 //        testMediaListActivity();
 //        testImagePicker();
 //        testFBImagePicker();
-        testIGImagePicker();
+//        testIGImagePicker();
 //        testIGPopularMediaGrid();
+//        testUserPictureView();
+        testAlbumCreateActivity();
+//        testAlbumGridView();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
-        Intent intent = new Intent(this, activityClass);
+        Intent intent = new Intent(context, activityClass);
 
         if (interceptor != null)
             interceptor.intercept(intent);
@@ -326,5 +338,46 @@ public class ApplicationService extends Service {
 
     private void testIGPopularMediaGrid() {
         testActivity(IGPopularMediaGridActivity.class, null);
+    }
+
+    private void testUserPictureView() {
+        User user = AuthenticationCenter.getDefault().getUser();
+        user.user_picture = "profiles/profile_c81e728d9d4c2f636f067f89cc14862c_1444935252.jpg";
+
+        UserPictureView view = new UserPictureView(context);
+        view.setModel(user);
+        Application.getTopActivity().addContentView(view, new LinearLayout.LayoutParams(150, 150));
+    }
+
+    private void testAlbumCreateActivity() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                AlbumCreateActivity.startActivity(response.body().entity);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("onFailure", t.getMessage());
+            }
+        });
+    }
+
+    private void testAlbumGridView() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                int h = Application.getTopActivity().getWindow().getDecorView().getHeight();
+                AlbumGridView view = new AlbumGridView(Application.applicationContext());
+                view.setModel(response.body().entity);
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, h));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("onFailure", t.getMessage());
+            }
+        });
     }
 }

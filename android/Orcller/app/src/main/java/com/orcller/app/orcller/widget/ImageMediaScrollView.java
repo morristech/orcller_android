@@ -32,10 +32,6 @@ public class ImageMediaScrollView extends MediaView {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImageMediaScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: MediaView
     // ================================================================================================
@@ -98,11 +94,11 @@ public class ImageMediaScrollView extends MediaView {
 
     @Override
     protected void onStartImageLoad() {
-        super.onStartImageLoad();
-
         scaleImageView.get().recycle();
         scaleImageView.get().resetScaleAndCenter();
         progressBar.setVisibility(VISIBLE);
+
+        super.onStartImageLoad();
     }
 
     // ================================================================================================

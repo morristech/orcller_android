@@ -29,7 +29,6 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
 
     public static final int FLIP_DURATION = 250;
     private boolean imageLoadTypeChanged;
-    private boolean pagesChanged;
     private int imageLoadType;
     private List<Page> pages;
     private PageView frontPageView;
@@ -49,10 +48,6 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         super(context, attrs, defStyleAttr);
     }
 
-    public FlipView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSView
     // ================================================================================================
@@ -63,11 +58,6 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
             imageLoadTypeChanged = false;
             frontPageView.setImageLoadType(imageLoadType);
             backPageView.setImageLoadType(imageLoadType);
-        }
-
-        if (pagesChanged) {
-            pagesChanged = false;
-            render();
         }
     }
 
@@ -192,7 +182,6 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
             return;
 
         this.pages = pages;
-        pagesChanged = true;
 
         if (frontPageView.hasVideoMediaView())
             frontPageView.getVideoMediaView().stop();
@@ -200,7 +189,7 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         if (backPageView.hasVideoMediaView())
             backPageView.getVideoMediaView().stop();
 
-        invalidateProperties();
+        render();
     }
 
     public PageView getPageView(Page model) {

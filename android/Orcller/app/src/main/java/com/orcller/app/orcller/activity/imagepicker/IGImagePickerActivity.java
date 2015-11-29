@@ -115,6 +115,9 @@ public class IGImagePickerActivity extends PSActionBarActivity
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(this, IGPopularMediaGridActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.getTopActivity().startActivity(intent);
     }
 
     @Override
@@ -254,8 +257,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
                 itemView.setModel(getItem(position));
 
                 if (lastRes != null &&
-                        lastRes.pagination != null &&
-                        lastRes.pagination.hasNext() &&
+                        lastRes.getPagination().hasNext() &&
                         position >= items.size() - 5) {
                     loadFollwing(lastRes.pagination.next_max_id);
                 }

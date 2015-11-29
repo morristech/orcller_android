@@ -12,7 +12,6 @@ import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
 
 import pisces.instagram.sdk.model.ApiInstagram;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSImageView;
 import pisces.psuikit.ext.PSLinearLayout;
@@ -48,7 +47,7 @@ public class IGImagePickerItemView extends PSLinearLayout {
     protected void commitProperties() {
         if (allowsShowBackgroundChanged) {
             allowsShowBackgroundChanged = false;
-            setBackgroundResource(allowsShowBackground ? R.drawable.itemview_profile_background : 0);
+            setBackgroundResource(allowsShowBackground ? R.drawable.background_itemview_profile : 0);
         }
     }
 
@@ -60,7 +59,7 @@ public class IGImagePickerItemView extends PSLinearLayout {
         nameTextView = (TextView) findViewById(R.id.nameTextView);
         idTextView = (TextView) findViewById(R.id.idTextView);
 
-        setBackgroundResource(R.drawable.itemview_profile_background);
+        setBackgroundResource(R.drawable.background_itemview_profile);
     }
 
     // ================================================================================================

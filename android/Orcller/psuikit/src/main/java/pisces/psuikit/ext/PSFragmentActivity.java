@@ -12,6 +12,11 @@ import pisces.psuikit.manager.ProgressBarManager;
  */
 public class PSFragmentActivity extends FragmentActivity {
     private boolean dataLoading;
+    private boolean firstLoading = true;
+
+    // ================================================================================================
+    //  Overridden: FragmentActivity
+    // ================================================================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +40,18 @@ public class PSFragmentActivity extends FragmentActivity {
         ProgressBarManager.hide(this);
     }
 
-    public void endDataLoading() {
-        dataLoading = false;
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public boolean isFirstLoading() {
+        return firstLoading;
     }
 
+    public void endDataLoading() {
+        dataLoading = false;
+        firstLoading = false;
+    }
     public boolean invalidDataLoading() {
         if (dataLoading)
             return true;

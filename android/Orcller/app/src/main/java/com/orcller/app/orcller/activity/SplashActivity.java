@@ -1,10 +1,9 @@
 package com.orcller.app.orcller.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.service.ApplicationService;
+import com.orcller.app.orcller.facade.ApplicationFacade;
 
 import pisces.psuikit.ext.PSActivity;
 
@@ -19,7 +18,7 @@ public class SplashActivity extends PSActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-        startService(new Intent(this, ApplicationService.class));
+        ApplicationFacade.getDefault().run();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_mediagrid);
+        setContentView(getLayoutRes());
         setToolbar((Toolbar) findViewById(R.id.toolbar));
 
         selectButton = (Button) findViewById(R.id.selectButton);
@@ -148,6 +149,10 @@ abstract public class MediaGridActivity extends PSActionBarActivity
 
     abstract protected void loadMore(int loadMore);
 
+    protected @LayoutRes int getLayoutRes() {
+        return R.layout.activity_mediagrid;
+    }
+
     protected void loadComplete(final List<?> data, Error error, final boolean refresh) {
         if (error == null) {
             if (data.size() > 0) {
@@ -166,6 +171,11 @@ abstract public class MediaGridActivity extends PSActionBarActivity
                     public void run() {
                         endDataLoading();
                         gridViewAdapter.notifyDataSetChanged();
+
+                        if (refresh) {
+                            gridView.clearChoices();
+                            onItemClick(gridView, null, 0, 0);
+                        }
                     }
                 });
             }

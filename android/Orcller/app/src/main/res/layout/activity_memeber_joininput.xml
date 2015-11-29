@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/PurpleToobarTheme.Toolbar" />
+        android:theme="@style/PurpleTheme.Toolbar" />
 
     <LinearLayout
         android:orientation="vertical"

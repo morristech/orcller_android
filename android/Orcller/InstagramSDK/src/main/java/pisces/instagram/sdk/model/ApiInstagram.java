@@ -10,34 +10,43 @@ import pisces.psfoundation.model.Model;
  * Created by pisces on 11/13/15.
  */
 public class ApiInstagram {
+
+    // ================================================================================================
+    //  Response
+    // ================================================================================================
+
     public class AccessTokenRes extends ApiInstagramResult {
         public String access_token;
         public String code;
         public User user;
     }
 
-    public class UserListRes extends ApiInstagramResult {
-        public List<User> data;
+    public class ListRes extends ApiInstagramResult {
         public Pagination pagination;
+
+        public Pagination getPagination() {
+            if (pagination == null) {
+                pagination = new Pagination();
+            }
+            return pagination;
+        }
     }
 
-    public class MediaListRes extends ApiInstagramResult {
+    public class MediaListRes extends ListRes {
         public List<Media> data;
-        public Pagination pagination;
+    }
+
+    public class UserListRes extends ListRes {
+        public List<User> data;
     }
 
     public class UserRes extends ApiInstagramResult {
         public User data;
     }
 
-    public static class Pagination extends Model {
-        public String next_max_id;
-        public String next_url;
-
-        public boolean hasNext() {
-            return next_max_id != null;
-        }
-    }
+    // ================================================================================================
+    //  Model
+    // ================================================================================================
 
     public static class Media extends Model {
         public enum Type {
@@ -104,6 +113,15 @@ public class ApiInstagram {
         public float latitude;
         public float longitude;
         public String name;
+    }
+
+    public static class Pagination extends Model {
+        public String next_max_id;
+        public String next_url;
+
+        public boolean hasNext() {
+            return next_max_id != null;
+        }
     }
 
     public static class Videos extends Model {
