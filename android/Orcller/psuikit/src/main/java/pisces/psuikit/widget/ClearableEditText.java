@@ -16,6 +16,8 @@ import pisces.psuikit.ext.adapter.TextWatcherAdapter;
 public class ClearableEditText extends EditText implements View.OnTouchListener, View.OnFocusChangeListener, TextWatcherAdapter.TextWatcherListener {
     private Drawable xD;
     private Listener listener;
+    private OnFocusChangeListener onFocusChangeListener;
+    private OnTouchListener onTouchListener;
 
     public ClearableEditText(Context context) {
         super(context);
@@ -32,18 +34,22 @@ public class ClearableEditText extends EditText implements View.OnTouchListener,
         init();
     }
 
-    @Override
-    public void setOnTouchListener(OnTouchListener l) {
-        this.l = l;
-    }
+    // ================================================================================================
+    //  Overridden: EditText
+    // ================================================================================================
 
     @Override
-    public void setOnFocusChangeListener(OnFocusChangeListener f) {
-        this.f = f;
-    }
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            setClearIconVisible(!TextUtils.isEmpty(getText()));
+        } else {
+            setClearIconVisible(false);
+        }
 
-    private OnTouchListener l;
-    private OnFocusChangeListener f;
+        if (onFocusChangeListener != null) {
+            onFocusChangeListener.onFocusChange(v, hasFocus);
+        }
+    }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -59,22 +65,31 @@ public class ClearableEditText extends EditText implements View.OnTouchListener,
                 return true;
             }
         }
-        if (l != null) {
-            return l.onTouch(v, event);
+        if (onTouchListener != null) {
+            return onTouchListener.onTouch(v, event);
         }
         return false;
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
+    public void setCursorVisible(boolean visible) {
+        super.setCursorVisible(visible);
+
+        if (visible) {
             setClearIconVisible(!TextUtils.isEmpty(getText()));
         } else {
             setClearIconVisible(false);
         }
-        if (f != null) {
-            f.onFocusChange(v, hasFocus);
-        }
+    }
+
+    @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener onFocusChangeListener) {
+        this.onFocusChangeListener = onFocusChangeListener;
+    }
+
+    @Override
+    public void setOnTouchListener(OnTouchListener onTouchListener) {
+        this.onTouchListener = onTouchListener;
     }
 
     @Override
@@ -84,9 +99,29 @@ public class ClearableEditText extends EditText implements View.OnTouchListener,
         }
     }
 
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
     public void setListener(Listener listener) {
         this.listener = listener;
     }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void setClearIconVisible(boolean visible) {
+        boolean wasVisible = (getCompoundDrawables()[2] != null);
+        if (visible != wasVisible) {
+            Drawable x = visible ? xD : null;
+            setCompoundDrawables(getCompoundDrawables()[0], getCompoundDrawables()[1], x, getCompoundDrawables()[3]);
+        }
+    }
+
+    // ================================================================================================
+    //  Private
+    // ================================================================================================
 
     private void init() {
         xD = getCompoundDrawables()[2];
@@ -100,13 +135,9 @@ public class ClearableEditText extends EditText implements View.OnTouchListener,
         addTextChangedListener(new TextWatcherAdapter(this, this));
     }
 
-    protected void setClearIconVisible(boolean visible) {
-        boolean wasVisible = (getCompoundDrawables()[2] != null);
-        if (visible != wasVisible) {
-            Drawable x = visible ? xD : null;
-            setCompoundDrawables(getCompoundDrawables()[0], getCompoundDrawables()[1], x, getCompoundDrawables()[3]);
-        }
-    }
+    // ================================================================================================
+    //  Interface: Listener
+    // ================================================================================================
 
     public interface Listener {
         void didClearText();

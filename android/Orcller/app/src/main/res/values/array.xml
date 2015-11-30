@@ -5,4 +5,10 @@
         <item>Open to Followers</item>
         <item>Private</item>
     </string-array>
+
+    <string-array name="add_dialog_items">
+        <item>Photo Gallery</item>
+        <item>Facebook</item>
+        <item>Instagram</item>
+    </string-array>
 </resources>

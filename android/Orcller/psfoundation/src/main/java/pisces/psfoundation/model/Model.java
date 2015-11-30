@@ -7,6 +7,7 @@ import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.GsonUtil;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/6/15.
@@ -22,9 +23,9 @@ public class Model implements Cloneable, Serializable {
     //  Public
     // ================================================================================================
 
-    public static boolean equalsModel(Model model, Model other) {
+    public static boolean equalsModel(Object model, Object other) {
         if (model != null && other != null)
-            return model.equalsModel(other);
+            return ((Model) model).equalsModel((Model) other);
         if (model == null && other == null)
             return true;
         return false;
@@ -40,12 +41,14 @@ public class Model implements Cloneable, Serializable {
 
             for (Field field : fields) {
                 field.setAccessible(true);
-                field.set(this, field.get(other));
 
-                if (!equals(field.get(this), field.get(other)))
+                if (Model.class.isInstance(field.get(this))) {
+                    if (!Model.equalsModel(field.get(this), field.get(other)))
+                        return false;
+                } else if (!equals(field.get(this), field.get(other))) {
                     return false;
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

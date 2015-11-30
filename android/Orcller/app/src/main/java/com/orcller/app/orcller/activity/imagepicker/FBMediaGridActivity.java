@@ -32,6 +32,8 @@ public class FBMediaGridActivity extends MediaGridActivity {
         album = (FBAlbum) getIntent().getSerializableExtra(ALBUM_KEY);
 
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setTitle(album.name);
     }
 
     @Override

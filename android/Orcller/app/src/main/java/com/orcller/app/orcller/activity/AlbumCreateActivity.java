@@ -9,12 +9,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.manager.ImagePickerManager;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
@@ -25,12 +27,15 @@ import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
+import pisces.psuikit.widget.ClearableEditText;
 
 /**
  * Created by pisces on 11/28/15.
@@ -42,7 +47,12 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private LinearLayout linearLayout;
     private PSScrollView scrollView;
     private Spinner permissionSpinner;
+    private ClearableEditText titleEditText;
     private EditText descriptionEditText;
+    private FrameLayout addButton;
+    private FrameLayout orderButton;
+    private FrameLayout defaultButton;
+    private FrameLayout deleteButton;
     private Button postButton;
     private UserPictureView userPictureView;
     private AlbumFlipView albumFlipView;
@@ -63,24 +73,34 @@ public class AlbumCreateActivity extends PSActionBarActivity
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         scrollView = (PSScrollView) findViewById(R.id.scrollView);
         permissionSpinner = (Spinner) findViewById(R.id.permissionSpinner);
+        titleEditText = (ClearableEditText) findViewById(R.id.titleEditText);
         descriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
-        postButton = (Button) findViewById(R.id.postButton);
         userPictureView = (UserPictureView) findViewById(R.id.userPictureView);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         albumGridView = (AlbumGridView) findViewById(R.id.albumGridView);
+        addButton = (FrameLayout) findViewById(R.id.addButton);
+        orderButton = (FrameLayout) findViewById(R.id.orderButton);
+        defaultButton = (FrameLayout) findViewById(R.id.defaultButton);
+        deleteButton = (FrameLayout) findViewById(R.id.deleteButton);
+        postButton = (Button) findViewById(R.id.postButton);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.public_options, R.layout.spinner_permission);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getString(R.string.w_creation));
+        getSupportActionBar().setTitle(getString(R.string.w_new_album));
         permissionSpinner.setAdapter(adapter);
         permissionSpinner.setOnItemSelectedListener(this);
         albumFlipView.setDelegate(this);
         albumGridView.setDelegate(this);
         userPictureView.setModel(AuthenticationCenter.getDefault().getUser());
         linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        addButton.setOnClickListener(this);
+        orderButton.setOnClickListener(this);
+        defaultButton.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
+        postButton.setOnClickListener(this);
         EventBus.getDefault().register(this);
         SoftKeyboardNotifier.getDefault().register(this);
     }
@@ -110,8 +130,14 @@ public class AlbumCreateActivity extends PSActionBarActivity
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
         permissionSpinner.setOnItemSelectedListener(null);
+        addButton.setOnClickListener(null);
+        orderButton.setOnClickListener(null);
+        defaultButton.setOnClickListener(null);
+        deleteButton.setOnClickListener(null);
+        postButton.setOnClickListener(null);
 
         permissionSpinner = null;
+        titleEditText = null;
         descriptionEditText = null;
         postButton = null;
         userPictureView = null;
@@ -138,7 +164,14 @@ public class AlbumCreateActivity extends PSActionBarActivity
      * Button listener
      */
     public void onClick(View v) {
-
+        if (v.equals(addButton)) {
+            new ImagePickerManager().pick(this, new ImagePickerManager.CompleteHandler() {
+                @Override
+                public void onComplete(List result) {
+                    Log.d("onComplete", result);
+                }
+            });
+        }
     }
 
     /**
@@ -146,9 +179,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
      */
     public void onEventMainThread(Object event) {
         if (event instanceof SoftKeyboardEvent.Show) {
+            if (titleEditText.hasFocus())
+                titleEditText.setCursorVisible(true);
+
             if (descriptionEditText.hasFocus())
                 descriptionEditText.setCursorVisible(true);
         } else if (event instanceof SoftKeyboardEvent.Hide) {
+            titleEditText.setCursorVisible(false);
             descriptionEditText.setCursorVisible(false);
         }
     }
@@ -157,11 +194,18 @@ public class AlbumCreateActivity extends PSActionBarActivity
      * Spinner listener
      */
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        clonedModel.permission = position + 1;
+        int permission = position + 1;
+
+
+        if (clonedModel.permission != permission) {
+            clonedModel.permission = permission;
+            setPostButtonEnabled();
+        }
+
+        Log.d("clonedModel.permission", clonedModel.permission, model.permission);
     }
 
     public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
     /**
@@ -177,15 +221,12 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     public void onLoadRemainPages(AlbumFlipView view) {
-
     }
 
     public void onPause(AlbumFlipView view) {
-
     }
 
     public void onStartLoadRemainPages(AlbumFlipView view) {
-
     }
 
     public void onStartPanning(AlbumFlipView view) {
@@ -193,11 +234,9 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     public void onStop(AlbumFlipView view) {
-
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
-
     }
 
     /**
@@ -227,12 +266,20 @@ public class AlbumCreateActivity extends PSActionBarActivity
         modelChanged();
     }
 
+    private void setPostButtonEnabled() {
+        if (model == null || clonedModel == null)
+            return;
+
+        postButton.setEnabled(!clonedModel.equalsModel(model));
+    }
+
     private void modelChanged() {
         permissionSpinner.setSelection(clonedModel.permission - 1);
         permissionSpinner.setVisibility(clonedModel.isMine() ? View.VISIBLE : View.GONE);
+        titleEditText.setText(clonedModel.name);
         albumFlipView.setModel(clonedModel);
         albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
-        albumFlipView.setPageIndex(0);
+        albumFlipView.setPageIndex(clonedModel.default_page_index);
         albumGridView.setModel(clonedModel);
         albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
     }

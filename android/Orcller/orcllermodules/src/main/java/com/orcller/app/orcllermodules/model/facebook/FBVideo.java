@@ -1,5 +1,6 @@
 package com.orcller.app.orcllermodules.model.facebook;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pisces.psfoundation.model.Model;
@@ -17,6 +18,6 @@ public class FBVideo extends Model {
     public Thumbnails thumbnails;
 
     public static class Thumbnails extends Model {
-        public List<FBVideoThumbnail> data;
+        public ArrayList<FBVideoThumbnail> data;
     }
 }

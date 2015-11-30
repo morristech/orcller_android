@@ -11,6 +11,11 @@
     <color name="theme_purple_primary">#762866</color>
     <color name="theme_purple_accent">#C54694</color>
 
+    <color name="theme_white_primary">#FFFFFF</color>
+    <color name="theme_white_accent">#F2F2F2</color>
+    <color name="theme_white_toolbar_control">#146FDF</color>
+    <color name="theme_white_toolbar_text">@android:color/black</color>
+
     <color name="main_tabbar_normal">#282828</color>
     <color name="main_tabbar_selected">#000000</color>
     <color name="member_tab_text_normal">#B4B4B4</color>

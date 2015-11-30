@@ -14,7 +14,11 @@
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
     <!-- words -->
-    <string name="w_creation">Creation</string>
+    <string name="w_add">Add</string>
+    <string name="w_add_dialog_title">Import photos and videos</string>
+    <string name="w_album_title_hint">Enter the album title here.</string>
+    <string name="w_default">Default</string>
+    <string name="w_delete">Delete</string>
     <string name="w_dismiss">Dismiss</string>
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
@@ -23,7 +27,9 @@
     <string name="w_me">Me</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
+    <string name="w_new_album">New Album</string>
     <string name="w_ok">Ok</string>
+    <string name="w_order">Order</string>
     <string name="w_retry">Retry</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>

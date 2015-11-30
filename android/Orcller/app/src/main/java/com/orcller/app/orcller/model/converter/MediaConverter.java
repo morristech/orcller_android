@@ -1,7 +1,5 @@
 package com.orcller.app.orcller.model.converter;
 
-import android.text.TextUtils;
-
 import com.orcller.app.orcller.model.album.Image;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Images;
@@ -20,7 +18,6 @@ import java.util.List;
 
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.psfoundation.utils.GsonUtil;
-import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/26/15.
@@ -69,8 +66,23 @@ public class MediaConverter {
     }
 
     public static Media convert(FBVideo video) {
+        List<FBVideoThumbnail> sorted = (List<FBVideoThumbnail>) video.thumbnails.data.clone();
+
+        Collections.sort(sorted, new Comparator<FBVideoThumbnail>() {
+            @Override
+            public int compare(FBVideoThumbnail lhs, FBVideoThumbnail rhs) {
+                if (lhs.width > rhs.width)
+                    return 1;
+                if (lhs.width < rhs.width)
+                    return -1;
+                return 0;
+            }
+        });
+
         Images images = new Images();
-        images.thumbnail = images.standard_resolution = createImage(video.thumbnails.data.get(0));
+        images.thumbnail = createImage(sorted.get(0));
+        images.low_resolution = createImage(sorted.size() > 2 ? sorted.get(2) : sorted.get(sorted.size() - 1));
+        images.standard_resolution = createImage(sorted.size() > 5 ? sorted.get(5) : sorted.get(sorted.size() - 1));
 
         Videos videos = new Videos();
         videos.low_resolution = videos.standard_resolution = createVideo(video);
