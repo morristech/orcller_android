@@ -92,6 +92,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(getString(R.string.w_new_album));
         permissionSpinner.setAdapter(adapter);
         permissionSpinner.setOnItemSelectedListener(this);
+        albumFlipView.setAllowsShowPageCount(false);
         albumFlipView.setDelegate(this);
         albumGridView.setDelegate(this);
         userPictureView.setModel(AuthenticationCenter.getDefault().getUser());
@@ -201,8 +202,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
             clonedModel.permission = permission;
             setPostButtonEnabled();
         }
-
-        Log.d("clonedModel.permission", clonedModel.permission, model.permission);
     }
 
     public void onNothingSelected(AdapterView<?> parent) {

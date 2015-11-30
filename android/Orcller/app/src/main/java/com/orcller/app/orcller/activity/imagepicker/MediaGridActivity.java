@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,8 +18,6 @@ import com.orcller.app.orcller.itemview.ImagePickerMediaItemView;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.converter.MediaConverter;
 import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
-import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.model.facebook.FBAlbum;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -99,15 +99,16 @@ abstract public class MediaGridActivity extends PSActionBarActivity
         Application.run(new Runnable() {
             @Override
             public void run() {
-                long[] itemIds = gridView.getCheckedItemIds();
-
-                for (long postion : itemIds) {
-                    list.add(items.get((int) postion));
+                SparseBooleanArray array = gridView.getCheckedItemPositions();
+                for (int i=0; i<array.size(); i++) {
+                    int key = array.keyAt(i);
+                    list.add(items.get(key));
                 }
             }
         }, new Runnable() {
             @Override
             public void run() {
+                Log.d("list", list);
                 EventBus.getDefault().post(
                         new ImagePickerEvent(
                                 ImagePickerEvent.COMPLETE_SELECTION,

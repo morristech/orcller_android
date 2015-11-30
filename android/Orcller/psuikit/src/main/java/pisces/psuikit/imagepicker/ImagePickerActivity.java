@@ -82,10 +82,10 @@ public class ImagePickerActivity extends PSActionBarActivity
         Application.run(new Runnable() {
             @Override
             public void run() {
-                long[] itemIds = gridView.getCheckedItemIds();
-
-                for (long postion : itemIds) {
-                    list.add(items.get((int) postion));
+                SparseBooleanArray array = gridView.getCheckedItemPositions();
+                for (int i=0; i<array.size(); i++) {
+                    int key = array.keyAt(i);
+                    list.add(items.get(key));
                 }
             }
         }, new Runnable() {
