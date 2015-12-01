@@ -10,6 +10,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
+import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
@@ -161,6 +162,7 @@ public class ApplicationFacade {
 //        testUserPictureView();
         testAlbumCreateActivity();
 //        testAlbumGridView();
+//        testAlbumPageOrderActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -350,10 +352,12 @@ public class ApplicationFacade {
     }
 
     private void testAlbumCreateActivity() {
+//        AlbumCreateActivity.show();
+
         AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                AlbumCreateActivity.startActivity(response.body().entity);
+                AlbumCreateActivity.show(response.body().entity);
             }
 
             @Override
@@ -372,6 +376,20 @@ public class ApplicationFacade {
                 AlbumGridView view = new AlbumGridView(Application.applicationContext());
                 view.setModel(response.body().entity);
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, h));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("onFailure", t.getMessage());
+            }
+        });
+    }
+
+    private void testAlbumPageOrderActivity() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                AlbumPageOrderActivity.show(response.body().entity);
             }
 
             @Override

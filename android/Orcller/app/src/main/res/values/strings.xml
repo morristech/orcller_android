@@ -20,24 +20,30 @@
     <string name="w_default">Default</string>
     <string name="w_delete">Delete</string>
     <string name="w_dismiss">Dismiss</string>
+    <string name="w_done">Done</string>
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
     <string name="w_following">Following</string>
     <string name="w_instagram_photos">Instagram Photos</string>
-    <string name="w_me">Me</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
+    <string name="w_me">Me</string>
     <string name="w_new_album">New Album</string>
+    <string name="w_no">No</string>
     <string name="w_ok">Ok</string>
     <string name="w_order">Order</string>
-    <string name="w_retry">Retry</string>
-    <string name="w_sign_up">Sign up</string>
-    <string name="w_sign_up_with_email">Sign up with email</string>
     <string name="w_password">Password</string>
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
-    <string name="w_untitled">Untitled</string>
+    <string name="w_retry">Retry</string>
+    <string name="w_sign_up">Sign up</string>
+    <string name="w_sign_up_with_email">Sign up with email</string>
+    <string name="w_title_album_page_order">Edit Page Order</string>
+    <string name="w_title_album_page_default">Set as Default Page</string>
+    <string name="w_title_album_page_delete">Page Deletion</string>
+    <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>
+    <string name="w_untitled">Untitled</string>
     <string name="w_update">Update</string>
     <string name="w_user_name">User Name</string>
 
@@ -52,4 +58,5 @@
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
     <string name="m_hint_album_description">Say something about this album...</string>
+    <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
 </resources>

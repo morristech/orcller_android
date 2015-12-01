@@ -108,6 +108,12 @@
             android:theme="@style/LightGrayTheme">
         </activity>
 
+        <activity
+            android:name=".activity.AlbumPageOrderActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/WhiteTheme">
+        </activity>
+
         <!-- psuikit -->
         <activity
             android:name="pisces.psuikit.imagepicker.ImagePickerActivity"

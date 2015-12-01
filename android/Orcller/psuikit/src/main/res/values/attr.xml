@@ -5,4 +5,15 @@
         <attr name="borderWidth" format="dimension"/>
         <attr name="cornerRadius" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="PSButton">
+        <attr name="android:drawableLeft"/>
+        <attr name="android:drawableTop"/>
+        <attr name="android:drawableRight"/>
+        <attr name="android:drawableBottom"/>
+        <attr name="android:drawablePadding"/>
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
+    </declare-styleable>
 </resources>

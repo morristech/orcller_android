@@ -102,13 +102,13 @@ abstract public class MediaGridActivity extends PSActionBarActivity
                 SparseBooleanArray array = gridView.getCheckedItemPositions();
                 for (int i=0; i<array.size(); i++) {
                     int key = array.keyAt(i);
-                    list.add(items.get(key));
+                    if (array.get(key))
+                        list.add(items.get(key));
                 }
             }
         }, new Runnable() {
             @Override
             public void run() {
-                Log.d("list", list);
                 EventBus.getDefault().post(
                         new ImagePickerEvent(
                                 ImagePickerEvent.COMPLETE_SELECTION,

@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.model.album;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,5 +9,5 @@ import java.util.List;
 public class Favorites extends ListEntity {
     public boolean participated;
     public long id;
-    public List<Favorite> data;
+    public List<Favorite> data = new ArrayList<>();
 }

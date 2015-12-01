@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.model.album;
 
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 
 import java.util.Date;
@@ -18,4 +19,10 @@ public class AlbumInfo extends Model {
     public String user_name;
     public String user_picture;
     public User user;
+
+    public boolean isMine() {
+        if (AuthenticationCenter.getDefault().getUser() == null)
+            return false;
+        return AuthenticationCenter.getDefault().getUser().user_uid == user_uid;
+    }
 }

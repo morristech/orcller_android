@@ -19,6 +19,7 @@
             android:background="@null"
             android:enabled="false"
             android:text="@string/imagepicker_menu_select"
+            android:textAllCaps="false"
             android:textColor="@drawable/textcolor_imagepicker_select_button"
             android:textSize="17dp"/>
     </android.support.v7.widget.Toolbar>

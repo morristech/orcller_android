@@ -27,6 +27,7 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     private ImageView imageView;
     private ImageView videoIcon;
     private Media model;
+    protected ImageView checkIcon;
     protected FrameLayout selectionIndicator;
 
     public ImagePickerMediaItemView(Context context) {
@@ -47,8 +48,9 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        inflate(context, R.layout.itemview_media_imagepicker, this);
+        inflate(context, getLayoutRes(), this);
 
+        checkIcon = (ImageView) findViewById(R.id.checkIcon);
         selectionIndicator = (FrameLayout) findViewById(R.id.selectionIndicator);
         imageView = (ImageView) findViewById(R.id.imageView);
         videoIcon = (ImageView) findViewById(R.id.videoIcon);
@@ -102,6 +104,14 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     @Override
     public void toggle() {
         setChecked(!checked);
+    }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected int getLayoutRes() {
+        return R.layout.itemview_media_imagepicker;
     }
 
     // ================================================================================================

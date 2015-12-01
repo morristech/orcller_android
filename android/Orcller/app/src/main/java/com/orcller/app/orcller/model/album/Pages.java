@@ -1,12 +1,13 @@
 package com.orcller.app.orcller.model.album;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by pisces on 11/16/15.
  */
 public class Pages extends ListEntity {
-    public List<Page> data;
+    public List<Page> data = new ArrayList<>();
 
     public void deleteHeavyData() {
 

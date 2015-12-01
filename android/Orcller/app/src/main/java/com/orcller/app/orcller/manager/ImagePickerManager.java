@@ -14,6 +14,7 @@ import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
 
@@ -21,6 +22,7 @@ import pisces.psuikit.imagepicker.ImagePickerActivity;
  * Created by pisces on 11/30/15.
  */
 public class ImagePickerManager {
+    private static ImagePickerManager uniqueInstance;
     private Context context;
     private CompleteHandler completeHandler;
 
@@ -28,7 +30,26 @@ public class ImagePickerManager {
     //  Public
     // ================================================================================================
 
+    public static ImagePickerManager getDefault() {
+        if(uniqueInstance == null) {
+            synchronized(ImagePickerManager.class) {
+                if(uniqueInstance == null) {
+                    uniqueInstance = new ImagePickerManager();
+                }
+            }
+        }
+        return uniqueInstance;
+    }
+
+    public void clear() {
+        EventBus.getDefault().unregister(this);
+        completeHandler = null;
+        context = null;
+    }
+
     public void pick(Context context, CompleteHandler completeHandler) {
+        clear();
+
         this.context = context;
         this.completeHandler = completeHandler;
 
@@ -75,12 +96,6 @@ public class ImagePickerManager {
     // ================================================================================================
     //  Private
     // ================================================================================================
-
-    private void clear() {
-        EventBus.getDefault().unregister(this);
-        completeHandler = null;
-        context = null;
-    }
 
     private void openImagePicker(int type) {
         Class activityClass = null;

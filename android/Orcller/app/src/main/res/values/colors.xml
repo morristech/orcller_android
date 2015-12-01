@@ -30,4 +30,6 @@
 
     <color name="profile_imageview_border">#F0F0F0</color>
     <color name="listview_profile_divider">#F0F0F0</color>
+    <color name="background_gridview_album_create">#EFEFFF</color>
+    <color name="background_album_pagegrid_textview">#55000000</color>
 </resources>

@@ -1,6 +1,5 @@
 package com.orcller.app.orcller.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -26,10 +25,7 @@ import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import pisces.psuikit.widget.ClearableEditText;
-import pisces.psuikit.ext.PSActionBarActivity;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import pisces.psuikit.manager.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.model.facebook.FBUser;
@@ -41,6 +37,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ClearableEditText;
 
 /**
  * Created by pisces on 11/12/15.

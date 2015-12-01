@@ -4,12 +4,17 @@ import android.text.TextUtils;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+import com.orcller.app.orcllermodules.model.User;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.DateUtil;
 
 /**
  * Created by pisces on 11/15/15.
@@ -52,10 +57,31 @@ public class Album extends AlbumInfo {
     public String desc;
     public String encrypted_id;
     public String name;
-    public Contributors contributors;
-    public Favorites favorites;
-    public Likes likes;
-    public Pages pages;
+    public Contributors contributors = new Contributors();
+    public Favorites favorites = new Favorites();
+    public Likes likes = new Likes();
+    public Pages pages = new Pages();
+
+    public Album(User user) {
+        super();
+
+        id = DateUtil.toUnixtimestamp(new Date());
+        permission = AuthenticationCenter.getDefault().getUser().user_options.album_permission;
+        user_uid = user.user_uid;
+        user_id = user.user_id;
+        user_link = user.user_link;
+        user_name = user.user_name;
+        user_picture = user.user_picture;
+
+        Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
+        Pattern pattern = Pattern.compile("(.*)ko(.*)");
+        String formatString = "MMM d, yyyy aaa";
+
+        if (pattern.matcher(locale.toLanguageTag()).matches())
+            formatString = "yyyy년 M월 d일 aaa";
+
+        name = new SimpleDateFormat(formatString).format(new Date());
+    }
 
     public boolean addPage(Page page) {
         if (page == null || pages.data.contains(page))
@@ -68,9 +94,9 @@ public class Album extends AlbumInfo {
         Collections.sort(pages.data, new Comparator<Page>() {
             @Override
             public int compare(Page lhs, Page rhs) {
-                if (lhs.order < rhs.order)
-                    return 1;
                 if (lhs.order > rhs.order)
+                    return 1;
+                if (lhs.order < rhs.order)
                     return -1;
                 return 0;
             }
@@ -97,12 +123,6 @@ public class Album extends AlbumInfo {
         pages.count = pages.total_count = pages.data.size();
 
         return true;
-    }
-
-    public boolean isMine() {
-        if (AuthenticationCenter.getDefault().getUser() == null)
-            return false;
-        return AuthenticationCenter.getDefault().getUser().user_uid == user_uid;
     }
 
     public void removeAllPages() {

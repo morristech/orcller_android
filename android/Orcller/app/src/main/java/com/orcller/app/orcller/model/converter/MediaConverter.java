@@ -7,6 +7,7 @@ import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Video;
 import com.orcller.app.orcller.model.album.VideoMedia;
 import com.orcller.app.orcller.model.album.Videos;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.facebook.FBPhoto;
 import com.orcller.app.orcllermodules.model.facebook.FBPhotoImage;
 import com.orcller.app.orcllermodules.model.facebook.FBVideo;
@@ -14,15 +15,18 @@ import com.orcller.app.orcllermodules.model.facebook.FBVideoThumbnail;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import pisces.instagram.sdk.model.ApiInstagram;
+import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.GsonUtil;
 
 /**
  * Created by pisces on 11/26/15.
  */
 public class MediaConverter {
+    private static int MEDIA_UNIQUE_ID = 0;
 
     // ================================================================================================
     //  Public
@@ -35,6 +39,8 @@ public class MediaConverter {
             return convert((FBVideo) object);
         if (object instanceof ApiInstagram.Media)
             return convert((ApiInstagram.Media) object);
+        if (object instanceof pisces.psuikit.imagepicker.Media)
+            return convert((pisces.psuikit.imagepicker.Media) object);
         return null;
     }
 
@@ -109,6 +115,16 @@ public class MediaConverter {
         result.images = GsonUtil.fromJson(GsonUtil.toGsonString(media.images), Images.class);
         result.origin_type = Media.OriginType.Instagram.getValue();
 
+        return result;
+    }
+
+    public static Media convert(pisces.psuikit.imagepicker.Media media) {
+        Media result = new ImageMedia();
+        result.origin_type = Media.OriginType.Local.getValue();
+        String originIdString = String.valueOf(AuthenticationCenter.getDefault().getUser().user_uid) +
+                String.valueOf(DateUtil.toUnixtimestamp(new Date())) +
+                (++MEDIA_UNIQUE_ID);
+        result.origin_id = Long.valueOf(originIdString);
         return result;
     }
 

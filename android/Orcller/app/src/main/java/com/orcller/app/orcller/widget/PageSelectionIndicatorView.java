@@ -54,6 +54,7 @@ public class PageSelectionIndicatorView extends PSView {
         int sw = strokeWidth/2;
 
         canvas.drawColor(getResources().getColor(pisces.android.R.color.imagepicker_toolbar_color));
+        path.reset();
 
         if (itemType.equals(ItemType.Single)) {
             path.moveTo(sw, sw);

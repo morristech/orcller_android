@@ -2,7 +2,10 @@ package pisces.psuikit.ext;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.SparseBooleanArray;
 import android.widget.GridView;
+
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/29/15.
@@ -48,6 +51,20 @@ public class PSGridView extends GridView implements PSComponent {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public int[] getCheckedPositions() {
+        int[] positions = new int[getCheckedItemCount()];
+
+        int idx = 0;
+        SparseBooleanArray array = getCheckedItemPositions();
+        for (int i=0; i<array.size(); i++) {
+            int key = array.keyAt(i);
+            if (array.get(key))
+                positions[idx++] = key;
+        }
+
+        return positions;
+    }
 
     public boolean isImmediatelyUpdating() {
         return immediatelyUpdating;

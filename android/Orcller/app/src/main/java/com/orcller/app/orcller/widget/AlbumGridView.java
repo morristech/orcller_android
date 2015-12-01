@@ -62,7 +62,6 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
         paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE);
 
-        setBackgroundColor(Color.WHITE);
         setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         setNumColumns(4);
         setHorizontalSpacing(GraphicUtils.convertDpToPixel(1));
@@ -114,6 +113,9 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
     }
 
     public void setSelectedIndex(int selectedIndex) {
+        if (model.pages.data.size() < 1)
+            return;
+
         if (selectedIndex == this.selectedIndex) {
             clearChoices();
             setSelection();
@@ -125,6 +127,10 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
 
         clearChoices();
         setSelection();
+    }
+
+    public void reload() {
+        gridViewAdapter.notifyDataSetChanged();
     }
 
     // ================================================================================================

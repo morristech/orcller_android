@@ -20,7 +20,7 @@ public class AlbumGridItemView extends ImagePickerMediaItemView {
     private boolean allowsShowDefaultIcon;
     private ImageView defaultIcon;
     private Page page;
-    private PageSelectionIndicatorView selectionIndicatorView;
+    private PageSelectionIndicatorView pageSelectionView;
     private PageSelectionIndicatorView.ItemType itemType;
 
     public AlbumGridItemView(Context context) {
@@ -47,7 +47,7 @@ public class AlbumGridItemView extends ImagePickerMediaItemView {
         defaultIcon.setImageResource(R.drawable.icon_page_default_white);
         defaultIcon.setVisibility(GONE);
 
-        selectionIndicatorView = new PageSelectionIndicatorView(context);
+        pageSelectionView = new PageSelectionIndicatorView(context);
 
         LayoutParams params = new LayoutParams(
                 GraphicUtils.convertDpToPixel(17), GraphicUtils.convertDpToPixel(17));
@@ -55,14 +55,14 @@ public class AlbumGridItemView extends ImagePickerMediaItemView {
         params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
 
         addView(defaultIcon, params);
-        addView(selectionIndicatorView);
+        addView(pageSelectionView);
     }
 
     @Override
     public void setChecked(boolean checked) {
         super.setChecked(checked);
 
-        selectionIndicatorView.setVisibility(checked ? VISIBLE : GONE);
+        pageSelectionView.setVisibility(checked ? VISIBLE : GONE);
         setCheckIconVisibility();
     }
 
@@ -95,9 +95,12 @@ public class AlbumGridItemView extends ImagePickerMediaItemView {
     }
 
     public void setItemType(PageSelectionIndicatorView.ItemType itemType) {
+        if (itemType.equals(this.itemType))
+            return;
+
         this.itemType = itemType;
 
-        selectionIndicatorView.setItemType(itemType);
+        pageSelectionView.setItemType(itemType);
         setCheckIconVisibility();
     }
 

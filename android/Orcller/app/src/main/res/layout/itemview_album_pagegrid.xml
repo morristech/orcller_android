@@ -19,6 +19,25 @@
         android:src="@drawable/video_play_button_normal"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:background="@color/background_album_pagegrid_textview"
+        android:textColor="@android:color/white"
+        android:textSize="13dp"/>
+
+    <ImageView
+        android:id="@+id/defaultIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:src="@drawable/icon_page_default_white"
+        android:visibility="gone"/>
+
     <FrameLayout
         android:id="@+id/selectionIndicator"
         android:layout_width="match_parent"
