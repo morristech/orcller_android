@@ -81,16 +81,19 @@ public class Model implements Cloneable, Serializable {
         EventBus.getDefault().post(new ModelDidChange(this));
     }
 
-    public boolean equalsList(List list1, List list2) {
-        if (list2 == null || list2 == null)
+    public boolean equalsList(Object object, Object other) {
+        List list = (List) object;
+        List otherList = (List) other;
+
+        if (list == null || otherList == null)
             return false;
 
-        if (list1.size() != list2.size())
+        if (list.size() != otherList.size())
             return false;
 
-        for (int i=0; i<list1.size(); i++) {
-            Object object1 = list1.get(i);
-            Object object2 = list2.get(i);
+        for (int i=0; i<list.size(); i++) {
+            Object object1 = list.get(i);
+            Object object2 = otherList.get(i);
 
             if (!Model.equalsModel(object1, object2))
                 return false;
@@ -108,8 +111,9 @@ public class Model implements Cloneable, Serializable {
 
                 Object object = field.get(this);
 
-                if (Model.class.isInstance(object) && !Model.equalsModel(object, field.get(other))) {
-                    return false;
+                if (Model.class.isInstance(object)) {
+                    if (!Model.equalsModel(object, field.get(other)))
+                        return false;
                 } else if (!equals(object, field.get(other))) {
                     return false;
                 }

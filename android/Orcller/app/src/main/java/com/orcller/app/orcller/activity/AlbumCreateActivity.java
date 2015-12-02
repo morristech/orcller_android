@@ -1,28 +1,35 @@
 package com.orcller.app.orcller.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Max;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.PageListEvent;
 import com.orcller.app.orcller.manager.ImagePickerManager;
+import com.orcller.app.orcller.manager.MediaManager;
+import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
@@ -34,23 +41,23 @@ import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcller.widget.UserPictureView;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import com.orcller.app.orcllermodules.model.User;
+import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
 import pisces.psuikit.widget.ClearableEditText;
 import pisces.psuikit.widget.PSButton;
-import retrofit.Callback;
 
 /**
  * Created by pisces on 11/28/15.
@@ -58,13 +65,18 @@ import retrofit.Callback;
 public class AlbumCreateActivity extends PSActionBarActivity
         implements View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener, AlbumFlipView.Delegate,
         AlbumGridView.Delegate, AdapterView.OnItemSelectedListener {
-    private static final String ALBUM_KEY = "album";
+    protected static final String ALBUM_KEY = "album";
     private int selectedIndexForAppending;
     private int processCountForAppending;
+    private Validator validator;
     private LinearLayout linearLayout;
     private PSScrollView scrollView;
+    private LinearLayout descContainer;
     private Spinner permissionSpinner;
+
+    @Max(value = 40)
     private ClearableEditText titleEditText;
+
     private EditText descriptionEditText;
     private LinearLayout buttonContainer;
     private PSButton addButton;
@@ -90,6 +102,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
 
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         scrollView = (PSScrollView) findViewById(R.id.scrollView);
+        descContainer = (LinearLayout) findViewById(R.id.descContainer);
         permissionSpinner = (Spinner) findViewById(R.id.permissionSpinner);
         titleEditText = (ClearableEditText) findViewById(R.id.titleEditText);
         descriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
@@ -102,61 +115,18 @@ public class AlbumCreateActivity extends PSActionBarActivity
         defaultButton = (PSButton) findViewById(R.id.defaultButton);
         deleteButton = (PSButton) findViewById(R.id.deleteButton);
         postButton = (Button) findViewById(R.id.postButton);
+        validator = new Validator(this);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.public_options, R.layout.spinner_permission);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getString(R.string.w_new_album));
+        getSupportActionBar().setTitle(getString(R.string.w_title_new_album));
         permissionSpinner.setAdapter(adapter);
-        permissionSpinner.setOnItemSelectedListener(this);
         albumFlipView.setAllowsShowPageCount(false);
-        albumFlipView.setDelegate(this);
-        albumGridView.setDelegate(this);
         userPictureView.setModel(AuthenticationCenter.getDefault().getUser());
-        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        addButton.setOnClickListener(this);
-        orderButton.setOnClickListener(this);
-        defaultButton.setOnClickListener(this);
-        deleteButton.setOnClickListener(this);
-        postButton.setOnClickListener(this);
-        EventBus.getDefault().register(this);
-        SoftKeyboardNotifier.getDefault().register(this);
-
-        titleEditText.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                CharSequence charSequence = titleEditText.getText();
-
-                if (clonedModel != null && !TextUtils.isEmpty(clonedModel.name) && !TextUtils.isEmpty(charSequence)) {
-                    clonedModel.name = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
-                    setPostButtonEnabled();
-                }
-            }
-        });
-
-        descriptionEditText.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                CharSequence charSequence = descriptionEditText.getText();
-
-                if (clonedModel != null && !TextUtils.isEmpty(clonedModel.desc) && !TextUtils.isEmpty(charSequence)) {
-                    clonedModel.desc = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
-                    setPostButtonEnabled();
-                }
-            }
-        });
+        setListeners();
     }
 
     @Override
@@ -198,6 +168,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         deleteButton.setOnClickListener(null);
         postButton.setOnClickListener(null);
 
+        validator = null;
         permissionSpinner = null;
         titleEditText = null;
         descriptionEditText = null;
@@ -207,18 +178,41 @@ public class AlbumCreateActivity extends PSActionBarActivity
         albumGridView = null;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                if (postButton.isEnabled()) {
+                    showCloseAlert();
+                    return true;
+                }
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (postButton.isEnabled()) {
+                    showCloseAlert();
+                    return true;
+                }
+
+                onBackPressed();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
 
     public static void show() {
-        show(null);
-    }
-
-    public static void show(Album album) {
         Intent intent = new Intent(Application.applicationContext(), AlbumCreateActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(ALBUM_KEY, album);
         Application.getTopActivity().startActivity(intent);
     }
 
@@ -238,7 +232,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
                 }
             });
         } else if (v.equals(orderButton)) {
-            AlbumPageOrderActivity.show(model);
+            AlbumPageOrderActivity.show(clonedModel);
+        } else if (v.equals(defaultButton)) {
+            AlbumPageDefaultActivity.show(clonedModel);
+        } else if (v.equals(deleteButton)) {
+            AlbumPageDeleteActivity.show(clonedModel);
+        } else if (v.equals(postButton)) {
+            validator.validate();
         }
     }
 
@@ -258,24 +258,35 @@ public class AlbumCreateActivity extends PSActionBarActivity
             titleEditText.setCursorVisible(false);
             descriptionEditText.setCursorVisible(false);
             buttonContainer.setVisibility(View.VISIBLE);
-        } else if (event instanceof AlbumPageGridActivity.Event) {
-            Application.run(new Runnable() {
-                @Override
-                public void run() {
-                    Album model = (Album) ((AlbumPageGridActivity.Event) event).getObject();
-                    clonedModel.removeAllPages();
+        } else if (event instanceof PageListEvent) {
+            PageListEvent casted = (PageListEvent) event;
+            final Album model = (Album) casted.getObject();
 
-                    for (Page page : model.pages.data) {
-                        clonedModel.addPage(page);
+            if (casted.getType() == PageListEvent.PAGE_EDIT_COMPLETE) {
+                Application.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        clonedModel.removeAllPages();
+
+                        for (Page page : model.pages.data) {
+                            clonedModel.addPage(page);
+                        }
                     }
-                }
-            }, new Runnable() {
-                @Override
-                public void run() {
-                    selectedIndexForAppending = 0;
-                    reload();
-                }
-            });
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        selectedIndexForAppending = 0;
+                        reload();
+                        setPostButtonEnabled();
+                        setOtherButtonsEnabled();
+                    }
+                });
+            } else if (casted.getType() == PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE) {
+                clonedModel.default_page_index = model.default_page_index;
+                selectedIndexForAppending = SharedObject.convertPageIndexToPosition(model.default_page_index);
+                reload();
+                setPostButtonEnabled();
+            }
         }
     }
 
@@ -332,6 +343,15 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void doRequest() {
+        MediaManager.getDefault().getUnit(clonedModel).setCompletionState(MediaUploadUnit.CompletionState.Creation);
+        MediaManager.getDefault().startUploading(clonedModel);
+    }
+
+    // ================================================================================================
     //  Private
     // ================================================================================================
 
@@ -352,8 +372,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                         if (++processCountForAppending >= list.size()) {
                             setPostButtonEnabled();
                             setOtherButtonsEnabled();
-
-                            //TODO: MediaManager startUploadingWithModel
+                            MediaManager.getDefault().startUploading(clonedModel);
                         }
                     }
                 });
@@ -367,13 +386,38 @@ public class AlbumCreateActivity extends PSActionBarActivity
                     if (object instanceof Media) {
                         appendPage.append(Page.create((Media) object));
                     } else if (object instanceof pisces.psuikit.imagepicker.Media) {
-                        Page page = Page.create(MediaConverter.convert(object));
+                        final Media media = MediaConverter.convert(object);
 
-                        //TODO: appendPage after MediaManager saveToTempWithImageRef
+                        MediaManager.getDefault().saveToTemp(
+                                (pisces.psuikit.imagepicker.Media) object,
+                                media, new MediaManager.CompleteHandler() {
+                                    @Override
+                                    public void onComplete(Error error) {
+                                        appendPage.append(Page.create(media));
+                                    }
+                                });
                     }
                 }
             }
         });
+    }
+
+    private void modelChanged() {
+        permissionSpinner.setSelection(clonedModel.permission - 1);
+        permissionSpinner.setVisibility(clonedModel.isMine() ? View.VISIBLE : View.GONE);
+        titleEditText.setEnabled(clonedModel.isMine());
+        titleEditText.setText(clonedModel.name);
+        descContainer.setVisibility(clonedModel.isMine() ? View.VISIBLE : View.GONE);
+        descriptionEditText.setText(clonedModel.desc);
+        albumFlipView.setModel(clonedModel);
+        albumFlipView.setPageIndex(clonedModel.default_page_index);
+        albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
+        albumGridView.setModel(clonedModel);
+        albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
+        setOtherButtonsEnabled();
+
+        if (clonedModel.pages.data.size() < 1)
+            onClick(addButton);
     }
 
     private void reload() {
@@ -382,6 +426,79 @@ public class AlbumCreateActivity extends PSActionBarActivity
         albumFlipView.setPageIndex(SharedObject.convertPositionToPageIndex(selectedIndexForAppending));
         albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
         albumGridView.setSelectedIndex(selectedIndexForAppending);
+    }
+
+    private void setListeners() {
+        permissionSpinner.setOnItemSelectedListener(this);
+        albumFlipView.setDelegate(this);
+        albumGridView.setDelegate(this);
+        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        addButton.setOnClickListener(this);
+        orderButton.setOnClickListener(this);
+        defaultButton.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
+        postButton.setOnClickListener(this);
+        EventBus.getDefault().register(this);
+        SoftKeyboardNotifier.getDefault().register(this);
+
+        titleEditText.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                CharSequence charSequence = titleEditText.getText();
+
+                if (clonedModel != null && !TextUtils.isEmpty(clonedModel.name) && !TextUtils.isEmpty(charSequence)) {
+                    clonedModel.name = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
+                    setPostButtonEnabled();
+                }
+            }
+        });
+
+        descriptionEditText.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                CharSequence charSequence = descriptionEditText.getText();
+
+                if (clonedModel != null && !TextUtils.isEmpty(clonedModel.desc) && !TextUtils.isEmpty(charSequence)) {
+                    clonedModel.desc = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
+                    setPostButtonEnabled();
+                }
+            }
+        });
+
+        validator.setValidationListener(new Validator.ValidationListener() {
+            @Override
+            public void onValidationSucceeded() {
+                clonedModel.created_time = clonedModel.updated_time = DateUtil.toUnixtimestamp(new Date());
+                clonedModel.page_replace_enabled = !clonedModel.pages.data.equals(model.pages.data);
+                postButton.setEnabled(false);
+                SoftKeyboardUtils.hide(linearLayout);
+                doRequest();
+                finish();
+            }
+
+            @Override
+            public void onValidationFailed(List<ValidationError> errors) {
+                for (ValidationError error : errors) {
+                    View view = error.getView();
+                    String message = error.getCollatedErrorMessage(getBaseContext());
+                    if (view instanceof EditText) {
+                        ((EditText) view).setError(message);
+                    } else {
+                        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
     }
 
     private void setModel(Album model) {
@@ -420,17 +537,19 @@ public class AlbumCreateActivity extends PSActionBarActivity
         });
     }
 
-    private void modelChanged() {
-        permissionSpinner.setSelection(clonedModel.permission - 1);
-        permissionSpinner.setVisibility(clonedModel.isMine() ? View.VISIBLE : View.GONE);
-        titleEditText.setEnabled(clonedModel.isMine());
-        titleEditText.setText(clonedModel.name);
-        albumFlipView.setModel(clonedModel);
-        albumFlipView.setPageIndex(clonedModel.default_page_index);
-        albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
-        albumGridView.setModel(clonedModel);
-        albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
-        setOtherButtonsEnabled();
+    private void showCloseAlert() {
+        AlertDialogUtils.show(getString(R.string.m_activity_close_message),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == AlertDialog.BUTTON_POSITIVE) {
+                            onBackPressed();
+                        }
+                    }
+                },
+                getString(R.string.w_no),
+                getString(R.string.w_yes)
+        );
     }
 
     private interface AppendPage {

@@ -8,12 +8,16 @@ import android.webkit.URLUtil;
 import java.net.URL;
 import java.util.regex.Pattern;
 
+import pisces.psfoundation.ext.Application;
+
 /**
  * Created by pisces on 11/16/15.
  */
 public class URLUtils {
     public static boolean isLocal(CharSequence input) {
-        String regex = "^" + Environment.getExternalStorageDirectory().getAbsolutePath() + "(.*)";
+        String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String cacheDir = Application.applicationContext().getCacheDir().getAbsolutePath();
+        String regex = "^(" + storageDir + "|" + cacheDir + ")(.*)";
         return Pattern.matches(regex, input);
     }
 

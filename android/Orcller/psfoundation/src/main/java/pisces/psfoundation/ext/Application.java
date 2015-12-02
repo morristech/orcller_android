@@ -129,6 +129,7 @@ public class Application extends android.app.Application {
     }
 
     public static void startActivity(Intent intent, int enterAnim, int exitAnim) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         topActivity.startActivity(intent);
         topActivity.overridePendingTransition(enterAnim, exitAnim);
     }

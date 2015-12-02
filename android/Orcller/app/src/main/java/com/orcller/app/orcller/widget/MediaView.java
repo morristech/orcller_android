@@ -2,27 +2,21 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.davemorrissey.labs.subscaleview.ImageSource;
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.MediaEvent;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.album.Image;
 import com.orcller.app.orcller.model.album.Media;
@@ -32,8 +26,6 @@ import java.net.URL;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psfoundation.utils.URLUtils;
 import pisces.psuikit.ext.PSFrameLayout;
@@ -156,7 +148,7 @@ abstract public class MediaView extends PSFrameLayout {
         this.model = model;
 
         if (this.model != null)
-            EventBus.getDefault().register(this, MediaManager.DidChangeImages.class);
+            EventBus.getDefault().register(this);
 
         modelChanged();
     }
@@ -174,8 +166,8 @@ abstract public class MediaView extends PSFrameLayout {
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (model != null && event instanceof MediaManager.DidChangeImages) {
-            Media media = ((MediaManager.DidChangeImages) event).getMedia();
+        if (model != null && event instanceof MediaEvent) {
+            Media media = (Media) ((MediaEvent) event).getObject();
             if (media.id == model.id) {
                 model.images = media.images;
                 modelChanged();

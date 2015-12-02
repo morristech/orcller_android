@@ -27,7 +27,7 @@ public class Log {
     }
 
     public static void e(String msg) {
-        android.util.Log.d(Application.applicationContext().getPackageName(), msg);
+        android.util.Log.e(Application.applicationContext().getPackageName(), msg);
     }
 
     public static void e(String tag, Object... objects) {
@@ -39,11 +39,11 @@ public class Log {
             msgs[i++] = msg;
         }
 
-        android.util.Log.d(Application.applicationContext().getPackageName(), tag + " -> " + TextUtils.join(", ", msgs));
+        android.util.Log.e(Application.applicationContext().getPackageName(), tag + " -> " + TextUtils.join(", ", msgs));
     }
 
     public static void e(String tag, String msg) {
-        android.util.Log.i(Application.applicationContext().getPackageName(), tag + " -> " + msg);
+        android.util.Log.e(Application.applicationContext().getPackageName(), tag + " -> " + msg);
     }
 
     public static void i(String msg) {

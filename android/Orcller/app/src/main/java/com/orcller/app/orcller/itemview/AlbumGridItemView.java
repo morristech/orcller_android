@@ -51,7 +51,7 @@ public class AlbumGridItemView extends ImagePickerMediaItemView {
 
         LayoutParams params = new LayoutParams(
                 GraphicUtils.convertDpToPixel(17), GraphicUtils.convertDpToPixel(17));
-        params.setMargins(0, 0, GraphicUtils.convertDpToPixel(2), GraphicUtils.convertDpToPixel(2));
+        params.bottomMargin = params.rightMargin = GraphicUtils.convertDpToPixel(5);
         params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
 
         addView(defaultIcon, params);

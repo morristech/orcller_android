@@ -2,14 +2,22 @@ package com.orcller.app.orcller.facade;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
+import com.orcller.app.orcller.activity.AlbumEditActivity;
+import com.orcller.app.orcller.activity.AlbumPageDefaultActivity;
+import com.orcller.app.orcller.activity.AlbumPageDeleteActivity;
 import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
@@ -18,6 +26,8 @@ import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
+import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
@@ -160,9 +170,13 @@ public class ApplicationFacade {
 //        testIGImagePicker();
 //        testIGPopularMediaGrid();
 //        testUserPictureView();
-        testAlbumCreateActivity();
+//        testAlbumCreateActivity();
 //        testAlbumGridView();
 //        testAlbumPageOrderActivity();
+//        testAlbumPageDefaultActivity();
+//        testAlbumPageDeleteActivity();
+//        testMemberActivity();
+        testAlbumEditActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -352,17 +366,18 @@ public class ApplicationFacade {
     }
 
     private void testAlbumCreateActivity() {
-//        AlbumCreateActivity.show();
+        AlbumCreateActivity.show();
+    }
 
+    private void testAlbumEditActivity() {
         AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                AlbumCreateActivity.show(response.body().entity);
+                AlbumEditActivity.show(response.body().entity);
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("onFailure", t.getMessage());
             }
         });
     }
@@ -380,7 +395,6 @@ public class ApplicationFacade {
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("onFailure", t.getMessage());
             }
         });
     }
@@ -394,8 +408,37 @@ public class ApplicationFacade {
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("onFailure", t.getMessage());
             }
         });
+    }
+
+    private void testAlbumPageDefaultActivity() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                AlbumPageDefaultActivity.show(response.body().entity);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testAlbumPageDeleteActivity() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                AlbumPageDeleteActivity.show(response.body().entity);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testMemberActivity() {
+        testActivity(MemberActivity.class, null);
     }
 }

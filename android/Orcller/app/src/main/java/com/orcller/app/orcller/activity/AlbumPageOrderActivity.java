@@ -31,8 +31,6 @@ public class AlbumPageOrderActivity extends AlbumPageGridActivity {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PSGridView gridView = (PSGridView) parent;
-
         if (!view.isEnabled())
             gridView.setItemChecked(position, false);
 
@@ -46,7 +44,6 @@ public class AlbumPageOrderActivity extends AlbumPageGridActivity {
 
     public static void show(Album album) {
         Intent intent = new Intent(Application.applicationContext(), AlbumPageOrderActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ALBUM_KEY, album);
         Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);
     }

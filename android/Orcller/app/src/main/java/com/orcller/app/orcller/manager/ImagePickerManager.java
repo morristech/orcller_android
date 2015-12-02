@@ -14,6 +14,7 @@ import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
@@ -107,8 +108,7 @@ public class ImagePickerManager {
             activityClass = IGImagePickerActivity.class;
 
         Intent intent = new Intent(context, activityClass);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        Application.getTopActivity().startActivity(intent);
     }
 
     // ================================================================================================

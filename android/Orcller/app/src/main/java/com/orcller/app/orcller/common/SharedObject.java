@@ -1,9 +1,11 @@
 package com.orcller.app.orcller.common;
 
+import android.graphics.Point;
 import android.text.TextUtils;
 
 import com.orcller.app.orcller.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,6 +18,11 @@ import pisces.psfoundation.utils.URLUtils;
  * Created by pisces on 11/4/15.
  */
 public class SharedObject {
+    public static final File CACHE_DIR = Application.applicationContext().getCacheDir();
+    public static final File FILES_DIR = Application.applicationContext().getFilesDir();
+    public static final File DATA_DIR = new File(CACHE_DIR.getAbsolutePath() + File.separator + "data");
+    public static final File TEMP_IMAGE_DIR = new File(CACHE_DIR.getAbsolutePath() + File.separator + "images");
+
     public enum SizeType {
         Small,
         Medium,
@@ -55,12 +62,8 @@ public class SharedObject {
         return -1;
     }
 
-    // ================================================================================================
-    //  Private
-    // ================================================================================================
-
     public static String toFullMediaUrl(String url) {
-        if (URLUtils.isWebURL(url))
+        if (URLUtils.isWebURL(url) || URLUtils.isLocal(url))
             return url;
         return Application.applicationContext().getString(R.string.s3_domain) + "/" + url;
     }
@@ -82,6 +85,14 @@ public class SharedObject {
 
         return null;
     }
+
+    public static String getImageUploadPath(String filename, Point size) {
+        return "images/p" + String.valueOf(size.x) + "x" + String.valueOf(size.y) + "/" + filename;
+    }
+
+    // ================================================================================================
+    //  Private
+    // ================================================================================================
 
     private static String getUserPicturePrefix(SharedObject.SizeType sizeType) {
         if (SharedObject.SizeType.Small.equals(sizeType))
