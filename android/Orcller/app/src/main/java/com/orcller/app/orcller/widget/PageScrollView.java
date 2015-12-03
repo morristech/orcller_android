@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.Page;
 
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 import pisces.psuikit.ext.PSScrollView;
@@ -58,7 +59,6 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
         heartButton = (PSButton) findViewById(R.id.heartButton);
         descriptionInputView = (DescriptionInputView) findViewById(R.id.descriptionInputView);
 
-        mediaScrollView.setBackgroundColor(getResources().getColor(R.color.background_media_scroll));
         mediaScrollView.setScaleAspectFill(true);
         mediaScrollView.setScaleEnabled(false);
         commentButton.setOnClickListener(this);
@@ -144,7 +144,7 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     public void reload() {
         mediaScrollView.setModel(model.media);
         buttonContainer.setVisibility(model.id > 0 ? VISIBLE : GONE);
-        heartButton.setSelected(model.likes.participated);
+        heartButton.setSelected(model.likes.getParticipated());
         heartButton.setText(model.likes.total_count > 0 ? String.valueOf(model.likes.total_count) : null);
         commentButton.setText(model.comments.total_count > 0 ? String.valueOf(model.comments.total_count) : null);
         pageProfileView.setModel(model);

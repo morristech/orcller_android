@@ -92,6 +92,12 @@ public class CommentInputView extends PSLinearLayout {
         SoftKeyboardUtils.hide(this);
     }
 
+    public void setFocus() {
+        editText.setFocusableInTouchMode(true);
+        editText.requestFocus();
+        SoftKeyboardUtils.show(editText);
+    }
+
     // ================================================================================================
     //  Listener
     // ================================================================================================

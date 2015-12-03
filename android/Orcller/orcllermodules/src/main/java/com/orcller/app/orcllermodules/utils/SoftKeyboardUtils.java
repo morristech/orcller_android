@@ -17,4 +17,9 @@ public class SoftKeyboardUtils {
             inputMethodManager.toggleSoftInput(0, 0);
         }
     }
+
+    public static void show(View focusView) {
+        InputMethodManager inputMethodManager = (InputMethodManager) Application.applicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInput(focusView, 0);
+    }
 }

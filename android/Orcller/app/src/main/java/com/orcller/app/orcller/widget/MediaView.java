@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.MediaEvent;
@@ -256,6 +257,9 @@ abstract public class MediaView extends PSFrameLayout {
                     .listener(new RequestListener<Object, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            if (BuildConfig.DEBUG)
+                                Log.e(e.getMessage(), e);
+
                             handler.onError();
                             return true;
                         }

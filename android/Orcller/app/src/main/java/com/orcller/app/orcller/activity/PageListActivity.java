@@ -19,9 +19,11 @@ import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.PageScrollView;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
@@ -34,6 +36,9 @@ import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSRecyclerViewPager;
 import pisces.psuikit.imagepicker.OnScrollListener;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by pisces on 12/3/15.
@@ -144,11 +149,21 @@ public class PageListActivity extends PSActionBarActivity
     // ================================================================================================
 
     public void onClickCommentButton(PageScrollView target) {
-        Log.d("onClickCommentButton");
+        commentInputView.setFocus();
     }
 
     public void onClickHeartButton(PageScrollView target) {
-        Log.d("onClickHeartButton");
+        AlbumDataProxy.getDefault().likeOfPage(selectedView.getModel().id, new Callback<APIResult>() {
+            @Override
+            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+                Log.d("response", response.body());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
     }
 
     public void onClickPostButton() {
