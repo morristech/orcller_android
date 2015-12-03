@@ -13,6 +13,8 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.event.Event;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSVideoView;
 
 /**
@@ -93,6 +95,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
             @Override
             public void onError() {
+                Log.d("onError");
                 if (delegate != null)
                     delegate.onError(self);
 
@@ -167,7 +170,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         progressBar.setVisibility(GONE);
         videoView.pause();
         layoutControlButton(ControlButtonState.Pause, true);
-        EventBus.getDefault().post(new VideoMediaViewEvent(this, VideoMediaViewEvent.DID_END_VIDEO_PLAYING));
+        EventBus.getDefault().post(new Event(Event.DID_END_VIDEO_PLAYING, this));
     }
 
     public void play() {
@@ -180,7 +183,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
             videoView.requestFocus();
             videoView.start();
             layoutControlButton(ControlButtonState.Play, true);
-            EventBus.getDefault().post(new VideoMediaViewEvent(this, VideoMediaViewEvent.DID_START_VIDEO_PLAYING));
+            EventBus.getDefault().post(new Event(Event.DID_START_VIDEO_PLAYING, this));
         }
     }
 
@@ -286,23 +289,12 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         }
     }
 
-    public static class VideoMediaViewEvent {
+    public static class Event extends pisces.psfoundation.event.Event {
         public static final String DID_START_VIDEO_PLAYING = "didStartVideoPlaying";
         public static final String DID_END_VIDEO_PLAYING = "didEndVideoPlaying";
-        private String type;
-        private VideoMediaView target;
 
-        public VideoMediaViewEvent(VideoMediaView target, String type) {
-            this.target = target;
-            this.type = type;
-        }
-
-        public VideoMediaView getTarget() {
-            return target;
-        }
-
-        public String getType() {
-            return type;
+        public Event(String type, Object target) {
+            super(type, target);
         }
     }
 }

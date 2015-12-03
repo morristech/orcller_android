@@ -10,6 +10,7 @@ import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/8/15.
@@ -17,7 +18,7 @@ import de.greenrobot.event.EventBus;
 public final class SoftKeyboardNotifier {
     private static SoftKeyboardNotifier uniqueInstance;
     private HashMap<String, ViewTreeObserver.OnGlobalLayoutListener> handlerMap;
-    private boolean isHide;
+    private boolean isHide = true;
 
     // ================================================================================================
     //  Public
@@ -61,11 +62,12 @@ public final class SoftKeyboardNotifier {
 
                     if (hide != isHide) {
                         isHide = hide;
+                        int keyboardHeight = hight - (displayHight + rect.top);
 
                         if (isHide)
-                            EventBus.getDefault().post(new SoftKeyboardEvent.Hide());
+                            EventBus.getDefault().post(new SoftKeyboardEvent(SoftKeyboardEvent.HIDE, keyboardHeight));
                         else
-                            EventBus.getDefault().post(new SoftKeyboardEvent.Show());
+                            EventBus.getDefault().post(new SoftKeyboardEvent(SoftKeyboardEvent.SHOW, keyboardHeight));
                     }
                 }
             };
@@ -84,7 +86,13 @@ public final class SoftKeyboardNotifier {
         if (handlerMap.containsKey(key)) {
             final View decorView = activity.getWindow().getDecorView();
             ViewTreeObserver.OnGlobalLayoutListener handler = handlerMap.get(key);
-            decorView.getViewTreeObserver().removeOnGlobalLayoutListener(handler);
+
+            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                decorView.getViewTreeObserver().removeOnGlobalLayoutListener(handler);
+            } else {
+                decorView.getViewTreeObserver().removeGlobalOnLayoutListener(handler);
+            }
+
             handlerMap.remove(key);
         }
     }

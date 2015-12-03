@@ -55,12 +55,12 @@
             android:inputType="textVisiblePassword|textNoSuggestions"
             android:nextFocusDown="@+id/pwEditText"
             android:textColor="@android:color/black"
-            android:textColorHint="@color/textcolot_hint"
+            android:textColorHint="@color/textcolor_textview_hint"
             android:textCursorDrawable="@drawable/member_cursor"
             android:textSize="14dp" />
 
         <View android:id="@+id/separator"
-            android:background="@color/hairline"
+            android:background="@color/border_hairline_lightgray"
             android:layout_width = "fill_parent"
             android:layout_height="1dip"
             android:layout_gravity="center_vertical" />
@@ -81,7 +81,7 @@
                 android:hint="@string/w_password"
                 android:inputType="textPassword"
                 android:textColor="@android:color/black"
-                android:textColorHint="@color/textcolot_hint"
+                android:textColorHint="@color/textcolor_textview_hint"
                 android:textCursorDrawable="@drawable/member_cursor"
                 android:textSize="14dp" />
 

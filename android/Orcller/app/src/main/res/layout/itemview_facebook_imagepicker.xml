@@ -14,7 +14,7 @@
         android:layout_height="69dp"
         android:scaleType="centerCrop"
         app:borderWidth="1dp"
-        app:borderColor="@color/profile_imageview_border"/>
+        app:borderColor="@color/border_profile_imageview"/>
 
     <LinearLayout
         android:orientation="vertical"

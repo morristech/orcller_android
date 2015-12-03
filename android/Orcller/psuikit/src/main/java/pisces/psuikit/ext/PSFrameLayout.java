@@ -4,9 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
-
-import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/19/15.
@@ -33,12 +30,6 @@ public class PSFrameLayout extends FrameLayout implements PSComponent {
         initProperties(context, attrs, defStyleAttr, 0);
     }
 
-    public PSFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        initProperties(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: FrameLayout
     // ================================================================================================
@@ -49,6 +40,7 @@ public class PSFrameLayout extends FrameLayout implements PSComponent {
 
         if (!initializedSubviews) {
             initializedSubviews = true;
+
             setUpSubviews(getContext());
         }
 
@@ -76,7 +68,7 @@ public class PSFrameLayout extends FrameLayout implements PSComponent {
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (initializedSubviews || immediatelyUpdating)
             commitProperties();
     }
 

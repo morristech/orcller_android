@@ -107,7 +107,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     @Override
     protected void setUpSubviews(Context context) {
         readyPages();
-        EventBus.getDefault().register(this, VideoMediaView.VideoMediaViewEvent.class);
+        EventBus.getDefault().register(this, VideoMediaView.Event.class);
     }
 
     @Override
@@ -471,8 +471,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     public void onEventMainThread(Object event) {
-        if (event instanceof VideoMediaView.VideoMediaViewEvent &&
-                ((VideoMediaView.VideoMediaViewEvent) event).getType() == VideoMediaView.VideoMediaViewEvent.DID_START_VIDEO_PLAYING)
+        if (event instanceof VideoMediaView.Event &&
+                ((VideoMediaView.Event) event).getType() == VideoMediaView.Event.DID_START_VIDEO_PLAYING)
             pause();
     }
 

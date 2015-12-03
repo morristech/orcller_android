@@ -132,6 +132,13 @@
             android:theme="@style/WhiteTheme">
         </activity>
 
+        <activity
+            android:name=".activity.PageListActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/WhiteTheme">
+        </activity>
+
         <!-- psuikit -->
         <activity
             android:name="pisces.psuikit.imagepicker.ImagePickerActivity"

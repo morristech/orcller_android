@@ -177,14 +177,18 @@ public class MemberActivity extends PSFragmentActivity {
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (event instanceof SoftKeyboardEvent.Show) {
-            animateTitleContainer(R.dimen.member_title_height_selected);
-            animateTitleLiner(R.dimen.member_title_margin_bottom_selected);
-            titleLinear.setOrientation(LinearLayout.HORIZONTAL);
-        } else if (event instanceof SoftKeyboardEvent.Hide) {
-            animateTitleContainer(R.dimen.member_title_height_normal);
-            animateTitleLiner(R.dimen.member_title_margin_bottom_normal);
-            titleLinear.setOrientation(LinearLayout.VERTICAL);
+        if (event instanceof SoftKeyboardEvent) {
+            SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
+
+            if (casted.getType().equals(SoftKeyboardEvent.SHOW)) {
+                animateTitleContainer(R.dimen.member_title_height_selected);
+                animateTitleLiner(R.dimen.member_title_margin_bottom_selected);
+                titleLinear.setOrientation(LinearLayout.HORIZONTAL);
+            } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
+                animateTitleContainer(R.dimen.member_title_height_normal);
+                animateTitleLiner(R.dimen.member_title_margin_bottom_normal);
+                titleLinear.setOrientation(LinearLayout.VERTICAL);
+            }
         }
     }
 

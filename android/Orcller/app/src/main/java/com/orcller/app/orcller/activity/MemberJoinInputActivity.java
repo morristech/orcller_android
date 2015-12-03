@@ -146,15 +146,19 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (event instanceof SoftKeyboardEvent.Show) {
-            if (idEditText.hasFocus())
-                idEditText.setCursorVisible(true);
+        if (event instanceof SoftKeyboardEvent) {
+            SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
 
-            if (pwEditText.hasFocus())
-                pwEditText.setCursorVisible(true);
-        } else if (event instanceof SoftKeyboardEvent.Hide) {
-            idEditText.setCursorVisible(false);
-            pwEditText.setCursorVisible(false);
+            if (casted.getType().equals(SoftKeyboardEvent.SHOW)) {
+                if (idEditText.hasFocus())
+                    idEditText.setCursorVisible(true);
+
+                if (pwEditText.hasFocus())
+                    pwEditText.setCursorVisible(true);
+            } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
+                idEditText.setCursorVisible(false);
+                pwEditText.setCursorVisible(false);
+            }
         }
     }
 

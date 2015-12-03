@@ -37,10 +37,6 @@ public class ImagePickerItemView extends PSFrameLayout implements Checkable {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImagePickerItemView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================

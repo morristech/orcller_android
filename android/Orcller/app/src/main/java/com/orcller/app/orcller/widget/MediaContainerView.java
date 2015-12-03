@@ -37,10 +37,6 @@ public class MediaContainerView extends PSFrameLayout implements MediaContainer 
         super(context, attrs, defStyleAttr);
     }
 
-    public MediaContainerView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================

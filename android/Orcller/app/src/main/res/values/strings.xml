@@ -37,10 +37,11 @@
     <string name="w_retry">Retry</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>
-    <string name="w_title_album_page_order">Edit Page Order</string>
+    <string name="w_title_album_page_order">Edit Page Orders</string>
     <string name="w_title_album_page_default">Set as Default Page</string>
-    <string name="w_title_album_page_delete">Page Deletion</string>
+    <string name="w_title_album_page_delete">Delete Pages</string>
     <string name="w_title_edit_album">Edit Album</string>
+    <string name="w_title_edit_page">Edit Page</string>
     <string name="w_title_new_album">New Album</string>
     <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>
@@ -59,5 +60,7 @@
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
     <string name="m_hint_album_description">Say something about this album...</string>
+    <string name="m_hint_comment_input">Please enter your comment.</string>
+    <string name="m_hint_papge_description">Say something about this page...</string>
     <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
 </resources>

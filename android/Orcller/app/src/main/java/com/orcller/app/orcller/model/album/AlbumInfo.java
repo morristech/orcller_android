@@ -3,8 +3,6 @@ package com.orcller.app.orcller.model.album;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 
-import java.util.Date;
-
 import pisces.psfoundation.model.Model;
 
 /**
@@ -18,7 +16,23 @@ public class AlbumInfo extends Model {
     public String user_link;
     public String user_name;
     public String user_picture;
-    public User user;
+    private User user;
+
+    public User getUser() {
+        if (user == null) {
+            if (isMine()) {
+                user = AuthenticationCenter.getDefault().getUser();
+            } else {
+                user = new User();
+                user.user_uid = user_uid;
+                user.user_id = user_id;
+                user.user_link = user_link;
+                user.user_name = user_name;
+                user.user_picture = user_picture;
+            }
+        }
+        return user;
+    }
 
     public boolean isMine() {
         if (AuthenticationCenter.getDefault().getUser() == null)

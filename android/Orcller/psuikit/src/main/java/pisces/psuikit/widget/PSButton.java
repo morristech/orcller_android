@@ -34,10 +34,6 @@ public class PSButton extends PSFrameLayout {
         super(context, attrs, defStyle);
     }
 
-    public PSButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================
@@ -139,7 +135,8 @@ public class PSButton extends PSFrameLayout {
     }
 
     public void setTextColor(ColorStateList textColor) {
-        textView.setTextColor(textColor);
+        if (textColor != null)
+            textView.setTextColor(textColor);
     }
 
     public float getTextSize() {

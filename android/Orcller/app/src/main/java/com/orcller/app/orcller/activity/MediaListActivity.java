@@ -129,10 +129,11 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
             if (selectedView.getImageMediaScrollView() != null)
                 selectedView.getImageMediaScrollView().reset();
 
+            stopSelectedVideoMediaView();
+
             selectedView = null;
         }
 
-        stopSelectedVideoMediaView();
         recyclerView.scrollToPosition(selectedIndex);
         updateTitle();
     }

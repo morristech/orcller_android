@@ -1,12 +1,15 @@
 package com.orcller.app.orcllermodules.event;
 
+import pisces.psfoundation.event.Event;
+
 /**
  * Created by pisces on 11/9/15.
  */
-public class SoftKeyboardEvent {
-    public static class Show {
-    }
+public class SoftKeyboardEvent extends Event {
+    public static final String HIDE = "hide";
+    public static final String SHOW = "show";
 
-    public static class Hide {
+    public SoftKeyboardEvent(String type, Object object) {
+        super(type, null, object);
     }
 }

@@ -40,6 +40,7 @@ public class PSLinearLayout extends LinearLayout implements PSComponent {
 
         if (!initializedSubviews) {
             initializedSubviews = true;
+
             setUpSubviews(getContext());
         }
 
@@ -67,7 +68,7 @@ public class PSLinearLayout extends LinearLayout implements PSComponent {
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (initializedSubviews || immediatelyUpdating)
             commitProperties();
     }
 

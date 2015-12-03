@@ -26,6 +26,7 @@ import java.net.URL;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psfoundation.utils.URLUtils;
 import pisces.psuikit.ext.PSFrameLayout;
@@ -247,7 +248,6 @@ abstract public class MediaView extends PSFrameLayout {
 
         try {
             Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
-
             Glide.with(getContext())
                     .load(source)
                     .placeholder(placeholder)

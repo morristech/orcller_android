@@ -13,6 +13,8 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.lang.ref.WeakReference;
 
+import pisces.psfoundation.utils.Log;
+
 /**
  * Created by pisces on 11/22/15.
  */
@@ -40,8 +42,7 @@ public class ImageMediaScrollView extends MediaView {
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super.initProperties(context, attrs, defStyleAttr, defStyleRes);
 
-        scaleImageView = new WeakReference<SubsamplingScaleImageView>(new SubsamplingScaleImageView(context));
-
+        scaleImageView = new WeakReference<>(new SubsamplingScaleImageView(context));
         scaleImageView.get().setDoubleTapZoomScale(2f);
         scaleImageView.get().setMaxScale(3f);
         setImageLoadType(ImageLoadType.StandardResoultion.getValue());

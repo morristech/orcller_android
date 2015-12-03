@@ -15,6 +15,8 @@ import pisces.psuikit.ext.PSFrameLayout;
  * Created by pisces on 11/23/15.
  */
 public class MediaScrollView extends PSFrameLayout implements MediaContainer {
+    private boolean scaleAspectFill = false;
+    private boolean scaleEnabled = true;
     private Media model;
     private MediaView mediaView;
 
@@ -28,10 +30,6 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
 
     public MediaScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public MediaScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     // ================================================================================================
@@ -83,6 +81,34 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
         modelChanged();
     }
 
+    public boolean isScaleAspectFill() {
+        return scaleAspectFill;
+    }
+
+    public void setScaleAspectFill(boolean scaleAspectFill) {
+        if (scaleAspectFill == this.scaleAspectFill)
+            return;
+
+        this.scaleAspectFill = scaleAspectFill;
+
+        if (getImageMediaScrollView() != null)
+            getImageMediaScrollView().setScaleAspectFill(scaleAspectFill);
+    }
+
+    public boolean isScaleEnabled() {
+        return scaleEnabled;
+    }
+
+    public void setScaleEnabled(boolean scaleEnabled) {
+        if (scaleEnabled == this.scaleEnabled)
+            return;
+
+        this.scaleEnabled = scaleEnabled;
+
+        if (getImageMediaScrollView() != null)
+            getImageMediaScrollView().setScaleEnabled(scaleEnabled);
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -90,8 +116,8 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     private MediaView createMediaView(Media model) {
         if (model instanceof ImageMedia) {
             ImageMediaScrollView view = new ImageMediaScrollView(getContext());
-            view.setScaleAspectFill(false);
-            view.setScaleEnabled(true);
+            view.setScaleAspectFill(scaleAspectFill);
+            view.setScaleEnabled(scaleEnabled);
             return view;
         }
         if (model instanceof VideoMedia) {

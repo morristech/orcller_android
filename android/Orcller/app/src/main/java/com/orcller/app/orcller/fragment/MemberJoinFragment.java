@@ -269,14 +269,18 @@ public class MemberJoinFragment extends PSFragment {
     }
 
     // ================================================================================================
-    //  Event Handler
+    //  Listener
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (event instanceof SoftKeyboardEvent.Show) {
-            editText.setCursorVisible(true);
-        } else if (event instanceof SoftKeyboardEvent.Hide) {
-            editText.setCursorVisible(false);
+        if (event instanceof SoftKeyboardEvent) {
+            SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
+
+            if (casted.getType().equals(SoftKeyboardEvent.SHOW)) {
+                editText.setCursorVisible(true);
+            } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
+                editText.setCursorVisible(false);
+            }
         }
     }
 }

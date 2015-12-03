@@ -37,10 +37,6 @@ public class ImagePickerImageView extends PSFrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImagePickerImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================

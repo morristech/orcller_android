@@ -2,14 +2,9 @@ package com.orcller.app.orcller.facade;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
@@ -22,12 +17,11 @@ import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
+import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
-import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
@@ -35,11 +29,13 @@ import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
+import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.ImageMediaScrollView;
 import com.orcller.app.orcller.widget.ImageMediaView;
 import com.orcller.app.orcller.widget.MediaScrollView;
 import com.orcller.app.orcller.widget.MediaView;
+import com.orcller.app.orcller.widget.PageScrollView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcller.widget.UserPictureView;
 import com.orcller.app.orcller.widget.VideoMediaView;
@@ -57,7 +53,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
 import retrofit.Callback;
 import retrofit.Response;
@@ -176,7 +171,10 @@ public class ApplicationFacade {
 //        testAlbumPageDefaultActivity();
 //        testAlbumPageDeleteActivity();
 //        testMemberActivity();
-        testAlbumEditActivity();
+//        testAlbumEditActivity();
+//        testPageScrollView();
+        testPageListActivity();
+//        testCommentInputView();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -309,7 +307,7 @@ public class ApplicationFacade {
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
                 int h = Application.getTopActivity().getWindow().getDecorView().getHeight();
-                Media media = response.body().entity.pages.getPageAtIndex(4).media;
+                Media media = response.body().entity.pages.getPageAtIndex(3).media;
                 MediaScrollView view = new MediaScrollView(Application.applicationContext());
                 view.setModel(media);
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, h));
@@ -370,16 +368,7 @@ public class ApplicationFacade {
     }
 
     private void testAlbumEditActivity() {
-        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
-            @Override
-            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                AlbumEditActivity.show(response.body().entity);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        });
+        AlbumEditActivity.show(4);
     }
 
     private void testAlbumGridView() {
@@ -440,5 +429,40 @@ public class ApplicationFacade {
 
     private void testMemberActivity() {
         testActivity(MemberActivity.class, null);
+    }
+
+    private void testPageScrollView() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                Page page = response.body().entity.pages.getPageAtIndex(3);
+                PageScrollView view = new PageScrollView(Application.applicationContext());
+                view.setModel(page);
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, w));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testPageListActivity() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                PageListActivity.show(response.body().entity, 0);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testCommentInputView() {
+        CommentInputView view = new CommentInputView(Application.applicationContext());
+        Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 }

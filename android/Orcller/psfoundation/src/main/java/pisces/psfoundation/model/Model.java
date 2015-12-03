@@ -3,12 +3,7 @@ package pisces.psfoundation.model;
 
 import android.os.AsyncTask;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +12,6 @@ import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.GsonUtil;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 
 /**
@@ -78,7 +72,7 @@ public class Model implements Cloneable, Serializable {
     }
 
     public void didChangeProperties() {
-        EventBus.getDefault().post(new ModelDidChange(this));
+        EventBus.getDefault().post(new Event(Event.CHANGE, this));
     }
 
     public boolean equalsList(Object object, Object other) {
@@ -161,7 +155,7 @@ public class Model implements Cloneable, Serializable {
 
             }
 
-            EventBus.getDefault().post(new ModelDidSynchronize(this));
+            EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, this));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -184,36 +178,25 @@ public class Model implements Cloneable, Serializable {
     }
 
     // ================================================================================================
-    //  Class: ModelDidChange
+    //  Class: Event
     // ================================================================================================
 
-    public class ModelDidChange {
-        private Model model;
+    public static class Event extends pisces.psfoundation.event.Event {
+        public static final String CHANGE = "change";
+        public static final String SYNCHRONIZE = "synchronize";
 
-        public ModelDidChange(Model model) {
-            this.model = model;
+        public Event(String type, Object target) {
+            super(type, target);
         }
 
-        public Model getObject() {
-            return model;
+        public Model getModel() {
+            return getTarget() != null ? (Model) getTarget() : null;
         }
     }
 
     // ================================================================================================
-    //  Class: ModelDidSynchronize
+    //  Interface: ModelUsable
     // ================================================================================================
-
-    public class ModelDidSynchronize {
-        private Model model;
-
-        public ModelDidSynchronize(Model model) {
-            this.model = model;
-        }
-
-        public Model getObject() {
-            return model;
-        }
-    }
 
     public static interface ModelUsable {
         Model getModel();
@@ -221,7 +204,7 @@ public class Model implements Cloneable, Serializable {
     }
 
     // ================================================================================================
-    //  Interface: ModelDidSynchronize
+    //  Interface: EqualsCompletion
     // ================================================================================================
 
     public static interface EqualsCompletion {

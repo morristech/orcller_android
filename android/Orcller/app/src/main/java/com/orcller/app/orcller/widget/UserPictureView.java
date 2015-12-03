@@ -12,7 +12,6 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.utils.GraphicUtils;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSImageView;
 
@@ -43,7 +42,7 @@ public class UserPictureView extends PSImageView {
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super.initProperties(context, attrs, defStyleAttr, defStyleRes);
 
-        setBorderColor(getResources().getColor(R.color.profile_imageview_border));
+        setBorderColor(getResources().getColor(R.color.border_profile_imageview));
         setBorderWidth(GraphicUtils.convertDpToPixel(1));
         setScaleType(ScaleType.CENTER_CROP);
     }
