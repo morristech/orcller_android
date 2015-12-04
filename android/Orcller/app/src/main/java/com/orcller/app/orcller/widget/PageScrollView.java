@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MediaListActivity;
@@ -30,6 +31,7 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     private boolean editEnabled;
     private Page model;
     private Delegate delegate;
+    private ScrollView scrollView;
     private FrameLayout pageContainer;
     private LinearLayout buttonContainer;
     private PageProfileView pageProfileView;
@@ -59,6 +61,7 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.view_pagescroll, this);
 
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
         pageContainer = (FrameLayout) findViewById(R.id.pageContainer);
         buttonContainer = (LinearLayout) findViewById(R.id.buttonContainer);
         pageProfileView = (PageProfileView) findViewById(R.id.pageProfileView);
@@ -171,7 +174,7 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
 
     public void addComments(Comments comments) {
         commentListView.add(comments);
-
+        scrollView.pageScroll(View.FOCUS_DOWN);
     }
 
     public void reload() {
