@@ -283,10 +283,16 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
     public interface Service {
         @GET("{albumId}/comments")
-        Call<ApiAlbum.CommentsRes> comments( @Path("albumId") long albumId, @Query("limit") int limit, @Query("prev") String prev);
+        Call<ApiAlbum.CommentsRes> comments(
+                @Path("albumId") long albumId,
+                @Query("limit") int limit,
+                @Query(value = "prev", encoded = true) String prev);
 
         @GET("page/{pageId}/comments")
-        Call<ApiAlbum.CommentsRes> commentsOfPage(@Path("pageId") long pageId, @Query("limit") int limit, @Query("prev") String prev);
+        Call<ApiAlbum.CommentsRes> commentsOfPage(
+                @Path("pageId") long pageId,
+                @Query("limit") int limit,
+                @Query(value = "prev", encoded = true) String prev);
 
         @FormUrlEncoded
         @POST("{albumId}/comment")
@@ -303,7 +309,10 @@ public class AlbumDataProxy extends AbstractDataProxy {
         Call<ApiAlbum.FavoritesRes> favorite(@Path("albumId") long albumId);
 
         @GET("{albumId}/favorites")
-        Call<ApiAlbum.FavoritesRes> favorites(@Path("albumId") long albumId, @Query("limit") int limit, @Query("after") String after);
+        Call<ApiAlbum.FavoritesRes> favorites(
+                @Path("albumId") long albumId,
+                @Query("limit") int limit,
+                @Query(value = "after", encoded = true) String after);
 
         @POST("{albumId}/like")
         Call<ApiAlbum.LikesRes> like(@Path("albumId") long albumId);
@@ -312,13 +321,22 @@ public class AlbumDataProxy extends AbstractDataProxy {
         Call<ApiAlbum.LikesRes> likeOfPage(@Path("pageId") long pageId);
 
         @GET("{albumId}/likes")
-        Call<ApiAlbum.LikesRes> likes(@Path("albumId") long albumId, @Query("limit") int limit, @Query("after") String after);
+        Call<ApiAlbum.LikesRes> likes(
+                @Path("albumId") long albumId,
+                @Query("limit") int limit,
+                @Query(value = "after", encoded = true) String after);
 
         @GET("page/{pageId}/likes")
-        Call<ApiAlbum.LikesRes> likesOfPage(@Path("pageId") long pageId, @Query("limit") int limit, @Query("after") String after);
+        Call<ApiAlbum.LikesRes> likesOfPage(
+                @Path("pageId") long pageId,
+                @Query("limit") int limit,
+                @Query(value = "after", encoded = true) String after);
 
         @GET("{albumId}/pages")
-        Call<ApiAlbum.PagesRes> pages(@Path("albumId") long albumId, @Query("limit") int limit, @Query("after") String after);
+        Call<ApiAlbum.PagesRes> pages(
+                @Path("albumId") long albumId,
+                @Query("limit") int limit,
+                @Query(value = "after", encoded = true) String after);
 
         @POST("{albumId}/report")
         Call<APIResult> report(@Path("albumId") long albumId, @Query("report_type") int reportType);

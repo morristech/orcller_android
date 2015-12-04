@@ -3,7 +3,6 @@ package com.orcller.app.orcller.widget;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
