@@ -167,21 +167,17 @@ public class CommentListView extends PSListView
             }
         };
 
-        Bundle param = new Bundle();
-
-
         AlbumDataProxy.getDefault().enqueueCall(
                 createUncommentCall(comment),
                 new Callback<ApiAlbum.CommentsRes>() {
                     @Override
                     public void onResponse(Response<ApiAlbum.CommentsRes> response, Retrofit retrofit) {
-                        Log.d("response.body()", response.body());
-
                         if (response.isSuccess() && response.body().isSuccess()) {
                             lastEntity = response.body().entity;
                             items.remove(comment);
                             listAdapter.notifyDataSetChanged();
                             dataLoadValidator.endDataLoading();
+                            ProgressBarManager.hide();
                             performChange();
                         } else {
                             error.run();

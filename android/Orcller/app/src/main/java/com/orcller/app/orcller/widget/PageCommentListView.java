@@ -34,7 +34,7 @@ public class PageCommentListView extends CommentListView {
     //  Public
     // ================================================================================================
 
-    public Pa getPage() {
+    public Page getPage() {
         return page;
     }
 
