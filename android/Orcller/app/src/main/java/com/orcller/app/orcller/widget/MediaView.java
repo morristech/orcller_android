@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -18,7 +20,6 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.MediaEvent;
-import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.album.Image;
 import com.orcller.app.orcller.model.album.Media;
 
@@ -35,7 +36,7 @@ import pisces.psuikit.ext.PSFrameLayout;
 /**
  * Created by pisces on 11/16/15.
  */
-abstract public class MediaView extends PSFrameLayout {
+abstract public class MediaView extends PSFrameLayout implements View.OnClickListener {
     public enum ImageLoadType {
         Thumbnail(1<<0),
         LowResolution(1<<1),
@@ -52,6 +53,7 @@ abstract public class MediaView extends PSFrameLayout {
         }
     }
 
+    private boolean clickEnabled;
     private boolean scaleAspectFill = true;
     private int imageLoadType;
     private Drawable placeholder;
@@ -60,7 +62,7 @@ abstract public class MediaView extends PSFrameLayout {
     protected Point imageSize;
     protected ImageView imageView;
     protected ProgressBar progressBar;
-    protected MediaViewDelegate delegate;
+    protected Delegate delegate;
 
     public MediaView(Context context) {
         super(context);
@@ -101,27 +103,30 @@ abstract public class MediaView extends PSFrameLayout {
         addView(progressBar, progressBarParams);
     }
 
+    @Override
+    public void onClick(View v) {
+        if (delegate != null)
+            delegate.onClick(this);
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
 
-    public boolean isScaleAspectFill() {
-        return scaleAspectFill;
+    public boolean isClickEnabled() {
+        return clickEnabled;
     }
 
-    public void setScaleAspectFill(boolean scaleAspectFill) {
-        if (scaleAspectFill == this.scaleAspectFill)
-            return;;
+    public void setClickEnabled(boolean clickEnabled) {
+        if (clickEnabled == this.clickEnabled)
+            return;
 
-        this.scaleAspectFill = scaleAspectFill;
+        this.clickEnabled = true;
 
-        if (scaleAspectFill)
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        else
-            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        clickEnabled();
     }
 
-    public void setDelegate(MediaViewDelegate delegate) {
+    public void setDelegate(Delegate delegate) {
         this.delegate = delegate;
     }
 
@@ -163,6 +168,22 @@ abstract public class MediaView extends PSFrameLayout {
         this.placeholder = placeholder;
     }
 
+    public boolean isScaleAspectFill() {
+        return scaleAspectFill;
+    }
+
+    public void setScaleAspectFill(boolean scaleAspectFill) {
+        if (scaleAspectFill == this.scaleAspectFill)
+            return;;
+
+        this.scaleAspectFill = scaleAspectFill;
+
+        if (scaleAspectFill)
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        else
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+    }
+
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -185,6 +206,13 @@ abstract public class MediaView extends PSFrameLayout {
      * @abstract
      */
     abstract protected void loadImages();
+
+    protected void clickEnabled() {
+        if (clickEnabled)
+            setOnClickListener(this);
+        else
+            setOnClickListener(null);
+    }
 
     protected void loadImages(CompleteHandler completeHandler) {
         if (canLoadThumbnail()) {
@@ -372,7 +400,8 @@ abstract public class MediaView extends PSFrameLayout {
         void onError();
     }
 
-    public interface MediaViewDelegate {
+    public interface Delegate {
+        void onClick(MediaView view);
         void onCompleteImageLoad(MediaView view);
         void onError(MediaView view);
         void onStartImageLoad(MediaView view);

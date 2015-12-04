@@ -5,10 +5,13 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import pisces.psfoundation.utils.DataLoadValidator;
+
 /**
  * Created by pisces on 11/22/15.
  */
 public class PSLinearLayout extends LinearLayout implements PSComponent {
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 

@@ -34,6 +34,7 @@
     <string name="w_password">Password</string>
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
+    <string name="w_previous_comments">Previous Comments</string>
     <string name="w_retry">Retry</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>
@@ -50,17 +51,18 @@
     <string name="w_user_name">User Name</string>
 
     <!-- messages -->
+    <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
+    <string name="m_fail_message">It failed to save changes.\nPlease try again.</string>
+    <string name="m_has_new_version">There is a new version on the App Store.</string>
+    <string name="m_hint_album_description">Say something about this album...</string>
+    <string name="m_hint_comment_input">Please enter your comment.</string>
+    <string name="m_hint_papge_description">Say something about this page...</string>
     <string name="m_member_joininput_desc">
         By tapping to continue, you are indicating that you have read the
         <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>
          and agree to <a href="orcller://web?url=https://www.orcller.com/site/policy/terms&amp;title=Term of service"><b>Terms of Service</b></a>.
     </string>
-    <string name="m_has_new_version">There is a new version on the App Store.</string>
     <string name="m_send_email_result">
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
-    <string name="m_hint_album_description">Say something about this album...</string>
-    <string name="m_hint_comment_input">Please enter your comment.</string>
-    <string name="m_hint_papge_description">Say something about this page...</string>
-    <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
 </resources>

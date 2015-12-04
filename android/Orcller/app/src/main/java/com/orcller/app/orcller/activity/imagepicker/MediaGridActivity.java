@@ -25,8 +25,8 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
+import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 
@@ -131,14 +131,16 @@ abstract public class MediaGridActivity extends PSActionBarActivity
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        MediaListActivity.startActivity(items, position);
+        MediaListActivity.show(items, position);
         return true;
     }
 
     public void onEventMainThread(Object event) {
-        if (event instanceof MediaListActivity.OnChangeSelectedIndex) {
-            MediaListActivity.OnChangeSelectedIndex casted = (MediaListActivity.OnChangeSelectedIndex) event;
-            gridView.setSelection(casted.getSelectedIndex());
+        if (event instanceof IndexChangeEvent) {
+            IndexChangeEvent casted = (IndexChangeEvent) event;
+
+            if (casted.getTarget() instanceof MediaListActivity)
+                gridView.setSelection(casted.getSelectedIndex());
         }
     }
 

@@ -17,6 +17,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.android.R;
 import pisces.psfoundation.ext.Application;
+import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 
 /**
@@ -95,7 +96,8 @@ public class ImagePickerViewActivity extends PSActionBarActivity
                 selectedView = (ImagePickerImageView) viewHolder.itemView;
 
             if (!initialSelection)
-                EventBus.getDefault().post(new OnChangeSelectedIndex(selectedIndex, selectedView));
+                EventBus.getDefault().post(new IndexChangeEvent(
+                        IndexChangeEvent.INDEX_CHANGE, this, selectedView, selectedIndex));
         }
     }
 
@@ -174,28 +176,6 @@ public class ImagePickerViewActivity extends PSActionBarActivity
     private final class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View itemView) {
             super(itemView);
-        }
-    }
-
-    // ================================================================================================
-    //  Class: OnChangeSelectedIndex
-    // ================================================================================================
-
-    public static class OnChangeSelectedIndex {
-        private int selectedIndex;
-        private ImagePickerImageView selectedView;
-
-        public OnChangeSelectedIndex(int selectedIndex, ImagePickerImageView selectedView) {
-            this.selectedIndex = selectedIndex;
-            this.selectedView = selectedView;
-        }
-
-        public int getSelectedIndex() {
-            return selectedIndex;
-        }
-
-        public ImagePickerImageView getSelectedView() {
-            return selectedView;
         }
     }
 }

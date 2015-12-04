@@ -3,14 +3,14 @@ package pisces.psuikit.ext;
 import android.support.v4.app.Fragment;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.utils.DataLoadValidator;
 import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/13/15.
  */
 public class PSFragment extends Fragment {
-    private boolean dataLoading;
-    private boolean firstLoading = true;
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     // ================================================================================================
     //  Overridden: Fragment
@@ -29,19 +29,14 @@ public class PSFragment extends Fragment {
     // ================================================================================================
 
     public boolean isFirstLoading() {
-        return firstLoading;
+        return dataLoadValidator.isFirstLoading();
     }
 
     public void endDataLoading() {
-        dataLoading = false;
-        firstLoading = false;
+        dataLoadValidator.endDataLoading();
     }
+
     public boolean invalidDataLoading() {
-        if (dataLoading)
-            return true;
-
-        dataLoading = true;
-
-        return false;
+        return dataLoadValidator.invalidDataLoading();
     }
 }

@@ -3,15 +3,22 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.MediaListActivity;
+import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 
+import de.greenrobot.event.EventBus;
+import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
+import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSLinearLayout;
 import pisces.psuikit.ext.PSScrollView;
 import pisces.psuikit.widget.PSButton;
@@ -19,7 +26,7 @@ import pisces.psuikit.widget.PSButton;
 /**
  * Created by pisces on 12/3/15.
  */
-public class PageScrollView extends PSLinearLayout implements View.OnClickListener {
+public class PageScrollView extends PSLinearLayout implements View.OnClickListener, MediaView.Delegate {
     private boolean editEnabled;
     private Page model;
     private Delegate delegate;
@@ -30,6 +37,7 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     private PSButton heartButton;
     private MediaScrollView mediaScrollView;
     private DescriptionInputView descriptionInputView;
+    private PageCommentListView commentListView;
 
     public PageScrollView(Context context) {
         super(context);
@@ -58,11 +66,13 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
         commentButton = (PSButton) findViewById(R.id.commentButton);
         heartButton = (PSButton) findViewById(R.id.heartButton);
         descriptionInputView = (DescriptionInputView) findViewById(R.id.descriptionInputView);
+        commentListView = (PageCommentListView) findViewById(R.id.commentListView);
 
+        mediaScrollView.setMediaViewDelegate(this);
         mediaScrollView.setScaleAspectFill(true);
-        mediaScrollView.setScaleEnabled(false);
         commentButton.setOnClickListener(this);
         heartButton.setOnClickListener(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -87,6 +97,20 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
         }
     }
 
+    public void onClick(MediaView view) {
+        if (delegate != null)
+            delegate.onClickMediaView(this, view);
+    }
+
+    public void onCompleteImageLoad(MediaView view) {
+    }
+
+    public void onError(MediaView view) {
+    }
+
+    public void onStartImageLoad(MediaView view) {
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
@@ -97,6 +121,10 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
 
     public void setDelegate(Delegate delegate) {
         this.delegate = delegate;
+    }
+
+    public DescriptionInputView getDescriptionInputView() {
+        return descriptionInputView;
     }
 
     public boolean isEditEnabled() {
@@ -116,18 +144,6 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
         return mediaScrollView.getImageMediaScrollView();
     }
 
-    public VideoMediaView getVideoMediaView() {
-        return mediaScrollView.getVideoMediaView();
-    }
-
-    public boolean hasImageMediaScrollView() {
-        return getImageMediaScrollView() != null;
-    }
-
-    public boolean hasVideoMediaView() {
-        return getVideoMediaView() != null;
-    }
-
     public Page getModel() {
         return model;
     }
@@ -141,16 +157,60 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
         reload();
     }
 
+    public VideoMediaView getVideoMediaView() {
+        return mediaScrollView.getVideoMediaView();
+    }
+
+    public boolean hasImageMediaScrollView() {
+        return getImageMediaScrollView() != null;
+    }
+
+    public boolean hasVideoMediaView() {
+        return getVideoMediaView() != null;
+    }
+
+    public void addComments(Comments comments) {
+        commentListView.add(comments);
+
+    }
+
     public void reload() {
         mediaScrollView.setModel(model.media);
         buttonContainer.setVisibility(model.id > 0 ? VISIBLE : GONE);
-        heartButton.setSelected(model.likes.getParticipated());
-        heartButton.setText(model.likes.total_count > 0 ? String.valueOf(model.likes.total_count) : null);
-        commentButton.setText(model.comments.total_count > 0 ? String.valueOf(model.comments.total_count) : null);
         pageProfileView.setModel(model);
         descriptionInputView.setModel(model.getUser());
         descriptionInputView.setText(model.desc);
+        commentListView.setPage(model);
+        updateButtons();
         editEnabledChanged();
+    }
+
+    public void reloadDescription() {
+        descriptionInputView.setText(model.desc);
+    }
+
+    public void updateButtons() {
+        heartButton.setSelected(model.likes.getParticipated());
+        heartButton.setText(model.likes.total_count > 0 ? String.valueOf(model.likes.total_count) : null);
+        commentButton.setText(model.comments.total_count > 0 ? String.valueOf(model.comments.total_count) : null);
+    }
+
+    // ================================================================================================
+    //  Listener
+    // ================================================================================================
+
+    public void onEventMainThread(Object event) {
+        if (event instanceof Model.Event) {
+            Model.Event casted = Model.Event.cast(event);
+
+            if (casted.getType().equals(Model.Event.SYNCHRONIZE)) {
+                if (casted.getTarget().equals(model)) {
+                    reload();
+                } else if (casted.getTarget().equals(model.likes) || casted.getTarget().equals(model.comments)) {
+                    updateButtons();
+                }
+            }
+        }
     }
 
     // ================================================================================================
@@ -158,8 +218,10 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     // ================================================================================================
 
     private void editEnabledChanged() {
+        mediaScrollView.setScaleEnabled(!editEnabled);
         buttonContainer.setVisibility(editEnabled ? GONE : VISIBLE);
         pageProfileView.setVisibility(editEnabled ? GONE : VISIBLE);
+        commentListView.setVisibility(editEnabled ? GONE : VISIBLE);
         descriptionInputView.setEnabled(editEnabled);
         descriptionInputView.setVisibility(editEnabled || !TextUtils.isEmpty(model.desc) ? VISIBLE : GONE);
     }
@@ -171,5 +233,6 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     public static interface Delegate {
         void onClickCommentButton(PageScrollView target);
         void onClickHeartButton(PageScrollView target);
+        void onClickMediaView(PageScrollView target, MediaView mediaView);
     }
 }

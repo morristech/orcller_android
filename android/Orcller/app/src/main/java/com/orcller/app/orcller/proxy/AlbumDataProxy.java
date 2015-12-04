@@ -1,5 +1,7 @@
 package com.orcller.app.orcller.proxy;
 
+import android.os.Bundle;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -9,20 +11,18 @@ import com.google.gson.JsonParseException;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.album.Pages;
 import com.orcller.app.orcller.model.album.VideoMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcllermodules.model.APIResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
-import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Converter;
@@ -31,6 +31,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
+import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -98,11 +99,11 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().commentsOfPage(pageId, limit, prev), callback);
     }
 
-    public void comment(long albumId, String message, Callback<APIResult> callback) {
+    public void comment(long albumId, String message, Callback<ApiAlbum.CommentsRes> callback) {
         enqueueCall(service().comment(albumId, message), callback);
     }
 
-    public void commentOfPage(long pageId, String message, Callback<APIResult> callback) {
+    public void commentOfPage(long pageId, String message, Callback<ApiAlbum.CommentsRes> callback) {
         enqueueCall(service().commentOfPage(pageId, message), callback);
     }
 
@@ -110,20 +111,29 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().create(album), callback);
     }
 
-    public void favorite(long albumId, Callback<APIResult> callback) {
-        enqueueCall(service().favorite(albumId), callback);
+    public void favorite(Album model, Callback<ApiAlbum.FavoritesRes> callback) {
+        if (model.likes.getParticipated())
+            enqueueCall(service().unfavorite(model.id), callback);
+        else
+            enqueueCall(service().favorite(model.id), callback);
     }
 
-    public void favorites(long albumId, int limit, String after, Callback<APIResult> callback) {
+    public void favorites(long albumId, int limit, String after, Callback<ApiAlbum.FavoritesRes> callback) {
         enqueueCall(service().favorites(albumId, limit, after), callback);
     }
 
-    public void like(long albumId, Callback<APIResult> callback) {
-        enqueueCall(service().like(albumId), callback);
+    public void like(Album model, Callback<ApiAlbum.LikesRes> callback) {
+        if (model.likes.getParticipated())
+            enqueueCall(service().unlike(model.id), callback);
+        else
+            enqueueCall(service().like(model.id), callback);
     }
 
-    public void likeOfPage(long pageId, Callback<APIResult> callback) {
-        enqueueCall(service().likeOfPage(pageId), callback);
+    public void likeOfPage(Page model, Callback<ApiAlbum.LikesRes> callback) {
+        if (model.likes.getParticipated())
+            enqueueCall(service().unlikePage(model.id), callback);
+        else
+            enqueueCall(service().likeOfPage(model.id), callback);
     }
 
     public void likes(long albumId, int limit, String after, Callback<ApiAlbum.LikesRes> callback) {
@@ -195,6 +205,10 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().report(albumId, reportType.getValue()), callback);
     }
 
+    public Service service() {
+        return (Service) getCurrentService();
+    }
+
     public void view(long albumId, Callback<ApiAlbum.AlbumRes> callback) {
         enqueueCall(service().view(albumId), callback);
     }
@@ -211,25 +225,13 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().uncommentOfPage(pageId, commentId), callback);
     }
 
-    public void unfavorite(long albumId, Callback<APIResult> callback) {
-        enqueueCall(service().unfavorite(albumId), callback);
-    }
-
-    public void unlike(long albumId, Callback<APIResult> callback) {
-        enqueueCall(service().unlike(albumId), callback);
-    }
-
-    public void unlikePage(long pageId, Callback<APIResult> callback) {
-        enqueueCall(service().unlikePage(pageId), callback);
-    }
-
     public void update(Album album, Callback<ApiAlbum.AlbumRes> callback) {
         clearCache(album.id);
         enqueueCall(service().update(album.id, album), callback);
     }
 
-    public void updatePage(long pageId, String desc, Callback<APIResult> callback) {
-        enqueueCall(service().updatePage(pageId, desc), callback);
+    public void updatePage(Page page, Callback<APIResult> callback) {
+        enqueueCall(service().updatePage(page.id, page), callback);
     }
 
     // ================================================================================================
@@ -257,10 +259,6 @@ public class AlbumDataProxy extends AbstractDataProxy {
         });
     }
 
-    private Service service() {
-        return (Service) getCurrentService();
-    }
-
     // ================================================================================================
     //  Class: MediaDeserializer
     // ================================================================================================
@@ -285,43 +283,42 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
     public interface Service {
         @GET("{albumId}/comments")
-        Call<ApiAlbum.CommentsRes> comments(@Path("albumId") long albumId, int limit, String prev);
+        Call<ApiAlbum.CommentsRes> comments( @Path("albumId") long albumId, @Query("limit") int limit, @Query("prev") String prev);
 
         @GET("page/{pageId}/comments")
-        Call<ApiAlbum.CommentsRes> commentsOfPage(@Path("pageId") long pageId, int limit, String prev);
+        Call<ApiAlbum.CommentsRes> commentsOfPage(@Path("pageId") long pageId, @Query("limit") int limit, @Query("prev") String prev);
 
         @FormUrlEncoded
         @POST("{albumId}/comment")
-        Call<APIResult> comment(@Path("albumId") long albumId, String message);
+        Call<ApiAlbum.CommentsRes> comment(@Path("albumId") long albumId, @Field("message") String message);
 
         @FormUrlEncoded
         @POST("page/{pageId}/comment")
-        Call<APIResult> commentOfPage(@Path("pageId") long pageId, String message);
+        Call<ApiAlbum.CommentsRes> commentOfPage(@Path("pageId") long pageId, @Field("message") String message);
 
-        @FormUrlEncoded
         @POST("create")
         Call<ApiAlbum.AlbumRes> create(@Body Album album);
 
         @POST("{albumId}/favorite")
-        Call<APIResult> favorite(@Path("albumId") long albumId);
+        Call<ApiAlbum.FavoritesRes> favorite(@Path("albumId") long albumId);
 
         @GET("{albumId}/favorites")
-        Call<ApiAlbum.FavoritesRes> favorites(@Path("albumId") long albumId, int limit, String after);
+        Call<ApiAlbum.FavoritesRes> favorites(@Path("albumId") long albumId, @Query("limit") int limit, @Query("after") String after);
 
         @POST("{albumId}/like")
-        Call<APIResult> like(@Path("albumId") long albumId);
+        Call<ApiAlbum.LikesRes> like(@Path("albumId") long albumId);
 
         @POST("page/{pageId}/like")
-        Call<APIResult> likeOfPage(@Path("pageId") long pageId);
+        Call<ApiAlbum.LikesRes> likeOfPage(@Path("pageId") long pageId);
 
         @GET("{albumId}/likes")
-        Call<ApiAlbum.LikesRes> likes(@Path("albumId") long albumId, int limit, String after);
+        Call<ApiAlbum.LikesRes> likes(@Path("albumId") long albumId, @Query("limit") int limit, @Query("after") String after);
 
         @GET("page/{pageId}/likes")
-        Call<ApiAlbum.LikesRes> likesOfPage(@Path("pageId") long pageId, int limit, String after);
+        Call<ApiAlbum.LikesRes> likesOfPage(@Path("pageId") long pageId, @Query("limit") int limit, @Query("after") String after);
 
         @GET("{albumId}/pages")
-        Call<ApiAlbum.PagesRes> pages(@Path("albumId") long albumId, int limit, String after);
+        Call<ApiAlbum.PagesRes> pages(@Path("albumId") long albumId, @Query("limit") int limit, @Query("after") String after);
 
         @POST("{albumId}/report")
         Call<APIResult> report(@Path("albumId") long albumId, @Query("report_type") int reportType);
@@ -333,27 +330,25 @@ public class AlbumDataProxy extends AbstractDataProxy {
         Call<ApiAlbum.AlbumRes> viewByPageId(@Query("page_id") long pageId);
 
         @DELETE("{albumId}/comment")
-        Call<APIResult> uncomment(@Path("albumId") long albumId, @Path("comment_id") long commentId);
+        Call<ApiAlbum.CommentsRes> uncomment(@Path("albumId") long albumId, @Query("comment_id") long commentId);
 
         @DELETE("page/{pageId}/comment")
-        Call<APIResult> uncommentOfPage(@Path("pageId") long pageId, @Path("comment_id") long commentId);
+        Call<ApiAlbum.CommentsRes> uncommentOfPage(@Path("pageId") long pageId, @Query("comment_id") long commentId);
 
         @DELETE("{albumId}/favorite")
-        Call<APIResult> unfavorite(@Path("albumId") long albumId);
+        Call<ApiAlbum.FavoritesRes> unfavorite(@Path("albumId") long albumId);
 
         @DELETE("{albumId}/like")
-        Call<APIResult> unlike(@Path("albumId") long albumId);
+        Call<ApiAlbum.LikesRes> unlike(@Path("albumId") long albumId);
 
         @DELETE("page/{pageId}/like")
-        Call<APIResult> unlikePage(@Path("pageId") long pageId);
+        Call<ApiAlbum.LikesRes> unlikePage(@Path("pageId") long pageId);
 
-        @FormUrlEncoded
         @POST("update")
         Call<ApiAlbum.AlbumRes> update(@Query("album_id") long albumId, @Body Album album);
 
-        @FormUrlEncoded
         @POST("page/{pageId}")
-        Call<APIResult> updatePage(@Path("pageId") long pageId, @Query("desc") String desc);
+        Call<APIResult> updatePage(@Path("pageId") long pageId, @Body Page page);
     }
 
     // ================================================================================================

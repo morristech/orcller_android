@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.DataLoadValidator;
 
 /**
  * Created by pisces on 11/15/15.
  */
 public class PSActivity extends Activity {
-    private boolean dataLoading;
-    private boolean firstLoading = true;
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     // ================================================================================================
     //  Overridden: Activity
@@ -36,19 +36,14 @@ public class PSActivity extends Activity {
     // ================================================================================================
 
     public boolean isFirstLoading() {
-        return firstLoading;
+        return dataLoadValidator.isFirstLoading();
     }
 
     public void endDataLoading() {
-        dataLoading = false;
+        dataLoadValidator.endDataLoading();
     }
+
     public boolean invalidDataLoading() {
-        if (dataLoading)
-            return true;
-
-        dataLoading = true;
-        firstLoading = false;
-
-        return false;
+       return dataLoadValidator.invalidDataLoading();
     }
 }

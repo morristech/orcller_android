@@ -5,12 +5,13 @@ import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.widget.GridView;
 
-import pisces.psfoundation.utils.Log;
+import pisces.psfoundation.utils.DataLoadValidator;
 
 /**
  * Created by pisces on 11/29/15.
  */
 public class PSGridView extends GridView implements PSComponent {
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
@@ -48,6 +49,20 @@ public class PSGridView extends GridView implements PSComponent {
         invalidateProperties();
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int heightSpec;
+
+        if (getLayoutParams().height == LayoutParams.WRAP_CONTENT) {
+            heightSpec = MeasureSpec.makeMeasureSpec(
+                    Integer.MAX_VALUE, MeasureSpec.AT_MOST);
+        } else {
+            heightSpec = heightMeasureSpec;
+        }
+
+        super.onMeasure(widthMeasureSpec, heightSpec);
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
@@ -75,7 +90,7 @@ public class PSGridView extends GridView implements PSComponent {
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (initializedSubviews || immediatelyUpdating)
             commitProperties();
     }
 

@@ -11,12 +11,18 @@ import android.widget.RelativeLayout;
 
 import java.util.HashMap;
 
+import pisces.psfoundation.ext.Application;
+
 /**
  * Created by pisces on 11/9/15.
  */
 public class ProgressBarManager {
     private static boolean showing;
     private static HashMap<String, ProgressBarManager.ViewInfo> viewInfoMap = new HashMap<String, ProgressBarManager.ViewInfo>();
+
+    public static void hide() {
+        hide(Application.getTopActivity());
+    }
 
     public static void hide(Activity activity) {
         final String key = String.valueOf(activity.hashCode());
@@ -36,6 +42,18 @@ public class ProgressBarManager {
 
     public static boolean isShowing() {
         return showing;
+    }
+
+    public static void show() {
+        show(Application.getTopActivity());
+    }
+
+    public static void show(boolean modal) {
+        show(Application.getTopActivity(), modal);
+    }
+
+    public static void show(boolean modal, int progressStyle) {
+        show(Application.getTopActivity(), modal, progressStyle);
     }
 
     public static void show(Activity activity) {

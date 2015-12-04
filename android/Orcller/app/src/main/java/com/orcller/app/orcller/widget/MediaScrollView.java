@@ -3,11 +3,16 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
 
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -19,6 +24,7 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     private boolean scaleEnabled = true;
     private Media model;
     private MediaView mediaView;
+    private MediaView.Delegate mediaViewDelegate;
 
     public MediaScrollView(Context context) {
         super(context);
@@ -69,6 +75,14 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
         return null;
     }
 
+    public MediaView.Delegate getMediaViewDelegate() {
+        return mediaViewDelegate;
+    }
+
+    public void setMediaViewDelegate(MediaView.Delegate mediaViewDelegate) {
+        this.mediaViewDelegate = mediaViewDelegate;
+    }
+
     public Media getModel() {
         return model;
     }
@@ -105,8 +119,12 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
 
         this.scaleEnabled = scaleEnabled;
 
-        if (getImageMediaScrollView() != null)
+        if (getImageMediaScrollView() != null) {
+            if (!scaleEnabled)
+                getImageMediaScrollView().reset();
+
             getImageMediaScrollView().setScaleEnabled(scaleEnabled);
+        }
     }
 
     // ================================================================================================
@@ -138,14 +156,18 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
         Media media = getMediaModel();
 
         if (mediaView == null || media == null || model.type != media.type) {
-            if (mediaView != null)
+            if (mediaView != null) {
+                mediaView.setDelegate(null);
                 removeView(mediaView);
+            }
 
             mediaView = createMediaView(model);
 
             if (mediaView != null) {
                 LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 params.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
+                mediaView.setClickEnabled(true);
+                mediaView.setDelegate(mediaViewDelegate);
                 addView(mediaView, 0, params);
             }
         }

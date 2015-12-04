@@ -30,6 +30,7 @@ import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcller.widget.CommentInputView;
+import com.orcller.app.orcller.widget.CommentListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.ImageMediaScrollView;
 import com.orcller.app.orcller.widget.ImageMediaView;
@@ -175,6 +176,7 @@ public class ApplicationFacade {
 //        testPageScrollView();
         testPageListActivity();
 //        testCommentInputView();
+//        testCommentListView();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -329,7 +331,7 @@ public class ApplicationFacade {
                     items.add(page.media);
                 }
 
-                MediaListActivity.startActivity(items, 0);
+                MediaListActivity.show(items, 0);
             }
 
             @Override
@@ -464,5 +466,21 @@ public class ApplicationFacade {
     private void testCommentInputView() {
         CommentInputView view = new CommentInputView(Application.applicationContext());
         Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    private void testCommentListView() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                CommentListView view = new CommentListView(Application.applicationContext());
+                view.setModel(response.body().entity);
+                Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(w, ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 }

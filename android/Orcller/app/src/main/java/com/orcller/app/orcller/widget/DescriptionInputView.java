@@ -12,7 +12,7 @@ import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 
@@ -61,7 +61,11 @@ public class DescriptionInputView extends PSLinearLayout {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
 
+        int pd = enabled ? GraphicUtils.convertDpToPixel(5) : 0;
+
+        editText.setBackground(enabled ? getResources().getDrawable(R.drawable.background_bordered_white, null) : null);
         editText.setEnabled(enabled);
+        editText.setPadding(pd, pd, pd, pd);
         userPictureView.setVisibility(enabled ? VISIBLE : GONE);
     }
 
@@ -96,12 +100,22 @@ public class DescriptionInputView extends PSLinearLayout {
 
     public void clear() {
         editText.setText(null);
+        clearFocus();
+    }
+
+    public void clearFocus() {
         editText.setCursorVisible(false);
         SoftKeyboardUtils.hide(this);
     }
 
     public void removeTextChangedListener(TextWatcher watcher) {
         editText.removeTextChangedListener(watcher);
+    }
+
+    public void setFocus() {
+        editText.setFocusableInTouchMode(true);
+        editText.requestFocus();
+        SoftKeyboardUtils.show(editText);
     }
 
     // ================================================================================================

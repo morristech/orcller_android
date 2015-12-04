@@ -303,7 +303,7 @@ public class ApplicationService extends Service {
                     items.add(page.media);
                 }
 
-                MediaListActivity.startActivity(items, 0);
+                MediaListActivity.show(items, 0);
             }
 
             @Override

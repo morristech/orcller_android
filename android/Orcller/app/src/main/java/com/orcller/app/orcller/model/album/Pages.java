@@ -6,9 +6,7 @@ import java.util.List;
 /**
  * Created by pisces on 11/16/15.
  */
-public class Pages extends ListEntity {
-    public ArrayList<Page> data = new ArrayList<>();
-
+public class Pages extends ListEntity<Page> {
     public void deleteHeavyData() {
 
     }

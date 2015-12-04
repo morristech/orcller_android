@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.ObjectUtils;
 
@@ -27,7 +28,7 @@ public class Model implements Cloneable, Serializable {
     public Object clone() throws CloneNotSupportedException {
         try {
             Object clone = super.clone();
-            Field[] fields = getClass().getDeclaredFields();
+            Field[] fields = getClass().getFields();
 
             for (Field field : fields) {
                 field.setAccessible(true);
@@ -75,30 +76,9 @@ public class Model implements Cloneable, Serializable {
         EventBus.getDefault().post(new Event(Event.CHANGE, this));
     }
 
-    public boolean equalsList(Object object, Object other) {
-        List list = (List) object;
-        List otherList = (List) other;
-
-        if (list == null || otherList == null)
-            return false;
-
-        if (list.size() != otherList.size())
-            return false;
-
-        for (int i=0; i<list.size(); i++) {
-            Object object1 = list.get(i);
-            Object object2 = otherList.get(i);
-
-            if (!Model.equalsModel(object1, object2))
-                return false;
-        }
-
-        return true;
-    }
-
     public boolean equalsModel(Model other) {
         try {
-            Field[] fields = other.getClass().getDeclaredFields();
+            Field[] fields = other.getClass().getFields();
 
             for (Field field : fields) {
                 field.setAccessible(true);
@@ -143,22 +123,39 @@ public class Model implements Cloneable, Serializable {
     }
 
     public void synchronize(Model other) {
-        if (!this.getClass().equals(other.getClass()))
+        synchronize(other, null);
+    }
+
+    public void synchronize(final Model other, final Runnable runnable) {
+        if (!this.getClass().equals(other.getClass()) || other == null)
             return;
 
-        try {
-            Field[] fields = other.getClass().getDeclaredFields();
+        final Model self = this;
 
-            for (Field field : fields) {
-                field.setAccessible(true);
-                field.set(this, field.get(other));
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Field[] fields = other.getClass().getFields();
 
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+                        field.set(self, field.get(other));
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, self));
 
-            EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, this));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                if (runnable != null)
+                    runnable.run();
+            }
+        });
     }
 
     public String toJson() {

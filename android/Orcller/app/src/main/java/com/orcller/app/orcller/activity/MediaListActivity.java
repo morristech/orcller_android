@@ -1,13 +1,10 @@
 package com.orcller.app.orcller.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -15,7 +12,6 @@ import android.widget.TextView;
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.widget.ImageMediaScrollView;
 import com.orcller.app.orcller.widget.MediaScrollView;
 
 import java.util.ArrayList;
@@ -23,8 +19,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
-import pisces.psuikit.event.ImageViewScaleEvent;
+import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.imagepicker.OnScrollListener;
 
@@ -99,7 +94,8 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
                 selectedView = (MediaScrollView) viewHolder.itemView;
 
             if (!initialSelection)
-                EventBus.getDefault().post(new OnChangeSelectedIndex(selectedIndex, selectedView));
+                EventBus.getDefault().post(new IndexChangeEvent(
+                        IndexChangeEvent.INDEX_CHANGE, this, selectedView, selectedIndex));
         }
     }
 
@@ -107,7 +103,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
     //  Public
     // ================================================================================================
 
-    public static void startActivity(ArrayList<Media> items, int selectedIndex) {
+    public static void show(ArrayList<Media> items, int selectedIndex) {
         Intent intent = new Intent(Application.applicationContext(), MediaListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ITEMS_KEY, items);
@@ -189,28 +185,6 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
     private final class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View itemView) {
             super(itemView);
-        }
-    }
-
-    // ================================================================================================
-    //  Class: DividerItemDecoration
-    // ================================================================================================
-
-    public static class OnChangeSelectedIndex {
-        private int selectedIndex;
-        private MediaScrollView selectedView;
-
-        public OnChangeSelectedIndex(int selectedIndex, MediaScrollView selectedView) {
-            this.selectedIndex = selectedIndex;
-            this.selectedView = selectedView;
-        }
-
-        public int getSelectedIndex() {
-            return selectedIndex;
-        }
-
-        public MediaScrollView getSelectedView() {
-            return selectedView;
         }
     }
 }

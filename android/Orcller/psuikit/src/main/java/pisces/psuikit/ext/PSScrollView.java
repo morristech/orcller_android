@@ -6,10 +6,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ScrollView;
 
+import pisces.psfoundation.utils.DataLoadValidator;
+
 /**
  * Created by pisces on 11/22/15.
  */
 public class PSScrollView extends ScrollView implements PSComponent {
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
     private boolean scrollable = true;

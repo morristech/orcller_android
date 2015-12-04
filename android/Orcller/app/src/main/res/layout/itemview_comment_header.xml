@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pisces.psuikit.widget.PSButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_itemview_comment_header"
+    android:text="@string/w_previous_comments"
+    android:textColor="@android:color/black"
+    android:textSize="12dp"/>

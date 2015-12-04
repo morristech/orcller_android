@@ -88,6 +88,10 @@ public class CommentInputView extends PSLinearLayout {
 
     public void clear() {
         editText.setText(null);
+        clearFocus();
+    }
+
+    public void clearFocus() {
         editText.setCursorVisible(false);
         SoftKeyboardUtils.hide(this);
     }

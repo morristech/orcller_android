@@ -5,14 +5,14 @@ import android.support.v4.app.FragmentActivity;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.DataLoadValidator;
 import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/15/15.
  */
 public class PSFragmentActivity extends FragmentActivity {
-    private boolean dataLoading;
-    private boolean firstLoading = true;
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     // ================================================================================================
     //  Overridden: FragmentActivity
@@ -45,19 +45,14 @@ public class PSFragmentActivity extends FragmentActivity {
     // ================================================================================================
 
     public boolean isFirstLoading() {
-        return firstLoading;
+        return dataLoadValidator.isFirstLoading();
     }
 
     public void endDataLoading() {
-        dataLoading = false;
-        firstLoading = false;
+        dataLoadValidator.endDataLoading();
     }
+
     public boolean invalidDataLoading() {
-        if (dataLoading)
-            return true;
-
-        dataLoading = true;
-
-        return false;
+        return dataLoadValidator.invalidDataLoading();
     }
 }

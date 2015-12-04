@@ -2,20 +2,17 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
 
 import com.orcller.app.orcller.model.album.Page;
 
-import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
  * Created by pisces on 11/19/15.
  */
-public class PageView extends PSFrameLayout implements MediaView.MediaViewDelegate {
+public class PageView extends PSFrameLayout implements MediaView.Delegate {
     private boolean controlEnabled;
     private boolean controlEnabledChanged;
     private int imageLoadType;
@@ -126,6 +123,9 @@ public class PageView extends PSFrameLayout implements MediaView.MediaViewDelega
     // ================================================================================================
     //  Listener
     // ================================================================================================
+
+    public void onClick(MediaView view) {
+    }
 
     public void onCompleteImageLoad(MediaView view) {
         if (delegate != null)

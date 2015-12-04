@@ -5,10 +5,13 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import pisces.psfoundation.utils.DataLoadValidator;
+
 /**
  * Created by pisces on 11/19/15.
  */
 public class PSFrameLayout extends FrameLayout implements PSComponent {
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 

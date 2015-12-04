@@ -22,6 +22,7 @@ import pisces.android.R;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
+import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 
@@ -119,11 +120,14 @@ public class ImagePickerActivity extends PSActionBarActivity
     }
 
     public void onEventMainThread(Object event) {
-        if (event instanceof ImagePickerViewActivity.OnChangeSelectedIndex) {
-            ImagePickerViewActivity.OnChangeSelectedIndex casted = (ImagePickerViewActivity.OnChangeSelectedIndex) event;
-            gridView.setSelection(casted.getSelectedIndex());
+        if (event instanceof IndexChangeEvent) {
+            IndexChangeEvent casted = (IndexChangeEvent) event;
+
+            if (casted.getTarget() instanceof ImagePickerViewActivity)
+                gridView.setSelection(casted.getSelectedIndex());
         }
     }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
