@@ -27,7 +27,8 @@ import pisces.psuikit.widget.PSButton;
 /**
  * Created by pisces on 12/3/15.
  */
-public class PageScrollView extends PSLinearLayout implements View.OnClickListener, MediaView.Delegate {
+public class PageScrollView extends PSLinearLayout
+        implements CommentListView.Delegate, MediaView.Delegate, View.OnClickListener {
     private boolean editEnabled;
     private Page model;
     private Delegate delegate;
@@ -75,6 +76,7 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
         mediaScrollView.setScaleAspectFill(true);
         commentButton.setOnClickListener(this);
         heartButton.setOnClickListener(this);
+        commentListView.setDelegate(this);
         EventBus.getDefault().register(this);
     }
 
@@ -103,6 +105,13 @@ public class PageScrollView extends PSLinearLayout implements View.OnClickListen
     public void onClick(MediaView view) {
         if (delegate != null)
             delegate.onClickMediaView(this, view);
+    }
+
+    public void onChange(Comments comments) {
+        model.comments.participated = comments.participated;
+        model.comments.total_count = comments.total_count;
+
+        updateButtons();
     }
 
     public void onCompleteImageLoad(MediaView view) {

@@ -49,9 +49,12 @@
 
         <ImageView
             android:id="@+id/deleteImageView"
-            android:layout_width="13dp"
-            android:layout_height="15dp"
+            android:layout_width="22dp"
+            android:layout_height="23dp"
             android:gravity="right"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
             android:src="@drawable/icon_comment_delete"
             android:visibility="gone"/>
     </LinearLayout>

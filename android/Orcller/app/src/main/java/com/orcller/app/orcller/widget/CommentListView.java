@@ -264,7 +264,7 @@ public class CommentListView extends PSListView
 
     private void performChange() {
         if (getDelegate() != null)
-            getDelegate().onChangeComments();
+            getDelegate().onChange(lastEntity);
     }
 
     private void setHeaderView() {
@@ -331,6 +331,6 @@ public class CommentListView extends PSListView
     // ================================================================================================
 
     public static interface Delegate {
-        void onChangeComments();
+        void onChange(Comments comments);
     }
 }

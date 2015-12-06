@@ -7,6 +7,7 @@ import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import pisces.android.R;
@@ -42,6 +43,8 @@ public class PSButton extends PSFrameLayout {
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         textView = new TextView(context);
 
+        addView(textView, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PSButton, defStyleAttr, defStyleRes);
         try {
             setDrawableBottom(ta.getResourceId(R.styleable.PSButton_android_drawableBottom, 0));
@@ -51,15 +54,12 @@ public class PSButton extends PSFrameLayout {
             setDrawablePadding(ta.getDimensionPixelSize(R.styleable.PSButton_android_drawablePadding, 0));
             setText(ta.getString(R.styleable.PSButton_android_text));
             setTextColor(ta.getColorStateList(R.styleable.PSButton_android_textColor));
+            setTextLayoutGravity(ta.getInt(R.styleable.PSButton_textLayoutGravity, Gravity.CENTER));
             setTextSize((float) ta.getDimensionPixelSize(R.styleable.PSButton_android_textSize, (int) getTextSize()));
         } finally {
             ta.recycle();
         }
 
-        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.CENTER;
-
-        addView(textView, params);
         setClickable(true);
     }
 
@@ -120,6 +120,14 @@ public class PSButton extends PSFrameLayout {
 
     public void setDrawablePadding(int drawablePadding) {
         textView.setCompoundDrawablePadding(drawablePadding);
+    }
+
+    public int getTextLayoutGravity() {
+        return ((LayoutParams) textView.getLayoutParams()).gravity;
+    }
+
+    public void setTextLayoutGravity(int gravity) {
+        ((LayoutParams) textView.getLayoutParams()).gravity = gravity;
     }
 
     public CharSequence getText() {
