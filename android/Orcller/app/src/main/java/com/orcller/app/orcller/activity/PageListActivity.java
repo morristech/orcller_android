@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,10 +31,9 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageScrollView;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,6 +185,17 @@ public class PageListActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static void show(Album model, int selectedIndex) {
+        Intent intent = new Intent(Application.applicationContext(), PageListActivity.class);
+        intent.putExtra(ALBUM_KEY, model);
+        intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
+        Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);
+    }
+
+    // ================================================================================================
     //  Listener
     // ================================================================================================
 
@@ -296,17 +305,6 @@ public class PageListActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
-    //  Public
-    // ================================================================================================
-
-    public static void show(Album model, int selectedIndex) {
-        Intent intent = new Intent(Application.applicationContext(), PageListActivity.class);
-        intent.putExtra(ALBUM_KEY, model);
-        intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
-        Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);
-    }
-
-    // ================================================================================================
     //  Private
     // ================================================================================================
 
@@ -364,7 +362,7 @@ public class PageListActivity extends PSActionBarActivity
         final Runnable error = new Runnable() {
             @Override
             public void run() {
-                AlertDialogUtils.show(getString(R.string.m_fail_message),
+                AlertDialogUtils.show(getString(R.string.m_message_fail),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -381,9 +379,9 @@ public class PageListActivity extends PSActionBarActivity
             }
         };
 
-        AlbumDataProxy.getDefault().updatePage(page, new Callback<APIResult>() {
+        AlbumDataProxy.getDefault().updatePage(page, new Callback<ApiResult>() {
             @Override
-            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+            public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 endDataLoading();
 
                 if (response.isSuccess() && response.body().isSuccess()) {

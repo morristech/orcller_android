@@ -1,7 +1,7 @@
 package com.orcller.app.orcllermodules.proxy;
 
 import com.orcller.app.orcllermodules.R;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 
 import java.util.Map;
@@ -49,7 +49,7 @@ public class MemberDataProxy extends AbstractDataProxy {
         Call<ApiMember.LoginRes> loginByIdp(@FieldMap Map<String, String> parameters);
 
         @GET("logout")
-        Call<APIResult> logout();
+        Call<ApiResult> logout();
 
         @FormUrlEncoded @POST("join_email")
         Call<ApiMember.LoginRes> joinByEmail(@FieldMap Map<String, String> parameters);
@@ -58,10 +58,10 @@ public class MemberDataProxy extends AbstractDataProxy {
         Call<ApiMember.LoginRes> joinByIdp(@FieldMap Map<String, String> parameters);
 
         @FormUrlEncoded @POST("send_certification_email")
-        Call<APIResult> sendCertificationEmail(@Field("email")String email);
+        Call<ApiResult> sendCertificationEmail(@Field("email")String email);
 
         @FormUrlEncoded @POST("sync_idp")
-        Call<APIResult> syncByIdp(@FieldMap Map<String, String> parameters);
+        Call<ApiResult> syncByIdp(@FieldMap Map<String, String> parameters);
 
         @FormUrlEncoded @POST("device")
         Call<ApiMember> updateDevice(@FieldMap Map<String, String> parameters);

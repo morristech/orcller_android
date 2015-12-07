@@ -79,6 +79,10 @@ public class UserPictureView extends PSImageView {
         this.sizeType = sizeType;
     }
 
+    public void reload() {
+        modelChanged();
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================

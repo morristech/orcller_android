@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/hide"
+        android:title="@string/w_hide_album"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/hideAll"
+        android:title="@string/w_hide_all_albums_of"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/report"
+        android:title="@string/w_report_inappropriate"
+        app:showAsAction="never" />
+</menu>

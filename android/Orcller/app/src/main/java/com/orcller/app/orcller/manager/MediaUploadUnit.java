@@ -208,7 +208,7 @@ public class MediaUploadUnit implements Serializable {
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     MediaManager.getDefault().clearUploading(model);
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.COMPLETE_CREATION, this, response.body().entity));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, response.body().entity));
                 } else {
                     errorState();
                 }
@@ -227,7 +227,7 @@ public class MediaUploadUnit implements Serializable {
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     MediaManager.getDefault().clearUploading(model);
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.COMPLETE_MODIFICATION, this, response.body().entity));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, response.body().entity));
                 } else {
                     errorState();
                 }

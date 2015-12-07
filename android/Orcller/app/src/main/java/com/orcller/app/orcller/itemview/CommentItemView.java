@@ -41,7 +41,7 @@ public class CommentItemView extends PSLinearLayout implements View.OnClickListe
     }
 
     // ================================================================================================
-    //  Overridden: PSListView
+    //  Overridden: PSLinearLayout
     // ================================================================================================
 
     @Override

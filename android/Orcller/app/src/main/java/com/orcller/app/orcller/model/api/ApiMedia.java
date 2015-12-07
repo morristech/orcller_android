@@ -1,12 +1,12 @@
 package com.orcller.app.orcller.model.api;
 
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 
 /**
  * Created by pisces on 12/3/15.
  */
 public class ApiMedia {
-    public static class UploadInfoRes extends APIResult {
+    public static class UploadInfoRes extends ApiResult {
         public UploadInfoEntity entity;
     }
 

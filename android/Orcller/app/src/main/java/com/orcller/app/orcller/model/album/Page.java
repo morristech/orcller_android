@@ -9,7 +9,6 @@ import pisces.psfoundation.utils.DateUtil;
  */
 public class Page extends AlbumInfo {
     public int order;
-    public long updated_time;
     public String desc;
     public Media media;
     public Comments comments = new Comments();

@@ -1,24 +1,15 @@
 package com.orcller.app.orcller.proxy;
 
-import android.os.Bundle;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.album.Pages;
-import com.orcller.app.orcller.model.album.VideoMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,8 +102,12 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().create(album), callback);
     }
 
+    public void delete(long albumId, Callback<ApiResult> callback) {
+        enqueueCall(service().delete(albumId), callback);
+    }
+
     public void favorite(Album model, Callback<ApiAlbum.FavoritesRes> callback) {
-        if (model.likes.getParticipated())
+        if (model.likes.isParticipated())
             enqueueCall(service().unfavorite(model.id), callback);
         else
             enqueueCall(service().favorite(model.id), callback);
@@ -123,14 +118,14 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     public void like(Album model, Callback<ApiAlbum.LikesRes> callback) {
-        if (model.likes.getParticipated())
+        if (model.likes.isParticipated())
             enqueueCall(service().unlike(model.id), callback);
         else
             enqueueCall(service().like(model.id), callback);
     }
 
     public void likeOfPage(Page model, Callback<ApiAlbum.LikesRes> callback) {
-        if (model.likes.getParticipated())
+        if (model.likes.isParticipated())
             enqueueCall(service().unlikePage(model.id), callback);
         else
             enqueueCall(service().likeOfPage(model.id), callback);
@@ -201,7 +196,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
         });
     }
 
-    public void report(long albumId, Album.ReportType reportType, Callback<APIResult> callback) {
+    public void report(long albumId, Album.ReportType reportType, Callback<ApiResult> callback) {
         enqueueCall(service().report(albumId, reportType.getValue()), callback);
     }
 
@@ -217,11 +212,11 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().viewByPageId(pageId), callback);
     }
 
-    public void uncomment(long albumId, long commentId, Callback<APIResult> callback) {
+    public void uncomment(long albumId, long commentId, Callback<ApiResult> callback) {
         enqueueCall(service().uncomment(albumId, commentId), callback);
     }
 
-    public void uncommentOfPage(long pageId, long commentId, Callback<APIResult> callback) {
+    public void uncommentOfPage(long pageId, long commentId, Callback<ApiResult> callback) {
         enqueueCall(service().uncommentOfPage(pageId, commentId), callback);
     }
 
@@ -230,7 +225,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().update(album.id, album), callback);
     }
 
-    public void updatePage(Page page, Callback<APIResult> callback) {
+    public void updatePage(Page page, Callback<ApiResult> callback) {
         enqueueCall(service().updatePage(page.id, page), callback);
     }
 
@@ -260,24 +255,6 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     // ================================================================================================
-    //  Class: MediaDeserializer
-    // ================================================================================================
-
-    private static class MediaDeserializer implements JsonDeserializer<Media> {
-        @Override
-        public Media deserialize(JsonElement je, Type type, JsonDeserializationContext jdc)
-                throws JsonParseException {
-            int _type = je.getAsJsonObject().get("type").getAsInt();
-
-            if (_type == Media.Type.Video.getValue())
-                return new Gson().fromJson(je, VideoMedia.class);
-            else if (_type == Media.Type.Image.getValue())
-                return new Gson().fromJson(je, ImageMedia.class);
-            return null;
-        }
-    }
-
-    // ================================================================================================
     //  Interface: Service
     // ================================================================================================
 
@@ -304,6 +281,9 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
         @POST("create")
         Call<ApiAlbum.AlbumRes> create(@Body Album album);
+
+        @DELETE("{albumId}")
+        Call<ApiResult> delete(@Path("albumId") long albumId);
 
         @POST("{albumId}/favorite")
         Call<ApiAlbum.FavoritesRes> favorite(@Path("albumId") long albumId);
@@ -339,7 +319,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
                 @Query(value = "after", encoded = true) String after);
 
         @POST("{albumId}/report")
-        Call<APIResult> report(@Path("albumId") long albumId, @Query("report_type") int reportType);
+        Call<ApiResult> report(@Path("albumId") long albumId, @Query("report_type") int reportType);
 
         @GET("{albumId}")
         Call<ApiAlbum.AlbumRes> view(@Path("albumId") long albumId);
@@ -366,7 +346,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
         Call<ApiAlbum.AlbumRes> update(@Query("album_id") long albumId, @Body Album album);
 
         @POST("page/{pageId}")
-        Call<APIResult> updatePage(@Path("pageId") long pageId, @Body Page page);
+        Call<ApiResult> updatePage(@Path("pageId") long pageId, @Body Page page);
     }
 
     // ================================================================================================

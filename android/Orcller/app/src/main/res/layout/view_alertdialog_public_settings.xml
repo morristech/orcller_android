@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pisces.psuikit.ext.PSLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/publicRadioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:text="@string/w_public"
+            android:textColor="@drawable/color_album_public_settings"
+            android:textSize="16dp"/>
+
+        <RadioButton
+            android:id="@+id/followersRadioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:text="@string/w_open_to_followers"
+            android:textColor="@drawable/color_album_public_settings"
+            android:textSize="16dp" />
+
+        <RadioButton
+            android:id="@+id/privateRadioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:text="@string/w_private"
+            android:textColor="@drawable/color_album_public_settings"
+            android:textSize="16dp" />
+    </RadioGroup>
+</pisces.psuikit.ext.PSLinearLayout>

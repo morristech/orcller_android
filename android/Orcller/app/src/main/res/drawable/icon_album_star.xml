@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:state_pressed="true">
+        <bitmap android:src="@drawable/icon_star_yellow"
+            android:tint="@color/icon_star_selected_pressed" />
+    </item>
+    <item android:state_selected="true" android:drawable="@drawable/icon_star_yellow"/>
+    <item android:state_pressed="true">
+        <bitmap android:src="@drawable/icon_star_gray"
+            android:tint="@android:color/black" />
+    </item>
+    <item android:drawable="@drawable/icon_star_gray"/>
+</selector>

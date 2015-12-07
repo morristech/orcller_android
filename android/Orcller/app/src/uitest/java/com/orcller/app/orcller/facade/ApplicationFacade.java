@@ -2,6 +2,7 @@ package com.orcller.app.orcller.facade;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -14,6 +15,7 @@ import com.orcller.app.orcller.activity.AlbumEditActivity;
 import com.orcller.app.orcller.activity.AlbumPageDefaultActivity;
 import com.orcller.app.orcller.activity.AlbumPageDeleteActivity;
 import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
+import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
@@ -22,6 +24,7 @@ import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
+import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
@@ -174,9 +177,11 @@ public class ApplicationFacade {
 //        testMemberActivity();
 //        testAlbumEditActivity();
 //        testPageScrollView();
-        testPageListActivity();
+//        testPageListActivity();
 //        testCommentInputView();
 //        testCommentListView();
+//        testAlbumItemView();
+        testAlbumViewActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -482,5 +487,36 @@ public class ApplicationFacade {
             public void onFailure(Throwable t) {
             }
         });
+    }
+
+    private void testAlbumItemView() {
+        final AlbumItemView view = new AlbumItemView(Application.applicationContext());
+        Application.getTopActivity().addContentView(view,
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(final Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                view.setModel(response.body().entity);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testAlbumViewActivity() {
+        AlbumViewActivity.show(4, false);
+//        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+//            @Override
+//            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+//                AlbumViewActivity.show(response.body().entity, false);
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//            }
+//        });
     }
 }

@@ -1,8 +1,6 @@
 package com.orcller.app.orcllermodules.error;
 
-import android.os.Bundle;
-
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 
 /**
  * Created by pisces on 11/5/15.
@@ -33,13 +31,13 @@ public class APIError extends Error {
         this.code = code;
     }
 
-    public APIError(APIResult result) {
+    public APIError(ApiResult result) {
         super(result.error_message);
 
         this.code = result.error_code;
     }
 
-    public static APIError create(APIResult result) {
+    public static APIError create(ApiResult result) {
         return new APIError(result);
     }
 

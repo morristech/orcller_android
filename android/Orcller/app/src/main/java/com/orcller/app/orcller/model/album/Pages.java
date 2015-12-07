@@ -16,4 +16,8 @@ public class Pages extends ListEntity<Page> {
             return null;
         return data.get(index);
     }
+
+    public int getPageIndex(Page page) {
+        return data.indexOf(page);
+    }
 }

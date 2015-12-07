@@ -60,10 +60,10 @@
             android:layout_height="48dp"
             android:layout_gravity="center_horizontal"
             android:background="@null"
-            android:drawableLeft="@drawable/button_fb_icon"
+            android:drawableLeft="@drawable/icon_facebook_circle"
             android:drawablePadding="5dp"
             android:text="@string/w_login_with_facebook"
-            android:textColor="@drawable/button_fb_textcolor"
+            android:textColor="@drawable/color_button_facebook"
             android:textSize="14dp" />
 
         <Button
@@ -73,7 +73,7 @@
             android:layout_gravity="center_horizontal|center_vertical"
             android:background="@android:color/transparent"
             android:text="Next"
-            android:textColor="@drawable/button_fb_textcolor"
+            android:textColor="@drawable/color_button_facebook"
             android:textSize="14dp"
             android:visibility="gone" />
     </FrameLayout>

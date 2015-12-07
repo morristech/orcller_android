@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.facebook.login.LoginManager;
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
@@ -149,7 +149,7 @@ public class AuthenticationCenter {
 
     public void logout(final Api.CompleteHandler completeHandler) {
         MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<APIResult> call = service.logout();
+        Call<ApiResult> call = service.logout();
 
         final Api.CompleteHandler handler = new Api.CompleteHandler() {
             @Override
@@ -159,9 +159,9 @@ public class AuthenticationCenter {
             }
         };
 
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<APIResult>() {
+        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
             @Override
-            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+            public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if (response.body().isSuccess()) {
                         synchronized (this) {
@@ -189,11 +189,11 @@ public class AuthenticationCenter {
 
     public void sendCertificationEmail(String email, final Api.CompleteHandler completeHandler) {
         MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<APIResult> call = service.sendCertificationEmail(email);
+        Call<ApiResult> call = service.sendCertificationEmail(email);
 
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<APIResult>() {
+        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
             @Override
-            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+            public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if (response.body().isSuccess()) {
                         completeHandler.onComplete(response.body(), null);
@@ -303,7 +303,7 @@ public class AuthenticationCenter {
 
     public void syncWithIdp(ApiMember.SyncWithIdpReq req, final Api.CompleteHandler completeHandler) {
         MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<APIResult> call = service.syncByIdp(req.map());
+        Call<ApiResult> call = service.syncByIdp(req.map());
         final Api.CompleteHandler handler = new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
@@ -312,9 +312,9 @@ public class AuthenticationCenter {
             }
         };
 
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<APIResult>() {
+        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
             @Override
-            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+            public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if (response.body().isSuccess()) {
                         handler.onComplete(response.body(), null);
@@ -340,9 +340,9 @@ public class AuthenticationCenter {
         MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
         Call<ApiMember.LoginRes> call = service.joinByEmail(new ApiMember.BaseReq().map());
 
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<APIResult>() {
+        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
             @Override
-            public void onResponse(Response<APIResult> response, Retrofit retrofit) {
+            public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
             }
 
             @Override

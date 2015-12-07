@@ -7,12 +7,12 @@ public class AlbumAdditionalListEntity<T> extends ListEntity<T> {
     public long id;
     public int participated;
 
-    public boolean getParticipated() {
+    public boolean isParticipated() {
         return participated > 0;
     }
 
     public void participated() {
-        if (getParticipated()) {
+        if (isParticipated()) {
             participated = 0;
             count--;
             total_count--;

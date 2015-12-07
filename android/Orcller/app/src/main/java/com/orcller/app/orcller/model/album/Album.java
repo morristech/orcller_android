@@ -21,6 +21,7 @@ import pisces.psfoundation.utils.DateUtil;
  */
 public class Album extends AlbumInfo {
     public enum Permission {
+        None(0),
         Public(1),
         Followers(2),
         Private(3);
@@ -53,10 +54,10 @@ public class Album extends AlbumInfo {
     public boolean page_replace_enabled;
     public int default_page_index;
     public int permission;
-    public long updated_time;
     public String desc;
     public String encrypted_id;
     public String name;
+    public Comments comments = new Comments();
     public Contributors contributors = new Contributors();
     public Favorites favorites = new Favorites();
     public Likes likes = new Likes();

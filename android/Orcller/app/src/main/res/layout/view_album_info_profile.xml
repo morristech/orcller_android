@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<pisces.psuikit.ext.PSLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:paddingRight="8dp"
@@ -23,10 +23,11 @@
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/idTextView"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/textcolor_dark_blue"
+                android:clickable="true"
+                android:textColorLink="@drawable/color_user_id"
                 android:textStyle="bold"
                 android:textSize="13dp"/>
 
@@ -47,4 +48,4 @@
             android:textColor="@android:color/black"
             android:textSize="12dp"/>
     </LinearLayout>
-</LinearLayout>
+</pisces.psuikit.ext.PSLinearLayout>

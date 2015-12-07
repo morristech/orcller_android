@@ -1,7 +1,7 @@
 package com.orcller.app.orcller.proxy;
 
 import com.orcller.app.orcller.model.api.ApiMedia;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import pisces.psfoundation.ext.Application;
@@ -44,7 +44,7 @@ public class MediaDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
-    public void uploadDirectly(Callback<APIResult> callback) {
+    public void uploadDirectly(Callback<ApiResult> callback) {
 
     }
 

@@ -1,7 +1,7 @@
 package com.orcller.app.orcllermodules.proxy;
 
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -41,7 +41,7 @@ abstract public class AbstractDataProxy<T> extends AbstractRetrofitProxy {
     //  Public
     // ================================================================================================
 
-    public void enqueueCall(final Call<APIResult> call, final Callback<APIResult> calllback) {
+    public void enqueueCall(final Call<ApiResult> call, final Callback<ApiResult> calllback) {
         Thread thread = new Thread(new Runnable(){
             @Override
             public void run() {

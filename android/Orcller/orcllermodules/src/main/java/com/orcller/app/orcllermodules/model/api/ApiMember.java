@@ -3,7 +3,7 @@ package com.orcller.app.orcllermodules.model.api;
 import android.os.Build;
 
 import com.orcller.app.orcllermodules.managers.DeviceManager;
-import com.orcller.app.orcllermodules.model.APIResult;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.utils.DeviceUtils;
 
 import java.util.Locale;
@@ -30,7 +30,7 @@ public class ApiMember {
         }
     }
 
-    public static class LoginRes extends APIResult {
+    public static class LoginRes extends ApiResult {
         public LoginRes.Entity entity;
 
         public class Entity {

@@ -6,7 +6,7 @@ import pisces.psfoundation.model.Model;
  * Created by pisces on 11/5/15.
  */
 public class ApiApplication {
-    public class Version extends APIResult {
+    public class Version extends ApiResult {
         public Version.Entity entity;
 
         public class Entity extends Model {

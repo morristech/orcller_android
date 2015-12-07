@@ -1,7 +1,6 @@
 package com.orcller.app.orcllermodules.model.api;
 
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.model.APIResult;
 
 /**
  * Created by pisces on 11/10/15.

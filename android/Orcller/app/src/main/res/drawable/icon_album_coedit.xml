@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:state_pressed="true" android:drawable="@drawable/icon_coedit_purple_selected"/>
+    <item android:state_selected="true" android:drawable="@drawable/icon_coedit_purple_selected"/>
+    <item android:state_pressed="true">
+        <bitmap android:src="@drawable/icon_coedit_purple"
+            android:tint="@color/theme_purple_accent" />
+    </item>
+    <item android:drawable="@drawable/icon_coedit_purple"/>
+</selector>

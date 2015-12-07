@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pisces.psuikit.ext.PSLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
+    <com.orcller.app.orcller.widget.AlbumInfoProfileView
+        android:id="@+id/albumInfoProfileView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.orcller.app.orcller.widget.AlbumFlipView
+        android:id="@+id/albumFlipView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
+
+    <LinearLayout
+        android:id="@+id/infoContainer"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
+        <TextView
+            android:id="@+id/heartTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingBottom="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:clickable="true"
+            android:textColor="@drawable/color_album_info"
+            android:textSize="11dp"/>
+
+        <TextView
+            android:id="@+id/commentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
+            android:clickable="true"
+            android:textColor="@drawable/color_album_info"
+            android:textSize="11dp"/>
+
+        <TextView
+            android:id="@+id/starTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
+            android:clickable="true"
+            android:textColor="@drawable/color_album_info"
+            android:textSize="11dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/optionsIcon"
+                android:layout_width="34dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:clickable="true"
+                android:src="@drawable/icon_album_options"
+                android:visibility="gone"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="@drawable/background_itemview_comment_header">
+        <pisces.psuikit.widget.PSButton
+            android:id="@+id/coeditButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/icon_album_coedit"
+            android:drawablePadding="5dp"
+            android:text="@string/w_coedit"
+            android:textColor="@drawable/color_album_coedit"
+            android:textSize="12dp"/>
+
+        <pisces.psuikit.widget.PSButton
+            android:id="@+id/heartButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/icon_album_heart"
+            android:drawablePadding="5dp"
+            android:textColor="@drawable/color_album_heart"
+            android:textSize="12dp"/>
+
+        <pisces.psuikit.widget.PSButton
+            android:id="@+id/commentButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/icon_album_comment"
+            android:drawablePadding="5dp"
+            android:text="@string/w_comment"
+            android:textColor="@drawable/color_album_comment"
+            android:textSize="12dp"/>
+
+        <pisces.psuikit.widget.PSButton
+            android:id="@+id/starButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/icon_album_star"
+            android:drawablePadding="5dp"
+            android:textColor="@drawable/color_album_star"
+            android:textSize="12dp"/>
+    </LinearLayout>
+</pisces.psuikit.ext.PSLinearLayout>
