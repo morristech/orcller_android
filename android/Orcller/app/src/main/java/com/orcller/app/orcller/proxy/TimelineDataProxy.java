@@ -2,12 +2,11 @@ package com.orcller.app.orcller.proxy;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
-import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Converter;
@@ -41,7 +40,7 @@ public class TimelineDataProxy extends AbstractDataProxy {
 
     @Override
     protected String createBaseUrl() {
-        return Application.applicationContext().getString(com.orcller.app.orcllermodules.R.string.server_base_url) + "/newsfeed/";
+        return BuildConfig.API_BASE_URL + "/newsfeed/";
     }
 
     // ================================================================================================

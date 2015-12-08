@@ -60,7 +60,7 @@ public class FBShareProxy {
                     if (error == null) {
                         upload(album);
                     } else {
-                        showRetryAlertDialog(error.getMessage(), new Runnable() {
+                        AlertDialogUtils.retry(error.getMessage(), new Runnable() {
                             @Override
                             public void run() {
                                 share(album);
@@ -81,7 +81,7 @@ public class FBShareProxy {
             public void run() {
                 ProgressBarManager.hide();
                 dataLoadValidator.endDataLoading();
-                showRetryAlertDialog(R.string.m_message_share_fail, new Runnable() {
+                AlertDialogUtils.retry(R.string.m_message_share_fail, new Runnable() {
                     @Override
                     public void run() {
                         upload(album);
@@ -124,24 +124,5 @@ public class FBShareProxy {
                 });
             }
         });
-    }
-
-    private void showRetryAlertDialog(int message, Runnable retry) {
-        showRetryAlertDialog(Application.applicationContext().getString(message), retry);
-    }
-
-    private void showRetryAlertDialog(String message, final Runnable retry) {
-        Context context = Application.applicationContext();
-        AlertDialogUtils.show(message,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == AlertDialog.BUTTON_POSITIVE) {
-                            retry.run();
-                        }
-                    }
-                },
-                context.getString(R.string.w_dismiss),
-                context.getString(R.string.w_retry));
     }
 }

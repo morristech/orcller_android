@@ -90,6 +90,7 @@
     <string name="m_message_album_delete_fail">It failed to delete an album.\nPlease try again.</string>
     <string name="m_message_fail">It failed to save changes.\nPlease try again.</string>
     <string name="m_message_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
+    <string name="m_message_comment_fail">It failed to post a comment.\nPlease try again.</string>
     <string name="m_message_report_received">The report has been received.\nThank you for your feedback.</string>
     <string name="m_message_share_fail">It failed to share the album.\nPlease try again.</string>
     <string name="m_send_email_result">

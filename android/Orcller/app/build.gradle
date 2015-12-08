@@ -46,22 +46,22 @@ android {
     productFlavors {
         uitest {
             applicationId "com.orcller.app.orcller.uitest"
-            buildConfigField 'String', 'HOST', '"http://192.168.10.103"'
+            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
         }
 
         dev {
             applicationId "com.orcller.app.orcller.dev"
-            buildConfigField 'String', 'HOST', '"http://192.168.10.103"'
+            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.103/apis"'
         }
 
         qa {
             applicationId "com.orcller.app.orcller.qa"
-            buildConfigField 'String', 'HOST', '"https://www.orcller.com"'
+            buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
         }
 
         production {
             applicationId "com.orcller.app.orcller"
-            buildConfigField 'String', 'HOST', '"https://www.orcller.com"'
+            buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
         }
     }
 }

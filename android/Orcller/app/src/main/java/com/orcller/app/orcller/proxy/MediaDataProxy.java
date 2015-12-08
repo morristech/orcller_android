@@ -2,6 +2,7 @@ package com.orcller.app.orcller.proxy;
 
 import android.graphics.Bitmap;
 
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 import com.squareup.okhttp.MediaType;
@@ -34,7 +35,7 @@ public class MediaDataProxy extends AbstractDataProxy {
 
     @Override
     protected String createBaseUrl() {
-        return Application.applicationContext().getString(com.orcller.app.orcllermodules.R.string.server_base_url) + "/media/";
+        return BuildConfig.API_BASE_URL + "/media/";
     }
 
     // ================================================================================================

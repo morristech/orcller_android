@@ -240,8 +240,14 @@ public class PageListActivity extends PSActionBarActivity
         commentInputView.clearFocus();
         ProgressBarManager.show(this);
 
-        final Page page = selectedView.getModel();
         String message = commentInputView.getText().toString().trim();
+        final Page page = selectedView.getModel();
+        final Runnable retry = new Runnable() {
+            @Override
+            public void run() {
+                onClickPostButton();
+            }
+        };
 
         AlbumDataProxy.getDefault().commentOfPage(page.id, message, new Callback<ApiAlbum.CommentsRes>() {
             @Override
@@ -252,12 +258,15 @@ public class PageListActivity extends PSActionBarActivity
                     commentInputView.clear();
                     page.comments.synchronize(response.body().entity);
                     selectedView.addComments(response.body().entity);
+                } else {
+                    AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 endDataLoading();
+                AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
             }
         });
     }

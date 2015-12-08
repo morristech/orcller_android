@@ -150,7 +150,7 @@ public class ImageGenerator {
         textView.setText(text);
         textView.setTextColor(Color.WHITE);
         textView.setTextSize(25);
-        textView.setShadowLayer(15, 3, 3, Color.argb(25, 0, 0, 0));
+        textView.setShadowLayer(15, 3, 3, Color.argb(55, 0, 0, 0));
         textView.measure(0, 0);
         textView.layout(0, 0, textView.getMeasuredWidth(), textView.getMeasuredHeight());
 

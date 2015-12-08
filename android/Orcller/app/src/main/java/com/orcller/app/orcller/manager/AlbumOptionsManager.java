@@ -54,7 +54,7 @@ public class AlbumOptionsManager {
 
         MenuInflater inflater = Application.getTopActivity().getMenuInflater();
 
-        if (!album.isMine()) {
+        if (album.isMine()) {
             inflater.inflate(R.menu.menu_album_view_owner, menu);
         } else if (album.contributors.isParticipated()) {
             inflater.inflate(R.menu.menu_album_view_coedit, menu);
@@ -345,7 +345,7 @@ public class AlbumOptionsManager {
 
     private void showFailAlertDialog(final Runnable retry, Throwable t) {
         if (BuildConfig.DEBUG && t != null)
-            Log.e(t.getMessage());
+            Log.e("onFailure", t);
 
         showFailAlertDialog(retry);
     }
@@ -360,17 +360,6 @@ public class AlbumOptionsManager {
     private void showFailAlertDialog(final Runnable retry) {
         ProgressBarManager.hide();
         dataLoadValidator.endDataLoading();
-        AlertDialogUtils.show(context.getString(R.string.m_message_fail),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == AlertDialog.BUTTON_POSITIVE) {
-                            if (retry != null)
-                                retry.run();
-                        }
-                    }
-                },
-                context.getString(R.string.w_dismiss),
-                context.getString(R.string.w_retry));
+        AlertDialogUtils.retry(R.string.m_message_fail, retry);
     }
 }

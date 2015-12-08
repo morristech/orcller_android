@@ -186,9 +186,9 @@ public class ApplicationFacade {
 //        testCommentInputView();
 //        testCommentListView();
 //        testAlbumItemView();
-//        testAlbumViewActivity();
+        testAlbumViewActivity();
 //        testImageGenerator();
-        testFBShareProxy();
+//        testFBShareProxy();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {

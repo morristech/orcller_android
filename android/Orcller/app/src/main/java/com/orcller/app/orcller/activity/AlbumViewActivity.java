@@ -4,14 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
@@ -25,7 +24,7 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
@@ -44,7 +43,7 @@ import retrofit.Retrofit;
  * Created by pisces on 12/7/15.
  */
 public class AlbumViewActivity extends PSActionBarActivity
-        implements AlbumItemView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+        implements AlbumItemView.Delegate, CommentInputView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
@@ -75,6 +74,7 @@ public class AlbumViewActivity extends PSActionBarActivity
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
         albumItemView.setDelegate(this);
+        commentInputView.setDelegate(this);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         SoftKeyboardNotifier.getDefault().register(this);
         EventBus.getDefault().register(this);
@@ -97,18 +97,25 @@ public class AlbumViewActivity extends PSActionBarActivity
             setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
             setAllowsCommentInputFocus(getIntent().getBooleanExtra(ALLOWS_COMMENT_INPUT_FOCUS, false));
         } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
-            load();
+            load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return albumOptionsManager.onCreateOptionsMenu(menu);
+        if (albumOptionsManager != null)
+            return albumOptionsManager.onCreateOptionsMenu(menu);
+        return false;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return albumOptionsManager.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                return super.onOptionsItemSelected(item);
+            default:
+                return albumOptionsManager.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -117,6 +124,7 @@ public class AlbumViewActivity extends PSActionBarActivity
 
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
+        ProgressBarManager.hide(this);
 
         rootLayout = null;
         scrollView = null;
@@ -124,6 +132,13 @@ public class AlbumViewActivity extends PSActionBarActivity
         commentListView = null;
         commentInputView = null;
         albumOptionsManager = null;
+    }
+
+    @Override
+    public void endDataLoading() {
+        super.endDataLoading();
+
+        ProgressBarManager.hide(this);
     }
 
     // ================================================================================================
@@ -206,6 +221,47 @@ public class AlbumViewActivity extends PSActionBarActivity
         PageListActivity.show(model, model.pages.getPageIndex(pageView.getModel()));
     }
 
+    /**
+     * CommentInputView delegate
+     */
+    public void onClickPostButton() {
+        if (invalidDataLoading())
+            return;
+
+        commentInputView.clearFocus();
+        ProgressBarManager.show(this);
+
+        String message = commentInputView.getText().toString().trim();
+        final Runnable retry = new Runnable() {
+            @Override
+            public void run() {
+                onClickPostButton();
+            }
+        };
+
+        AlbumDataProxy.getDefault().comment(model.id, message, new Callback<ApiAlbum.CommentsRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.CommentsRes> response, Retrofit retrofit) {
+                endDataLoading();
+
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    commentInputView.clear();
+                    model.comments.synchronize(response.body().entity);
+                    commentListView.add(response.body().entity);
+                    scrollView.pageScroll(View.FOCUS_DOWN);
+                } else {
+                    AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                endDataLoading();
+                AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
+            }
+        });
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -224,30 +280,37 @@ public class AlbumViewActivity extends PSActionBarActivity
         modelChanged();
     }
 
-    private void load() {
+    private void load(long albumId) {
         if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
 
-        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+        AlbumDataProxy.getDefault().view(albumId, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 ProgressBarManager.hide();
 
-                if (response.isSuccess() && response.body().isSuccess())
+                if (response.isSuccess() && response.body().isSuccess()) {
                     setModel(response.body().entity);
+                } else {
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
+                }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if (BuildConfig.DEBUG)
+                    Log.e("onFailure", t);
+
                 ProgressBarManager.hide();
             }
         });
     }
 
     private void modelChanged() {
-        albumOptionsManager = new AlbumOptionsManager(this, albumItemView.getAlbumFlipView().getModel());
+        albumOptionsManager = new AlbumOptionsManager(this, model);
         getSupportActionBar().setTitle(model.name);
         albumItemView.setModel(model);
         commentListView.setModel(model);
