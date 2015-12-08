@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
+import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GsonUtil;
 import retrofit.Call;
@@ -167,8 +168,7 @@ public class AuthenticationCenter {
                         synchronized (this) {
                             clear();
                             LoginManager.getInstance().logOut();
-                            // TODO: Add Instagram logout
-
+                            InstagramApplicationCenter.getDefault().logout();
                             handler.onComplete(response.body(), null);
                             EventBus.getDefault().post(new LogoutComplete());
                         }

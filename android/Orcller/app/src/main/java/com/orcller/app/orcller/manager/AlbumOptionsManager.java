@@ -17,8 +17,8 @@ import com.orcller.app.orcller.itemview.PublicSettingsAlertDialogView;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
+import com.orcller.app.orcller.proxy.FBShareProxy;
 import com.orcller.app.orcller.proxy.TimelineDataProxy;
-import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
@@ -36,12 +36,12 @@ import retrofit.Retrofit;
  */
 public class AlbumOptionsManager {
     private Context context;
-    private AlbumFlipView albumFlipView;
+    private Album album;
     private DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
-    public AlbumOptionsManager(Context context, AlbumFlipView albumFlipView) {
+    public AlbumOptionsManager(Context context, Album album) {
         this.context = context;
-        this.albumFlipView = albumFlipView;
+        this.album = album;
     }
 
     // ================================================================================================
@@ -49,19 +49,19 @@ public class AlbumOptionsManager {
     // ================================================================================================
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (albumFlipView == null || albumFlipView.getModel() == null)
+        if (album == null)
             return false;
 
         MenuInflater inflater = Application.getTopActivity().getMenuInflater();
 
-        if (!albumFlipView.getModel().isMine()) {
+        if (!album.isMine()) {
             inflater.inflate(R.menu.menu_album_view_owner, menu);
-        } else if (albumFlipView.getModel().contributors.isParticipated()) {
+        } else if (album.contributors.isParticipated()) {
             inflater.inflate(R.menu.menu_album_view_coedit, menu);
         } else {
             inflater.inflate(R.menu.menu_album_view, menu);
             MenuItem item = menu.findItem(R.id.hideAll);
-            item.setTitle(item.getTitle() + " " + albumFlipView.getModel().user_id);
+            item.setTitle(item.getTitle() + " " + album.user_id);
         }
 
         return true;
@@ -70,7 +70,7 @@ public class AlbumOptionsManager {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit:
-                AlbumEditActivity.show(albumFlipView.getModel().id);
+                AlbumEditActivity.show(album.id);
                 break;
 
             case R.id.delete:
@@ -123,25 +123,24 @@ public class AlbumOptionsManager {
         };
 
         try {
-            final Album model = albumFlipView.getModel();
-            Album clonedModel = (Album) model.clone();
-            clonedModel.permission = permission.getValue();
+            Album clonedAlbum = (Album) album.clone();
+            clonedAlbum.permission = permission.getValue();
 
-            AlbumDataProxy.getDefault().update(clonedModel, new Callback<ApiAlbum.AlbumRes>() {
+            AlbumDataProxy.getDefault().update(clonedAlbum, new Callback<ApiAlbum.AlbumRes>() {
                 @Override
                 public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                     if (response.isSuccess() && response.body().isSuccess()) {
                         ProgressBarManager.hide();
                         dataLoadValidator.endDataLoading();
-                        model.synchronize(response.body().entity);
+                        album.synchronize(response.body().entity);
                     } else {
-                        showFailAlertDialog(runnable);
+                        showFailAlertDialog(runnable, response.body());
                     }
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    showFailAlertDialog(runnable);
+                    showFailAlertDialog(runnable, t);
                 }
             });
         } catch (Exception e) {
@@ -163,22 +162,22 @@ public class AlbumOptionsManager {
             }
         };
 
-        AlbumDataProxy.getDefault().delete(albumFlipView.getModel().id, new Callback<ApiResult>() {
+        AlbumDataProxy.getDefault().delete(album.id, new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
                     dataLoadValidator.endDataLoading();
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, albumFlipView.getModel()));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, album));
                     finishActivity();
                 } else {
-                    showFailAlertDialog(runnable);
+                    showFailAlertDialog(runnable, response.body());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                showFailAlertDialog(runnable);
+                showFailAlertDialog(runnable, t);
             }
         });
     }
@@ -194,7 +193,6 @@ public class AlbumOptionsManager {
 
         ProgressBarManager.show();
 
-        final Album model = albumFlipView.getModel();
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -202,22 +200,22 @@ public class AlbumOptionsManager {
             }
         };
 
-        TimelineDataProxy.getDefault().hideAlbum(model.id, new Callback<ApiResult>() {
+        TimelineDataProxy.getDefault().hideAlbum(album.id, new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
                     dataLoadValidator.endDataLoading();
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, model));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, album));
                     finishActivity();
                 } else {
-                    showFailAlertDialog(runnable);
+                    showFailAlertDialog(runnable, response.body());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                showFailAlertDialog(runnable);
+                showFailAlertDialog(runnable, t);
             }
         });
     }
@@ -228,7 +226,6 @@ public class AlbumOptionsManager {
 
         ProgressBarManager.show();
 
-        final Album model = albumFlipView.getModel();
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -236,22 +233,22 @@ public class AlbumOptionsManager {
             }
         };
 
-        TimelineDataProxy.getDefault().hideAllAlbums(model.user_uid, new Callback<ApiResult>() {
+        TimelineDataProxy.getDefault().hideAllAlbums(album.user_uid, new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
                     dataLoadValidator.endDataLoading();
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, model));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, album));
                     finishActivity();
                 } else {
-                    showFailAlertDialog(runnable);
+                    showFailAlertDialog(runnable, response.body());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                showFailAlertDialog(runnable);
+                showFailAlertDialog(runnable, t);
             }
         });
     }
@@ -275,7 +272,7 @@ public class AlbumOptionsManager {
                 })
                 .create()
                 .show();
-        view.setModel(albumFlipView.getModel());
+        view.setModel(album);
     }
 
     private void report() {
@@ -284,7 +281,6 @@ public class AlbumOptionsManager {
 
         ProgressBarManager.show();
 
-        final Album model = albumFlipView.getModel();
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -292,7 +288,7 @@ public class AlbumOptionsManager {
             }
         };
 
-        AlbumDataProxy.getDefault().report(model.id, Album.ReportType.Inappropriate, new Callback<ApiResult>() {
+        AlbumDataProxy.getDefault().report(album.id, Album.ReportType.Inappropriate, new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
@@ -300,19 +296,19 @@ public class AlbumOptionsManager {
                     dataLoadValidator.endDataLoading();
                     AlertDialogUtils.show(R.string.m_message_report_received, R.string.w_ok);
                 } else {
-                    showFailAlertDialog(runnable);
+                    showFailAlertDialog(runnable, response.body());
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                showFailAlertDialog(runnable);
+                showFailAlertDialog(runnable, t);
             }
         });
     }
 
     private void share() {
-        //TODO: Imple here (make FBShareProxy)
+        FBShareProxy.getDefault().share(album);
     }
 
     private void showChangePermissionAlertDialog(final Album.Permission permission) {
@@ -345,6 +341,20 @@ public class AlbumOptionsManager {
                 },
                 context.getString(R.string.w_cancel),
                 context.getString(R.string.w_delete));
+    }
+
+    private void showFailAlertDialog(final Runnable retry, Throwable t) {
+        if (BuildConfig.DEBUG && t != null)
+            Log.e(t.getMessage());
+
+        showFailAlertDialog(retry);
+    }
+
+    private void showFailAlertDialog(final Runnable retry, ApiResult result) {
+        if (BuildConfig.DEBUG && result != null)
+            Log.e("Api Error", result);
+
+        showFailAlertDialog(retry);
     }
 
     private void showFailAlertDialog(final Runnable retry) {

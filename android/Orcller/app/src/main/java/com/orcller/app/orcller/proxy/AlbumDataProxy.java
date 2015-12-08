@@ -318,8 +318,9 @@ public class AlbumDataProxy extends AbstractDataProxy {
                 @Query("limit") int limit,
                 @Query(value = "after", encoded = true) String after);
 
+        @FormUrlEncoded
         @POST("{albumId}/report")
-        Call<ApiResult> report(@Path("albumId") long albumId, @Query("report_type") int reportType);
+        Call<ApiResult> report(@Path("albumId") long albumId, @Field("report_type") int reportType);
 
         @GET("{albumId}")
         Call<ApiAlbum.AlbumRes> view(@Path("albumId") long albumId);

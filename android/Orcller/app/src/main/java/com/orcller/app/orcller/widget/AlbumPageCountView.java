@@ -33,12 +33,6 @@ public class AlbumPageCountView extends TextView {
         initProperties(context, attrs, defStyleAttr, 0);
     }
 
-    public AlbumPageCountView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        initProperties(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     private void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

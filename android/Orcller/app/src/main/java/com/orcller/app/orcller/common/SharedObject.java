@@ -6,6 +6,9 @@ import android.text.TextUtils;
 import com.orcller.app.orcller.R;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -88,6 +91,15 @@ public class SharedObject {
 
     public static String getImageUploadPath(String filename, Point size) {
         return "images/p" + String.valueOf(size.x) + "x" + String.valueOf(size.y) + "/" + filename;
+    }
+
+    public static String getShareContentUrl(String encryptedAlbumId) {
+        try {
+            return Application.applicationContext().getString(R.string.domain) +
+                    "/site/album/view?id=" + URLEncoder.encode(encryptedAlbumId, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     // ================================================================================================

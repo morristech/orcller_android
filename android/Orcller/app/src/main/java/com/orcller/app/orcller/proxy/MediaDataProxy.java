@@ -1,13 +1,21 @@
 package com.orcller.app.orcller.proxy;
 
+import android.graphics.Bitmap;
+
 import com.orcller.app.orcller.model.api.ApiMedia;
-import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.RequestBody;
+
+import java.io.ByteArrayOutputStream;
 
 import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.Callback;
+import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.POST;
 
 /**
  * Created by pisces on 12/3/15.
@@ -44,12 +52,19 @@ public class MediaDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
-    public void uploadDirectly(Callback<ApiResult> callback) {
-
-    }
-
     public void getUploadInfo(Callback<ApiMedia.UploadInfoRes> callback) {
         enqueueCall(service().uploadInfo(), callback);
+    }
+
+    public void uploadDirectly(Bitmap bitmap, Callback<ApiMedia.UploadInfoRes> callback) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        RequestBody body = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("Filedata", "image_media",
+                        RequestBody.create(MediaType.parse("image/jpeg"), byteArrayOutputStream.toByteArray()))
+                .build();
+        enqueueCall(service().uploadDirectly(body), callback);
     }
 
     private Service service() {
@@ -61,6 +76,9 @@ public class MediaDataProxy extends AbstractDataProxy {
     // ================================================================================================
 
     public interface Service {
+        @POST("upload")
+        Call<ApiMedia.UploadInfoRes> uploadDirectly(@Body RequestBody body);
+
         @GET("upload_info")
         Call<ApiMedia.UploadInfoRes> uploadInfo();
     }

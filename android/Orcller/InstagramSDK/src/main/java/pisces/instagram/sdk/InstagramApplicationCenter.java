@@ -122,10 +122,18 @@ public class InstagramApplicationCenter<T> {
             EventBus.getDefault().register(this);
 
             Intent intent = new Intent(Application.applicationContext(), InstagramLoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("resource", resource);
             Application.applicationContext().startActivity(intent);
         }
+    }
+
+    public void logout() {
+        commandQueue.clear();
+        setCachedAccessTokenRes(null);
+
+        completeHandler = null;
+        accessToken = null;
+        code = null;
     }
 
     // ================================================================================================

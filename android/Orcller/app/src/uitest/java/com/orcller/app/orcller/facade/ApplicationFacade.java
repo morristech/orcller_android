@@ -2,8 +2,10 @@ package com.orcller.app.orcller.facade;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.facebook.FacebookSdk;
@@ -30,6 +32,8 @@ import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
+import com.orcller.app.orcller.proxy.FBShareProxy;
+import com.orcller.app.orcller.utils.ImageGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcller.widget.CommentInputView;
@@ -57,6 +61,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
 import retrofit.Callback;
 import retrofit.Response;
@@ -181,7 +186,9 @@ public class ApplicationFacade {
 //        testCommentInputView();
 //        testCommentListView();
 //        testAlbumItemView();
-        testAlbumViewActivity();
+//        testAlbumViewActivity();
+//        testImageGenerator();
+        testFBShareProxy();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -518,5 +525,39 @@ public class ApplicationFacade {
 //            public void onFailure(Throwable t) {
 //            }
 //        });
+    }
+
+    private void testImageGenerator() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(final Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                ImageGenerator.generateShareImage(response.body().entity, new ImageGenerator.CompleteHandler() {
+                    @Override
+                    public void onComplete(Bitmap bitmap) {
+                        ImageView view = new ImageView(Application.applicationContext());
+                        view.setImageBitmap(bitmap);
+                        Application.getTopActivity().addContentView(
+                                view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testFBShareProxy() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(final Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                FBShareProxy.getDefault().share(response.body().entity);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 }

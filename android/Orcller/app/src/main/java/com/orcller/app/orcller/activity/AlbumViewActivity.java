@@ -71,7 +71,6 @@ public class AlbumViewActivity extends PSActionBarActivity
         albumItemView = (AlbumItemView) findViewById(R.id.albumItemView);
         commentListView = (CommentListView) findViewById(R.id.commentListView);
         commentInputView = (CommentInputView) findViewById(R.id.commentInputView);
-        albumOptionsManager = new AlbumOptionsManager(this, albumItemView.getAlbumFlipView());
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
@@ -248,6 +247,7 @@ public class AlbumViewActivity extends PSActionBarActivity
     }
 
     private void modelChanged() {
+        albumOptionsManager = new AlbumOptionsManager(this, albumItemView.getAlbumFlipView().getModel());
         getSupportActionBar().setTitle(model.name);
         albumItemView.setModel(model);
         commentListView.setModel(model);

@@ -1,6 +1,5 @@
 package com.orcller.app.orcller.manager;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -16,6 +15,8 @@ import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Image;
 import com.orcller.app.orcller.model.album.Images;
 import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.api.ApiMedia;
+import com.orcller.app.orcller.proxy.MediaDataProxy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,16 +29,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.BitmapUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
+import retrofit.Callback;
 
 /**
  * Created by pisces on 11/16/15.
  */
 public class MediaManager {
-    private static final int WIDTH_IMAGE_LOW_RESOLUTION = 320;
-    private static final int WIDTH_IMAGE_STANDARD_RESOLUTION = 640;
-    private static final int WIDTH_IMAGE_THUMBNAIL= 150;
+    public static final int WIDTH_IMAGE_LOW_RESOLUTION = 320;
+    public static final int WIDTH_IMAGE_STANDARD_RESOLUTION = 640;
+    public static final int WIDTH_IMAGE_THUMBNAIL= 150;
     private static final File CACHED_UPLOAD_UNIT_MAP = new File(SharedObject.DATA_DIR, "mediaupload.units");
     private static final File CACHED_ERROR_IMAGE_LIST = new File(SharedObject.DATA_DIR, "mediauploaderror.images");
     private static MediaManager uniqueInstance;
@@ -243,7 +246,6 @@ public class MediaManager {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state == TransferState.COMPLETED) {
-                    Log.d("Upload complete", key);
                     image.url = key;
 
                     if (file.exists() && !file.delete()) {
@@ -260,10 +262,16 @@ public class MediaManager {
 
             @Override
             public void onError(int id, Exception ex) {
-                Log.d("Upload failed", key);
+                if (BuildConfig.DEBUG)
+                    Log.e(ex.getMessage(), ex);
+
                 completeHandler.onComplete(new Error(ex.getMessage()));
             }
         });
+    }
+
+    public void uploadImageDirectly(Bitmap bitmap, Callback<ApiMedia.UploadInfoRes> callback) {
+        MediaDataProxy.getDefault().uploadDirectly(bitmap, callback);
     }
 
     // ================================================================================================
@@ -280,18 +288,6 @@ public class MediaManager {
                 }
             }
         });
-    }
-
-    private Bitmap createBitmap(Point size, Bitmap source) {
-        int limitValue = Math.min(size.x, size.y);
-        int w = Math.min(limitValue, size.x);
-        int h = Math.min(limitValue, size.y);
-        int x = Math.max(0, (size.x - w) / 2);
-        int y = Math.max(0, (size.y - h)/2);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(source, size.x, size.y, true);
-        Bitmap bitmap = Bitmap.createBitmap(scaledBitmap, x, y, w, h);
-        scaledBitmap.recycle();
-        return bitmap;
     }
 
     private void deleteFile(Image image, boolean allowsEnqueueError) {
@@ -396,9 +392,9 @@ public class MediaManager {
         Point standardSize = getFitedSize(WIDTH_IMAGE_STANDARD_RESOLUTION, originSize);
         Point lowSize = getFitedSize(WIDTH_IMAGE_LOW_RESOLUTION, originSize);
         Point thumbnailSize = getFitedSize(WIDTH_IMAGE_THUMBNAIL, originSize);
-        Bitmap standardBitmap = createBitmap(standardSize, bitmap);
-        Bitmap lowBitmap = createBitmap(lowSize, bitmap);
-        Bitmap thumbnailBitmap = createBitmap(thumbnailSize, bitmap);
+        Bitmap standardBitmap = BitmapUtils.createSquareBitmap(standardSize, bitmap);
+        Bitmap lowBitmap = BitmapUtils.createSquareBitmap(lowSize, bitmap);
+        Bitmap thumbnailBitmap = BitmapUtils.createSquareBitmap(thumbnailSize, bitmap);
         String standardImageName = String.valueOf(media.origin_id) + "_s.jpg";
         String lowImageName = String.valueOf(media.origin_id) + "_l.jpg";
         String thumbnailImageName = String.valueOf(media.origin_id) + "_t.jpg";

@@ -3,6 +3,7 @@
     <!-- properties -->
     <string name="app_name">Orcller</string>
     <string name="app_scheme">orcller</string>
+    <string name="domain">https://www.orcller.com</string>
     <string name="external_web">web</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
@@ -12,6 +13,8 @@
     <string name="instagram_client_secret">786fe9d225c248bc970aa251c6fd4771</string>
     <string name="instagram_redirect_url">ig786fe9d225c248bc970aa251c6fd4771://authorize</string>
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
+
+    <string name="facebook_share_content_title">Orcller - Live and Put Together</string>
 
     <!-- words -->
     <string name="w_add">Add</string>
@@ -88,6 +91,7 @@
     <string name="m_message_fail">It failed to save changes.\nPlease try again.</string>
     <string name="m_message_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
     <string name="m_message_report_received">The report has been received.\nThank you for your feedback.</string>
+    <string name="m_message_share_fail">It failed to share the album.\nPlease try again.</string>
     <string name="m_send_email_result">
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
