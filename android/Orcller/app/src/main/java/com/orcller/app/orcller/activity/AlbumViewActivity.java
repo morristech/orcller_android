@@ -24,11 +24,13 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
@@ -80,7 +82,7 @@ public class AlbumViewActivity extends PSActionBarActivity
         EventBus.getDefault().register(this);
 
 
-        //TODO: CommentInputView 연동, heart/unheart, star/unstar, co-edit, AlbumItemView에 AlbumOptionsManager 연동, 개발서버로 테스트 환경 세팅
+        //TODO: heart/unheart, star/unstar, co-edit, AlbumItemView에 AlbumOptionsManager 연동
     }
 
     @Override
@@ -250,14 +252,14 @@ public class AlbumViewActivity extends PSActionBarActivity
                     commentListView.add(response.body().entity);
                     scrollView.pageScroll(View.FOCUS_DOWN);
                 } else {
-                    AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
+                    AlertDialogUtils.retry(R.string.m_fail_comment, retry);
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 endDataLoading();
-                AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
+                AlertDialogUtils.retry(R.string.m_fail_comment, retry);
             }
         });
     }
@@ -289,7 +291,7 @@ public class AlbumViewActivity extends PSActionBarActivity
         AlbumDataProxy.getDefault().view(albumId, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                ProgressBarManager.hide();
+                endDataLoading();
 
                 if (response.isSuccess() && response.body().isSuccess()) {
                     setModel(response.body().entity);
@@ -301,10 +303,10 @@ public class AlbumViewActivity extends PSActionBarActivity
 
             @Override
             public void onFailure(Throwable t) {
+                endDataLoading();
+
                 if (BuildConfig.DEBUG)
                     Log.e("onFailure", t);
-
-                ProgressBarManager.hide();
             }
         });
     }

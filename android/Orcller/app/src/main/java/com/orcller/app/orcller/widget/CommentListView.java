@@ -150,7 +150,7 @@ public class CommentListView extends PSListView
                 dataLoadValidator.endDataLoading();
                 ProgressBarManager.hide();
 
-                AlertDialogUtils.show(getResources().getString(R.string.m_message_fail),
+                AlertDialogUtils.show(getResources().getString(R.string.m_fail_common),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

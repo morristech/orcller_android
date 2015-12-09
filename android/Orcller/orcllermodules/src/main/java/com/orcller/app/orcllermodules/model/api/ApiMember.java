@@ -30,9 +30,7 @@ public class ApiMember {
         }
     }
 
-    public static class LoginRes extends ApiResult {
-        public LoginRes.Entity entity;
-
+    public static class LoginRes extends ApiResult<LoginRes.Entity> {
         public class Entity {
             public String session_token;
         }

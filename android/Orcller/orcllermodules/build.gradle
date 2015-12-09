@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
+    publishNonDefault true
+
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
@@ -15,6 +17,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        dev {
+            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
+            buildConfigField 'int', 'HTTP_TIMEOUT_INTERVAL', '20'
+        }
+        production {
+            buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
+            buildConfigField 'int', 'HTTP_TIMEOUT_INTERVAL', '10'
         }
     }
 }

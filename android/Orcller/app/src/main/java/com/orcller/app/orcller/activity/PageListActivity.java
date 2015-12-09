@@ -259,14 +259,14 @@ public class PageListActivity extends PSActionBarActivity
                     page.comments.synchronize(response.body().entity);
                     selectedView.addComments(response.body().entity);
                 } else {
-                    AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
+                    AlertDialogUtils.retry(R.string.m_fail_comment, retry);
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 endDataLoading();
-                AlertDialogUtils.retry(R.string.m_message_comment_fail, retry);
+                AlertDialogUtils.retry(R.string.m_fail_comment, retry);
             }
         });
     }
@@ -371,7 +371,7 @@ public class PageListActivity extends PSActionBarActivity
         final Runnable error = new Runnable() {
             @Override
             public void run() {
-                AlertDialogUtils.show(getString(R.string.m_message_fail),
+                AlertDialogUtils.show(getString(R.string.m_fail_common),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

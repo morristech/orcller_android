@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
 import retrofit.Callback;
 import retrofit.Response;
@@ -206,6 +207,7 @@ public class MediaUploadUnit implements Serializable {
         AlbumDataProxy.getDefault().create(model, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                Log.d("response.body()", response.body());
                 if (response.isSuccess() && response.body().isSuccess()) {
                     MediaManager.getDefault().clearUploading(model);
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, response.body().entity));
@@ -216,6 +218,7 @@ public class MediaUploadUnit implements Serializable {
 
             @Override
             public void onFailure(Throwable t) {
+                Log.d("onFailure", t);
                 errorState();
             }
         });

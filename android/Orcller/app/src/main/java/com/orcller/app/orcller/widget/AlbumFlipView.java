@@ -44,7 +44,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private int imageLoadType;
     private int pageHeight;
     private int pageWidth;
-    private int pageIndex;
+    private int pageIndex = -1;
     private float originRotation;
     private float xPanningOffset;
     private View background;

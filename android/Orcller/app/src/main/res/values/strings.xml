@@ -85,15 +85,18 @@
         <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>
          and agree to <a href="orcller://web?url=https://www.orcller.com/site/policy/terms&amp;title=Term of service"><b>Terms of Service</b></a>.
     </string>
-    <string name="m_message_album_change">"It failed to save changes.\nPlease try again."</string>
-    <string name="m_message_album_delete">Are you sure you want to delete an album?</string>
-    <string name="m_message_album_delete_fail">It failed to delete an album.\nPlease try again.</string>
-    <string name="m_message_fail">It failed to save changes.\nPlease try again.</string>
-    <string name="m_message_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
-    <string name="m_message_comment_fail">It failed to post a comment.\nPlease try again.</string>
-    <string name="m_message_report_received">The report has been received.\nThank you for your feedback.</string>
-    <string name="m_message_share_fail">It failed to share the album.\nPlease try again.</string>
-    <string name="m_send_email_result">
+    <string name="m_complete_email_send">
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
+    <string name="m_complete_report_send">The report has been received.\nThank you for your feedback.</string>
+    <string name="m_confirm_album_delete">Are you sure you want to delete an album?</string>
+    <string name="m_fail_album_change">"It failed to save changes.\nPlease try again."</string>
+    <string name="m_fail_album_delete">It failed to delete an album.\nPlease try again.</string>
+    <string name="m_fail_common">It failed to save changes.\nPlease try again.</string>
+    <string name="m_fail_comment">It failed to post a comment.\nPlease try again.</string>
+    <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
+    <string name="m_warn_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
+    <string name="m_validate_album_title_length">The album title must be a maximum of 40 characters!</string>
+    <string name="m_validate_password_length">The password is required at least 6 characters and maximum 16 characters!</string>
+    <string name="m_validate_user_name_length">The user name is required at least 6 characters and maximum 16 characters!</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.orcller.app.orcllermodules.proxy;
 
+import com.orcller.app.orcllermodules.BuildConfig;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.squareup.okhttp.Interceptor;
@@ -8,6 +9,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import pisces.psfoundation.proxy.AbstractRetrofitProxy;
 import retrofit.Call;
@@ -24,6 +26,7 @@ abstract public class AbstractDataProxy<T> extends AbstractRetrofitProxy {
 
     @Override
     protected void interceptRequest(OkHttpClient httpClient) {
+        httpClient.setReadTimeout(BuildConfig.HTTP_TIMEOUT_INTERVAL, TimeUnit.SECONDS);
         httpClient.interceptors().add(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {

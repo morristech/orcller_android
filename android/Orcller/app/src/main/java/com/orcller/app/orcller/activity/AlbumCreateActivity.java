@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
-import com.mobsandgeeks.saripaar.annotation.Max;
+import com.mobsandgeeks.saripaar.annotation.Length;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -64,8 +64,9 @@ import pisces.psuikit.widget.PSButton;
  * Created by pisces on 11/28/15.
  */
 public class AlbumCreateActivity extends PSActionBarActivity
-        implements View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener, AlbumFlipView.Delegate,
-        AlbumGridView.Delegate, AdapterView.OnItemSelectedListener {
+        implements AdapterView.OnItemSelectedListener, AlbumFlipView.Delegate, AlbumGridView.Delegate,
+        Validator.ValidationListener, View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
+    private static final int PAGE_COUNT_MIN = 1;
     private int selectedIndexForAppending;
     private int processCountForAppending;
     private Validator validator;
@@ -75,7 +76,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private LinearLayout buttonContainer;
     private Spinner spinner;
 
-    @Max(value = 40)
+    @Length(max = 40, messageResId = R.string.m_validate_album_title_length)
     private ClearableEditText titleEditText;
 
     private Button postButton;
@@ -300,6 +301,30 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     /**
+     * Validator delegate
+     */
+    public void onValidationSucceeded() {
+        clonedModel.created_time = clonedModel.updated_time = DateUtil.toUnixtimestamp(new Date());
+        clonedModel.page_replace_enabled = !clonedModel.pages.data.equals(model.pages.data);
+        postButton.setEnabled(false);
+        SoftKeyboardUtils.hide(rootLayout);
+        doRequest();
+        finish();
+    }
+
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(getBaseContext());
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
      * AlbumFlipView delegate
      */
     public void onCancelPanning(AlbumFlipView view) {
@@ -360,7 +385,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
             clonedModel = (Album) model.clone();
         } catch (CloneNotSupportedException e) {
             if (BuildConfig.DEBUG)
-                Log.d(e.getMessage());
+                Log.e(e.getMessage(), e);
         }
 
         modelChanged();
@@ -457,6 +482,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         defaultButton.setOnClickListener(this);
         deleteButton.setOnClickListener(this);
         postButton.setOnClickListener(this);
+        validator.setValidationListener(this);
         EventBus.getDefault().register(this);
         SoftKeyboardNotifier.getDefault().register(this);
 
@@ -493,31 +519,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
                 }
             }
         });
-
-        validator.setValidationListener(new Validator.ValidationListener() {
-            @Override
-            public void onValidationSucceeded() {
-                clonedModel.created_time = clonedModel.updated_time = DateUtil.toUnixtimestamp(new Date());
-                clonedModel.page_replace_enabled = !clonedModel.pages.data.equals(model.pages.data);
-                postButton.setEnabled(false);
-                SoftKeyboardUtils.hide(rootLayout);
-                doRequest();
-                finish();
-            }
-
-            @Override
-            public void onValidationFailed(List<ValidationError> errors) {
-                for (ValidationError error : errors) {
-                    View view = error.getView();
-                    String message = error.getCollatedErrorMessage(getBaseContext());
-                    if (view instanceof EditText) {
-                        ((EditText) view).setError(message);
-                    } else {
-                        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        });
     }
 
     private void setOtherButtonsEnabled() {
@@ -535,7 +536,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         model.equalsModel(clonedModel, new Model.EqualsCompletion() {
             @Override
             public void onComplete(boolean equals) {
-                postButton.setEnabled(!equals);
+                postButton.setEnabled(!equals && clonedModel.pages.count >= PAGE_COUNT_MIN);
             }
         });
     }

@@ -209,6 +209,10 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().view(albumId), callback);
     }
 
+    public void view1(long albumId, Callback<ApiResult> callback) {
+        enqueueCall(service().view(albumId), callback);
+    }
+
     public void viewByPageId(long pageId, Callback<ApiAlbum.AlbumRes> callback) {
         enqueueCall(service().viewByPageId(pageId), callback);
     }
@@ -325,6 +329,9 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
         @GET("{albumId}")
         Call<ApiAlbum.AlbumRes> view(@Path("albumId") long albumId);
+
+        @GET("{albumId}")
+        Call<ApiResult> view1(@Path("albumId") long albumId);
 
         @GET("view_by_page")
         Call<ApiAlbum.AlbumRes> viewByPageId(@Query("page_id") long pageId);

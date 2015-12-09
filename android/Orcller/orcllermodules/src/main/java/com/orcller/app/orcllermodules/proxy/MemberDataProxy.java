@@ -1,12 +1,11 @@
 package com.orcller.app.orcllermodules.proxy;
 
-import com.orcller.app.orcllermodules.R;
+import com.orcller.app.orcllermodules.BuildConfig;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 
 import java.util.Map;
 
-import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.http.Field;
 import retrofit.http.FieldMap;
@@ -27,7 +26,7 @@ public class MemberDataProxy extends AbstractDataProxy {
 
     @Override
     protected String createBaseUrl() {
-        return Application.applicationContext().getString(R.string.server_base_url) + "/member/";
+        return BuildConfig.API_BASE_URL + "/member/";
     }
 
     public static MemberDataProxy getDefault() {

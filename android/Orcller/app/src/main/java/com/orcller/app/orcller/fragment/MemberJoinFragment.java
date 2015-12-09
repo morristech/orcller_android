@@ -259,7 +259,7 @@ public class MemberJoinFragment extends PSFragment {
 
                         if (error == null) {
                             AlertDialogUtils.show(
-                                    getResources().getString(R.string.m_send_email_result),
+                                    getResources().getString(R.string.m_complete_email_send),
                                     getResources().getString(R.string.w_ok)
                             );
                             editText.setText(null);

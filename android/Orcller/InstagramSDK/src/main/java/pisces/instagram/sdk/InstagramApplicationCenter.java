@@ -123,6 +123,7 @@ public class InstagramApplicationCenter<T> {
 
             Intent intent = new Intent(Application.applicationContext(), InstagramLoginActivity.class);
             intent.putExtra("resource", resource);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Application.applicationContext().startActivity(intent);
         }
     }

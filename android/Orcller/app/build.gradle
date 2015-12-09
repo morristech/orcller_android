@@ -81,6 +81,6 @@ dependencies {
     compile 'in.srain.cube:ultra-ptr:1.0.11'
     productionCompile project(':orcllermodules')
     devCompile project(':orcllermodules')
-    uitestCompile project(':orcllermodules')
+    uitestCompile project(path: ':orcllermodules', configuration: 'devDebug')
     qaCompile project(':orcllermodules')
 }

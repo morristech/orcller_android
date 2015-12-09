@@ -108,6 +108,7 @@ public class ImagePickerManager {
             activityClass = IGImagePickerActivity.class;
 
         Intent intent = new Intent(context, activityClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.getTopActivity().startActivity(intent);
     }
 

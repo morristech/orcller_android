@@ -294,7 +294,7 @@ public class AlbumOptionsManager {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
                     dataLoadValidator.endDataLoading();
-                    AlertDialogUtils.show(R.string.m_message_report_received, R.string.w_ok);
+                    AlertDialogUtils.show(R.string.m_complete_report_send, R.string.w_ok);
                 } else {
                     showFailAlertDialog(runnable, response.body());
                 }
@@ -313,7 +313,7 @@ public class AlbumOptionsManager {
 
     private void showChangePermissionAlertDialog(final Album.Permission permission) {
         if (Album.Permission.Private.equals(permission)) {
-            AlertDialogUtils.show(context.getString(R.string.m_message_album_permission),
+            AlertDialogUtils.show(context.getString(R.string.m_warn_album_permission),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -330,7 +330,7 @@ public class AlbumOptionsManager {
     }
 
     private void showDeleteAlertDialog() {
-        AlertDialogUtils.show(context.getString(R.string.m_message_album_delete),
+        AlertDialogUtils.show(context.getString(R.string.m_confirm_album_delete),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -360,6 +360,6 @@ public class AlbumOptionsManager {
     private void showFailAlertDialog(final Runnable retry) {
         ProgressBarManager.hide();
         dataLoadValidator.endDataLoading();
-        AlertDialogUtils.retry(R.string.m_message_fail, retry);
+        AlertDialogUtils.retry(R.string.m_fail_common, retry);
     }
 }

@@ -21,6 +21,7 @@ import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
+import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
@@ -123,7 +124,10 @@ public class ApplicationFacade {
             runTestSuite();
         } else {
             AuthenticationCenter.getDefault()
-                    .setTestUserSessionToken("8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ==");
+                    .setTestUserSessionToken("RXmCdDakJeeQD2/Jra07dWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0QlyV6nPXi3n5Cx6sivmUxFGRXRDqW2BHuFqAfFqqY1eU/t6ueakPZMF0xpt/JgsRQ\\u003d\\u003d");
+
+//            AuthenticationCenter.getDefault()
+//                    .setTestUserSessionToken("8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ==");
             ApplicationLauncher.getDefault()
                     .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
                     .launch();
@@ -180,6 +184,7 @@ public class ApplicationFacade {
 //        testAlbumPageDefaultActivity();
 //        testAlbumPageDeleteActivity();
 //        testMemberActivity();
+//        testMemberJoinInputActivity();
 //        testAlbumEditActivity();
 //        testPageScrollView();
 //        testPageListActivity();
@@ -445,6 +450,10 @@ public class ApplicationFacade {
         testActivity(MemberActivity.class, null);
     }
 
+    private void testMemberJoinInputActivity() {
+        testActivity(MemberJoinInputActivity.class, null);
+    }
+
     private void testPageScrollView() {
         AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
             @Override
@@ -514,7 +523,7 @@ public class ApplicationFacade {
     }
 
     private void testAlbumViewActivity() {
-        AlbumViewActivity.show(4, false);
+        AlbumViewActivity.show(5, false);
 //        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
 //            @Override
 //            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {

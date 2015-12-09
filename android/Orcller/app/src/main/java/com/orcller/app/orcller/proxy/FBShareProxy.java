@@ -1,8 +1,5 @@
 package com.orcller.app.orcller.proxy;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -81,7 +78,7 @@ public class FBShareProxy {
             public void run() {
                 ProgressBarManager.hide();
                 dataLoadValidator.endDataLoading();
-                AlertDialogUtils.retry(R.string.m_message_share_fail, new Runnable() {
+                AlertDialogUtils.retry(R.string.m_fail_share, new Runnable() {
                     @Override
                     public void run() {
                         upload(album);

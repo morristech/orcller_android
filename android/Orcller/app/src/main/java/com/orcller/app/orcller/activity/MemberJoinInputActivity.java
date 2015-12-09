@@ -1,7 +1,5 @@
 package com.orcller.app.orcller.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -19,9 +17,7 @@ import android.widget.Toast;
 
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
-import com.mobsandgeeks.saripaar.annotation.Max;
-import com.mobsandgeeks.saripaar.annotation.Min;
-import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Length;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
@@ -44,15 +40,11 @@ import pisces.psuikit.widget.ClearableEditText;
 /**
  * Created by pisces on 11/12/15.
  */
-public class MemberJoinInputActivity extends PSActionBarActivity {
-    @NotEmpty
-    @Max(value = 16)
-    @Min(value = 6)
+public class MemberJoinInputActivity extends PSActionBarActivity implements Validator.ValidationListener {
+    @Length(min = 6, max = 16, messageResId = R.string.m_validate_user_name_length)
     private ClearableEditText idEditText;
 
-    @NotEmpty
-    @Max(value = 16)
-    @Min(value = 6)
+    @Length(min = 6, max = 16, messageResId = R.string.m_validate_password_length)
     private ClearableEditText pwEditText;
 
     private String email;
@@ -162,6 +154,22 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
         }
     }
 
+    public void onValidationSucceeded() {
+        join();
+    }
+
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(getBaseContext());
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -188,17 +196,12 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                 if (error != null) {
                     String message = error.getMessage();
                     if (message != null) {
-                        AlertDialogUtils.show(message,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (which == AlertDialog.BUTTON_POSITIVE)
-                                            joinWithEmail();
-                                    }
-                                },
-                                getResources().getString(R.string.w_dismiss),
-                                getResources().getString(R.string.w_retry)
-                        );
+                        AlertDialogUtils.retry(message, new Runnable() {
+                            @Override
+                            public void run() {
+                                joinWithEmail();
+                            }
+                        });
                     }
                 }
             }
@@ -217,17 +220,12 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                 if (error != null) {
                     String message = error.getMessage();
                     if (message != null) {
-                        AlertDialogUtils.show(message,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (which == AlertDialog.BUTTON_POSITIVE)
-                                            joinWithIdp();
-                                    }
-                                },
-                                getResources().getString(R.string.w_dismiss),
-                                getResources().getString(R.string.w_retry)
-                        );
+                        AlertDialogUtils.retry(message, new Runnable() {
+                            @Override
+                            public void run() {
+                                joinWithIdp();
+                            }
+                        });
                     }
                 }
             }
@@ -269,27 +267,9 @@ public class MemberJoinInputActivity extends PSActionBarActivity {
                 return false;
             }
         });
-        validator.setValidationListener(new Validator.ValidationListener() {
-            @Override
-            public void onValidationSucceeded() {
-                join();
-            }
-
-            @Override
-            public void onValidationFailed(List<ValidationError> errors) {
-                for (ValidationError error : errors) {
-                    View view = error.getView();
-                    String message = error.getCollatedErrorMessage(getBaseContext());
-                    if (view instanceof EditText) {
-                        ((EditText) view).setError(message);
-                    } else {
-                        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        });
         idEditText.addTextChangedListener(textWatcher);
         pwEditText.addTextChangedListener(textWatcher);
+        validator.setValidationListener(this);
         SoftKeyboardNotifier.getDefault().register(this);
         EventBus.getDefault().register(this);
     }

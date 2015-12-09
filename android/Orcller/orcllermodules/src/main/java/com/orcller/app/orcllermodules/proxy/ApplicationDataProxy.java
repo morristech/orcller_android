@@ -1,9 +1,8 @@
 package com.orcller.app.orcllermodules.proxy;
 
-import com.orcller.app.orcllermodules.R;
+import com.orcller.app.orcllermodules.BuildConfig;
 import com.orcller.app.orcllermodules.model.ApiApplication;
 
-import pisces.psfoundation.ext.Application;
 import retrofit.Call;
 import retrofit.http.GET;
 
@@ -18,7 +17,7 @@ public class ApplicationDataProxy extends AbstractDataProxy {
 
     @Override
     protected String createBaseUrl() {
-        return Application.applicationContext().getString(R.string.server_base_url) + "/app/";
+        return BuildConfig.API_BASE_URL+ "/app/";
     }
 
     public interface Service {

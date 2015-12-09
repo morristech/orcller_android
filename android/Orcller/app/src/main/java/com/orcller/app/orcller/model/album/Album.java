@@ -67,12 +67,15 @@ public class Album extends AlbumInfo {
         super();
 
         id = DateUtil.toUnixtimestamp(new Date());
-        permission = AuthenticationCenter.getDefault().getUser().user_options.album_permission;
-        user_uid = user.user_uid;
-        user_id = user.user_id;
-        user_link = user.user_link;
-        user_name = user.user_name;
-        user_picture = user.user_picture;
+
+        if (user != null) {
+            permission = user.user_options.album_permission;
+            user_uid = user.user_uid;
+            user_id = user.user_id;
+            user_link = user.user_link;
+            user_name = user.user_name;
+            user_picture = user.user_picture;
+        }
 
         Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
         Pattern pattern = Pattern.compile("(.*)ko(.*)");

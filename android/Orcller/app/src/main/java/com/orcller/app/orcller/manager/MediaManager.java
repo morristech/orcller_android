@@ -183,11 +183,11 @@ public class MediaManager {
         Application.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
-                if (cachedUploadUnits.size() > 0) {
+                if (cachedUploadUnitMap.size() > 0) {
                     try {
                         FileOutputStream fos = new FileOutputStream(CACHED_UPLOAD_UNIT_MAP);
                         ObjectOutputStream os = new ObjectOutputStream(fos);
-                        os.writeObject(cachedUploadUnits);
+                        os.writeObject(cachedUploadUnitMap);
                         os.close();
                         fos.close();
                     } catch (Exception e) {
@@ -335,7 +335,7 @@ public class MediaManager {
                 return result;
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.e(e.getMessage());
+                    Log.e(e.getMessage(), e);
             }
         }
         return new HashMap<>();
