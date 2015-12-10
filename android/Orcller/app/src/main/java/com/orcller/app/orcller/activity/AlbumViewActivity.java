@@ -16,21 +16,18 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
-import com.orcller.app.orcller.widget.AlbumFlipView;
+import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
-import com.orcller.app.orcller.widget.FlipView;
-import com.orcller.app.orcller.widget.PageView;
-import com.orcller.app.orcllermodules.model.ApiResult;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
@@ -45,12 +42,14 @@ import retrofit.Retrofit;
  * Created by pisces on 12/7/15.
  */
 public class AlbumViewActivity extends PSActionBarActivity
-        implements AlbumItemView.Delegate, CommentInputView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+        implements AlbumItemViewDelegate.Invoker, CommentInputView.Delegate,
+        CommentListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
     private Album model;
     private AlbumOptionsManager albumOptionsManager;
+    private AlbumItemViewDelegate albumItemViewDelegate;
     private LinearLayout rootLayout;
     private PSScrollView scrollView;
     private AlbumItemView albumItemView;
@@ -72,17 +71,23 @@ public class AlbumViewActivity extends PSActionBarActivity
         albumItemView = (AlbumItemView) findViewById(R.id.albumItemView);
         commentListView = (CommentListView) findViewById(R.id.commentListView);
         commentInputView = (CommentInputView) findViewById(R.id.commentInputView);
+        albumItemViewDelegate = new AlbumItemViewDelegate(this);
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
-        albumItemView.setDelegate(this);
+        albumItemView.setDelegate(albumItemViewDelegate);
+        commentListView.setDelegate(this);
         commentInputView.setDelegate(this);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         SoftKeyboardNotifier.getDefault().register(this);
         EventBus.getDefault().register(this);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        //TODO: heart/unheart, star/unstar, co-edit, AlbumItemView에 AlbumOptionsManager 연동
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -177,50 +182,13 @@ public class AlbumViewActivity extends PSActionBarActivity
     }
 
     /**
-     * AlbumItemView delegate
+     * CommentListView delegate
      */
-    public void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model) {
+    public void onChange(Comments comments) {
+        model.comments.participated = comments.participated;
+        model.comments.total_count = comments.total_count;
 
-    }
-
-    public void onAlbumSynchronize(AlbumItemView itemView) {
-
-    }
-
-    public void onClick(AlbumItemView itemView, AlbumItemView.ButtonType type) {
-
-    }
-
-    public void onPageChange(AlbumItemView itemView) {
-
-    }
-
-    public void onCancelPanning(AlbumFlipView view) {
-        scrollView.setScrollable(true);
-    }
-
-    public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
-        scrollView.setScrollable(true);
-    }
-
-    public void onLoadRemainPages(AlbumFlipView view) {
-    }
-
-    public void onPause(AlbumFlipView view) {
-    }
-
-    public void onStartLoadRemainPages(AlbumFlipView view) {
-    }
-
-    public void onStartPanning(AlbumFlipView view) {
-        scrollView.setScrollable(false);
-    }
-
-    public void onStop(AlbumFlipView view) {
-    }
-
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
-        PageListActivity.show(model, model.pages.getPageIndex(pageView.getModel()));
+        albumItemView.updateDisplayList();
     }
 
     /**
@@ -234,10 +202,15 @@ public class AlbumViewActivity extends PSActionBarActivity
         ProgressBarManager.show(this);
 
         String message = commentInputView.getText().toString().trim();
-        final Runnable retry = new Runnable() {
+        final Runnable error = new Runnable() {
             @Override
             public void run() {
-                onClickPostButton();
+                AlertDialogUtils.retry(R.string.m_fail_comment, new Runnable() {
+                    @Override
+                    public void run() {
+                        onClickPostButton();
+                    }
+                });
             }
         };
 
@@ -252,16 +225,33 @@ public class AlbumViewActivity extends PSActionBarActivity
                     commentListView.add(response.body().entity);
                     scrollView.pageScroll(View.FOCUS_DOWN);
                 } else {
-                    AlertDialogUtils.retry(R.string.m_fail_comment, retry);
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
+
+                    error.run();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if (BuildConfig.DEBUG)
+                    Log.e("onFailure", t);
+
                 endDataLoading();
-                AlertDialogUtils.retry(R.string.m_fail_comment, retry);
+                error.run();
             }
         });
+    }
+
+    /**
+     * AlbumItemViewDelete invoker
+     */
+    public CommentInputView getCommentInputView() {
+        return commentInputView;
+    }
+
+    public PSScrollView getScrollView() {
+        return scrollView;
     }
 
     // ================================================================================================

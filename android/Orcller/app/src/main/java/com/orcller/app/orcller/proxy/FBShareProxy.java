@@ -1,11 +1,13 @@
 package com.orcller.app.orcller.proxy;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
@@ -20,7 +22,7 @@ import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.DataLoadValidator;
-import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psfoundation.utils.Log;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -73,10 +75,12 @@ public class FBShareProxy {
         if (dataLoadValidator.invalidDataLoading())
             return;
 
+        final ProgressDialog progressDialog = ProgressDialog.show(
+                Application.getTopActivity(), null, Application.applicationContext().getString(R.string.w_preparing));
         final Runnable error = new Runnable() {
             @Override
             public void run() {
-                ProgressBarManager.hide();
+                progressDialog.hide();
                 dataLoadValidator.endDataLoading();
                 AlertDialogUtils.retry(R.string.m_fail_share, new Runnable() {
                     @Override
@@ -87,7 +91,6 @@ public class FBShareProxy {
             }
         };
 
-        ProgressBarManager.show();
         ImageGenerator.generateShareImage(album, new ImageGenerator.CompleteHandler() {
             @Override
             public void onComplete(final Bitmap bitmap) {
@@ -97,7 +100,7 @@ public class FBShareProxy {
                         bitmap.recycle();
 
                         if (response.isSuccess() && response.body().isSuccess()) {
-                            ProgressBarManager.hide();
+                            progressDialog.hide();
                             dataLoadValidator.endDataLoading();
 
                             String description = album.getViewName() + (TextUtils.isEmpty(album.desc) ? "" : "- " + album.desc);
@@ -109,12 +112,18 @@ public class FBShareProxy {
 
                             ShareDialog.show(Application.getTopActivity(), content);
                         } else {
+                            if (BuildConfig.DEBUG)
+                                Log.e("Api Error", response.body());
+
                             error.run();
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
+                        if (BuildConfig.DEBUG)
+                            Log.e("onFailure", t);
+
                         bitmap.recycle();
                         error.run();
                     }

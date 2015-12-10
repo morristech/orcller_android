@@ -3,6 +3,7 @@ package com.orcller.app.orcller.manager;
 import android.os.AsyncTask;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Image;
@@ -207,18 +208,22 @@ public class MediaUploadUnit implements Serializable {
         AlbumDataProxy.getDefault().create(model, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                Log.d("response.body()", response.body());
                 if (response.isSuccess() && response.body().isSuccess()) {
                     MediaManager.getDefault().clearUploading(model);
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, response.body().entity));
                 } else {
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
+
                     errorState();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("onFailure", t);
+                if (BuildConfig.DEBUG)
+                    Log.e("onFailure", t);
+
                 errorState();
             }
         });

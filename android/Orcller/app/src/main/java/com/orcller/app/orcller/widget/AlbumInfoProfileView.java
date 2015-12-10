@@ -1,24 +1,16 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
-import android.text.util.Linkify;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.album.AlbumInfo;
-import com.orcller.app.orcller.utils.SchemaGenerator;
-import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.DateUtil;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 
@@ -57,6 +49,7 @@ public class AlbumInfoProfileView extends PSLinearLayout {
         dateTextView = (TextView) findViewById(R.id.dateTextView);
         userPictureView = (UserPictureView) findViewById(R.id.userPictureView);
 
+        idTextView.setMovementMethod(LinkMovementMethod.getInstance());
         EventBus.getDefault().register(this);
     }
 
@@ -74,14 +67,14 @@ public class AlbumInfoProfileView extends PSLinearLayout {
 
         this.model = model;
 
-        idTextView.setText(SchemaGenerator.createHtmlForUserProfile(model.getUser()));
+        idTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model.getUser()));
         nameTextView.setText(model.user_name);
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         userPictureView.setModel(model.getUser());
     }
 
     public void reload() {
-        idTextView.setText(SchemaGenerator.createHtmlForUserProfile(model.getUser()));
+        idTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model.getUser()));
         nameTextView.setText(model.user_name);
         userPictureView.reload();
     }

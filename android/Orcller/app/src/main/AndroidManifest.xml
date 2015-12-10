@@ -61,19 +61,6 @@
         </activity>
 
         <activity
-            android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"
-            android:theme="@style/PurpleTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="@string/external_web" android:scheme="@string/app_scheme" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".activity.MediaListActivity"
             android:launchMode="singleTask"
             android:theme="@style/BlackTheme">
@@ -139,9 +126,50 @@
 
         <activity
             android:name=".activity.PageListActivity"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/WhiteTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.CommentListActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.AlbumHeartListActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.AlbumStarListActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:theme="@style/PurpleTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="users" android:path="/1" android:scheme="@string/app_scheme" />
+            </intent-filter>
+        </activity>
+
+        <!-- orcllermodules -->
+        <activity
+            android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"
+            android:theme="@style/PurpleTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="@string/external_web" android:scheme="@string/app_scheme" />
+            </intent-filter>
         </activity>
 
         <!-- psuikit -->

@@ -1,13 +1,12 @@
 package com.orcller.app.orcller.widget;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.CommentItemView;
 import com.orcller.app.orcller.model.album.Album;
@@ -22,6 +21,7 @@ import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -40,7 +40,7 @@ public class CommentListView extends PSListView
         Bottom, Top
     }
 
-    private final int LOAD_LIMIT_COUNT = 5;
+    private final int LOAD_LIMIT_COUNT = 10;
     private List<Comment> items = new ArrayList<>();
     private SortDirection sortDirection = SortDirection.Bottom;
     private Comments lastEntity;
@@ -113,7 +113,12 @@ public class CommentListView extends PSListView
         if (lastEntity != null)
             lastEntity.total_count = comments.total_count;
 
-        items.addAll(comments.data);
+        if (sortDirection.equals(SortDirection.Bottom)) {
+            items.addAll(comments.data);
+        } else if (sortDirection.equals(SortDirection.Top)) {
+            items.addAll(0, comments.data);
+        }
+
         listAdapter.notifyDataSetChanged();
     }
 
@@ -138,7 +143,7 @@ public class CommentListView extends PSListView
     }
 
     public void onClickDeleteButton(final CommentItemView target) {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
@@ -147,21 +152,15 @@ public class CommentListView extends PSListView
         final Runnable error = new Runnable() {
             @Override
             public void run() {
-                dataLoadValidator.endDataLoading();
+                endDataLoading();
                 ProgressBarManager.hide();
 
-                AlertDialogUtils.show(getResources().getString(R.string.m_fail_common),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == AlertDialog.BUTTON_POSITIVE) {
-                                    onClickDeleteButton(target);
-                                }
-                            }
-                        },
-                        getResources().getString(R.string.w_dismiss),
-                        getResources().getString(R.string.w_retry)
-                );
+                AlertDialogUtils.retry(R.string.m_fail_common, new Runnable() {
+                    @Override
+                    public void run() {
+                        onClickDeleteButton(target);
+                    }
+                });
             }
         };
 
@@ -174,16 +173,22 @@ public class CommentListView extends PSListView
                             lastEntity = response.body().entity;
                             items.remove(comment);
                             listAdapter.notifyDataSetChanged();
-                            dataLoadValidator.endDataLoading();
+                            endDataLoading();
                             ProgressBarManager.hide();
                             performChange();
                         } else {
+                            if (BuildConfig.DEBUG)
+                                Log.e("Api Error", response.body());
+
                             error.run();
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
+                        if (BuildConfig.DEBUG)
+                            Log.e("onFailure", t);
+
                         error.run();
                     }
                 });
@@ -206,7 +211,7 @@ public class CommentListView extends PSListView
     // ================================================================================================
 
     private void load(final String after) {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         AlbumDataProxy.getDefault().enqueueCall(
@@ -233,18 +238,24 @@ public class CommentListView extends PSListView
                             }, new Runnable() {
                                 @Override
                                 public void run() {
-                                    dataLoadValidator.endDataLoading();
+                                    endDataLoading();
                                     listAdapter.notifyDataSetChanged();
                                     performChange();
                                     setHeaderView();
                                 }
                             });
+                        } else {
+                            if (BuildConfig.DEBUG)
+                                Log.e("Api Error", response.body());
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-                        dataLoadValidator.endDataLoading();
+                        if (BuildConfig.DEBUG)
+                            Log.e("onFailure", t);
+
+                        endDataLoading();
                     }
                 });
     }

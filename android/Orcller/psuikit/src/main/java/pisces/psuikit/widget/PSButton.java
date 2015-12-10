@@ -21,7 +21,7 @@ public class PSButton extends PSFrameLayout {
     private @DrawableRes int drawableTop;
     private @DrawableRes int drawableRight;
     private @DrawableRes int drawableBottom;
-    private TextView textView;
+    protected TextView textView;
 
     public PSButton(Context context) {
         super(context);

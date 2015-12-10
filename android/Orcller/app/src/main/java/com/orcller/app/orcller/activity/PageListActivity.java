@@ -199,6 +199,9 @@ public class PageListActivity extends PSActionBarActivity
     //  Listener
     // ================================================================================================
 
+    /**
+     * PageScrollView delegate
+     */
     public void onClickCommentButton(PageScrollView target) {
         commentInputView.setFocus();
     }
@@ -233,6 +236,9 @@ public class PageListActivity extends PSActionBarActivity
         MediaListActivity.show(mediaList, selectedIndex);
     }
 
+    /**
+     * CommentInputView delegate
+     */
     public void onClickPostButton() {
         if (invalidDataLoading())
             return;
@@ -271,6 +277,9 @@ public class PageListActivity extends PSActionBarActivity
         });
     }
 
+    /**
+     * EventBus listener
+     */
     public void onEventMainThread(Object event) {
         if (event instanceof SoftKeyboardEvent) {
             SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
@@ -296,6 +305,9 @@ public class PageListActivity extends PSActionBarActivity
         }
     }
 
+    /**
+     * PSRecyclerViewPager listener
+     */
     public void OnPageChanged(int oldPosition, int newPosition) {
         boolean initialSelection = newPosition == selectedIndex;
 

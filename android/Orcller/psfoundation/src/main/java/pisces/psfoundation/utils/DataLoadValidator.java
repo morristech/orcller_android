@@ -28,4 +28,14 @@ public class DataLoadValidator {
 
         return false;
     }
+
+    // ================================================================================================
+    //  Interface: Client
+    // ================================================================================================
+
+    public static interface Client {
+        void endDataLoading();
+        boolean isFirstLoading();
+        boolean invalidDataLoading();
+    }
 }

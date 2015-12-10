@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,10 +9,10 @@ import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.Comment;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.UserPictureView;
 
 import pisces.psfoundation.utils.DateUtil;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 
@@ -53,8 +54,9 @@ public class CommentItemView extends PSLinearLayout implements View.OnClickListe
         dateTextView = (TextView) findViewById(R.id.dateTextView);
         userPictureView = (UserPictureView) findViewById(R.id.userPictureView);
         deleteImageView = (ImageView) findViewById(R.id.deleteImageView);
-        separator = (View) findViewById(R.id.separator);
+        separator = findViewById(R.id.separator);
 
+        idTextView.setMovementMethod(LinkMovementMethod.getInstance());
         deleteImageView.setOnClickListener(this);
     }
 
@@ -101,11 +103,11 @@ public class CommentItemView extends PSLinearLayout implements View.OnClickListe
     // ================================================================================================
 
     private void modelChanged() {
-        idTextView.setText(model.user_id);
+        idTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model));
         commentTextView.setText(model.message);
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.created_time));
-        userPictureView.setModel(model.getUser());
-        deleteImageView.setVisibility(model.isMine() ? VISIBLE : GONE);
+        userPictureView.setModel(model);
+        deleteImageView.setVisibility(model.isMe() ? VISIBLE : GONE);
     }
 
     // ================================================================================================

@@ -42,6 +42,7 @@ import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
@@ -79,7 +80,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     @Length(max = 40, messageResId = R.string.m_validate_album_title_length)
     private ClearableEditText titleEditText;
 
-    private Button postButton;
+    protected Button postButton;
     private PSButton addButton;
     private PSButton orderButton;
     private PSButton defaultButton;
@@ -125,6 +126,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
         spinner.setAdapter(adapter);
         albumFlipView.setAllowsShowPageCount(false);
         setListeners();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

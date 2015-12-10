@@ -1,7 +1,10 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.AttributeSet;
+import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -9,8 +12,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
+import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSImageView;
@@ -18,8 +24,8 @@ import pisces.psuikit.ext.PSImageView;
 /**
  * Created by pisces on 11/28/15.
  */
-public class UserPictureView extends PSImageView {
-    private User model;
+public class UserPictureView extends PSImageView implements View.OnClickListener {
+    private BaseUser model;
     private SharedObject.SizeType sizeType = SharedObject.SizeType.Small;
 
     public UserPictureView(Context context) {
@@ -44,7 +50,9 @@ public class UserPictureView extends PSImageView {
 
         setBorderColor(getResources().getColor(R.color.border_profile_imageview));
         setBorderWidth(GraphicUtils.convertDpToPixel(1));
+        setClickable(true);
         setScaleType(ScaleType.CENTER_CROP);
+        setOnClickListener(this);
     }
 
     @Override
@@ -58,11 +66,11 @@ public class UserPictureView extends PSImageView {
     //  Public
     // ================================================================================================
 
-    public User getModel() {
+    public BaseUser getModel() {
         return model;
     }
 
-    public void setModel(User model) {
+    public void setModel(BaseUser model) {
         if (ObjectUtils.equals(model, this.model))
             return;
 
@@ -81,6 +89,16 @@ public class UserPictureView extends PSImageView {
 
     public void reload() {
         modelChanged();
+    }
+
+    // ================================================================================================
+    //  Listener
+    // ================================================================================================
+
+    public void onClick(View v) {
+        String link = CustomSchemeGenerator.createUserProfile(model).toString();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        Application.applicationContext().startActivity(intent);
     }
 
     // ================================================================================================

@@ -14,6 +14,16 @@
     <string name="instagram_redirect_url">ig786fe9d225c248bc970aa251c6fd4771://authorize</string>
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
+    <!-- custom scheme -->
+    <string name="host_album">album</string>
+    <string name="host_coediting">coediting</string>
+    <string name="host_feed">feed</string>
+    <string name="host_member">member</string>
+    <string name="host_notification">notification</string>
+    <string name="host_options">options</string>
+    <string name="host_relationships">relationships</string>
+    <string name="host_users">users</string>
+
     <string name="facebook_share_content_title">Orcller - Live and Put Together</string>
 
     <!-- words -->
@@ -32,6 +42,7 @@
     <string name="w_edit">Edit</string>
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
+    <string name="w_follow">Follow</string>
     <string name="w_following">Following</string>
     <string name="w_hide_all_albums_of">Hide all Albums of</string>
     <string name="w_hide_album">Hide Album</string>
@@ -48,12 +59,14 @@
     <string name="w_password">Password</string>
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
+    <string name="w_preparing">Preparing...</string>
     <string name="w_previous_comments">Previous Comments</string>
     <string name="w_private">Private</string>
     <string name="w_public">Public</string>
     <string name="w_public_settings">Public Settings</string>
     <string name="w_report_inappropriate">Report Inappropriate</string>
     <string name="w_retry">Retry</string>
+    <string name="w_save">Save</string>
     <string name="w_share_to_facebook">Share to Facebook</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>
@@ -69,6 +82,7 @@
     <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>
     <string name="w_unheart">Unheart</string>
+    <string name="w_unfollow">Unfollow</string>
     <string name="w_unstar">Unstar</string>
     <string name="w_untitled">Untitled</string>
     <string name="w_update">Update</string>
@@ -92,7 +106,7 @@
     <string name="m_confirm_album_delete">Are you sure you want to delete an album?</string>
     <string name="m_fail_album_change">"It failed to save changes.\nPlease try again."</string>
     <string name="m_fail_album_delete">It failed to delete an album.\nPlease try again.</string>
-    <string name="m_fail_common">It failed to save changes.\nPlease try again.</string>
+    <string name="m_fail_common">It failed to request.\nPlease try again.</string>
     <string name="m_fail_comment">It failed to post a comment.\nPlease try again.</string>
     <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
     <string name="m_warn_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>

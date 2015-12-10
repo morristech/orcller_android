@@ -4,6 +4,10 @@ import android.graphics.Point;
 import android.text.TextUtils;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.album.Comments;
+import com.orcller.app.orcller.model.album.Favorites;
+import com.orcller.app.orcller.model.album.Likes;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -37,11 +41,25 @@ public class SharedObject {
     // ================================================================================================
 
     public static int convertPositionToPageIndex(int position) {
-        return Math.round((float) position/2);
+        return Math.round((float) position / 2);
     }
 
     public static int convertPageIndexToPosition(int pageIndex) {
         return Math.max(0, (pageIndex * 2) - 1);
+    }
+
+    public static String getAlbumInfoText(AlbumAdditionalListEntity entity) {
+        if (entity instanceof Likes)
+            return getAlbumInfoText(entity, (entity.total_count > 1 ? R.string.w_hearts : R.string.w_heart));
+        if (entity instanceof Comments)
+            return getAlbumInfoText(entity, (entity.total_count > 1 ? R.string.w_comments : R.string.w_comment));
+        if (entity instanceof Favorites)
+            return getAlbumInfoText(entity, (entity.total_count > 1 ? R.string.w_stars : R.string.w_star));
+        return null;
+    }
+
+    public static String getImageUploadPath(String filename, Point size) {
+        return "images/p" + String.valueOf(size.x) + "x" + String.valueOf(size.y) + "/" + filename;
     }
 
     public static List<Integer> getListPositions(int position, int total) {
@@ -63,6 +81,15 @@ public class SharedObject {
         if (position > -1 && position < total)
             return position;
         return -1;
+    }
+
+    public static String getShareContentUrl(String encryptedAlbumId) {
+        try {
+            return Application.applicationContext().getString(R.string.domain) +
+                    "/site/album/view?id=" + URLEncoder.encode(encryptedAlbumId, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     public static String toFullMediaUrl(String url) {
@@ -89,22 +116,14 @@ public class SharedObject {
         return null;
     }
 
-    public static String getImageUploadPath(String filename, Point size) {
-        return "images/p" + String.valueOf(size.x) + "x" + String.valueOf(size.y) + "/" + filename;
-    }
-
-    public static String getShareContentUrl(String encryptedAlbumId) {
-        try {
-            return Application.applicationContext().getString(R.string.domain) +
-                    "/site/album/view?id=" + URLEncoder.encode(encryptedAlbumId, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-    }
-
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private static String getAlbumInfoText(AlbumAdditionalListEntity entity, int stringId) {
+        return Application.applicationContext().getString(stringId) + " " +
+                (entity.total_count > 0 ? String.valueOf(entity.total_count) : "");
+    }
 
     private static String getUserPicturePrefix(SharedObject.SizeType sizeType) {
         if (SharedObject.SizeType.Small.equals(sizeType))

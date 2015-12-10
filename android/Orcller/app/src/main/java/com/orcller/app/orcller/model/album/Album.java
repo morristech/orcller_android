@@ -3,7 +3,6 @@ package com.orcller.app.orcller.model.album;
 import android.text.TextUtils;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 
 import java.text.SimpleDateFormat;
@@ -63,28 +62,16 @@ public class Album extends AlbumInfo {
     public Likes likes = new Likes();
     public Pages pages = new Pages();
 
+    public Album() {
+        super();
+
+        init(null);
+    }
+
     public Album(User user) {
         super();
 
-        id = DateUtil.toUnixtimestamp(new Date());
-
-        if (user != null) {
-            permission = user.user_options.album_permission;
-            user_uid = user.user_uid;
-            user_id = user.user_id;
-            user_link = user.user_link;
-            user_name = user.user_name;
-            user_picture = user.user_picture;
-        }
-
-        Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
-        Pattern pattern = Pattern.compile("(.*)ko(.*)");
-        String formatString = "MMM d, yyyy aaa";
-
-        if (pattern.matcher(locale.toLanguageTag()).matches())
-            formatString = "yyyy년 M월 d일 aaa";
-
-        name = new SimpleDateFormat(formatString).format(new Date());
+        init(user);
     }
 
     public boolean addPage(Page page) {
@@ -142,5 +129,27 @@ public class Album extends AlbumInfo {
         if (index < 0 || index >= pages.data.size())
             return false;
         return pages.data.remove(index) != null;
+    }
+
+    private void init(User user) {
+        Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
+        Pattern pattern = Pattern.compile("(.*)ko(.*)");
+        String formatString = "MMM d, yyyy aaa";
+
+        if (pattern.matcher(locale.toLanguageTag()).matches())
+            formatString = "yyyy년 M월 d일 aaa";
+
+        name = new SimpleDateFormat(formatString).format(new Date());
+        id = DateUtil.toUnixtimestamp(new Date());
+
+        if (user != null) {
+            this.user = user;
+            permission = user.user_options.album_permission;
+            user_uid = user.user_uid;
+            user_id = user.user_id;
+            user_link = user.user_link;
+            user_name = user.user_name;
+            user_picture = user.user_picture;
+        }
     }
 }

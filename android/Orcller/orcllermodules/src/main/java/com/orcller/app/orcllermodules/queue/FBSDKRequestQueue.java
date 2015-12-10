@@ -1,6 +1,7 @@
 package com.orcller.app.orcllermodules.queue;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -12,6 +13,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.orcller.app.orcllermodules.BuildConfig;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.error.FacebookSDKError;
 
@@ -69,6 +71,12 @@ public class FBSDKRequestQueue<T> {
 
     public boolean isValidAccessToken() {
         return AccessToken.getCurrentAccessToken() != null && !AccessToken.getCurrentAccessToken().isExpired();
+    }
+
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (callbackManager != null)
+            return callbackManager.onActivityResult(requestCode, resultCode, data);
+        return false;
     }
 
     public FBSDKRequest request(
@@ -147,6 +155,9 @@ public class FBSDKRequestQueue<T> {
 
                 @Override
                 public void onError(FacebookException error) {
+                    if (BuildConfig.DEBUG)
+                        Log.e(error.getMessage(), error);
+
                     arrayList.remove(0);
                     APIError err = APIError.create(
                             APIError.APIErrorCodeUnknown,

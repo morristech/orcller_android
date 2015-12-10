@@ -4,7 +4,6 @@ import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.event.Event;
 import pisces.psfoundation.model.Model;
 
 /**
@@ -19,7 +18,7 @@ public class AlbumInfo extends Model {
     public String user_link;
     public String user_name;
     public String user_picture;
-    private User user;
+    protected User user;
 
     public AlbumInfo() {
         EventBus.getDefault().register(this);

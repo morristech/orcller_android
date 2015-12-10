@@ -108,7 +108,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     public void favorite(Album model, Callback<ApiAlbum.FavoritesRes> callback) {
-        if (model.likes.isParticipated())
+        if (model.favorites.isParticipated())
             enqueueCall(service().unfavorite(model.id), callback);
         else
             enqueueCall(service().favorite(model.id), callback);

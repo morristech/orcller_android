@@ -6,13 +6,13 @@ import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.DataLoadValidator;
 
 /**
  * Created by pisces on 11/12/15.
  */
-public class PSActionBarActivity extends ActionBarActivity {
-    private boolean dataLoading;
-    private boolean firstLoading = true;
+public class PSActionBarActivity extends ActionBarActivity implements DataLoadValidator.Client {
+    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private Toolbar toolbar;
 
     // ================================================================================================
@@ -69,19 +69,14 @@ public class PSActionBarActivity extends ActionBarActivity {
     }
 
     public boolean isFirstLoading() {
-        return firstLoading;
+        return dataLoadValidator.isFirstLoading();
     }
 
     public void endDataLoading() {
-        dataLoading = false;
-        firstLoading = false;
+        dataLoadValidator.endDataLoading();
     }
+
     public boolean invalidDataLoading() {
-        if (dataLoading)
-            return true;
-
-        dataLoading = true;
-
-        return false;
+        return dataLoadValidator.invalidDataLoading();
     }
 }

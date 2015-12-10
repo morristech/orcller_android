@@ -10,7 +10,7 @@ import pisces.psfoundation.utils.DataLoadValidator;
 /**
  * Created by pisces on 11/15/15.
  */
-public class PSActivity extends Activity {
+public class PSActivity extends Activity implements DataLoadValidator.Client {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     // ================================================================================================

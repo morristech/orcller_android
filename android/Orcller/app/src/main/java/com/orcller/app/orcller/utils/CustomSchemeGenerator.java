@@ -3,29 +3,32 @@ package com.orcller.app.orcller.utils;
 import android.text.Html;
 import android.text.Spannable;
 
+import com.orcller.app.orcller.R;
+import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.HtmlUtils;
 import pisces.psfoundation.utils.MapUtils;
 
 /**
  * Created by pisces on 12/7/15.
  */
-public class SchemaGenerator {
-    public static final String SCHEMA = "orcller";
+public class CustomSchemeGenerator {
+    public static final String SCHEMA = Application.applicationContext().getString(R.string.app_scheme);
 
     public enum Category {
-        Album("album"),
-        Coediting("coediting"),
-        Feed("feed"),
-        Member("member"),
-        Notification("notification"),
-        Options("options"),
-        Relationships("relationships"),
-        Users("users");
+        Album(Application.applicationContext().getString(R.string.host_album)),
+        Coediting(Application.applicationContext().getString(R.string.host_coediting)),
+        Feed(Application.applicationContext().getString(R.string.host_feed)),
+        Member(Application.applicationContext().getString(R.string.host_member)),
+        Notification(Application.applicationContext().getString(R.string.host_notification)),
+        Options(Application.applicationContext().getString(R.string.host_options)),
+        Relationships(Application.applicationContext().getString(R.string.host_relationships)),
+        Users(Application.applicationContext().getString(R.string.host_users));
 
         private String value;
 
@@ -157,16 +160,20 @@ public class SchemaGenerator {
         }
     }
 
-    public static CharSequence createHtmlForUserProfile(User user) {
-        Map<String, String> param = new HashMap<>();
-        param.put("user_uid", String.valueOf(user.user_uid));
-        String link = createSchema(Category.Users, ViewTypeUsers.Profile.getValue(), param);
+    public static String create(Category category, int viewType, Map<String, String> param) {
+        return SCHEMA + "://" + category.getValue() + "/" + String.valueOf(viewType) + "?" + MapUtils.toQueryString(param);
+    }
+
+    public static CharSequence createUserProfileHtml(BaseUser user) {
+        String tag = "<a href=\"" + createUserProfile(user) + "\" >" + user.user_id + "</a>";
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(
-                Html.fromHtml("<a href=\"" + link + "\" >" + user.user_id + "</a>"));
+                Html.fromHtml(tag));
         return HtmlUtils.removeUnderlines(spannable);
     }
 
-    public static String createSchema(Category category, int viewType, Map<String, String> param) {
-        return SCHEMA + "//:" + category.getValue() + "/" + String.valueOf(viewType) + "?" + MapUtils.toQueryString(param);
+    public static String createUserProfile(BaseUser user) {
+        Map<String, String> param = new HashMap<>();
+        param.put("user_uid", String.valueOf(user.user_uid));
+        return create(Category.Users, ViewTypeUsers.Profile.getValue(), param);
     }
 }

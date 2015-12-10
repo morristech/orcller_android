@@ -11,7 +11,7 @@ import pisces.psuikit.manager.ProgressBarManager;
 /**
  * Created by pisces on 11/15/15.
  */
-public class PSFragmentActivity extends FragmentActivity {
+public class PSFragmentActivity extends FragmentActivity implements DataLoadValidator.Client {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     // ================================================================================================

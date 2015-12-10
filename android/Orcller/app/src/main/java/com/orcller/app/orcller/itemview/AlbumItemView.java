@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.album.Comments;
@@ -166,6 +168,26 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         updateDisplayList();
     }
 
+    public void updateDisplayList() {
+        descriptionTextView.setText(model.desc);
+        descriptionTextView.setVisibility(TextUtils.isEmpty(model.desc) ? GONE : VISIBLE);
+        heartTextView.setText(getInfoText(heartTextView));
+        heartTextView.setVisibility(model.likes.total_count > 0 ? VISIBLE : GONE);
+        commentTextView.setText(getInfoText(commentTextView));
+        commentTextView.setVisibility(model.comments.total_count > 0 ? VISIBLE : GONE);
+        starTextView.setText(getInfoText(starTextView));
+        starTextView.setVisibility(model.favorites.total_count > 0 ? VISIBLE : GONE);
+        coeditButton.setSelected(model.contributors.isParticipated());
+        heartButton.setText(getButtonText(heartButton));
+        heartButton.setSelected(model.likes.isParticipated());
+        commentButton.setSelected(model.comments.isParticipated());
+        starButton.setText(getButtonText(starButton));
+        starButton.setSelected(model.favorites.isParticipated());
+        starButton.setVisibility(model.isMine() ? VISIBLE : GONE);
+        setLeftMargin(commentTextView, heartTextView);
+        setLeftMargin(starTextView, commentTextView);
+    }
+
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -240,16 +262,12 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
 
     private String getInfoText(TextView textView) {
         if (heartTextView.equals(textView))
-            return getInfoText(model.likes.total_count, (model.likes.total_count > 1 ? R.string.w_hearts : R.string.w_heart));
+            return SharedObject.getAlbumInfoText(model.likes);
         if (commentTextView.equals(textView))
-            return getInfoText(model.comments.total_count, (model.comments.total_count > 1 ? R.string.w_comments : R.string.w_comment));
+            return SharedObject.getAlbumInfoText(model.comments);
         if (starTextView.equals(textView))
-            return getInfoText(model.favorites.total_count, (model.favorites.total_count > 1 ? R.string.w_stars : R.string.w_star));
+            return SharedObject.getAlbumInfoText(model.favorites);
         return null;
-    }
-
-    private String getInfoText(int totalCount, int stringId) {
-        return getResources().getString(stringId) + " " + (totalCount > 0 ? String.valueOf(totalCount) : "");
     }
 
     private void modelChanged() {
@@ -302,25 +320,6 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
                 });
             }
         }
-    }
-
-    private void updateDisplayList() {
-        descriptionTextView.setText(model.desc);
-        heartTextView.setText(getInfoText(heartTextView));
-        heartTextView.setVisibility(model.likes.total_count > 0 ? VISIBLE : GONE);
-        commentTextView.setText(getInfoText(commentTextView));
-        commentTextView.setVisibility(model.comments.total_count > 0 ? VISIBLE : GONE);
-        starTextView.setText(getInfoText(starTextView));
-        starTextView.setVisibility(model.favorites.total_count > 0 ? VISIBLE : GONE);
-        coeditButton.setSelected(model.contributors.isParticipated());
-        heartButton.setText(getButtonText(heartButton));
-        heartButton.setSelected(model.likes.isParticipated());
-        commentButton.setSelected(model.comments.isParticipated());
-        starButton.setText(getButtonText(starButton));
-        starButton.setSelected(model.favorites.isParticipated());
-        starButton.setVisibility(model.isMine() ? VISIBLE : GONE);
-        setLeftMargin(commentTextView, heartTextView);
-        setLeftMargin(starTextView, commentTextView);
     }
 
     // ================================================================================================

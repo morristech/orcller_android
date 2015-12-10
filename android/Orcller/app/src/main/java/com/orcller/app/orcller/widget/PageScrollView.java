@@ -85,6 +85,9 @@ public class PageScrollView extends PSLinearLayout
     //  Listener
     // ================================================================================================
 
+    /**
+     * OnClick listener
+     */
     public void onClick(View v) {
         if (delegate == null)
             return;
@@ -96,16 +99,22 @@ public class PageScrollView extends PSLinearLayout
         }
     }
 
-    public void onClick(MediaView view) {
-        if (delegate != null)
-            delegate.onClickMediaView(this, view);
-    }
-
+    /**
+     * CommentListView delegate
+     */
     public void onChange(Comments comments) {
         model.comments.participated = comments.participated;
         model.comments.total_count = comments.total_count;
 
         updateButtons();
+    }
+
+    /**
+     * MediaView delegate
+     */
+    public void onClick(MediaView view) {
+        if (delegate != null)
+            delegate.onClickMediaView(this, view);
     }
 
     public void onCompleteImageLoad(MediaView view) {

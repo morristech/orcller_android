@@ -3,7 +3,6 @@ package com.orcller.app.orcller.facade;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -11,13 +10,16 @@ import android.widget.LinearLayout;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.AlbumEditActivity;
+import com.orcller.app.orcller.activity.AlbumHeartListActivity;
 import com.orcller.app.orcller.activity.AlbumPageDefaultActivity;
 import com.orcller.app.orcller.activity.AlbumPageDeleteActivity;
 import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
+import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
@@ -28,6 +30,7 @@ import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
@@ -46,12 +49,14 @@ import com.orcller.app.orcller.widget.MediaScrollView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageScrollView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.UserListView;
 import com.orcller.app.orcller.widget.UserPictureView;
 import com.orcller.app.orcller.widget.VideoMediaView;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.managers.GooglePlayServiceManager;
+import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.model.User;
 
@@ -64,6 +69,7 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
+import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -124,10 +130,7 @@ public class ApplicationFacade {
             runTestSuite();
         } else {
             AuthenticationCenter.getDefault()
-                    .setTestUserSessionToken("RXmCdDakJeeQD2/Jra07dWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0QlyV6nPXi3n5Cx6sivmUxFGRXRDqW2BHuFqAfFqqY1eU/t6ueakPZMF0xpt/JgsRQ\\u003d\\u003d");
-
-//            AuthenticationCenter.getDefault()
-//                    .setTestUserSessionToken("8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ==");
+                    .setTestUserSessionToken(BuildConfig.TEST_SESSION_TOKEN);
             ApplicationLauncher.getDefault()
                     .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
                     .launch();
@@ -194,6 +197,9 @@ public class ApplicationFacade {
         testAlbumViewActivity();
 //        testImageGenerator();
 //        testFBShareProxy();
+//        testCommentListActivity();
+//        testUserListView();
+//        testAlbumHeartListActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -523,7 +529,7 @@ public class ApplicationFacade {
     }
 
     private void testAlbumViewActivity() {
-        AlbumViewActivity.show(5, false);
+        AlbumViewActivity.show(4, false);
 //        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
 //            @Override
 //            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
@@ -568,5 +574,35 @@ public class ApplicationFacade {
             public void onFailure(Throwable t) {
             }
         });
+    }
+
+    private void testCommentListActivity() {
+        Album album = new Album();
+        album.id = 4;
+
+        CommentListActivity.show(album);
+    }
+
+    private void testUserListView() {
+        UserListView.DataSource dataSource = new UserListView.DataSource<ApiAlbum.LikesRes>() {
+            @Override
+            public boolean followButtonHidden() {
+                return true;
+            }
+
+            @Override
+            public Call<ApiAlbum.LikesRes> createDataLoadCall(int limit, String after) {
+                return AlbumDataProxy.getDefault().service().likes(5, limit, after);
+            }
+        };
+
+        UserListView view = new UserListView(Application.applicationContext());
+        view.setDataSource(dataSource);
+        Application.getTopActivity().addContentView(
+                view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    private void testAlbumHeartListActivity() {
+        AlbumHeartListActivity.show(4);
     }
 }

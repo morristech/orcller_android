@@ -46,17 +46,20 @@ android {
     productFlavors {
         uitest {
             applicationId "com.orcller.app.orcller.uitest"
-            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
+            buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
+            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
         }
 
         dev {
             applicationId "com.orcller.app.orcller.dev"
-            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.103/apis"'
+            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
+            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"RXmCdDakJeeQD2/Jra07dWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0QlyV6nPXi3n5Cx6sivmUxFGRXRDqW2BHuFqAfFqqY1eU/t6ueakPZMF0xpt/JgsRQ\\u003d\\u003d"'
         }
 
         qa {
             applicationId "com.orcller.app.orcller.qa"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
+            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
         }
 
         production {

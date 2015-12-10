@@ -22,7 +22,7 @@ android {
     productFlavors {
         dev {
             buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
-            buildConfigField 'int', 'HTTP_TIMEOUT_INTERVAL', '20'
+            buildConfigField 'int', 'HTTP_TIMEOUT_INTERVAL', '30'
         }
         production {
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'

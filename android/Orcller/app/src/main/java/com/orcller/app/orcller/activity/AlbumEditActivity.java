@@ -32,6 +32,7 @@ public class AlbumEditActivity extends AlbumCreateActivity {
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setTitle(getString(R.string.w_title_edit_album));
+        postButton.setText(R.string.w_save);
         loadAlbum();
     }
 

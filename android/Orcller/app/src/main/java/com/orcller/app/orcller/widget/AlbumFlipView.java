@@ -21,7 +21,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -90,13 +89,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         allowsShowPageCount = true;
         pageIndex = -1;
         imageLoadType = MediaView.ImageLoadType.LowResolution.getValue();
-        visibleViews = new ArrayList<FlipView>();
+        visibleViews = new ArrayList<>();
         background = new View(context);
         container = new PSFrameLayout(context);
         pageCountView = new AlbumPageCountView(context);
         progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
 
         background.setBackgroundColor(Color.BLACK);
+        setClipChildren(false);
         addView(background);
         addView(container, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -106,7 +106,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     @Override
     protected void setUpSubviews(Context context) {
         readyPages();
-        EventBus.getDefault().register(this, VideoMediaView.Event.class);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -484,13 +484,16 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     private void alignContainer(int pageIndex, int duration, Interpolator interpolator, boolean animated) {
+        if (pageWidth < 1 || model == null)
+            return;
+
         int x = 0;
         if (pageIndex == 0)
-            x = (getMeasuredWidth() - container.getMeasuredWidth())/2 - (pageWidth/2);
+            x = (getWidth() - container.getWidth())/2 - (pageWidth/2);
         else if ((pageIndex * 2) + 1 > model.pages.count)
-            x = (getMeasuredWidth() - container.getMeasuredWidth())/2 + (pageWidth/2);
+            x = (getWidth() - container.getWidth())/2 + (pageWidth/2);
         else
-            x = (getMeasuredWidth() - container.getMeasuredWidth())/2;
+            x = (getWidth() - container.getWidth())/2;
 
         if (animated) {
             container.animate()
@@ -624,7 +627,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private void resizePages() {
         ViewGroup.LayoutParams params = getLayoutParams();
         params.width = pageWidth * PAGE_COUNT;
-        params.height = pageHeight + GraphicUtils.convertDpToPixel(20);
+        params.height = pageHeight;
 
         ViewGroup.LayoutParams bgparams = background.getLayoutParams();
         bgparams.width = params.width;
@@ -636,6 +639,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             params.height = pageHeight;
             view.setX(pageWidth);
         }
+
+        alignContainer(pageIndex, false);
     }
 
     private void updatePageCountView() {

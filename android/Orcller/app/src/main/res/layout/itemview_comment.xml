@@ -26,7 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/textcolor_dark_blue"
+                android:clickable="true"
+                android:textColorLink="@drawable/color_user_id"
                 android:textStyle="bold"
                 android:textSize="13dp"/>
 

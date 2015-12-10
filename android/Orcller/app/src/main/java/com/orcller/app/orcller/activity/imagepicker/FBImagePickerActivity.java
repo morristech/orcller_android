@@ -67,12 +67,10 @@ public class FBImagePickerActivity extends PSActionBarActivity
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        FBSDKRequestQueue.currentQueue()
-                .getCallbackManager()
-                .onActivityResult(requestCode, resultCode, data);
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
