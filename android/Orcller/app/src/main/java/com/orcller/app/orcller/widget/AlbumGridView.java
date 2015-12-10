@@ -62,25 +62,12 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
         paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE);
 
+        setAdapter(gridViewAdapter);
         setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         setNumColumns(4);
         setHorizontalSpacing(GraphicUtils.convertDpToPixel(1));
         setVerticalSpacing(GraphicUtils.convertDpToPixel(1));
         setOnItemClickListener(this);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int heightSpec;
-
-        if (getLayoutParams().height == LayoutParams.WRAP_CONTENT) {
-            heightSpec = MeasureSpec.makeMeasureSpec(
-                    Integer.MAX_VALUE, MeasureSpec.AT_MOST);
-        } else {
-            heightSpec = heightMeasureSpec;
-        }
-
-        super.onMeasure(widthMeasureSpec, heightSpec);
     }
 
     // ================================================================================================
@@ -105,7 +92,7 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
 
         this.model = model;
 
-        setAdapter(gridViewAdapter);
+        gridViewAdapter.notifyDataSetChanged();
     }
 
     public int getSelectedIndex() {
@@ -148,7 +135,7 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
     //  Private
     // ================================================================================================
 
-    private int getDefaultPositin() {
+    private int getDefaultPosition() {
         int row = Math.max(0, (model.default_page_index * 2) - 1);
         int next = getPosition(row + (row % 2 == 1 ? 1 : -1));
         return next > -1 ? next : getPosition(row);
@@ -186,7 +173,7 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
 
         @Override
         public int getCount() {
-            return model.pages.data.size();
+            return model != null ? model.pages.data.size() : 0;
         }
 
         @Override
@@ -211,7 +198,7 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
                 itemView = (AlbumGridItemView) convertView;
             }
 
-            itemView.setAllowsShowDefaultIcon(getDefaultPositin() == position);
+            itemView.setAllowsShowDefaultIcon(getDefaultPosition() == position);
             itemView.setItemType(getItemType(position));
             itemView.setPage(getItem(position));
 
@@ -220,7 +207,7 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
     }
 
     // ================================================================================================
-    //  Class: GridViewAdapter
+    //  Interface: Delegate
     // ================================================================================================
 
     public static interface Delegate {

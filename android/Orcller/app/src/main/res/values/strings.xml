@@ -29,7 +29,6 @@
     <!-- words -->
     <string name="w_add">Add</string>
     <string name="w_add_dialog_title">Import photos and videos</string>
-    <string name="w_album_title_hint">Enter the album title here.</string>
     <string name="w_cancel">Cancel</string>
     <string name="w_change">Change</string>
     <string name="w_coedit">Co-edit</string>
@@ -43,6 +42,7 @@
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
     <string name="w_follow">Follow</string>
+    <string name="w_followers">Followers</string>
     <string name="w_following">Following</string>
     <string name="w_hide_all_albums_of">Hide all Albums of</string>
     <string name="w_hide_album">Hide Album</string>
@@ -92,8 +92,11 @@
     <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
     <string name="m_has_new_version">There is a new version on the App Store.</string>
     <string name="m_hint_album_description">Say something about this album...</string>
+    <string name="m_hint_album_title">Enter the album title here.</string>
     <string name="m_hint_comment_input">Please enter your comment.</string>
     <string name="m_hint_papge_description">Say something about this page...</string>
+    <string name="m_hint_profile_message">Enter profile message</string>
+    <string name="m_hint_user_id">Enter your nickname</string>
     <string name="m_member_joininput_desc">
         By tapping to continue, you are indicating that you have read the
         <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>

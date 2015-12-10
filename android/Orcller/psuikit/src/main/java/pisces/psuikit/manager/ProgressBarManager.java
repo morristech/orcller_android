@@ -61,7 +61,7 @@ public class ProgressBarManager {
     }
 
     public static void show(Activity activity, boolean modal) {
-        show(activity, modal, android.R.attr.progressBarStyleLarge);
+        show(activity, modal, android.R.attr.progressBarStyle);
     }
 
     public static void show(Activity activity, boolean modal, int progressStyle) {

@@ -17,4 +17,8 @@
     <declare-styleable name="CommentListView">
         <attr name="listCountAtOnce" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="UserDataGridView">
+        <attr name="listCountAtOnce"/>
+    </declare-styleable>
 </resources>

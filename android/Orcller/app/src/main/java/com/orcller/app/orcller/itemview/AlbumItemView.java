@@ -215,7 +215,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         else if (starButton.equals(v))
             type = ButtonType.Star;
 
-        delegate.onClick(this, type);
+        delegate.onClick(this, type, v);
     }
 
     public void onEventMainThread(Object event) {
@@ -329,7 +329,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     public static interface Delegate extends AlbumFlipView.Delegate {
         void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
         void onAlbumSynchronize(AlbumItemView itemView);
-        void onClick(AlbumItemView itemView, ButtonType type);
+        void onClick(AlbumItemView itemView, ButtonType type, View view);
         void onPageChange(AlbumItemView itemView);
     }
 }

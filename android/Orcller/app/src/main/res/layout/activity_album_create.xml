@@ -65,7 +65,7 @@
                     android:layout_marginRight="15dp"
                     android:background="@drawable/background_album_title_edittext"
                     android:cursorVisible="true"
-                    android:hint="@string/w_album_title_hint"
+                    android:hint="@string/m_hint_album_title"
                     android:inputType="text"
                     android:nextFocusDown="@+id/descriptionEditText"
                     android:textColor="@android:color/black"

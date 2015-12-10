@@ -3,11 +3,13 @@ package com.orcller.app.orcller.facade;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.facebook.FacebookSdk;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.BuildConfig;
@@ -37,6 +39,7 @@ import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.FBShareProxy;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.utils.ImageGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
@@ -49,6 +52,7 @@ import com.orcller.app.orcller.widget.MediaScrollView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageScrollView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.ProfileHearderView;
 import com.orcller.app.orcller.widget.UserListView;
 import com.orcller.app.orcller.widget.UserPictureView;
 import com.orcller.app.orcller.widget.VideoMediaView;
@@ -182,7 +186,7 @@ public class ApplicationFacade {
 //        testIGPopularMediaGrid();
 //        testUserPictureView();
 //        testAlbumCreateActivity();
-//        testAlbumGridView();
+        testAlbumGridView();
 //        testAlbumPageOrderActivity();
 //        testAlbumPageDefaultActivity();
 //        testAlbumPageDeleteActivity();
@@ -194,12 +198,14 @@ public class ApplicationFacade {
 //        testCommentInputView();
 //        testCommentListView();
 //        testAlbumItemView();
-        testAlbumViewActivity();
+//        testAlbumViewActivity();
 //        testImageGenerator();
 //        testFBShareProxy();
 //        testCommentListActivity();
 //        testUserListView();
 //        testAlbumHeartListActivity();
+//        testProfileHeaderView();
+//        testProfileActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -604,5 +610,19 @@ public class ApplicationFacade {
 
     private void testAlbumHeartListActivity() {
         AlbumHeartListActivity.show(4);
+    }
+
+    private void testProfileHeaderView() {
+        ProfileHearderView view = new ProfileHearderView(Application.applicationContext());
+        view.setModel(AuthenticationCenter.getDefault().getUser());
+        Application.getTopActivity().addContentView(
+                view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    private void testProfileActivity() {
+        String link = CustomSchemeGenerator.createUserProfile(1).toString();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.applicationContext().startActivity(intent);
     }
 }

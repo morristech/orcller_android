@@ -3,10 +3,13 @@ package com.orcller.app.orcller.manager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v7.internal.view.menu.MenuBuilder;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -49,22 +52,11 @@ public class AlbumOptionsManager {
     // ================================================================================================
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (album == null)
-            return false;
+        return onCreateOptionsMenu(menu, null);
+    }
 
-        MenuInflater inflater = Application.getTopActivity().getMenuInflater();
-
-        if (album.isMine()) {
-            inflater.inflate(R.menu.menu_album_view_owner, menu);
-        } else if (album.contributors.isParticipated()) {
-            inflater.inflate(R.menu.menu_album_view_coedit, menu);
-        } else {
-            inflater.inflate(R.menu.menu_album_view, menu);
-            MenuItem item = menu.findItem(R.id.hideAll);
-            item.setTitle(item.getTitle() + " " + album.user_id);
-        }
-
-        return true;
+    public boolean onCreateOptionsMenu(View anchor) {
+        return onCreateOptionsMenu(null, anchor);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -253,6 +245,27 @@ public class AlbumOptionsManager {
         });
     }
 
+    private boolean onCreateOptionsMenu(Menu menu, View view) {
+        if (album == null)
+            return false;
+
+        if (menu != null) {
+            setMenuItems(menu, Application.getTopActivity().getMenuInflater());
+        } else {
+            PopupMenu popupMenu  = new PopupMenu(context, view);
+            setMenuItems(popupMenu.getMenu(), popupMenu.getMenuInflater());
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    return onOptionsItemSelected(item);
+                }
+            });
+            popupMenu.show();
+        }
+
+        return true;
+    }
+
     private void publicSettings() {
         final PublicSettingsAlertDialogView view = new PublicSettingsAlertDialogView(context);
 
@@ -305,6 +318,18 @@ public class AlbumOptionsManager {
                 showFailAlertDialog(runnable, t);
             }
         });
+    }
+
+    private void setMenuItems(Menu menu, MenuInflater inflater) {
+        if (album.isMine()) {
+            inflater.inflate(R.menu.menu_album_view_owner, menu);
+        } else if (album.contributors.isParticipated()) {
+            inflater.inflate(R.menu.menu_album_view_coedit, menu);
+        } else {
+            inflater.inflate(R.menu.menu_album_view, menu);
+            MenuItem item = menu.findItem(R.id.hideAll);
+            item.setTitle(item.getTitle() + " " + album.user_id);
+        }
     }
 
     private void share() {

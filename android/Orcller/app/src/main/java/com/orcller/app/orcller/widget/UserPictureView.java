@@ -14,7 +14,6 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.model.BaseUser;
-import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;

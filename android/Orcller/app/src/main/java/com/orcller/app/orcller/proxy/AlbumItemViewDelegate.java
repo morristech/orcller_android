@@ -1,11 +1,15 @@
 package com.orcller.app.orcller.proxy;
 
+import android.view.View;
+import android.widget.PopupMenu;
+
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.activity.AlbumHeartListActivity;
 import com.orcller.app.orcller.activity.AlbumStarListActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.api.ApiAlbum;
@@ -14,6 +18,7 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSScrollView;
@@ -26,7 +31,6 @@ import retrofit.Retrofit;
  */
 public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Delegate {
     private Invoker invoker;
-    private AlbumItemView itemView;
 
     public AlbumItemViewDelegate(Invoker invoker) {
         this.invoker = invoker;
@@ -51,7 +55,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         itemView.reload();
     }
 
-    public void onClick(AlbumItemView itemView, AlbumItemView.ButtonType type) {
+    public void onClick(AlbumItemView itemView, AlbumItemView.ButtonType type, View view) {
         if (AlbumItemView.ButtonType.Coedit.equals(type)) {
             //TODO: Open CoeditActivity
         } else if (AlbumItemView.ButtonType.Comment.equals(type)) {
@@ -64,7 +68,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         } else if (AlbumItemView.ButtonType.HeartList.equals(type)) {
             AlbumHeartListActivity.show(itemView.getModel().id);
         } else if (AlbumItemView.ButtonType.Options.equals(type)) {
-            //TODO: Open Options Menu
+            new AlbumOptionsManager(itemView.getContext(), itemView.getModel()).onCreateOptionsMenu(view);
         } else if (AlbumItemView.ButtonType.Star.equals(type)) {
             star(itemView);
         } else if (AlbumItemView.ButtonType.StarList.equals(type)) {

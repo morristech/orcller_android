@@ -171,9 +171,13 @@ public class CustomSchemeGenerator {
         return HtmlUtils.removeUnderlines(spannable);
     }
 
-    public static String createUserProfile(BaseUser user) {
+    public static String createUserProfile(long userId) {
         Map<String, String> param = new HashMap<>();
-        param.put("user_uid", String.valueOf(user.user_uid));
+        param.put("user_uid", String.valueOf(userId));
         return create(Category.Users, ViewTypeUsers.Profile.getValue(), param);
+    }
+
+    public static String createUserProfile(BaseUser user) {
+        return createUserProfile(user.user_uid);
     }
 }
