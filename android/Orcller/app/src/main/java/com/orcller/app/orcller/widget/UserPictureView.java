@@ -98,6 +98,7 @@ public class UserPictureView extends PSImageView implements View.OnClickListener
     public void onClick(View v) {
         String link = CustomSchemeGenerator.createUserProfile(model).toString();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
     }
 

@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class CommentListView extends PSListView
         Bottom, Top
     }
 
-    private final int LOAD_LIMIT_COUNT = 10;
+    private int listCountAtOnce;
     private List<Comment> items = new ArrayList<>();
     private SortDirection sortDirection = SortDirection.Bottom;
     private Comments lastEntity;
@@ -74,11 +75,22 @@ public class CommentListView extends PSListView
         headerView.setOnClickListener(this);
         setDivider(null);
         setAdapter(listAdapter);
+
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CommentListView, defStyleAttr, defStyleRes);
+        try {
+            setListCountAtOnce(ta.getInt(R.styleable.CommentListView_listCountAtOnce, 5));
+        } finally {
+            ta.recycle();
+        }
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public void setListCountAtOnce(int listCountAtOnce) {
+        this.listCountAtOnce = listCountAtOnce;
+    }
 
     public Delegate getDelegate() {
         return delegate;
@@ -215,7 +227,7 @@ public class CommentListView extends PSListView
             return;
 
         AlbumDataProxy.getDefault().enqueueCall(
-                createCommentsCall(LOAD_LIMIT_COUNT, after),
+                createCommentsCall(listCountAtOnce, after),
                 new Callback<ApiAlbum.CommentsRes>() {
                     @Override
                     public void onResponse(final Response<ApiAlbum.CommentsRes> response, Retrofit retrofit) {
@@ -260,17 +272,17 @@ public class CommentListView extends PSListView
                 });
     }
 
+    private void loadAfter() {
+        if (lastEntity != null && lastEntity.after != null)
+            load(lastEntity.after);
+    }
+
     private void loadMore(int position) {
         if (sortDirection.equals(SortDirection.Top) &&
                 lastEntity != null &&
                 items.size() < lastEntity.total_count &&
                 position >= items.size() - 3)
             loadAfter();
-    }
-
-    private void loadAfter() {
-        if (lastEntity != null && lastEntity.after != null)
-            load(lastEntity.after);
     }
 
     private void performChange() {

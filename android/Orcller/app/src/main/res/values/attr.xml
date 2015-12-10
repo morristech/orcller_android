@@ -13,4 +13,8 @@
     <declare-styleable name="DescriptionInputView">
         <attr name="android:hint"/>
     </declare-styleable>
+
+    <declare-styleable name="CommentListView">
+        <attr name="listCountAtOnce" format="integer"/>
+    </declare-styleable>
 </resources>

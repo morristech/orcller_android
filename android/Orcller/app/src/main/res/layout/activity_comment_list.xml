@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -21,7 +22,8 @@
         <com.orcller.app.orcller.widget.CommentListView
             android:id="@+id/commentListView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:listCountAtOnce="20"/>
 
         <com.orcller.app.orcller.widget.CommentInputView
             android:id="@+id/commentInputView"
