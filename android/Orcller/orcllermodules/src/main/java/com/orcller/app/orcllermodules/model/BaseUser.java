@@ -23,6 +23,10 @@ public class BaseUser extends Model {
         return following > 0;
     }
 
+    public void setFollowing(boolean following) {
+        this.following = following ? 1 : 0;
+    }
+
     public boolean isMe() {
         if (AuthenticationCenter.getDefault().getUser() == null)
             return false;

@@ -44,7 +44,7 @@ public class MediaDataProxy extends AbstractDataProxy {
 
     public static MediaDataProxy getDefault() {
         if(uniqueInstance == null) {
-            synchronized(AlbumDataProxy.class) {
+            synchronized(MediaDataProxy.class) {
                 if(uniqueInstance == null) {
                     uniqueInstance = new MediaDataProxy();
                 }

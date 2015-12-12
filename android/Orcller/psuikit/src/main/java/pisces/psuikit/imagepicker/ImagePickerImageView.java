@@ -48,7 +48,7 @@ public class ImagePickerImageView extends PSFrameLayout {
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         imageView = new SubsamplingScaleImageView(context);
-        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyle);
 
         FrameLayout.LayoutParams imageViewParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

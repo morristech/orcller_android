@@ -10,11 +10,12 @@ import com.orcller.app.orcller.model.album.ListEntity;
 import com.orcller.app.orcller.widget.UserListView;
 
 import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 12/10/15.
  */
-abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivity implements UserListView.OnLoadListener {
+abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivity implements UserListView.Delegate {
     protected static final String ALBUM_ID_KEY = "albumId";
     protected long albumId;
     private UserListView userListView;
@@ -34,8 +35,8 @@ abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivit
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
+        userListView.setDelegate(this);
         userListView.setDataSource(createDataSource());
-        userListView.setOnLoadListener(this);
     }
 
     @Override
@@ -49,7 +50,16 @@ abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivit
     //  Listener
     // ================================================================================================
 
-    public void onLoad(ListEntity listEntity) {
+    /**
+     * UserListView.Delgate
+     */
+    public void onLoad(UserListView listView) {
+        if (listView.isFirstLoading())
+            ProgressBarManager.show();
+    }
+
+    public void onLoadComplete(UserListView listView, ListEntity listEntity) {
+        ProgressBarManager.hide();
         getSupportActionBar().setTitle(
                 SharedObject.getAlbumInfoText((AlbumAdditionalListEntity) listEntity));
     }

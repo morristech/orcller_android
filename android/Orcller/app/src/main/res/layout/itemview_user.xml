@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white">
+    android:background="@null"
+    android:clickable="true">
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -19,15 +20,17 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:layout_marginLeft="8dp">
             <TextView
                 android:id="@+id/idTextView"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/background_tab_profile_content"
                 android:clickable="true"
-                android:textColorLink="@drawable/color_user_id"
+                android:textColorLink="@color/textcolor_dark_blue"
                 android:textStyle="bold"
                 android:textSize="13dp"/>
 
@@ -42,8 +45,8 @@
 
         <com.orcller.app.orcller.widget.FollowButton
             android:id="@+id/followButton"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
+            android:layout_width="84dp"
+            android:layout_height="32dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
             android:gravity="right"/>

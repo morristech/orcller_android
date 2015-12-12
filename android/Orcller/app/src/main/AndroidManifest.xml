@@ -158,6 +158,21 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.UserPictureActivity"
+            android:theme="@style/BlackTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.FollowingActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.FollowersActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
         <!-- orcllermodules -->
         <activity
             android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"

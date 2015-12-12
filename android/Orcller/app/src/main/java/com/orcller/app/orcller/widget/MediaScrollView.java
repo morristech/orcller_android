@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
@@ -136,11 +137,13 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
             ImageMediaScrollView view = new ImageMediaScrollView(getContext());
             view.setScaleAspectFill(scaleAspectFill);
             view.setScaleEnabled(scaleEnabled);
+            view.setProgressBar(new ProgressBar(getContext(), null, android.R.attr.progressBarStyle));
             return view;
         }
         if (model instanceof VideoMedia) {
             VideoMediaView view = new VideoMediaView(getContext());
             view.setImageLoadType(MediaView.ImageLoadType.LowResolution.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+            view.setProgressBar(new ProgressBar(getContext(), null, android.R.attr.progressBarStyle));
             return view;
         }
         return null;

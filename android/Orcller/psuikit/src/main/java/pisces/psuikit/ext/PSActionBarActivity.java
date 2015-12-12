@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.DataLoadValidator;

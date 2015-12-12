@@ -1,27 +1,30 @@
 package com.orcller.app.orcller.activity;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.TabHost;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.fragment.ActivityFragment;
-import com.orcller.app.orcller.fragment.FindFriendsFragment;
-import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcller.fragment.UserAlbumGridFragment;
+import com.orcller.app.orcller.fragment.UserAlbumStarGridFragment;
+import com.orcller.app.orcller.fragment.UserDataGridFragment;
+import com.orcller.app.orcller.fragment.UserMediaGridFragment;
 import com.orcller.app.orcller.proxy.UserDataProxy;
+import com.orcller.app.orcller.widget.ProfileContentView;
 import com.orcller.app.orcller.widget.ProfileHearderView;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
+import java.util.Arrays;
+import java.util.List;
+
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -33,14 +36,13 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/10/15.
  */
-public class ProfileActivity extends PSActionBarActivity implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+public class ProfileActivity extends PSActionBarActivity implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
     private static final String USER_UID_KEY = "user_uid";
-    private long userUid;
+    private long userId;
     private User model;
-    private PagerAdapter pagerAdapter;
-    private TabHost tabHost;
-    private ViewPager viewPager;
     private ProfileHearderView profileHearderView;
+    private ProfileContentView profileContentView;
+    private List<UserDataGridFragment> fragments;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -54,31 +56,46 @@ public class ProfileActivity extends PSActionBarActivity implements TabHost.OnTa
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
 
-        userUid = Long.valueOf(getIntent().getData().getQueryParameter(USER_UID_KEY));
+        userId = Long.valueOf(getIntent().getData().getQueryParameter(USER_UID_KEY));
+        fragments = createFragments();
         profileHearderView = (ProfileHearderView) findViewById(R.id.profileHearderView);
-        tabHost = (TabHost) findViewById(R.id.tabHost);
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        profileContentView = (ProfileContentView) findViewById(R.id.profileContentView);
 
-        tabHost.setup();
+        if (User.isMe(userId)) {
+            setModel(AuthenticationCenter.getDefault().getUser());
+        } else {
+            loadProfile();
+        }
 
-
-        View view = new View(this);
-        view.setBackgroundColor(Color.RED);
-
-        TabHost.TabSpec tabSpec1 = tabHost.newTabSpec("1").setIndicator(view).setContent(new TabFactory(this));
-        TabHost.TabSpec tabSpec2 = tabHost.newTabSpec("2").setIndicator("2").setContent(new TabFactory(this));
-        TabHost.TabSpec tabSpec3 = tabHost.newTabSpec("3").setIndicator("3").setContent(new TabFactory(this));
-
-        tabHost.addTab(tabSpec1);
-        tabHost.addTab(tabSpec2);
-        tabHost.addTab(tabSpec3);
-        tabHost.setOnTabChangedListener(this);
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.addOnPageChangeListener(this);
-
-        load();
+        profileHearderView.setDelegate(this);
+        profileContentView.setDataSource(this);
+        profileContentView.setUserId(userId);
         SoftKeyboardNotifier.getDefault().register(this);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (User.isMe(userId)) {
+            int res = profileHearderView.isEditing() ? R.menu.menu_profile_save : R.menu.menu_profile;
+            Application.getTopActivity().getMenuInflater().inflate(res, menu);
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                profileHearderView.save();
+                return false;
+
+            case R.id.options:
+                //TODO: open options activity
+                return false;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -86,6 +103,9 @@ public class ProfileActivity extends PSActionBarActivity implements TabHost.OnTa
         super.onDestroy();
 
         SoftKeyboardNotifier.getDefault().unregister(this);
+
+        profileHearderView = null;
+        profileContentView = null;
     }
 
     @Override
@@ -100,25 +120,28 @@ public class ProfileActivity extends PSActionBarActivity implements TabHost.OnTa
     // ================================================================================================
 
     /**
-     * TabHost.OnTabChangeListener
+     * ProfileHearderView.Delegate
      */
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    public void onPageSelected(int position) {
-
-    }
-
-    public void onPageScrollStateChanged(int state) {
-
+    public void onChangeState() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(!profileHearderView.isEditing());
+        setToolbarTitle();
+        invalidateOptionsMenu();
+        profileContentView.setVisibility(profileHearderView.isEditing() ? View.GONE : View.VISIBLE);
     }
 
     /**
-     * ViewPager.OnPageChangeListener
+     * ProfileContentView.DataSource
      */
-    public void onTabChanged(String tag) {
+    public List<UserDataGridFragment> getFragments() {
+        return fragments;
+    }
 
+    public FragmentManager getGridFragmentManager() {
+        return getSupportFragmentManager();
+    }
+
+    public int getTabCount() {
+        return fragments.size();
     }
 
     // ================================================================================================
@@ -135,21 +158,29 @@ public class ProfileActivity extends PSActionBarActivity implements TabHost.OnTa
 
         this.model = model;
 
-        getSupportActionBar().setTitle(model.user_id);
+        setToolbarTitle();
         profileHearderView.setModel(model);
+        profileHearderView.setVisibility(View.VISIBLE);
+        profileContentView.setVisibility(View.VISIBLE);
+    }
+
+    protected List<UserDataGridFragment> createFragments() {
+        if (User.isMe(userId))
+            return Arrays.asList(new UserAlbumGridFragment(), new UserAlbumStarGridFragment(), new UserMediaGridFragment());
+        return Arrays.asList(new UserAlbumGridFragment(), new UserMediaGridFragment());
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
-    private void load() {
-        if (userUid < 1 || invalidDataLoading())
+    private void loadProfile() {
+        if (userId < 1 || invalidDataLoading())
             return;
 
         ProgressBarManager.show();
 
-        UserDataProxy.getDefault().profile(userUid, new Callback<ApiUser.Profile>() {
+        UserDataProxy.getDefault().profile(userId, new Callback<ApiUser.Profile>() {
             @Override
             public void onResponse(Response<ApiUser.Profile> response, Retrofit retrofit) {
                 endDataLoading();
@@ -174,55 +205,7 @@ public class ProfileActivity extends PSActionBarActivity implements TabHost.OnTa
         });
     }
 
-    // ================================================================================================
-    //  Class: TabFactory
-    // ================================================================================================
-
-    private class TabFactory implements TabHost.TabContentFactory {
-        private final Context mContext;
-
-        public TabFactory(Context context) {
-            mContext = context;
-        }
-
-        public View createTabContent(String tag) {
-            View v = new View(mContext);
-            v.setMinimumWidth(0);
-            v.setMinimumHeight(0);
-            return v;
-        }
-    }
-
-    // ================================================================================================
-    //  Class: PagerAdapter
-    // ================================================================================================
-
-    private class PagerAdapter extends FragmentPagerAdapter {
-        public PagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch(position) {
-                case 0:
-                    return new TimelineFragment();
-                case 1:
-                    return new FindFriendsFragment();
-                case 2:
-                    return new ActivityFragment();
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return null;
-        }
+    private void setToolbarTitle() {
+        getSupportActionBar().setTitle(profileHearderView.isEditing() ? getString(R.string.w_title_profile) : model.user_id);
     }
 }

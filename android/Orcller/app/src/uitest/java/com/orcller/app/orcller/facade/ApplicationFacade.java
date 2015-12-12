@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,15 +24,19 @@ import com.orcller.app.orcller.activity.AlbumPageDeleteActivity;
 import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
+import com.orcller.app.orcller.activity.FollowersActivity;
+import com.orcller.app.orcller.activity.FollowingActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
+import com.orcller.app.orcller.activity.UserPictureActivity;
 import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
+import com.orcller.app.orcller.fragment.UserAlbumGridFragment;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.ImageMedia;
@@ -186,7 +192,7 @@ public class ApplicationFacade {
 //        testIGPopularMediaGrid();
 //        testUserPictureView();
 //        testAlbumCreateActivity();
-        testAlbumGridView();
+//        testAlbumGridView();
 //        testAlbumPageOrderActivity();
 //        testAlbumPageDefaultActivity();
 //        testAlbumPageDeleteActivity();
@@ -206,6 +212,9 @@ public class ApplicationFacade {
 //        testAlbumHeartListActivity();
 //        testProfileHeaderView();
 //        testProfileActivity();
+//        testFollowersActivity();
+//        testFollowersActivity();
+        testUserPictureActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -624,5 +633,17 @@ public class ApplicationFacade {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
+    }
+
+    private void testFollowingActivity() {
+        FollowingActivity.show(1);
+    }
+
+    private void testFollowersActivity() {
+        FollowersActivity.show(1);
+    }
+
+    private void testUserPictureActivity() {
+        UserPictureActivity.show(AuthenticationCenter.getDefault().getUser());
     }
 }

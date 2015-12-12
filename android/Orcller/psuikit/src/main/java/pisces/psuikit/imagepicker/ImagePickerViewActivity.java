@@ -107,7 +107,6 @@ public class ImagePickerViewActivity extends PSActionBarActivity
 
     public static void startActivity(ArrayList<Media> items, int selectedIndex) {
         Intent intent = new Intent(Application.applicationContext(), ImagePickerViewActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ITEMS_KEY, items);
         intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
         Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);

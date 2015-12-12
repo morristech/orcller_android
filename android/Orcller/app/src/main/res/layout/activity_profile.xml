@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_album_view"
-    android:scrollbars="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true">
     <android.support.v7.widget.Toolbar
@@ -13,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
+        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/PurpleTheme.Toolbar"/>
 
@@ -20,34 +20,11 @@
         android:id="@+id/profileHearderView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="10dp"/>
+        android:visibility="gone"/>
 
-    <TabHost
-        android:id="@+id/tabHost"
+    <com.orcller.app.orcller.widget.ProfileContentView
+        android:id="@+id/profileContentView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="0"/>
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="0"/>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-        </LinearLayout>
-    </TabHost>
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 </LinearLayout>

@@ -79,6 +79,18 @@ public class PSLinearLayout extends LinearLayout implements PSComponent {
         commitProperties();
     }
 
+    public boolean isFirstLoading() {
+        return dataLoadValidator.isFirstLoading();
+    }
+
+    public void endDataLoading() {
+        dataLoadValidator.endDataLoading();
+    }
+
+    public boolean invalidDataLoading() {
+        return dataLoadValidator.invalidDataLoading();
+    }
+
     // ================================================================================================
     //  Protected
     // ================================================================================================

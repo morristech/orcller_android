@@ -61,13 +61,21 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/theme_purple_primary</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimaryDark">@color/theme_purple_primary</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
     </style>
     <style name="PurpleTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:titleTextStyle">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
         <item name="titleTextColor">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="android:actionMenuTextAppearance">@style/PurpleTheme.Toolbar.MenuTextStyle</item>
+    </style>
+    <style name="PurpleTheme.Toolbar.MenuTextStyle"
+        parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">17dp</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="WhiteTheme" parent="Theme.AppCompat.Light.NoActionBar">

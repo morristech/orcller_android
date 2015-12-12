@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <pisces.psuikit.ext.PSLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@drawable/background_bordered_white"
     android:padding="8dp"
     android:focusable="true"
     android:focusableInTouchMode="true">
@@ -15,7 +16,8 @@
             android:id="@id/userPictureView"
             android:layout_width="54dp"
             android:layout_height="54dp"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"
+            app:allowsProfileOpen="false"/>
 
         <LinearLayout
             android:orientation="vertical"
@@ -24,14 +26,14 @@
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="8dp">
             <pisces.psuikit.widget.ClearableEditText
-                android:id="@+id/nameEditText"
+                android:id="@+id/nickNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="34dp"
                 android:layout_marginLeft="5dp"
                 android:background="@null"
                 android:cursorVisible="true"
-                android:hint="@string/m_hint_user_id"
                 android:inputType="text"
+                android:nextFocusDown="@+id/messageEditText"
                 android:textColor="@color/textcolor_dark_blue"
                 android:textColorHint="@color/textcolor_textview_hint"
                 android:textCursorDrawable="@drawable/member_cursor"
@@ -50,8 +52,7 @@
                 android:layout_marginLeft="5dp"
                 android:background="@null"
                 android:cursorVisible="true"
-                android:hint="@string/m_hint_profile_message"
-                android:inputType="text"
+                android:inputType="textShortMessage"
                 android:textColor="@android:color/black"
                 android:textColorHint="@color/textcolor_textview_hint"
                 android:textCursorDrawable="@drawable/member_cursor"
@@ -60,15 +61,19 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/buttonContainer"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="67dp">
+        android:layout_marginLeft="67dp"
+        android:layout_marginBottom="15dp">
         <Button
             android:id="@+id/followingButton"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
+            android:background="@drawable/background_ripple_button_profile_header"
             android:text="@string/w_following"
+            android:textColor="@drawable/color_button_profile_header"
             android:textSize="11dp"
             android:textAllCaps="false"/>
 
@@ -76,24 +81,11 @@
             android:id="@+id/followersButton"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/background_ripple_button_profile_header"
             android:text="@string/w_followers"
+            android:textColor="@drawable/color_button_profile_header"
             android:textSize="11dp"
             android:textAllCaps="false"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <Button
-                android:id="@+id/saveButton"
-                android:layout_width="45dp"
-                android:layout_height="30dp"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/button_blue_radius3dp"
-                android:text="@string/w_save"
-                android:textColor="@android:color/white"
-                android:textSize="10dp"
-                android:visibility="gone"/>
-        </RelativeLayout>
     </LinearLayout>
 </pisces.psuikit.ext.PSLinearLayout>

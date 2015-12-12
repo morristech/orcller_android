@@ -21,4 +21,8 @@
     <declare-styleable name="UserDataGridView">
         <attr name="listCountAtOnce"/>
     </declare-styleable>
+
+    <declare-styleable name="UserPictureView">
+        <attr name="allowsProfileOpen" format="boolean"/>
+    </declare-styleable>
 </resources>

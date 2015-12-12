@@ -38,6 +38,10 @@ abstract public class AbstractDataGridItemView extends PSLinearLayout {
     //  Public
     // ================================================================================================
 
+    public int getColumnHeight(int columnWidth) {
+        return columnWidth;
+    }
+
     public Model getModel() {
         return model;
     }

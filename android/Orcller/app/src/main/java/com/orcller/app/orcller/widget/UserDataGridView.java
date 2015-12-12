@@ -17,7 +17,6 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.model.ApiResult;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
@@ -34,8 +33,8 @@ import retrofit.Retrofit;
  */
 public class UserDataGridView extends PSGridView implements AdapterView.OnItemClickListener {
     private int listCountAtOnce;
-    private List<Model> items = new ArrayList<>();
-    private Class<AbstractDataGridItemView> itemViewClass;
+    private ArrayList<Model> items = new ArrayList<>();
+    private Class itemViewClass;
     private GridViewAdapter gridViewAdapter;
     private DataSource dataSource;
     private Delegate delegate;
@@ -90,6 +89,8 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+
+        reload();
     }
 
     public Delegate getDelegate() {
@@ -100,8 +101,8 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
         this.delegate = delegate;
     }
 
-    public Class getItemViewClass() {
-        return itemViewClass;
+    public ArrayList<Model> getItems() {
+        return items;
     }
 
     public void setItemViewClass(Class itemViewClass) {
@@ -112,13 +113,17 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
         this.listCountAtOnce = listCountAtOnce;
     }
 
+    public void reload() {
+        load(null);
+    }
+
     // ================================================================================================
     //  Listener
     // ================================================================================================
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (delegate != null)
-            delegate.onSelect(position);
+            delegate.onSelect(this, position, items.get(position));
     }
 
     // ================================================================================================
@@ -126,14 +131,23 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     // ================================================================================================
 
     private void load(final String after) {
-        if (invalidDataLoading())
+        Call call = dataSource != null ? dataSource.createDataLoadCall(listCountAtOnce, after) : null;
+
+        if (call == null || invalidDataLoading())
             return;
 
+        final UserDataGridView self = this;
+
+        if (delegate != null)
+            delegate.onLoad(this);
+
         UserDataProxy.getDefault().enqueueCall(
-                dataSource.createDataLoadCall(listCountAtOnce, after),
+                call,
                 new Callback<ApiResult>() {
                     @Override
                     public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {
+                        endDataLoading();
+
                         if (response.isSuccess() && response.body().isSuccess()) {
                             Application.run(new Runnable() {
                                 @Override
@@ -148,11 +162,10 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
                             }, new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (delegate != null)
-                                        delegate.onLoad(lastEntity);
-
-                                    endDataLoading();
                                     gridViewAdapter.notifyDataSetChanged();
+
+                                    if (delegate != null)
+                                        delegate.onLoadComplete(self, lastEntity);
                                 }
                             });
                         } else {
@@ -211,16 +224,12 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            AbstractDataGridItemView itemView;
+            AbstractDataGridItemView itemView = null;
 
             if (convertView == null) {
                 try {
-                    Class<AbstractDataGridItemView> clazz = itemViewClass.getClass();
-                    Constructor<itemViewClass> ctor = clazz.getConstructor(Context.class);
-
-
-                    itemView = (AbstractDataGridItemView) ctor.newInstance(context);
-                    itemView.setLayoutParams(new ViewGroup.LayoutParams(getColumnWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
+                    itemView = (AbstractDataGridItemView) itemViewClass.getConstructor(Context.class).newInstance(context);
+                    itemView.setLayoutParams(new ViewGroup.LayoutParams(getColumnWidth(), itemView.getColumnHeight(getColumnWidth())));
                 } catch (Exception e) {
                     if (BuildConfig.DEBUG)
                         Log.e(e.getMessage(), e);
@@ -251,7 +260,8 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     // ================================================================================================
 
     public static interface Delegate {
-        void onLoad(ListEntity listEntity);
-        void onSelect(int position);
+        void onLoad(UserDataGridView gridView);
+        void onLoadComplete(UserDataGridView gridView, ListEntity listEntity);
+        void onSelect(UserDataGridView gridView, int position, Model item);
     }
 }

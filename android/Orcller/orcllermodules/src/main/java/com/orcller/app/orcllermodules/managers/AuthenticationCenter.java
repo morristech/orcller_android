@@ -241,21 +241,22 @@ public class AuthenticationCenter {
     public void synchorinzeUser(final User user, final Runnable completeHandler) {
         final AuthenticationCenter self = this;
 
-        Application.runOnBackgroundThread(new Runnable() {
-            @Override
-            public void run() {
-                setCachedUser(user);
+        setCachedUser(user);
 
-                if (self.user != null) {
-                    self.user.synchronize(user);
-                } else {
-                    self.user = user;
+        if (this.user != null) {
+            this.user.synchronize(user, new Runnable() {
+                @Override
+                public void run() {
+                    if (completeHandler != null)
+                        completeHandler.run();
                 }
+            });
+        } else {
+            this.user = user;
 
-                if (completeHandler != null)
-                    Application.runOnMainThread(completeHandler);
-            }
-        });
+            if (completeHandler != null)
+                completeHandler.run();
+        }
     }
 
     public void syncWithFacebook(Object target, final Api.CompleteHandler completeHandler) {

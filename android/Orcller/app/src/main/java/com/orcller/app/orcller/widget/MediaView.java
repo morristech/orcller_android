@@ -84,23 +84,18 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         emptyImageView = new ImageView(context);
         imageView = new ImageView(context);
-        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
 
         TypedArray typedArray = context.obtainStyledAttributes(
                 attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
 
-        LayoutParams progressBarParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        progressBarParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
-
         setImageLoadType(typedArray.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
         setPlaceholder(typedArray.getDrawable(R.styleable.MediaView_placeholder));
-        progressBar.setVisibility(GONE);
         imageView.setAdjustViewBounds(true);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         emptyImageView.setVisibility(GONE);
         addView(imageView);
         addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        addView(progressBar, progressBarParams);
+        setProgressBar(new ProgressBar(context, null, android.R.attr.progressBarStyleSmall));
     }
 
     @Override
@@ -166,6 +161,20 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
 
     public void setPlaceholder(Drawable placeholder) {
         this.placeholder = placeholder;
+    }
+
+    public void setProgressBar(ProgressBar progressBar) {
+        if (this.progressBar != null) {
+            removeView(this.progressBar);
+            this.progressBar = null;
+        }
+
+        this.progressBar = progressBar;
+
+        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+        progressBar.setVisibility(GONE);
+        addView(progressBar, params);
     }
 
     public boolean isScaleAspectFill() {

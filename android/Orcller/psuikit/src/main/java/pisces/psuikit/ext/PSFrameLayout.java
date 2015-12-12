@@ -10,7 +10,7 @@ import pisces.psfoundation.utils.DataLoadValidator;
 /**
  * Created by pisces on 11/19/15.
  */
-public class PSFrameLayout extends FrameLayout implements PSComponent {
+public class PSFrameLayout extends FrameLayout implements PSComponent, DataLoadValidator.Client {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
@@ -77,6 +77,18 @@ public class PSFrameLayout extends FrameLayout implements PSComponent {
 
     public void validateProperties() {
         commitProperties();
+    }
+
+    public boolean isFirstLoading() {
+        return dataLoadValidator.isFirstLoading();
+    }
+
+    public void endDataLoading() {
+        dataLoadValidator.endDataLoading();
+    }
+
+    public boolean invalidDataLoading() {
+        return dataLoadValidator.invalidDataLoading();
     }
 
     // ================================================================================================

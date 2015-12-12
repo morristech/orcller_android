@@ -67,6 +67,7 @@
     <string name="w_report_inappropriate">Report Inappropriate</string>
     <string name="w_retry">Retry</string>
     <string name="w_save">Save</string>
+    <string name="w_saving">Saving...</string>
     <string name="w_share_to_facebook">Share to Facebook</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>
@@ -79,6 +80,7 @@
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
     <string name="w_title_new_album">New Album</string>
+    <string name="w_title_profile">Edit Profile</string>
     <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>
     <string name="w_unheart">Unheart</string>
@@ -95,8 +97,10 @@
     <string name="m_hint_album_title">Enter the album title here.</string>
     <string name="m_hint_comment_input">Please enter your comment.</string>
     <string name="m_hint_papge_description">Say something about this page...</string>
-    <string name="m_hint_profile_message">Enter profile message</string>
-    <string name="m_hint_user_id">Enter your nickname</string>
+    <string name="m_hint_profile_message">No profile message</string>
+    <string name="m_hint_profile_message_me">Enter profile message</string>
+    <string name="m_hint_user_name">No nickname</string>
+    <string name="m_hint_user_name_me">Enter your nickname</string>
     <string name="m_member_joininput_desc">
         By tapping to continue, you are indicating that you have read the
         <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>
@@ -107,13 +111,15 @@
     </string>
     <string name="m_complete_report_send">The report has been received.\nThank you for your feedback.</string>
     <string name="m_confirm_album_delete">Are you sure you want to delete an album?</string>
-    <string name="m_fail_album_change">"It failed to save changes.\nPlease try again."</string>
     <string name="m_fail_album_delete">It failed to delete an album.\nPlease try again.</string>
+    <string name="m_fail_change">"It failed to save changes.\nPlease try again."</string>
     <string name="m_fail_common">It failed to request.\nPlease try again.</string>
     <string name="m_fail_comment">It failed to post a comment.\nPlease try again.</string>
     <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
     <string name="m_warn_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
     <string name="m_validate_album_title_length">The album title must be a maximum of 40 characters!</string>
     <string name="m_validate_password_length">The password is required at least 6 characters and maximum 16 characters!</string>
+    <string name="m_validate_profile_message_length">The profile message must be a maximum of 50 characters!</string>
     <string name="m_validate_user_name_length">The user name is required at least 6 characters and maximum 16 characters!</string>
+    <string name="m_validate_user_nickname_length">The user nickname must be a maximum of 16 characters!</string>
 </resources>

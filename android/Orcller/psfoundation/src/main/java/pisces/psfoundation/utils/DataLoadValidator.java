@@ -17,6 +17,7 @@ public class DataLoadValidator {
 
     public void endDataLoading() {
         dataLoading = false;
+        firstLoading = false;
     }
 
     public boolean invalidDataLoading() {
@@ -24,7 +25,6 @@ public class DataLoadValidator {
             return true;
 
         dataLoading = true;
-        firstLoading = false;
 
         return false;
     }

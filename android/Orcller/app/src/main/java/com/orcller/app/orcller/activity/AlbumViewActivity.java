@@ -306,9 +306,9 @@ public class AlbumViewActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(model.name);
         albumItemView.setModel(model);
         commentListView.setModel(model);
-        scrollView.setVisibility(View.VISIBLE);
         commentInputView.setVisibility(View.VISIBLE);
         setScrollViewLayout();
+        scrollView.setVisibility(View.VISIBLE);
         invalidateOptionsMenu();
     }
 

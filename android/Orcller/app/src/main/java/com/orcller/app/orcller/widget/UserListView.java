@@ -1,15 +1,16 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.orcller.app.orcller.BuildConfig;
+import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.UserItemView;
 import com.orcller.app.orcller.model.album.ListEntity;
-import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.BaseUser;
@@ -30,12 +31,11 @@ import retrofit.Retrofit;
  * Created by pisces on 12/10/15.
  */
 public class UserListView extends PSListView {
-
-    private final int LOAD_LIMIT_COUNT = 20;
+    private int listCountAtOnce;
     private List<BaseUser> items = new ArrayList<>();
     private ListAdapter listAdapter;
     private DataSource dataSource;
-    private OnLoadListener listener;
+    private Delegate delegate;
     private ListEntity lastEntity;
 
     public UserListView(Context context) {
@@ -56,6 +56,13 @@ public class UserListView extends PSListView {
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.UserDataGridView, defStyleAttr, defStyleRes);
+        try {
+            setListCountAtOnce(ta.getInt(R.styleable.UserDataGridView_listCountAtOnce, 20));
+        } finally {
+            ta.recycle();
+        }
+
         listAdapter = new ListAdapter(context);
 
         setDivider(null);
@@ -79,8 +86,12 @@ public class UserListView extends PSListView {
         load(null);
     }
 
-    public void setOnLoadListener(OnLoadListener listener) {
-        this.listener = listener;
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
+    }
+
+    public void setListCountAtOnce(int listCountAtOnce) {
+        this.listCountAtOnce = listCountAtOnce;
     }
 
     // ================================================================================================
@@ -91,8 +102,13 @@ public class UserListView extends PSListView {
         if (invalidDataLoading())
             return;
 
+        final UserListView self = this;
+
+        if (delegate != null)
+            delegate.onLoad(this);
+
         AlbumDataProxy.getDefault().enqueueCall(
-                dataSource.createDataLoadCall(LOAD_LIMIT_COUNT, after),
+                dataSource.createDataLoadCall(listCountAtOnce, after),
                 new Callback<ApiResult>() {
                     @Override
                     public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {
@@ -110,11 +126,11 @@ public class UserListView extends PSListView {
                             }, new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (listener != null)
-                                        listener.onLoad(lastEntity);
-
                                     endDataLoading();
                                     listAdapter.notifyDataSetChanged();
+
+                                    if (delegate != null)
+                                        delegate.onLoadComplete(self, lastEntity);
                                 }
                             });
                         } else {
@@ -155,11 +171,12 @@ public class UserListView extends PSListView {
     }
 
     // ================================================================================================
-    //  Interface: OnLoadListener
+    //  Interface: Delegate
     // ================================================================================================
 
-    public static interface OnLoadListener {
-        void onLoad(ListEntity listEntity);
+    public static interface Delegate {
+        void onLoad(UserListView listView);
+        void onLoadComplete(UserListView listView, ListEntity listEntity);
     }
 
     // ================================================================================================
@@ -194,7 +211,7 @@ public class UserListView extends PSListView {
 
             if (convertView == null) {
                 itemView = new UserItemView(context);
-                itemView.setAllowsShowFollowButton(dataSource.followButtonHidden());
+                itemView.setAllowsShowFollowButton(!dataSource.followButtonHidden());
                 convertView = itemView;
             } else {
                 itemView = (UserItemView) convertView;

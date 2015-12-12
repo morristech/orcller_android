@@ -13,8 +13,6 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.event.Event;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSVideoView;
 
 /**
@@ -95,7 +93,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
             @Override
             public void onError() {
-                Log.d("onError");
                 if (delegate != null)
                     delegate.onError(self);
 

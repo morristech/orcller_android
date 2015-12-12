@@ -55,6 +55,16 @@ public class AlertDialogUtils {
         retry(Application.applicationContext().getString(message), retry);
     }
 
+    public static void retry(int message, DialogInterface.OnClickListener listener) {
+        Context context = Application.applicationContext();
+        show(context.getString(message), listener, context.getString(R.string.w_dismiss), context.getString(R.string.w_retry));
+    }
+
+    public static void retry(String message, DialogInterface.OnClickListener listener) {
+        Context context = Application.applicationContext();
+        show(message, listener,context.getString(R.string.w_dismiss), context.getString(R.string.w_retry));
+    }
+
     public static void retry(String message, final Runnable retry) {
         Context context = Application.applicationContext();
         show(message, new DialogInterface.OnClickListener() {

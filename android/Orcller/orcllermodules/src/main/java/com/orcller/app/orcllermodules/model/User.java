@@ -1,5 +1,7 @@
 package com.orcller.app.orcllermodules.model;
 
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+
 import pisces.psfoundation.model.Model;
 
 /**
@@ -10,6 +12,12 @@ public class User extends BaseUser {
     private long updated_time;
     public String user_profile_message;
     public UserOptions user_options;
+
+    public static boolean isMe(long userId) {
+        if (AuthenticationCenter.getDefault().getUser() == null)
+            return false;
+        return AuthenticationCenter.getDefault().getUser().user_uid == userId;
+    }
 
     public class UserOptions extends Model {
         public boolean following;

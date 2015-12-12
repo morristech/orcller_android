@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/PurpleTheme.Toolbar"/>
+        android:theme="@style/PurpleTheme.Toolbar"
+        android:elevation="1dp"/>
 
     <com.orcller.app.orcller.widget.UserListView
         android:id="@+id/userListView"

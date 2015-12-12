@@ -27,9 +27,11 @@
     <color name="background_tabbar_main_selected">#000000</color>
 
     <color name="border_hairline_lightgray">#E8E7EE</color>
-    <color name="border_profile_imageview">#F0F0F0</color>
+    <color name="border_profile_imageview">@color/border_hairline_lightgray</color>
 
-    <color name="button_follow">#1E6AC1</color>
+    <color name="button_follow">#246AC1</color>
+    <color name="button_profile_header">@color/button_follow</color>
+    <color name="button_profile_header_text">#284D76</color>
 
     <color name="icon_page_pressed">#999999</color>
     <color name="icon_comment_selected">@color/theme_black_primary</color>
@@ -40,8 +42,10 @@
     <color name="icon_star_selected">#FF8D27</color>
     <color name="icon_star_selected_pressed">#F2A725</color>
 
-    <color name="tabtext_member_normal">#B4B4B4</color>
-    <color name="tabtext_member_selected">#762866</color>
+    <color name="tab_text_member_normal">#B4B4B4</color>
+    <color name="tab_text_member_selected">#762866</color>
+    <color name="tab_profile_content_normal">#C8C7CC</color>
+    <color name="tab_profile_content_selected">@color/button_profile_header_text</color>
 
     <color name="textcolor_album_icon">#777277</color>
     <color name="textcolor_fb_normal">#0091ED</color>

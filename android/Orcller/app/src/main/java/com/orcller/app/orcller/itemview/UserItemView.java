@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
@@ -93,9 +94,10 @@ public class UserItemView extends PSLinearLayout {
     // ================================================================================================
 
     private void modelChanged() {
+        userPictureView.setModel(model);
         idTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model));
         nameTextView.setText(model.user_name);
-        userPictureView.setModel(model);
+        nameTextView.setVisibility(TextUtils.isEmpty(model.user_name) ? GONE : VISIBLE);
         followButton.setModel(model);
         followButton.setVisibility(allowsShowFollowButton ? VISIBLE :GONE);
     }

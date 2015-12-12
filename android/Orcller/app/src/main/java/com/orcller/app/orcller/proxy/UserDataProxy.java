@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.api.ApiUsers;
+import com.orcller.app.orcllermodules.model.ApiResult;
+import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
@@ -11,8 +14,12 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Converter;
 import retrofit.GsonConverterFactory;
+import retrofit.http.Field;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * Created by pisces on 12/11/15.
@@ -57,15 +64,19 @@ public class UserDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
+    public void count(long userId, Callback<ApiUsers.CountRes> callback) {
+        enqueueCall(service().count(userId), callback);
+    }
+
     public void profile(long userId, Callback<ApiUser.Profile> callback) {
         enqueueCall(service().profile(userId), callback);
     }
 
-    // ================================================================================================
-    //  Private
-    // ================================================================================================
+    public void saveProfile(User user, Callback<ApiResult> callback) {
+        enqueueCall(service().saveProfile(user.user_uid, user.user_name, user.user_profile_message), callback);
+    }
 
-    private Service service() {
+    public Service service() {
         return (Service) getCurrentService();
     }
 
@@ -74,7 +85,32 @@ public class UserDataProxy extends AbstractDataProxy {
     // ================================================================================================
 
     public interface Service {
+        @GET("{userId}/album")
+        Call<ApiUsers.AlbumListRes> albums(@Path("userId") long userId);
+
+        @GET("{userId}/coediting")
+        Call<ApiUsers.AlbumListRes> coediting(@Path("userId") long userId);
+
+        @GET("{userId}/count")
+        Call<ApiUsers.CountRes> count(@Path("userId") long userId);
+
+        @GET("{userId}/favorites")
+        Call<ApiUsers.AlbumListRes> favorites(@Path("userId") long userId);
+
+        @GET("{userId}/media")
+        Call<ApiUsers.MediaListRes> media(@Path("userId") long userId);
+
         @GET("{userId}")
         Call<ApiUser.Profile> profile(@Path("userId") long userId);
+
+        @POST("picture")
+        Call<ApiUser.Profile> savePicture(@Path("userId") long userId);
+
+        @FormUrlEncoded
+        @POST("{userId}")
+        Call<ApiResult> saveProfile(
+                @Path("userId") long userId,
+                @Field("user_name") String userName,
+                @Field("user_profile_message") String profile);
     }
 }

@@ -599,11 +599,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
                         if (container.getVisibility() == INVISIBLE) {
                             container.setVisibility(VISIBLE);
-                            container.setAlpha(0);
-                            container.animate()
-                                    .setDuration(500)
-                                    .alpha(1)
-                                    .start();
                         }
                     }
                 });

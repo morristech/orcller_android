@@ -23,7 +23,7 @@ public class AlbumHeartListActivity extends AlbumAdditionalInfoListActivity {
         return new UserListView.DataSource<ApiAlbum.LikesRes>() {
             @Override
             public boolean followButtonHidden() {
-                return false;
+                return true;
             }
 
             @Override
