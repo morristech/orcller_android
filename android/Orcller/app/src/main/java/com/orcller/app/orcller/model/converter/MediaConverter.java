@@ -42,6 +42,8 @@ public class MediaConverter {
             return convert((ApiInstagram.Media) object);
         if (object instanceof pisces.psuikit.imagepicker.Media)
             return convert((pisces.psuikit.imagepicker.Media) object);
+        if (object instanceof Media)
+            return (Media) object;
         return null;
     }
 
@@ -126,7 +128,11 @@ public class MediaConverter {
         String originIdString = String.valueOf(AuthenticationCenter.getDefault().getUser().user_uid) +
                 String.valueOf(DateUtil.toUnixtimestamp(new Date())) +
                 (++MEDIA_UNIQUE_ID);
+
+        result.images = new Images();
+        result.images.standard_resolution = new Image(media.width, media.height, media.path);
         result.origin_id = Long.valueOf(originIdString);
+
         return result;
     }
 

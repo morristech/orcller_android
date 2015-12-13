@@ -19,6 +19,7 @@ import pisces.psuikit.ext.PSFrameLayout;
  */
 public class ImagePickerItemView extends PSFrameLayout implements Checkable {
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
+    private boolean allowsShowIndicator = true;
     private boolean checked = false;
     private ImageView imageView;
     private FrameLayout selectionIndicator;
@@ -42,19 +43,11 @@ public class ImagePickerItemView extends PSFrameLayout implements Checkable {
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_imagepicker, this);
 
         imageView = (ImageView) findViewById(R.id.imageView);
         selectionIndicator = (FrameLayout) findViewById(R.id.selectionIndicator);
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
     }
 
     // ================================================================================================
@@ -82,7 +75,7 @@ public class ImagePickerItemView extends PSFrameLayout implements Checkable {
         this.checked = checked;
 
         refreshDrawableState();
-        selectionIndicator.setVisibility(checked ? VISIBLE : INVISIBLE);
+        selectionIndicator.setVisibility(allowsShowIndicator && checked ? VISIBLE : INVISIBLE);
     }
 
     @Override
@@ -93,6 +86,18 @@ public class ImagePickerItemView extends PSFrameLayout implements Checkable {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isAllowsShowIndicator() {
+        return allowsShowIndicator;
+    }
+
+    public void setAllowsShowIndicator(boolean allowsShowIndicator) {
+        this.allowsShowIndicator = allowsShowIndicator;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
+    }
 
     public void setMedia(final Media media) {
         if (ObjectUtils.equals(media, this.media))
@@ -121,9 +126,4 @@ public class ImagePickerItemView extends PSFrameLayout implements Checkable {
             }
         }.execute();
     }
-
-    // ================================================================================================
-    //  Private
-    // ================================================================================================
-
 }

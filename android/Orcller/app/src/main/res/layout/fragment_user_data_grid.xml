@@ -6,7 +6,8 @@
     <com.orcller.app.orcller.widget.UserDataGridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/theme_white_accent"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

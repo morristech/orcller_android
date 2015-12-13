@@ -1,12 +1,16 @@
 package pisces.psuikit.imagepicker;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
@@ -44,6 +48,8 @@ public class ImagePickerViewActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_imagepickerview);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         items = (List<Media>) getIntent().getSerializableExtra(ITEMS_KEY);
 
@@ -55,8 +61,6 @@ public class ImagePickerViewActivity extends PSActionBarActivity
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
@@ -105,11 +109,12 @@ public class ImagePickerViewActivity extends PSActionBarActivity
     //  Public
     // ================================================================================================
 
-    public static void startActivity(ArrayList<Media> items, int selectedIndex) {
-        Intent intent = new Intent(Application.applicationContext(), ImagePickerViewActivity.class);
+    public static void startActivity(ArrayList<Media> items, int selectedIndex, ImageView imageView) {
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Application.getTopActivity(), Pair.create((View) imageView, "imageView"));
+        Intent intent = new Intent(Application.getTopActivity(), ImagePickerViewActivity.class);
         intent.putExtra(ITEMS_KEY, items);
         intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
-        Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);
+        Application.getTopActivity().startActivity(intent, options.toBundle());
     }
 
     // ================================================================================================

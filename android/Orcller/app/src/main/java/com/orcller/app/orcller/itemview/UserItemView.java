@@ -99,6 +99,6 @@ public class UserItemView extends PSLinearLayout {
         nameTextView.setText(model.user_name);
         nameTextView.setVisibility(TextUtils.isEmpty(model.user_name) ? GONE : VISIBLE);
         followButton.setModel(model);
-        followButton.setVisibility(allowsShowFollowButton ? VISIBLE :GONE);
+        followButton.setVisibility(allowsShowFollowButton ? followButton.getVisibility() : GONE);
     }
 }

@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:paddingRight="8dp"
-    android:paddingLeft="8dp"
-    android:background="@drawable/background_bordered_pageprofile">
+    android:paddingLeft="8dp">
     <com.orcller.app.orcller.widget.UserPictureView
         android:id="@+id/userPictureView"
         android:layout_width="36dp"

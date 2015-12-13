@@ -73,6 +73,7 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
 
         setAdapter(gridViewAdapter);
         setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        setDrawSelectorOnTop(true);
         setNumColumns(3);
         setHorizontalSpacing(GraphicUtils.convertDpToPixel(1));
         setVerticalSpacing(GraphicUtils.convertDpToPixel(1));

@@ -1,15 +1,17 @@
 package com.orcller.app.orcller.manager;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.UserPictureEditActivity;
 import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
+import com.orcller.app.orcller.model.converter.MediaConverter;
 
 import java.util.List;
 
@@ -24,7 +26,9 @@ import pisces.psuikit.imagepicker.ImagePickerActivity;
  */
 public class ImagePickerManager {
     private static ImagePickerManager uniqueInstance;
-    private Context context;
+    private boolean cropEnabled;
+    private int choiceMode;
+    private Activity context;
     private CompleteHandler completeHandler;
 
     // ================================================================================================
@@ -48,10 +52,24 @@ public class ImagePickerManager {
         context = null;
     }
 
-    public void pick(Context context, CompleteHandler completeHandler) {
+    public void pick(Activity context, CompleteHandler completeHandler) {
+        pick(context, AbsListView.CHOICE_MODE_MULTIPLE, false, completeHandler);
+    }
+
+    public void pick(Activity context, boolean cropEnabled) {
+        pick(context, cropEnabled, null);
+    }
+
+    public void pick(Activity context, boolean cropEnabled, CompleteHandler completeHandler) {
+        pick(context, cropEnabled ? AbsListView.CHOICE_MODE_SINGLE : AbsListView.CHOICE_MODE_MULTIPLE, cropEnabled, completeHandler);
+    }
+
+    public void pick(Activity context, final int choiceMode, boolean cropEnabled, CompleteHandler completeHandler) {
         clear();
 
         this.context = context;
+        this.choiceMode = choiceMode;
+        this.cropEnabled = cropEnabled;
         this.completeHandler = completeHandler;
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
@@ -65,7 +83,7 @@ public class ImagePickerManager {
                 .setTitle(R.string.w_add_dialog_title)
                 .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        openImagePicker(which);
+                        openImagePicker(which, choiceMode);
                     }
                 })
                 .setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -88,8 +106,17 @@ public class ImagePickerManager {
             ImagePickerEvent casted = (ImagePickerEvent) event;
 
             if (casted.getType().equals(ImagePickerEvent.COMPLETE_SELECTION)) {
-                completeHandler.onComplete((List) casted.getObject());
-                clear();
+                List list = (List) casted.getObject();
+
+                if (cropEnabled && choiceMode == AbsListView.CHOICE_MODE_SINGLE) {
+                    UserPictureEditActivity.show(MediaConverter.convert(list.get(0)));
+                } else {
+                    if (completeHandler != null)
+                        completeHandler.onComplete(list);
+
+                    Application.moveToBack(context);
+                    clear();
+                }
             }
         }
     }
@@ -98,18 +125,13 @@ public class ImagePickerManager {
     //  Private
     // ================================================================================================
 
-    private void openImagePicker(int type) {
-        Class activityClass = null;
+    private void openImagePicker(int type, int choiceMode) {
         if (type == 0)
-            activityClass = ImagePickerActivity.class;
+            ImagePickerActivity.show(choiceMode);
         else if (type == 1)
-            activityClass = FBImagePickerActivity.class;
+            FBImagePickerActivity.show(choiceMode);
         else if (type == 2)
-            activityClass = IGImagePickerActivity.class;
-
-        Intent intent = new Intent(context, activityClass);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Application.getTopActivity().startActivity(intent);
+            IGImagePickerActivity.show(choiceMode);
     }
 
     // ================================================================================================

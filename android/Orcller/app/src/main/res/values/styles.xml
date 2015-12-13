@@ -38,31 +38,50 @@
     <style name="BlackTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="colorPrimary">@color/theme_black_primary</item>
     </style>
     <style name="BlackTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@color/theme_black_primary</item>
-        <item name="colorControlNormal">@color/theme_black_primary</item>
+        <item name="colorControlNormal">@drawable/textcolor_imagepicker_select_button</item>
         <item name="titleTextColor">@android:color/white</item>
+        <item name="actionMenuTextColor">@drawable/textcolor_imagepicker_select_button</item>
+        <item name="android:actionMenuTextAppearance">@style/BlackTheme.Toolbar.MenuTextStyle</item>
+    </style>
+    <style name="BlackTheme.Toolbar.MenuTextStyle"
+        parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">17dp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="LightGrayTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="colorPrimary">@color/theme_lightgray_primary</item>
+        <item name="colorControlNormal">@drawable/textcolor_imagepicker_select_button</item>
         <item name="colorAccent">@color/theme_lightgray_accent</item>
+        <item name="colorPrimary">@color/theme_lightgray_primary</item>
     </style>
     <style name="LightGrayTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:titleTextStyle">@color/theme_lightgray_toolbar_text</item>
         <item name="colorControlNormal">@color/theme_lightgray_toolbar_control</item>
         <item name="titleTextColor">@color/theme_lightgray_toolbar_text</item>
+        <item name="actionMenuTextColor">@drawable/textcolor_imagepicker_select_button</item>
+        <item name="android:actionMenuTextAppearance">@style/LightGrayTheme.Toolbar.MenuTextStyle</item>
+    </style>
+    <style name="LightGrayTheme.Toolbar.MenuTextStyle"
+        parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">17dp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="PurpleTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="colorPrimary">@color/theme_purple_primary</item>
-        <item name="colorPrimaryDark">@color/theme_purple_primary</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
+        <item name="colorControlNormal">@color/theme_purple_control_normal</item>
+        <item name="colorPrimary">@color/theme_purple_primary</item>
+        <item name="colorPrimaryDark">@color/theme_purple_primary_dark</item>
     </style>
     <style name="PurpleTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:titleTextStyle">@android:color/white</item>
@@ -73,26 +92,31 @@
     </style>
     <style name="PurpleTheme.Toolbar.MenuTextStyle"
         parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">17dp</item>
-        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="WhiteTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="colorControlNormal">@color/imagepicker_toolbar_button_title_selected_color</item>
         <item name="colorPrimary">@color/theme_white_primary</item>
-        <item name="colorAccent">@color/theme_white_accent</item>
-        <item name="android:actionMenuTextColor">@drawable/textcolor_imagepicker_select_button</item>
-        <item name="android:actionMenuTextAppearance">@style/WhiteTheme.TitleTextStyle</item>
-    </style>
-    <style name="WhiteTheme.TitleTextStyle" parent="@android:style/TextAppearance">
-        <item name="android:textSize">17dp</item>
+        <item name="colorPrimaryDark">@color/theme_white_primary_dark</item>
     </style>
     <style name="WhiteTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:titleTextStyle">@color/theme_white_toolbar_text</item>
-        <item name="colorControlNormal">@color/theme_white_toolbar_control</item>
+        <item name="colorControlNormal">@drawable/textcolor_imagepicker_select_button</item>
         <item name="titleTextColor">@color/theme_white_toolbar_text</item>
+        <item name="actionMenuTextColor">@drawable/textcolor_imagepicker_select_button</item>
+        <item name="android:actionMenuTextAppearance">@style/WhiteTheme.Toolbar.MenuTextStyle</item>
+    </style>
+    <style name="WhiteTheme.Toolbar.MenuTextStyle"
+        parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">17dp</item>
+        <item name="android:textStyle">normal</item>
     </style>
     <style name="WhiteThemeAlertDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColor">#777777</item>

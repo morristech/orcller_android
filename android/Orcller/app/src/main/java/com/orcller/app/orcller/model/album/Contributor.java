@@ -7,10 +7,20 @@ import com.orcller.app.orcllermodules.model.User;
  */
 public class Contributor extends User {
     public enum Status {
-        None,
-        Ask,
-        Invite,
-        Accept
+        None(0),
+        Ask(1),
+        Invite(2),
+        Accept(3);
+
+        private int value;
+
+        private Status(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     };
 
     public String contributor_id;

@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -34,11 +37,11 @@ import pisces.psuikit.manager.ProgressBarManager;
  * Created by pisces on 11/27/15.
  */
 abstract public class MediaGridActivity extends PSActionBarActivity
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
-    protected ArrayList<Media> items = new ArrayList<>();
-    private Button selectButton;
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+    public static final String CHOICE_MODE_KEY = "choiceMode";
     private GridView gridView;
     private GridViewAdapter gridViewAdapter;
+    protected ArrayList<Media> items = new ArrayList<>();
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -51,16 +54,42 @@ abstract public class MediaGridActivity extends PSActionBarActivity
         setContentView(getLayoutRes());
         setToolbar((Toolbar) findViewById(R.id.toolbar));
 
-        selectButton = (Button) findViewById(R.id.selectButton);
         gridView = (GridView) findViewById(R.id.gridView);
         gridViewAdapter = new GridViewAdapter(this);
 
         gridView.setAdapter(gridViewAdapter);
         gridView.setOnItemClickListener(this);
         gridView.setOnItemLongClickListener(this);
-        selectButton.setOnClickListener(this);
+        gridView.setChoiceMode(getIntent().getIntExtra(CHOICE_MODE_KEY, AbsListView.CHOICE_MODE_MULTIPLE));
         loadContent();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE) {
+            Application.getTopActivity().getMenuInflater().inflate(pisces.android.R.menu.menu_image_picker, menu);
+
+            MenuItem item = menu.findItem(pisces.android.R.id.select);
+            item.setEnabled(gridView.getCheckedItemCount() > 0);
+            int count = gridView.getCheckedItemCount();
+            String prefix = getResources().getString(pisces.android.R.string.imagepicker_menu_select);
+            String text = count > 0 ? prefix + " " + String.valueOf(count) : prefix;
+
+            item.setTitle(text);
+            return true;
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == pisces.android.R.id.select) {
+            select();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -71,7 +100,6 @@ abstract public class MediaGridActivity extends PSActionBarActivity
         ProgressBarManager.hide(this);
         gridView.setOnItemClickListener(null);
         gridView.setOnItemLongClickListener(null);
-        selectButton.setOnClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
         FBPhotoCaches.getDefault().clear();
 
@@ -91,45 +119,13 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     //  Listener
     // ================================================================================================
 
-    @Override
-    public void onClick(View v) {
-        final List<Media> list = new ArrayList<>();
-        final Object self = this;
-
-        Application.run(new Runnable() {
-            @Override
-            public void run() {
-                SparseBooleanArray array = gridView.getCheckedItemPositions();
-                for (int i=0; i<array.size(); i++) {
-                    int key = array.keyAt(i);
-                    if (array.get(key))
-                        list.add(items.get(key));
-                }
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                EventBus.getDefault().post(
-                        new ImagePickerEvent(
-                                ImagePickerEvent.COMPLETE_SELECTION,
-                                self,
-                                list));
-                finish();
-            }
-        });
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int count = gridView.getCheckedItemCount();
-        String prefix = getResources().getString(pisces.android.R.string.imagepicker_menu_select);
-        String text = count > 0 ? prefix + " " + String.valueOf(count) : prefix;
-
-        selectButton.setEnabled(gridView.getCheckedItemCount() > 0);
-        selectButton.setText(text);
+        if (gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE)
+            invalidateOptionsMenu();
+        else
+            select();
     }
 
-    @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         MediaListActivity.show(items, position);
         return true;
@@ -188,6 +184,36 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
+    //  Private
+    // ================================================================================================
+
+    public void select() {
+        final List<Media> list = new ArrayList<>();
+        final Object self = this;
+
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                SparseBooleanArray array = gridView.getCheckedItemPositions();
+                for (int i=0; i<array.size(); i++) {
+                    int key = array.keyAt(i);
+                    if (array.get(key))
+                        list.add(items.get(key));
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(
+                        new ImagePickerEvent(
+                                ImagePickerEvent.COMPLETE_SELECTION,
+                                self,
+                                list));
+            }
+        });
+    }
+
+    // ================================================================================================
     //  Class: GridViewAdapter
     // ================================================================================================
 
@@ -219,6 +245,7 @@ abstract public class MediaGridActivity extends PSActionBarActivity
 
             if (convertView == null) {
                 itemView = new ImagePickerMediaItemView(context);
+                itemView.setAllowsShowIndicator(gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE);
                 itemView.setLayoutParams(new ViewGroup.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
                 convertView = itemView;
             } else {

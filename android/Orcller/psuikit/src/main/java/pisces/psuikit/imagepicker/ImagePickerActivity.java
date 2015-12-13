@@ -2,17 +2,21 @@ package pisces.psuikit.imagepicker;
 
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +24,6 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.android.R;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -30,9 +33,9 @@ import pisces.psuikit.manager.ProgressBarManager;
  * Created by pisces on 11/24/15.
  */
 public class ImagePickerActivity extends PSActionBarActivity
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
-    private ArrayList<Media> items = new ArrayList<Media>();
-    private Button selectButton;
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+    private static final String CHOICE_MODE_KEY = "choiceMode";
+    private ArrayList<Media> items = new ArrayList<>();
     private GridView gridView;
 
     // ================================================================================================
@@ -44,17 +47,43 @@ public class ImagePickerActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_imagepicker);
-
-        gridView = (GridView) findViewById(R.id.gridView);
-        selectButton = (Button) findViewById(R.id.selectButton);
-
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getResources().getString(R.string.imagepicker_title));
+
+        gridView = (GridView) findViewById(R.id.gridView);
+
         init();
+        gridView.setChoiceMode(getIntent().getIntExtra(CHOICE_MODE_KEY, AbsListView.CHOICE_MODE_MULTIPLE));
         gridView.setOnItemClickListener(this);
         gridView.setOnItemLongClickListener(this);
-        selectButton.setOnClickListener(this);
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE) {
+            Application.getTopActivity().getMenuInflater().inflate(pisces.android.R.menu.menu_image_picker, menu);
+
+            MenuItem item = menu.findItem(pisces.android.R.id.select);
+            item.setEnabled(gridView.getCheckedItemCount() > 0);
+            int count = gridView.getCheckedItemCount();
+            String prefix = getResources().getString(pisces.android.R.string.imagepicker_menu_select);
+            String text = count > 0 ? prefix + " " + String.valueOf(count) : prefix;
+
+            item.setTitle(text);
+            return true;
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.select) {
+            select();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -64,11 +93,19 @@ public class ImagePickerActivity extends PSActionBarActivity
         EventBus.getDefault().unregister(this);
         gridView.setOnItemClickListener(null);
         gridView.setOnItemLongClickListener(null);
-        selectButton.setOnClickListener(null);
 
         items = null;
         gridView = null;
-        selectButton = null;
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static void show(int choiceMode) {
+        Intent intent = new Intent(Application.applicationContext(), ImagePickerActivity.class);
+        intent.putExtra(CHOICE_MODE_KEY, choiceMode);
+        Application.getTopActivity().startActivity(intent);
     }
 
     // ================================================================================================
@@ -76,46 +113,17 @@ public class ImagePickerActivity extends PSActionBarActivity
     // ================================================================================================
 
     @Override
-    public void onClick(View v) {
-        final List<Media> list = new ArrayList<>();
-        final Object self = this;
-
-        Application.run(new Runnable() {
-            @Override
-            public void run() {
-                SparseBooleanArray array = gridView.getCheckedItemPositions();
-                for (int i=0; i<array.size(); i++) {
-                    int key = array.keyAt(i);
-                    if (array.get(key))
-                        list.add(items.get(key));
-                }
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                EventBus.getDefault().post(
-                        new ImagePickerEvent(
-                                ImagePickerEvent.COMPLETE_SELECTION,
-                                self,
-                                list));
-                finish();
-            }
-        });
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int count = gridView.getCheckedItemCount();
-        String prefix = getResources().getString(R.string.imagepicker_menu_select);
-        String text = count > 0 ? prefix + " " + String.valueOf(count) : prefix;
-
-        selectButton.setEnabled(gridView.getCheckedItemCount() > 0);
-        selectButton.setText(text);
+        if (gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE)
+            invalidateOptionsMenu();
+        else
+            select();
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        ImagePickerViewActivity.startActivity(items, position);
+        ImageView imageView = ((ImagePickerItemView) view).getImageView();
+        ImagePickerViewActivity.startActivity(items, position, imageView);
         return true;
     }
 
@@ -139,6 +147,8 @@ public class ImagePickerActivity extends PSActionBarActivity
         String[] projection = {
                 MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media._ID,
+                MediaStore.Images.ImageColumns.WIDTH,
+                MediaStore.Images.ImageColumns.HEIGHT,
                 MediaStore.Images.ImageColumns.DESCRIPTION,
                 MediaStore.Images.ImageColumns.DATE_TAKEN
         };
@@ -160,6 +170,8 @@ public class ImagePickerActivity extends PSActionBarActivity
                     item.id = cursor.getInt(columnIndex);
                     item.dataColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
                     item.path = cursor.getString(item.dataColumnIndex);
+                    item.width = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH));
+                    item.height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT));
                     item.date = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN));
 
                     items.add(item);
@@ -171,6 +183,32 @@ public class ImagePickerActivity extends PSActionBarActivity
                 ProgressBarManager.hide(self);
                 gridView.setVisibility(View.VISIBLE);
                 gridView.setAdapter(new ImageAdapter(self));
+            }
+        });
+    }
+
+    public void select() {
+        final List<Media> list = new ArrayList<>();
+        final Object self = this;
+
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                SparseBooleanArray array = gridView.getCheckedItemPositions();
+                for (int i=0; i<array.size(); i++) {
+                    int key = array.keyAt(i);
+                    if (array.get(key))
+                        list.add(items.get(key));
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(
+                        new ImagePickerEvent(
+                                ImagePickerEvent.COMPLETE_SELECTION,
+                                self,
+                                list));
             }
         });
     }
@@ -203,8 +241,8 @@ public class ImagePickerActivity extends PSActionBarActivity
 
             if (convertView == null) {
                 itemView = new ImagePickerItemView(context);
+                itemView.setAllowsShowIndicator(gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE);
                 itemView.setLayoutParams(new ViewGroup.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
-
                 convertView = itemView;
             } else {
                 itemView = (ImagePickerItemView) convertView;

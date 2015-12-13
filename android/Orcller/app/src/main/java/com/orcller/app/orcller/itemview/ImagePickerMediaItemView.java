@@ -23,6 +23,7 @@ import pisces.psuikit.ext.PSFrameLayout;
  */
 public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable {
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
+    private boolean allowsShowIndicator = true;
     private boolean checked;
     private ImageView imageView;
     private ImageView videoIcon;
@@ -59,6 +60,14 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isAllowsShowIndicator() {
+        return allowsShowIndicator;
+    }
+
+    public void setAllowsShowIndicator(boolean allowsShowIndicator) {
+        this.allowsShowIndicator = allowsShowIndicator;
+    }
 
     public Media getModel() {
         return model;
@@ -98,7 +107,7 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
         this.checked = checked;
 
         refreshDrawableState();
-        selectionIndicator.setVisibility(checked ? VISIBLE : INVISIBLE);
+        selectionIndicator.setVisibility(allowsShowIndicator && checked ? VISIBLE : INVISIBLE);
     }
 
     @Override

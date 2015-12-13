@@ -242,13 +242,18 @@ public class ProfileContentView extends PSTabHost
 
         @Override
         public Fragment getItem(int position) {
-            UserDataGridFragment fragment = dataSource.getFragments().get(position);
+            try {
+                Class clazz = dataSource.getFragments().get(position);
+                UserDataGridFragment fragment = (UserDataGridFragment) clazz.newInstance();
 
-            if (fragment != null) {
-                fragment.setUserId(userId);
+                if (fragment != null) {
+                    fragment.setUserId(userId);
+                }
+
+                return fragment;
+            } catch (Exception e) {
+                return null;
             }
-
-            return fragment;
         }
     }
 
@@ -257,7 +262,7 @@ public class ProfileContentView extends PSTabHost
     // ================================================================================================
 
     public static interface DataSource {
-        List<UserDataGridFragment> getFragments();
+        List<Class<? extends UserDataGridFragment>> getFragments();
         FragmentManager getGridFragmentManager();
         int getTabCount();
     }

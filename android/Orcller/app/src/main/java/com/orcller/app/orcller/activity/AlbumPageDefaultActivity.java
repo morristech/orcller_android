@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -27,11 +26,9 @@ import pisces.psuikit.ext.PSActionBarActivity;
 /**
  * Created by pisces on 12/2/15.
  */
-public class AlbumPageDefaultActivity extends PSActionBarActivity
-        implements View.OnClickListener, AlbumGridView.Delegate  {
+public class AlbumPageDefaultActivity extends PSActionBarActivity implements AlbumGridView.Delegate  {
     protected static final String ALBUM_KEY = "album";
     protected boolean allowsShowCloseAlert;
-    protected Button doneButton;
     private AlbumGridView gridView;
     private Album model;
     private Album clonedModel;
@@ -49,11 +46,9 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(getString(R.string.w_title_album_page_default));
 
         allowsShowCloseAlert = true;
-        doneButton = (Button) findViewById(R.id.doneButton);
         gridView = (AlbumGridView) findViewById(R.id.gridView);
 
         gridView.setDelegate(this);
-        doneButton.setOnClickListener(this);
         setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
     }
 
@@ -61,10 +56,7 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        doneButton.setOnClickListener(null);
-
         gridView = null;
-        doneButton = null;
         model = null;
     }
 
@@ -72,7 +64,7 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (allowsShowCloseAlert && doneButton.isEnabled()) {
+                if (allowsShowCloseAlert && getDoneItem().isEnabled()) {
                     showCloseAlert();
                     return true;
                 }
@@ -82,16 +74,28 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Application.getTopActivity().getMenuInflater().inflate(R.menu.menu_album_info_edit, menu);
+        getDoneItem().setEnabled(false);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (allowsShowCloseAlert && doneButton.isEnabled()) {
+                if (allowsShowCloseAlert && getDoneItem().isEnabled()) {
                     showCloseAlert();
                     return true;
                 }
 
                 onBackPressed();
                 break;
+
+            case R.id.done:
+                EventBus.getDefault().post(new PageListEvent(PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE, this, clonedModel));
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -111,19 +115,13 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity
     //  Listener
     // ================================================================================================
 
-    @Override
-    public void onClick(View v) {
-        EventBus.getDefault().post(new PageListEvent(PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE, this, clonedModel));
-        finish();
-    }
-
     /**
      * AlbumGridView delegate
      */
     public void onSelect(int position) {
         clonedModel.default_page_index = SharedObject.convertPositionToPageIndex(position);
         gridView.reload();
-        doneButton.setEnabled(model.default_page_index != clonedModel.default_page_index);
+        getDoneItem().setEnabled(model.default_page_index != clonedModel.default_page_index);
     }
 
     // ================================================================================================
@@ -161,6 +159,10 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private MenuItem getDoneItem() {
+        return getToolbar().getMenu().findItem(R.id.done);
+    }
 
     private void showCloseAlert() {
         AlertDialogUtils.show(getString(R.string.m_activity_close_message),

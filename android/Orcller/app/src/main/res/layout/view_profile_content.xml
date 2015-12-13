@@ -15,7 +15,7 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:elevation="15dp"
+                android:background="@android:color/white"
                 android:divider="@null"/>
 
             <FrameLayout
@@ -28,8 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
-                android:elevation="20dp"/>
+                android:background="@android:color/white"/>
         </LinearLayout>
     </FrameLayout>
 </pisces.psuikit.ext.PSTabHost>

@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -23,6 +24,7 @@ import com.orcller.app.orcller.activity.AlbumPageDefaultActivity;
 import com.orcller.app.orcller.activity.AlbumPageDeleteActivity;
 import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
+import com.orcller.app.orcller.activity.CoeditListActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.FollowersActivity;
 import com.orcller.app.orcller.activity.FollowingActivity;
@@ -32,10 +34,12 @@ import com.orcller.app.orcller.activity.MemberActivity;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.activity.UserPictureActivity;
+import com.orcller.app.orcller.activity.UserPictureEditActivity;
 import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
+import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.fragment.UserAlbumGridFragment;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.model.album.Album;
@@ -214,7 +218,9 @@ public class ApplicationFacade {
 //        testProfileActivity();
 //        testFollowersActivity();
 //        testFollowersActivity();
-        testUserPictureActivity();
+//        testUserPictureActivity();
+//        testUserPictureEditActivity();
+        testCoeditListActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -544,17 +550,16 @@ public class ApplicationFacade {
     }
 
     private void testAlbumViewActivity() {
-        AlbumViewActivity.show(4, false);
-//        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
-//            @Override
-//            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-//                AlbumViewActivity.show(response.body().entity, false);
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//            }
-//        });
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                AlbumViewActivity.show(response.body().entity, false);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 
     private void testImageGenerator() {
@@ -645,5 +650,24 @@ public class ApplicationFacade {
 
     private void testUserPictureActivity() {
         UserPictureActivity.show(AuthenticationCenter.getDefault().getUser());
+    }
+
+    private void testUserPictureEditActivity() {
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                int w = Application.getTopActivity().getWindow().getDecorView().getWidth();
+                Page page = response.body().entity.pages.getPageAtIndex(3);
+                UserPictureEditActivity.show(page.media);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    private void testCoeditListActivity() {
+        testActivity(CoeditListActivity.class, null);
     }
 }

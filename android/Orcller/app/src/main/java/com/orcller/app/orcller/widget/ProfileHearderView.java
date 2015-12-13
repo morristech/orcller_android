@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Length;
@@ -19,6 +19,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.FollowersActivity;
 import com.orcller.app.orcller.activity.FollowingActivity;
+import com.orcller.app.orcller.activity.UserPictureActivity;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -32,6 +33,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
@@ -56,6 +58,7 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
     private ClearableEditText messageEditText;
 
     private LinearLayout buttonContainer;
+    private View separator;
     private Button followersButton;
     private Button followingButton;
     private UserPictureView userPictureView;
@@ -82,6 +85,7 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
 
         nickNameEditText = (ClearableEditText) findViewById(R.id.nickNameEditText);
         messageEditText = (ClearableEditText) findViewById(R.id.messageEditText);
+        separator = findViewById(R.id.separator);
         buttonContainer = (LinearLayout) findViewById(R.id.buttonContainer);
         followersButton = (Button) findViewById(R.id.followersButton);
         followingButton = (Button) findViewById(R.id.followingButton);
@@ -90,6 +94,7 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
 
         followersButton.setOnClickListener(this);
         followingButton.setOnClickListener(this);
+        userPictureView.setOnClickListener(this);
         validator.setValidationListener(this);
         EventBus.getDefault().register(this);
     }
@@ -139,6 +144,8 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
             FollowingActivity.show(model.user_uid);
         } else if (followersButton.equals(v)) {
             FollowersActivity.show(model.user_uid);
+        } else if (userPictureView.equals(v)) {
+            UserPictureActivity.show(model);
         }
     }
 
@@ -164,7 +171,9 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
 
                 modelChanged();
                 nickNameEditText.setCursorVisible(false);
+                nickNameEditText.clearFocus();
                 messageEditText.setCursorVisible(false);
+                messageEditText.clearFocus();
                 buttonContainer.setVisibility(VISIBLE);
             }
 
@@ -278,6 +287,20 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
         messageEditText.setEnabled(model.isMe());
         followersButton.setText(getContext().getString(R.string.w_followers) + getCountText(model.user_options.follower_count));
         followingButton.setText(getContext().getString(R.string.w_following) + getCountText(model.user_options.follow_count));
+
+        if (!model.isMe()) {
+            nickNameEditText.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+
+            LayoutParams params = (LayoutParams) messageEditText.getLayoutParams();
+            params.height = LayoutParams.WRAP_CONTENT;
+            params.topMargin = 0;
+
+            nickNameEditText.setBackground(null);
+            nickNameEditText.setPadding(nickNameEditText.getPaddingLeft(), 0, 0, GraphicUtils.convertDpToPixel(8));
+            messageEditText.setBackground(null);
+            messageEditText.setPadding(messageEditText.getPaddingLeft(), GraphicUtils.convertDpToPixel(8), 0, 0);
+            separator.setVisibility(VISIBLE);
+        }
     }
 
     // ================================================================================================

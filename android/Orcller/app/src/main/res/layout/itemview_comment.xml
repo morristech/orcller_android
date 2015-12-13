@@ -23,11 +23,11 @@
             android:layout_marginLeft="8dp">
             <TextView
                 android:id="@+id/idTextView"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
-                android:textColorLink="@drawable/color_user_id"
+                android:textColorLink="@color/textcolor_dark_blue"
                 android:textStyle="bold"
                 android:textSize="13dp"/>
 

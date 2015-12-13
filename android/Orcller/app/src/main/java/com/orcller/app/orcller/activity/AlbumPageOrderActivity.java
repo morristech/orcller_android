@@ -61,6 +61,6 @@ public class AlbumPageOrderActivity extends AlbumPageGridActivity {
     }
 
     private void setButtonEnabled() {
-        doneButton.setEnabled(!getModel().pages.data.equals(getClonedModel().pages.data));
+        getDoneItem().setEnabled(!getModel().pages.data.equals(getClonedModel().pages.data));
     }
 }

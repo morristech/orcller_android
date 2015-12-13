@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -39,6 +40,7 @@ import pisces.psuikit.manager.ProgressBarManager;
  */
 public class FBImagePickerActivity extends PSActionBarActivity
         implements AdapterView.OnItemClickListener {
+    private int choiceMode;
     private List<FBAlbum> items = new ArrayList<>();
     private ListView listView;
     private ListAdapter listAdapter;
@@ -53,17 +55,16 @@ public class FBImagePickerActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_facebook_imagepicker);
-
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getString(R.string.w_facebook_photos));
 
+        choiceMode = getIntent().getIntExtra(MediaGridActivity.CHOICE_MODE_KEY, AbsListView.CHOICE_MODE_MULTIPLE);
         listView = (ListView) findViewById(R.id.listView);
         listAdapter = new ListAdapter(this);
 
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
         loadAlbums();
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -77,7 +78,6 @@ public class FBImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        EventBus.getDefault().unregister(this);
         ProgressBarManager.hide(this);
         listView.setOnItemClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
@@ -97,19 +97,22 @@ public class FBImagePickerActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static void show(int choiceMode) {
+        Intent intent = new Intent(Application.applicationContext(), FBImagePickerActivity.class);
+        intent.putExtra(MediaGridActivity.CHOICE_MODE_KEY, choiceMode);
+        Application.getTopActivity().startActivity(intent);
+    }
+
+    // ================================================================================================
     //  Listener
     // ================================================================================================
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        FBMediaGridActivity.startActivity(items.get(position));
-    }
-
-    public void onEventMainThread(Object event) {
-        if (event instanceof ImagePickerEvent &&
-                ((ImagePickerEvent) event).getType().equals(ImagePickerEvent.COMPLETE_SELECTION)) {
-            finish();
-        }
+        FBMediaGridActivity.show(items.get(position), choiceMode);
     }
 
     // ================================================================================================

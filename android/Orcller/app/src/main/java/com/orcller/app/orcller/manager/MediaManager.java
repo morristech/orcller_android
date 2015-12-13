@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.common.SharedObject;
@@ -26,7 +27,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.BitmapUtils;
@@ -227,6 +230,42 @@ public class MediaManager {
         }.execute();
     }
 
+    public void saveUserPicture(Bitmap source, final String filename, final CompleteHandler completeHandler) {
+        final List<SharedObject.SizeType> types = Arrays.asList
+                (SharedObject.SizeType.Large, SharedObject.SizeType.Medium, SharedObject.SizeType.Small);
+        final Point p = new Point(0, types.size());
+
+        CompleteHandler checkComplete = new CompleteHandler() {
+            @Override
+            public void onComplete(Error error) {
+                if (p.x >= p.y)
+                    return;
+
+                if (error != null) {
+                    AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
+
+                    for (SharedObject.SizeType type : types) {
+                        File file = new File(SharedObject.TEMP_IMAGE_DIR, SharedObject.extractFilename(filename, type));
+
+                        if (file.exists())
+                            file.delete();
+                    }
+
+                    completeHandler.onComplete(error);
+                    p.x = p.y;
+                } else {
+                    if (++p.x >= p.y) {
+                        completeHandler.onComplete(null);
+                    }
+                }
+            }
+        };
+
+        for (SharedObject.SizeType type : types) {
+            uploadUserPicture(source, filename, type, checkComplete);
+        }
+    }
+
     public void startUploading(Album model) {
         getUnit(model).upload();
     }
@@ -407,6 +446,55 @@ public class MediaManager {
         media.images.low_resolution = new Image(lowBitmap.getWidth(), lowBitmap.getHeight(), basePath + "/" + lowImageName);
         media.images.standard_resolution = new Image(standardBitmap.getWidth(), standardBitmap.getHeight(), basePath + "/" + standardImageName);
         media.images.thumbnail = new Image(thumbnailBitmap.getWidth(), thumbnailBitmap.getHeight(), basePath + "/" + thumbnailImageName);
+    }
+
+    private void uploadUserPicture(final Bitmap source, final String filename,
+                                   final SharedObject.SizeType sizeType, final CompleteHandler completeHandler) {
+        Application.runOnBackgroundThread(new Runnable() {
+            @Override
+            public void run() {
+                int pixel = SharedObject.convertSizeTypeToPixel(sizeType);
+                float scale = (float) pixel / source.getWidth();
+                int w = Math.min(Math.round(source.getWidth() * scale), source.getWidth());
+                int h = Math.min(Math.round(source.getHeight() * scale), source.getHeight());
+                Bitmap bitmap = Bitmap.createScaledBitmap(source, w, h, true);
+                String path = SharedObject.extractFilename(filename, sizeType);
+                final String key = SharedObject.toUserPictureUrl(filename, sizeType, true);
+                final File file = new File(SharedObject.TEMP_IMAGE_DIR, path);
+
+                saveBitmap(bitmap, path);
+
+                Application.runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
+                        observer.setTransferListener(new TransferListener() {
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                if (state == TransferState.COMPLETED) {
+                                    if (file.exists())
+                                        file.delete();
+
+                                    completeHandler.onComplete(null);
+                                }
+                            }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                if (BuildConfig.DEBUG)
+                                    Log.e(ex.getMessage(), ex);
+
+                                completeHandler.onComplete(new Error(ex.getMessage()));
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 
     // ================================================================================================

@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.text.TextUtils;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.album.Favorites;
@@ -19,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
 
 /**
@@ -46,6 +48,31 @@ public class SharedObject {
 
     public static int convertPageIndexToPosition(int pageIndex) {
         return Math.max(0, (pageIndex * 2) - 1);
+    }
+
+    public static int convertSizeTypeToPixel(SizeType sizeType) {
+        if (SizeType.Large.equals(sizeType))
+            return MediaManager.WIDTH_IMAGE_STANDARD_RESOLUTION;
+        if (SizeType.Medium.equals(sizeType))
+            return MediaManager.WIDTH_IMAGE_LOW_RESOLUTION;
+        if (SizeType.Small.equals(sizeType))
+            return MediaManager.WIDTH_IMAGE_THUMBNAIL;
+        return 0;
+    }
+
+    public static String extractFilename(String filename, SizeType sizeType) {
+        if (TextUtils.isEmpty(filename))
+            return null;
+
+        Pattern namePattern = Pattern.compile("[^/]+[0-9$]");
+        Pattern exPattern = Pattern.compile("\\.[a-z]+");
+        Matcher nameMatcher = namePattern.matcher(filename);
+        Matcher exMatcher = exPattern.matcher(filename);
+
+        nameMatcher.find();
+        exMatcher.find();
+
+        return nameMatcher.group(0) + "_" + getSizeTypeString(sizeType) + exMatcher.group(0);
     }
 
     public static String getAlbumInfoText(AlbumAdditionalListEntity entity) {
@@ -99,6 +126,10 @@ public class SharedObject {
     }
 
     public static String toUserPictureUrl(String filename, SizeType sizeType) {
+        return toUserPictureUrl(filename, sizeType, false);
+    }
+
+    public static String toUserPictureUrl(String filename, SizeType sizeType, boolean excludeDomain) {
         if (TextUtils.isEmpty(filename))
             return null;
 
@@ -110,7 +141,7 @@ public class SharedObject {
 
         while (matcher.find()) {
             String replaced = matcher.replaceAll(getUserPicturePrefix(sizeType) + matcher.group(0));
-            return Application.applicationContext().getString(R.string.s3_domain) + "/" + replaced;
+            return excludeDomain ? replaced : Application.applicationContext().getString(R.string.s3_domain) + "/" + replaced;
         }
 
         return null;
@@ -125,12 +156,22 @@ public class SharedObject {
                 (entity.total_count > 0 ? String.valueOf(entity.total_count) : "");
     }
 
-    private static String getUserPicturePrefix(SharedObject.SizeType sizeType) {
-        if (SharedObject.SizeType.Small.equals(sizeType))
+    private static String getSizeTypeString(SizeType sizeType) {
+        if (SizeType.Small.equals(sizeType))
+            return "s";
+        if (SizeType.Medium.equals(sizeType))
+            return "l";
+        if (SizeType.Large.equals(sizeType))
+            return "s";
+        return "";
+    }
+
+    private static String getUserPicturePrefix(SizeType sizeType) {
+        if (SizeType.Small.equals(sizeType))
             return "/p88x88";
-        if (SharedObject.SizeType.Medium.equals(sizeType))
+        if (SizeType.Medium.equals(sizeType))
             return "/p108x108";
-        if (SharedObject.SizeType.Large.equals(sizeType))
+        if (SizeType.Large.equals(sizeType))
             return "/p640x640";
         return "";
     }

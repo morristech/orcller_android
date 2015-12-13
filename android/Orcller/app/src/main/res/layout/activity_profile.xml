@@ -20,11 +20,13 @@
         android:id="@+id/profileHearderView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="0dp"
         android:visibility="gone"/>
 
     <com.orcller.app.orcller.widget.ProfileContentView
         android:id="@+id/profileContentView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:elevation="1dp"
         android:visibility="gone"/>
 </LinearLayout>

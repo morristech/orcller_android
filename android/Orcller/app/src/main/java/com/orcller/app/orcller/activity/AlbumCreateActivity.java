@@ -9,12 +9,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -80,7 +80,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
     @Length(max = 40, messageResId = R.string.m_validate_album_title_length)
     private ClearableEditText titleEditText;
 
-    protected Button postButton;
     private PSButton addButton;
     private PSButton orderButton;
     private PSButton defaultButton;
@@ -114,7 +113,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
         orderButton = (PSButton) findViewById(R.id.orderButton);
         defaultButton = (PSButton) findViewById(R.id.defaultButton);
         deleteButton = (PSButton) findViewById(R.id.deleteButton);
-        postButton = (Button) findViewById(R.id.postButton);
         validator = new Validator(this);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -150,6 +148,32 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Application.getTopActivity().getMenuInflater().inflate(R.menu.menu_album_create, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (getPostItem().isEnabled()) {
+                    showCloseAlert();
+                    return true;
+                }
+
+                onBackPressed();
+                break;
+
+            case R.id.post:
+                validator.validate();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -167,13 +191,11 @@ public class AlbumCreateActivity extends PSActionBarActivity
         orderButton.setOnClickListener(null);
         defaultButton.setOnClickListener(null);
         deleteButton.setOnClickListener(null);
-        postButton.setOnClickListener(null);
 
         spinnerContainer = null;
         spinner = null;
         titleEditText = null;
         descriptionInputView = null;
-        postButton = null;
         albumFlipView = null;
         albumGridView = null;
         validator = null;
@@ -183,29 +205,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (postButton.isEnabled()) {
+                if (getPostItem().isEnabled()) {
                     showCloseAlert();
                     return true;
                 }
                 break;
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (postButton.isEnabled()) {
-                    showCloseAlert();
-                    return true;
-                }
-
-                onBackPressed();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     // ================================================================================================
@@ -238,8 +244,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
             AlbumPageDefaultActivity.show(clonedModel);
         } else if (v.equals(deleteButton)) {
             AlbumPageDeleteActivity.show(clonedModel);
-        } else if (v.equals(postButton)) {
-            validator.validate();
         }
     }
 
@@ -257,6 +261,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                 buttonContainer.setVisibility(View.GONE);
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 titleEditText.setCursorVisible(false);
+                titleEditText.clearFocus();
                 buttonContainer.setVisibility(View.VISIBLE);
             }
         } else if (event instanceof PageListEvent) {
@@ -269,6 +274,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                     public void run() {
                         clonedModel.removeAllPages();
 
+                        Log.d("model.pages.data", model.pages.data.size());
                         for (Page page : model.pages.data) {
                             clonedModel.addPage(page);
                         }
@@ -278,7 +284,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                     public void run() {
                         selectedIndexForAppending = 0;
                         reload();
-                        setPostButtonEnabled();
+                        setPostItemEnabled();
                         setOtherButtonsEnabled();
                     }
                 });
@@ -286,7 +292,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                 clonedModel.default_page_index = model.default_page_index;
                 selectedIndexForAppending = SharedObject.convertPageIndexToPosition(model.default_page_index);
                 reload();
-                setPostButtonEnabled();
+                setPostItemEnabled();
             }
         }
     }
@@ -301,7 +307,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         int permission = position + 1;
         if (clonedModel.permission != permission) {
             clonedModel.permission = permission;
-            setPostButtonEnabled();
+            setPostItemEnabled();
         }
     }
 
@@ -314,7 +320,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     public void onValidationSucceeded() {
         clonedModel.created_time = clonedModel.updated_time = DateUtil.toUnixtimestamp(new Date());
         clonedModel.page_replace_enabled = !clonedModel.pages.data.equals(model.pages.data);
-        postButton.setEnabled(false);
+        getPostItem().setEnabled(false);
         SoftKeyboardUtils.hide(rootLayout);
         doRequest();
         finish();
@@ -383,6 +389,10 @@ public class AlbumCreateActivity extends PSActionBarActivity
         MediaManager.getDefault().startUploading(clonedModel);
     }
 
+    protected MenuItem getPostItem() {
+        return getToolbar().getMenu().findItem(R.id.post);
+    }
+
     protected void setModel(Album model) {
         if (ObjectUtils.equals(model, this.model))
             return;
@@ -418,7 +428,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                         reload();
 
                         if (++processCountForAppending >= list.size()) {
-                            setPostButtonEnabled();
+                            setPostItemEnabled();
                             setOtherButtonsEnabled();
                             MediaManager.getDefault().startUploading(clonedModel);
                         }
@@ -489,7 +499,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
         orderButton.setOnClickListener(this);
         defaultButton.setOnClickListener(this);
         deleteButton.setOnClickListener(this);
-        postButton.setOnClickListener(this);
         validator.setValidationListener(this);
         EventBus.getDefault().register(this);
         SoftKeyboardNotifier.getDefault().register(this);
@@ -506,7 +515,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
 
                 if (clonedModel != null && !TextUtils.isEmpty(clonedModel.name) && !TextUtils.isEmpty(charSequence)) {
                     clonedModel.name = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
-                    setPostButtonEnabled();
+                    setPostItemEnabled();
                 }
             }
         });
@@ -523,7 +532,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
 
                 if (clonedModel != null) {
                     clonedModel.desc = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
-                    setPostButtonEnabled();
+                    setPostItemEnabled();
                 }
             }
         });
@@ -537,14 +546,14 @@ public class AlbumCreateActivity extends PSActionBarActivity
         }
     }
 
-    private void setPostButtonEnabled() {
+    private void setPostItemEnabled() {
         if (model == null || clonedModel == null)
             return;
 
         model.equalsModel(clonedModel, new Model.EqualsCompletion() {
             @Override
             public void onComplete(boolean equals) {
-                postButton.setEnabled(!equals && clonedModel.pages.count >= PAGE_COUNT_MIN);
+                getPostItem().setEnabled(!equals && clonedModel.pages.count >= PAGE_COUNT_MIN);
             }
         });
     }

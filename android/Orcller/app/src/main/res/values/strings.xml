@@ -27,6 +27,7 @@
     <string name="facebook_share_content_title">Orcller - Live and Put Together</string>
 
     <!-- words -->
+    <string name="w_accept">Accept</string>
     <string name="w_add">Add</string>
     <string name="w_add_dialog_title">Import photos and videos</string>
     <string name="w_cancel">Cancel</string>
@@ -77,6 +78,7 @@
     <string name="w_title_album_page_order">Edit Page Orders</string>
     <string name="w_title_album_page_default">Set as Default Page</string>
     <string name="w_title_album_page_delete">Delete Pages</string>
+    <string name="w_title_coediting">Co-editing</string>
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
     <string name="w_title_new_album">New Album</string>
@@ -115,6 +117,7 @@
     <string name="m_fail_change">"It failed to save changes.\nPlease try again."</string>
     <string name="m_fail_common">It failed to request.\nPlease try again.</string>
     <string name="m_fail_comment">It failed to post a comment.\nPlease try again.</string>
+    <string name="m_fail_save_user_picture">It failed to save the picture.\nPlease try again.</string>
     <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
     <string name="m_warn_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
     <string name="m_validate_album_title_length">The album title must be a maximum of 40 characters!</string>

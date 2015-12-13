@@ -99,6 +99,15 @@ public class Application extends android.app.Application {
         return compareVersions(getPackageVersionName(), version) == -1;
     }
 
+    public static void moveToBack(Activity activity) {
+        if (getTopActivity().equals(activity))
+            return;
+
+        Intent intent = activity.getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        activity.startActivity(intent);
+    }
+
     public static void run(final Runnable doInBackground, final Runnable onPostExecute) {
         new AsyncTask<Void, Void, Void>() {
             @Override

@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/imagepicker_toolbar_color"
+        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ImagePickerTheme.Toolbar">
         <TextView
@@ -32,6 +33,7 @@
         android:layout_height="44dp"
         android:layout_gravity="bottom"
         android:background="@color/imagepicker_toolbar_color"
+        android:elevation="2dp"
         android:gravity="center_vertical"
         android:textAlignment="center"
         android:textColor="@color/imagepicker_toolbar_button_title_color"/>

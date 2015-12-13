@@ -5,6 +5,9 @@ import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.widget.GridView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pisces.psfoundation.utils.DataLoadValidator;
 
 /**
@@ -66,6 +69,20 @@ public class PSGridView extends GridView implements PSComponent, DataLoadValidat
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public List getCheckedItems() {
+        List list = new ArrayList();
+
+        SparseBooleanArray array = getCheckedItemPositions();
+        for (int i=0; i<array.size(); i++) {
+            int key = array.keyAt(i);
+            if (array.get(key)) {
+                list.add(getAdapter().getItem(key));
+            }
+        }
+
+        return list;
+    }
 
     public int[] getCheckedPositions() {
         int[] positions = new int[getCheckedItemCount()];

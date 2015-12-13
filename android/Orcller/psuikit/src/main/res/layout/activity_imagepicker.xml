@@ -7,22 +7,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
+        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ImagePickerTheme.Toolbar">
-        <Button
-            android:id="@+id/selectButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="right"
-            android:background="@null"
-            android:enabled="false"
-            android:text="@string/imagepicker_menu_select"
-            android:textAllCaps="false"
-            android:textColor="@drawable/textcolor_imagepicker_select_button"
-            android:textSize="17dp"/>
-    </android.support.v7.widget.Toolbar>
+        android:theme="@style/ImagePickerTheme.Toolbar"/>
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/gridView"

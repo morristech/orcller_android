@@ -2,13 +2,16 @@ package com.orcller.app.orcller.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.album.Page;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 12/2/15.
@@ -27,17 +30,21 @@ public class AlbumPageDeleteActivity extends AlbumPageGridActivity {
     }
 
     @Override
-    public void onClick(View v) {
-        for (int postion : gridView.getCheckedPositions()) {
-            getClonedModel().removePage(postion);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.done:
+                for (Object page : gridView.getCheckedItems()) {
+                    getClonedModel().removePage((Page) page);
+                }
+                break;
         }
 
-        super.onClick(v);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        doneButton.setEnabled(gridView.getCheckedItemCount() > 0);
+        getDoneItem().setEnabled(gridView.getCheckedItemCount() > 0);
     }
 
     // ================================================================================================

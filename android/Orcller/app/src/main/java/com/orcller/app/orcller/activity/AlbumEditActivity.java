@@ -3,6 +3,7 @@ package com.orcller.app.orcller.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.manager.MediaManager;
@@ -32,10 +33,17 @@ public class AlbumEditActivity extends AlbumCreateActivity {
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setTitle(getString(R.string.w_title_edit_album));
-        postButton.setText(R.string.w_save);
         loadAlbum();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+        getPostItem().setTitle(R.string.w_save);
+        return result;
+    }
+
+    @Override
     protected Album createModel() {
         return null;
     }

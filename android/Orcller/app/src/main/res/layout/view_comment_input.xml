@@ -38,7 +38,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginLeft="6dp"
-        android:background="@drawable/background_roundbutton_purple"
+        android:background="@drawable/background_ripple_roundbutton_purple"
         android:enabled="false"
         android:text="@string/w_post"
         android:textAllCaps="false"

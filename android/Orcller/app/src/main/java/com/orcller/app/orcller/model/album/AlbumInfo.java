@@ -61,7 +61,6 @@ public class AlbumInfo extends Model {
         Model.Event casted = (Model.Event) event;
 
         if (Model.Event.SYNCHRONIZE.equals(casted.getType()) &&
-                (casted.getTarget() instanceof User) &&
                 AuthenticationCenter.getDefault().getUser().equals(casted.getTarget())) {
             User model = (User) casted.getTarget();
             user_name = model.user_name;

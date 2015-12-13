@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/background_album_pagegrid_textview">
-    <item android:id="@android:id/mask" android:drawable="@drawable/background_blue_circle_selected"/>
-    <item android:drawable="@drawable/background_transparent"/>
+    <item android:id="@android:id/mask" android:drawable="@drawable/background_white_circle"/>
+    <item android:drawable="@android:color/transparent"/>
 </ripple>

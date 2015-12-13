@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.api.ApiUsers;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
@@ -64,8 +65,16 @@ public class UserDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
+    public void coediting(int limit, String after, Callback<ApiUsers.CoeditListRes> callback) {
+        enqueueCall(service().coediting(AuthenticationCenter.getDefault().getUser().user_uid, limit, after), callback);
+    }
+
     public void count(long userId, Callback<ApiUsers.CountRes> callback) {
         enqueueCall(service().count(userId), callback);
+    }
+
+    public void newUserPictureName(Callback<ApiUsers.NewUserPictureNameRes> callback) {
+        enqueueCall(service().newUserPictureName(), callback);
     }
 
     public void profile(long userId, Callback<ApiUser.Profile> callback) {
@@ -89,7 +98,8 @@ public class UserDataProxy extends AbstractDataProxy {
         Call<ApiUsers.AlbumListRes> albums(@Path("userId") long userId);
 
         @GET("{userId}/coediting")
-        Call<ApiUsers.AlbumListRes> coediting(@Path("userId") long userId);
+        Call<ApiUsers.CoeditListRes> coediting(
+                @Path("userId") long userId, @Query("limit") int limit, @Query("after") String after);
 
         @GET("{userId}/count")
         Call<ApiUsers.CountRes> count(@Path("userId") long userId);
@@ -100,11 +110,11 @@ public class UserDataProxy extends AbstractDataProxy {
         @GET("{userId}/media")
         Call<ApiUsers.MediaListRes> media(@Path("userId") long userId);
 
+        @POST("picture")
+        Call<ApiUsers.NewUserPictureNameRes> newUserPictureName();
+
         @GET("{userId}")
         Call<ApiUser.Profile> profile(@Path("userId") long userId);
-
-        @POST("picture")
-        Call<ApiUser.Profile> savePicture(@Path("userId") long userId);
 
         @FormUrlEncoded
         @POST("{userId}")

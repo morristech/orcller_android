@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -37,6 +38,7 @@ import retrofit.Call;
 public class IGImagePickerActivity extends PSActionBarActivity
         implements AdapterView.OnItemClickListener, View.OnClickListener {
     private static final int FOLLOWING_LOAD_LIMIT = 50;
+    private int choiceMode;
     private List<ApiInstagram.User> items = new ArrayList<>();
     private Button popularButton;
     private ListView listView;
@@ -52,10 +54,10 @@ public class IGImagePickerActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_instagram_imagepicker);
-
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getString(R.string.w_instagram_photos));
 
+        choiceMode = getIntent().getIntExtra(MediaGridActivity.CHOICE_MODE_KEY, AbsListView.CHOICE_MODE_MULTIPLE);
         listView = (ListView) findViewById(R.id.listView);
         popularButton = (Button) findViewById(R.id.popularButton);
         listAdapter = new ListAdapter(this);
@@ -65,7 +67,6 @@ public class IGImagePickerActivity extends PSActionBarActivity
         popularButton.setOnClickListener(this);
         popularButton.setEnabled(InstagramApplicationCenter.getDefault().hasSession());
         load();
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -87,7 +88,6 @@ public class IGImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        EventBus.getDefault().unregister(this);
         ProgressBarManager.hide(this);
         listView.setOnItemClickListener(null);
         popularButton.setOnClickListener(null);
@@ -108,28 +108,28 @@ public class IGImagePickerActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static void show(int choiceMode) {
+        Intent intent = new Intent(Application.applicationContext(), IGImagePickerActivity.class);
+        intent.putExtra(MediaGridActivity.CHOICE_MODE_KEY, choiceMode);
+        Application.getTopActivity().startActivity(intent);
+    }
+
+    // ================================================================================================
     //  Listener
     // ================================================================================================
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, IGPopularMediaGridActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Application.getTopActivity().startActivity(intent);
+        IGPopularMediaGridActivity.show(choiceMode);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (view instanceof IGImagePickerItemView) {
-            IGMediaGridActivity.startActivity(((IGImagePickerItemView) view).getModel());
-        }
-    }
-
-    public void onEventMainThread(Object event) {
-        if (event instanceof ImagePickerEvent &&
-                ((ImagePickerEvent) event).getType().equals(ImagePickerEvent.COMPLETE_SELECTION)) {
-            finish();
-        }
+        if (view instanceof IGImagePickerItemView)
+            IGMediaGridActivity.show(((IGImagePickerItemView) view).getModel(), choiceMode);
     }
 
     // ================================================================================================

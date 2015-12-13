@@ -3,11 +3,12 @@ package com.orcller.app.orcller.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -17,6 +18,7 @@ import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Page;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -25,10 +27,8 @@ import pisces.psuikit.ext.PSGridView;
 /**
  * Created by pisces on 12/1/15.
  */
-public class AlbumPageGridActivity extends PSActionBarActivity
-        implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class AlbumPageGridActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
     protected static final String ALBUM_KEY = "album";
-    protected Button doneButton;
     protected GridViewAdapter gridViewAdapter;
     protected PSGridView gridView;
     private Album model;
@@ -45,14 +45,31 @@ public class AlbumPageGridActivity extends PSActionBarActivity
         setContentView(R.layout.activity_album_pagegrid);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
 
-        doneButton = (Button) findViewById(R.id.doneButton);
         gridView = (PSGridView) findViewById(R.id.gridView);
         gridViewAdapter = new GridViewAdapter(this);
 
         gridView.setAdapter(gridViewAdapter);
         gridView.setOnItemClickListener(this);
-        doneButton.setOnClickListener(this);
         setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Application.getTopActivity().getMenuInflater().inflate(R.menu.menu_album_info_edit, menu);
+        getDoneItem().setEnabled(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.done:
+                EventBus.getDefault().post(new PageListEvent(PageListEvent.PAGE_EDIT_COMPLETE, this, clonedModel));
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -60,23 +77,15 @@ public class AlbumPageGridActivity extends PSActionBarActivity
         super.onDestroy();
 
         gridView.setOnItemClickListener(null);
-        doneButton.setOnClickListener(null);
 
         gridView = null;
         gridViewAdapter = null;
-        doneButton = null;
         model = null;
     }
 
     // ================================================================================================
     //  Listener
     // ================================================================================================
-
-    @Override
-    public void onClick(View v) {
-        EventBus.getDefault().post(new PageListEvent(PageListEvent.PAGE_EDIT_COMPLETE, this, clonedModel));
-        finish();
-    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -88,6 +97,10 @@ public class AlbumPageGridActivity extends PSActionBarActivity
 
     protected Album getClonedModel() {
         return clonedModel;
+    }
+
+    protected MenuItem getDoneItem() {
+        return getToolbar().getMenu().findItem(R.id.done);
     }
 
     protected Album getModel() {

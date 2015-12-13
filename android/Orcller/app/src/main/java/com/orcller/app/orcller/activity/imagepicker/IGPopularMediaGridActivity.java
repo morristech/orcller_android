@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.activity.imagepicker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -10,6 +11,7 @@ import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.instagram.sdk.error.InstagramSDKError;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
+import pisces.psfoundation.ext.Application;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Call;
 
@@ -59,6 +61,16 @@ public class IGPopularMediaGridActivity extends MediaGridActivity
     protected void loadMore(int position) {
         if (lastRes != null && lastRes.getPagination().hasNext() && position >= items.size() - 9)
             load(lastRes.pagination.next_max_id);
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static void show(int choiceMode) {
+        Intent intent = new Intent(Application.applicationContext(), IGPopularMediaGridActivity.class);
+        intent.putExtra(CHOICE_MODE_KEY, choiceMode);
+        Application.getTopActivity().startActivity(intent);
     }
 
     // ================================================================================================

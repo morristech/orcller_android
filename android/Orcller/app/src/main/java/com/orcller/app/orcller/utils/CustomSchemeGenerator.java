@@ -3,11 +3,13 @@ package com.orcller.app.orcller.utils;
 import android.text.Html;
 import android.text.Spannable;
 
+import com.amazonaws.util.StringUtils;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
@@ -164,10 +166,29 @@ public class CustomSchemeGenerator {
         return SCHEMA + "://" + category.getValue() + "/" + String.valueOf(viewType) + "?" + MapUtils.toQueryString(param);
     }
 
-    public static CharSequence createUserProfileHtml(BaseUser user) {
-        String tag = "<a href=\"" + createUserProfile(user) + "\" >" + user.user_id + "</a>";
+    public static CharSequence createContributorsHtml(User master, List users) {
+        String masterLink = createLinkTag(master);
+        String[] links = new String[users.size()];
+        int i = 0;
+
+        for (Object object : users) {
+            BaseUser user = (BaseUser) object;
+            links[i++] = createLinkTag(user);
+        }
+
+        String link = masterLink + (users.size() > 0 ? " with " + StringUtils.join(", ", links) : "");
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(
-                Html.fromHtml(tag));
+                Html.fromHtml(link));
+        return HtmlUtils.removeUnderlines(spannable);
+    }
+
+    public static String createLinkTag(BaseUser user) {
+        return "<a href=\"" + createUserProfile(user) + "\" ><b>" + user.user_id + "</b></a>";
+    }
+
+    public static CharSequence createUserProfileHtml(BaseUser user) {
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(
+                Html.fromHtml(createLinkTag(user)));
         return HtmlUtils.removeUnderlines(spannable);
     }
 

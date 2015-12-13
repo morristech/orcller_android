@@ -1,10 +1,10 @@
 package pisces.psuikit.ext;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.MenuItem;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.DataLoadValidator;
@@ -50,6 +50,12 @@ public class PSActionBarActivity extends ActionBarActivity implements DataLoadVa
         super.onDestroy();
 
         toolbar = null;
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        super.startActivity(intent);
     }
 
     // ================================================================================================

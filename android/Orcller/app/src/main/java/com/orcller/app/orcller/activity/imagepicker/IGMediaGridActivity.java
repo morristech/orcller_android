@@ -48,9 +48,9 @@ public class IGMediaGridActivity extends MediaGridActivity {
     //  Public
     // ================================================================================================
 
-    public static void startActivity(ApiInstagram.User user) {
+    public static void show(ApiInstagram.User user, int choiceMode) {
         Intent intent = new Intent(Application.applicationContext(), IGMediaGridActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(CHOICE_MODE_KEY, choiceMode);
         intent.putExtra(USER_KEY, user);
         Application.getTopActivity().startActivity(intent);
     }

@@ -2,6 +2,7 @@ package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.AbsListView;
 
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.facebook.FBAlbum;
@@ -51,10 +52,10 @@ public class FBMediaGridActivity extends MediaGridActivity {
     //  Public
     // ================================================================================================
 
-    public static void startActivity(FBAlbum album) {
+    public static void show(FBAlbum album, int choiceMode) {
         Intent intent = new Intent(Application.applicationContext(), FBMediaGridActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ALBUM_KEY, album);
+        intent.putExtra(CHOICE_MODE_KEY, choiceMode);
         Application.getTopActivity().startActivity(intent);
     }
 

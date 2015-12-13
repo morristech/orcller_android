@@ -42,7 +42,7 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
     private User model;
     private ProfileHearderView profileHearderView;
     private ProfileContentView profileContentView;
-    private List<UserDataGridFragment> fragments;
+    private List<Class<? extends UserDataGridFragment>> fragments;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -89,11 +89,11 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
         switch (item.getItemId()) {
             case R.id.save:
                 profileHearderView.save();
-                return false;
+                return true;
 
             case R.id.options:
                 //TODO: open options activity
-                return false;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -132,7 +132,7 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
     /**
      * ProfileContentView.DataSource
      */
-    public List<UserDataGridFragment> getFragments() {
+    public List<Class<? extends UserDataGridFragment>> getFragments() {
         return fragments;
     }
 
@@ -164,10 +164,10 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
         profileContentView.setVisibility(View.VISIBLE);
     }
 
-    protected List<UserDataGridFragment> createFragments() {
+    protected List<Class<? extends UserDataGridFragment>> createFragments() {
         if (User.isMe(userId))
-            return Arrays.asList(new UserAlbumGridFragment(), new UserAlbumStarGridFragment(), new UserMediaGridFragment());
-        return Arrays.asList(new UserAlbumGridFragment(), new UserMediaGridFragment());
+            return Arrays.asList(UserAlbumGridFragment.class, UserAlbumStarGridFragment.class, UserMediaGridFragment.class);
+        return Arrays.asList(UserAlbumGridFragment.class, UserMediaGridFragment.class);
     }
 
     // ================================================================================================
