@@ -17,7 +17,7 @@ public class ApiResult<T> extends Model {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -29,6 +29,6 @@ public class ApiResult<T> extends Model {
     public T entity;
 
     public boolean isSuccess() {
-        return this.code == ApiResultCode.Ok.getValue();
+        return this.code == ApiResultCode.Ok.value();
     }
 }

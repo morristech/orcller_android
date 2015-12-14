@@ -3,6 +3,7 @@ package com.orcller.app.orcller.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -70,7 +71,9 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private static final int PAGE_COUNT_MIN = 1;
     private int selectedIndexForAppending;
     private int processCountForAppending;
+    private AsyncTask asyncTask;
     private Validator validator;
+    private Album model;
     private LinearLayout rootLayout;
     private PSScrollView scrollView;
     private FrameLayout spinnerContainer;
@@ -87,7 +90,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private DescriptionInputView descriptionInputView;
     private AlbumFlipView albumFlipView;
     private AlbumGridView albumGridView;
-    private Album model;
+
     protected Album clonedModel;
 
     // ================================================================================================
@@ -184,6 +187,11 @@ public class AlbumCreateActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
+        if (asyncTask != null) {
+            asyncTask.cancel(false);
+            asyncTask = null;
+        }
+
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
         spinner.setOnItemSelectedListener(null);
@@ -269,12 +277,11 @@ public class AlbumCreateActivity extends PSActionBarActivity
             final Album model = (Album) casted.getObject();
 
             if (casted.getType() == PageListEvent.PAGE_EDIT_COMPLETE) {
-                Application.run(new Runnable() {
+                asyncTask = Application.run(new Runnable() {
                     @Override
                     public void run() {
                         clonedModel.removeAllPages();
 
-                        Log.d("model.pages.data", model.pages.data.size());
                         for (Page page : model.pages.data) {
                             clonedModel.addPage(page);
                         }
@@ -286,6 +293,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
                         reload();
                         setPostItemEnabled();
                         setOtherButtonsEnabled();
+                        asyncTask = null;
                     }
                 });
             } else if (casted.getType() == PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE) {
@@ -473,7 +481,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
         albumGridView.setModel(clonedModel);
         albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
-        scrollView.setBackgroundResource(spinnerContainer.isShown() ? 0 : R.drawable.background_bordered_lightgray);
+        scrollView.setBackgroundResource(spinnerContainer.getVisibility() == View.VISIBLE ? 0 : R.drawable.background_bordered_lightgray);
         scrollView.setVisibility(View.VISIBLE);
         buttonContainer.setVisibility(View.VISIBLE);
         setOtherButtonsEnabled();
@@ -572,6 +580,10 @@ public class AlbumCreateActivity extends PSActionBarActivity
                 getString(R.string.w_yes)
         );
     }
+
+    // ================================================================================================
+    //  Interface: AppendPage
+    // ================================================================================================
 
     private interface AppendPage {
         void append(Page page);

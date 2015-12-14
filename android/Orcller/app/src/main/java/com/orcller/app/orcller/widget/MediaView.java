@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,7 +47,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -56,13 +55,13 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     private boolean clickEnabled;
     private boolean scaleAspectFill = true;
     private int imageLoadType;
-    private Drawable placeholder;
-    private ImageView emptyImageView;
-    private Media model;
     protected Point imageSize;
+    private Drawable placeholder;
+    private Media model;
+    protected Delegate delegate;
+    private ImageView emptyImageView;
     protected ImageView imageView;
     protected ProgressBar progressBar;
-    protected Delegate delegate;
 
     public MediaView(Context context) {
         super(context);
@@ -82,19 +81,19 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        emptyImageView = new ImageView(context);
-        imageView = new ImageView(context);
+        inflate(context, R.layout.view_media, this);
 
-        TypedArray typedArray = context.obtainStyledAttributes(
-                attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
+        imageView = (ImageView) findViewById(R.id.imageView);
+        emptyImageView = (ImageView) findViewById(R.id.emptyImageView);
 
-        setImageLoadType(typedArray.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.getValue()));
-        setPlaceholder(typedArray.getDrawable(R.styleable.MediaView_placeholder));
-        imageView.setAdjustViewBounds(true);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        emptyImageView.setVisibility(GONE);
-        addView(imageView);
-        addView(emptyImageView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
+        try {
+            setImageLoadType(ta.getInt(R.styleable.MediaView_imageLoadType, ImageLoadType.Thumbnail.value()));
+            setPlaceholder(ta.getDrawable(R.styleable.MediaView_placeholder));
+        } finally {
+            ta.recycle();
+        }
+
         setProgressBar(new ProgressBar(context, null, android.R.attr.progressBarStyleSmall));
     }
 
@@ -237,6 +236,9 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         imageView.setImageDrawable(drawable);
     }
 
+    protected void onError() {
+    }
+
     protected void onStartImageLoad() {
         Glide.clear(imageView);
 
@@ -249,15 +251,15 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     // ================================================================================================
 
     private boolean canLoadLowResolution() {
-        return (imageLoadType & ImageLoadType.LowResolution.getValue()) == ImageLoadType.LowResolution.getValue();
+        return (imageLoadType & ImageLoadType.LowResolution.value()) == ImageLoadType.LowResolution.value();
     }
 
     private boolean canLoadStandardResolution() {
-        return (imageLoadType & ImageLoadType.StandardResoultion.getValue()) == ImageLoadType.StandardResoultion.getValue();
+        return (imageLoadType & ImageLoadType.StandardResoultion.value()) == ImageLoadType.StandardResoultion.value();
     }
 
     private boolean canLoadThumbnail() {
-        return (imageLoadType & ImageLoadType.Thumbnail.getValue()) == ImageLoadType.Thumbnail.getValue();
+        return (imageLoadType & ImageLoadType.Thumbnail.value()) == ImageLoadType.Thumbnail.value();
     }
 
     private void loadImage(Image image, final CompleteHandler completeHandler) {
@@ -295,8 +297,9 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
                         @Override
                         public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
                             if (BuildConfig.DEBUG)
-                                Log.e(e.getMessage(), e);
+                                Log.e("onException", e, model);
 
+                            onError();
                             handler.onError();
                             return true;
                         }

@@ -19,7 +19,7 @@ public class InstagramSDKError extends Error {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -55,7 +55,7 @@ public class InstagramSDKError extends Error {
     public InstagramSDKError(Code code, Message detailMessage) {
         super(detailMessage.getValue());
 
-        this.code = code.getValue();
+        this.code = code.value();
     }
 
     public int getCode() {

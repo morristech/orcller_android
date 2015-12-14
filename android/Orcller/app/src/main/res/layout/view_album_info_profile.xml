@@ -24,7 +24,6 @@
                 android:id="@+id/idTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@drawable/background_tab_profile_content"
                 android:clickable="true"
                 android:textColorLink="@color/textcolor_dark_blue"
@@ -35,6 +34,7 @@
                 android:id="@+id/dateTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="right|center_vertical"
                 android:textColor="@color/textcolor_pageprofile_date"
                 android:textSize="11dp"/>

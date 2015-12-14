@@ -26,6 +26,9 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import static com.orcller.app.orcller.BuildConfig.DEBUG;
+import static pisces.psfoundation.utils.Log.e;
+
 /**
  * Created by pisces on 12/11/15.
  */
@@ -194,8 +197,8 @@ public class ProfileContentView extends PSTabHost
                         button.setText(getTabTitle(response.body().entity, i));
                     }
                 } else {
-                    if (BuildConfig.DEBUG)
-                        Log.e("Api Error", response.body());
+                    if (DEBUG)
+                        e("Api Error", response.body());
                 }
             }
 

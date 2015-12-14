@@ -88,7 +88,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         allowsShowPageCount = true;
         pageIndex = -1;
-        imageLoadType = MediaView.ImageLoadType.LowResolution.getValue();
+        imageLoadType = MediaView.ImageLoadType.LowResolution.value();
         visibleViews = new ArrayList<>();
         background = new View(context);
         container = new PSFrameLayout(context);

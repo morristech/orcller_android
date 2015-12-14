@@ -127,6 +127,14 @@ public class Model implements Cloneable, Serializable {
     }
 
     public void synchronize(final Model other, final Runnable runnable) {
+        synchronize(other, null, false);
+    }
+
+    public void synchronize(final Model other, boolean postEnabled) {
+        synchronize(other, null, postEnabled);
+    }
+
+    public void synchronize(final Model other, final Runnable runnable, final boolean postEnabled) {
         if (!this.getClass().equals(other.getClass()) || other == null)
             return;
 
@@ -150,7 +158,8 @@ public class Model implements Cloneable, Serializable {
         }, new Runnable() {
             @Override
             public void run() {
-                EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, self));
+                if (postEnabled)
+                    EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, self));
 
                 if (runnable != null)
                     runnable.run();

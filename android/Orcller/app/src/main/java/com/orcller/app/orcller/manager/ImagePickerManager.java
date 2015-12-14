@@ -17,7 +17,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
 
@@ -80,7 +79,7 @@ public class ImagePickerManager {
 
         new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.WhiteThemeAlertDialog))
                 .setCancelable(true)
-                .setTitle(R.string.w_add_dialog_title)
+                .setTitle(R.string.w_title_add_dialog)
                 .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         openImagePicker(which, choiceMode);

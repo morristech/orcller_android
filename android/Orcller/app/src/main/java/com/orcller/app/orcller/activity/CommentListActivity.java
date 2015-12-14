@@ -3,30 +3,23 @@ package com.orcller.app.orcller.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Comments;
-import com.orcller.app.orcller.model.api.ApiAlbum;
-import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 /**
  * Created by pisces on 12/10/15.
@@ -48,13 +41,13 @@ public class CommentListActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_comment_list);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle(null);
 
         rootLayout = (LinearLayout) findViewById(R.id.rootLayout);
         commentListView = (CommentListView) findViewById(R.id.commentListView);
         commentInputView = (CommentInputView) findViewById(R.id.commentInputView);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(null);
         commentListView.setDelegate(this);
         commentListView.setSortDirection(CommentListView.SortDirection.Top);
         commentInputView.setDelegate(this);
@@ -72,7 +65,7 @@ public class CommentListActivity extends PSActionBarActivity
         }
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) commentListView.getLayoutParams();
-        params.bottomMargin = commentInputView.isShown() ? commentInputView.getHeight() : 0;
+        params.bottomMargin = commentInputView.getVisibility() == View.VISIBLE ? commentInputView.getHeight() : 0;
     }
 
     @Override
@@ -104,7 +97,7 @@ public class CommentListActivity extends PSActionBarActivity
     }
 
     /**
-     * CommentListView delegate
+     * CommentListView.Delegate
      */
     public void onChange(Comments comments) {
         model.comments.participated = comments.participated;
@@ -114,60 +107,10 @@ public class CommentListActivity extends PSActionBarActivity
     }
 
     /**
-     * CommentInputView delegate
+     * CommentInputView.Delegate
      */
-    public void onClickPostButton() {
-        if (invalidDataLoading())
-            return;
-
-        commentInputView.clearFocus();
-        ProgressBarManager.show(this);
-
-        String message = commentInputView.getText().toString().trim();
-        final Runnable error = new Runnable() {
-            @Override
-            public void run() {
-                AlertDialogUtils.retry(R.string.m_fail_comment, new Runnable() {
-                    @Override
-                    public void run() {
-                        onClickPostButton();
-                    }
-                });
-            }
-        };
-
-        AlbumDataProxy.getDefault().comment(model.id, message, new Callback<ApiAlbum.CommentsRes>() {
-            @Override
-            public void onResponse(Response<ApiAlbum.CommentsRes> response, Retrofit retrofit) {
-                endDataLoading();
-
-                if (response.isSuccess() && response.body().isSuccess()) {
-                    commentInputView.clear();
-                    commentListView.add(response.body().entity);
-                    model.comments.synchronize(response.body().entity, new Runnable() {
-                        @Override
-                        public void run() {
-                            updateTitle();
-                            commentListView.scrollTo(0, 0);
-                        }
-                    });
-                } else {
-                    if (BuildConfig.DEBUG)
-                        Log.e("Api Error", response.body());
-
-                    error.run();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                if (BuildConfig.DEBUG)
-                    Log.e("onFailure", t);
-
-                endDataLoading();
-                error.run();
-            }
-        });
+    public void onCompletePost(CommentInputView commentInputView, Comments comments) {
+        commentListView.add(comments);
     }
 
     // ================================================================================================
@@ -186,6 +129,7 @@ public class CommentListActivity extends PSActionBarActivity
     private void modelChanged() {
         updateTitle();
         commentListView.setModel(model);
+        commentInputView.setModel(model.comments, model.id);
     }
 
     private void updateTitle() {

@@ -23,6 +23,7 @@ import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
@@ -77,6 +78,9 @@ public class PageListActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_pagelist);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle(getString(R.string.w_title_edit_page));
 
         rootLayout = (LinearLayout) findViewById(R.id.rootLayout);
         toolbarTextView = (TextView) findViewById(R.id.toolbarTextView);
@@ -87,13 +91,11 @@ public class PageListActivity extends PSActionBarActivity
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setTitle(getString(R.string.w_title_edit_page));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnPageChangedListener(this);
         recyclerView.addOnScrollListener(new OnScrollListener());
+        commentInputView.setCommentType(CommentInputView.COMMENT_TYPE_PAGE);
         commentInputView.setDelegate(this);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         SoftKeyboardNotifier.getDefault().register(this);
@@ -200,84 +202,6 @@ public class PageListActivity extends PSActionBarActivity
     // ================================================================================================
 
     /**
-     * PageScrollView delegate
-     */
-    public void onClickCommentButton(PageScrollView target) {
-        commentInputView.setFocus();
-    }
-
-    public void onClickHeartButton(PageScrollView target) {
-        if (invalidDataLoading())
-            return;
-
-        final Page page = selectedView.getModel();
-
-        AlbumDataProxy.getDefault().likeOfPage(page, new Callback<ApiAlbum.LikesRes>() {
-            @Override
-            public void onResponse(Response<ApiAlbum.LikesRes> response, Retrofit retrofit) {
-                endDataLoading();
-
-                if (response.isSuccess() && response.body().isSuccess()) {
-                    page.likes.synchronize(response.body().entity);
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                endDataLoading();
-            }
-        });
-
-        page.likes.participated();
-        selectedView.updateButtons();
-    }
-
-    public void onClickMediaView(PageScrollView target, MediaView mediaView) {
-        MediaListActivity.show(mediaList, selectedIndex);
-    }
-
-    /**
-     * CommentInputView delegate
-     */
-    public void onClickPostButton() {
-        if (invalidDataLoading())
-            return;
-
-        commentInputView.clearFocus();
-        ProgressBarManager.show(this);
-
-        String message = commentInputView.getText().toString().trim();
-        final Page page = selectedView.getModel();
-        final Runnable retry = new Runnable() {
-            @Override
-            public void run() {
-                onClickPostButton();
-            }
-        };
-
-        AlbumDataProxy.getDefault().commentOfPage(page.id, message, new Callback<ApiAlbum.CommentsRes>() {
-            @Override
-            public void onResponse(Response<ApiAlbum.CommentsRes> response, Retrofit retrofit) {
-                endDataLoading();
-
-                if (response.isSuccess() && response.body().isSuccess()) {
-                    commentInputView.clear();
-                    page.comments.synchronize(response.body().entity);
-                    selectedView.addComments(response.body().entity);
-                } else {
-                    AlertDialogUtils.retry(R.string.m_fail_comment, retry);
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                endDataLoading();
-                AlertDialogUtils.retry(R.string.m_fail_comment, retry);
-            }
-        });
-    }
-
-    /**
      * EventBus listener
      */
     public void onEventMainThread(Object event) {
@@ -306,6 +230,50 @@ public class PageListActivity extends PSActionBarActivity
     }
 
     /**
+     * PageScrollView.Delegate
+     */
+    public void onClickCommentButton(PageScrollView target) {
+        commentInputView.setFocus();
+    }
+
+    public void onClickHeartButton(PageScrollView target) {
+        if (invalidDataLoading())
+            return;
+
+        final Page page = selectedView.getModel();
+
+        AlbumDataProxy.getDefault().likeOfPage(page, new Callback<ApiAlbum.LikesRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.LikesRes> response, Retrofit retrofit) {
+                endDataLoading();
+
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    page.likes.synchronize(response.body().entity, true);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                endDataLoading();
+            }
+        });
+
+        page.likes.participated();
+        selectedView.updateButtons();
+    }
+
+    public void onClickMediaView(PageScrollView target, MediaView mediaView) {
+        MediaListActivity.show(mediaList, selectedIndex);
+    }
+
+    /**
+     * CommentInputView.Delegate
+     */
+    public void onCompletePost(CommentInputView commentInputView, Comments comments) {
+        selectedView.addComments(comments);
+    }
+
+    /**
      * PSRecyclerViewPager listener
      */
     public void OnPageChanged(int oldPosition, int newPosition) {
@@ -316,8 +284,10 @@ public class PageListActivity extends PSActionBarActivity
         if (selectedView == null) {
             RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(selectedIndex);
 
-            if (viewHolder != null)
+            if (viewHolder != null) {
                 selectedView = (PageScrollView) viewHolder.itemView;
+                commentInputView.setModel(selectedView.getModel().comments, selectedView.getModel().id);
+            }
 
             if (!initialSelection)
                 EventBus.getDefault().post(new IndexChangeEvent(
@@ -406,7 +376,7 @@ public class PageListActivity extends PSActionBarActivity
                 endDataLoading();
 
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    selectedView.getModel().synchronize(page);
+                    selectedView.getModel().synchronize(page, true);
                     setEditEnabled();
                 } else {
                     error.run();
@@ -442,7 +412,7 @@ public class PageListActivity extends PSActionBarActivity
 
     private void setRecyclerViewLayout() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
-        params.bottomMargin = commentInputView.isShown() ? commentInputView.getHeight() : 0;
+        params.bottomMargin = commentInputView.getVisibility() == View.VISIBLE ? commentInputView.getHeight() : 0;
     }
 
     private void stopSelectedVideoMediaView() {
@@ -463,7 +433,7 @@ public class PageListActivity extends PSActionBarActivity
                 if (clonedPage.id > 0) {
                     requestUpdatePage(clonedPage);
                 } else {
-                    selectedView.getModel().synchronize(clonedPage);
+                    selectedView.getModel().synchronize(clonedPage, true);
                     setEditEnabled();
                 }
             }

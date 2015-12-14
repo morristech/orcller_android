@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
-import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GsonUtil;
 import retrofit.Call;
 import retrofit.Callback;
@@ -124,7 +123,7 @@ public class AuthenticationCenter {
 
                         if (error == null) {
                             ApiMember.LoginWithIdpReq req = new ApiMember.LoginWithIdpReq();
-                            req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
+                            req.idp_type = ApiMember.IDProviderType.Facebook.value();
                             req.idp_user_id = result.id;
 
                             login(req, new Api.CompleteHandler() {
@@ -250,7 +249,7 @@ public class AuthenticationCenter {
                     if (completeHandler != null)
                         completeHandler.run();
                 }
-            });
+            }, true);
         } else {
             this.user = user;
 
@@ -280,7 +279,7 @@ public class AuthenticationCenter {
                     public void onComplete(final FBUser result, APIError error) {
                         if (error == null) {
                             ApiMember.SyncWithIdpReq req = new ApiMember.SyncWithIdpReq();
-                            req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
+                            req.idp_type = ApiMember.IDProviderType.Facebook.value();
                             req.idp_user_id = result.id;
 
                             syncWithIdp(req, new Api.CompleteHandler() {

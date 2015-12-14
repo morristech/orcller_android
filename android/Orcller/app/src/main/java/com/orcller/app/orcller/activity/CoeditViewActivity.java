@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -16,14 +15,12 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
+import com.orcller.app.orcller.widget.CoeditButton;
 import com.orcller.app.orcller.widget.CommentInputView;
-import com.orcller.app.orcller.widget.CommentListView;
-import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import com.orcller.app.orcller.widget.ContributorListView;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
@@ -42,22 +39,20 @@ import static com.orcller.app.orcller.BuildConfig.DEBUG;
 import static pisces.psfoundation.utils.Log.e;
 
 /**
- * Created by pisces on 12/7/15.
+ * Created by pisces on 12/14/15.
  */
-public class AlbumViewActivity extends PSActionBarActivity
-        implements AlbumItemViewDelegate.Invoker, CommentInputView.Delegate,
-        CommentListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+public class CoeditViewActivity extends PSActionBarActivity
+        implements AlbumItemViewDelegate.Invoker, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
-    private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
     private Album model;
-    private AlbumOptionsManager albumOptionsManager;
     private AlbumItemViewDelegate albumItemViewDelegate;
+    private AlbumOptionsManager albumOptionsManager;
     private LinearLayout rootLayout;
     private PSScrollView scrollView;
     private AlbumItemView albumItemView;
-    private CommentListView commentListView;
-    private CommentInputView commentInputView;
+    private ContributorListView contributorListView;
+    private CoeditButton coeditButton;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -67,30 +62,22 @@ public class AlbumViewActivity extends PSActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_album_view);
+        setContentView(R.layout.activity_coedit_view);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
 
+        albumItemViewDelegate = new AlbumItemViewDelegate(this);
         rootLayout = (LinearLayout) findViewById(R.id.rootLayout);
         scrollView = (PSScrollView) findViewById(R.id.scrollView);
         albumItemView = (AlbumItemView) findViewById(R.id.albumItemView);
-        commentListView = (CommentListView) findViewById(R.id.commentListView);
-        commentInputView = (CommentInputView) findViewById(R.id.commentInputView);
-        albumItemViewDelegate = new AlbumItemViewDelegate(this);
+        contributorListView = (ContributorListView) findViewById(R.id.contributorListView);
+        coeditButton = (CoeditButton) findViewById(R.id.button);
 
         albumItemView.setDelegate(albumItemViewDelegate);
-        commentListView.setDelegate(this);
-        commentInputView.setDelegate(this);
+        albumItemView.setButtonVisiblity(AlbumItemView.HEART | AlbumItemView.COMMENT | AlbumItemView.STAR);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         SoftKeyboardNotifier.getDefault().register(this);
         EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -101,11 +88,8 @@ public class AlbumViewActivity extends PSActionBarActivity
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        setScrollViewLayout();
-
         if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
             setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
-            setAllowsCommentInputFocus(getIntent().getBooleanExtra(ALLOWS_COMMENT_INPUT_FOCUS, false));
         } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
             load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
         }
@@ -137,11 +121,10 @@ public class AlbumViewActivity extends PSActionBarActivity
         ProgressBarManager.hide(this);
 
         rootLayout = null;
-        scrollView = null;
         albumItemView = null;
-        commentListView = null;
-        commentInputView = null;
         albumOptionsManager = null;
+        contributorListView = null;
+        coeditButton = null;
     }
 
     @Override
@@ -155,17 +138,15 @@ public class AlbumViewActivity extends PSActionBarActivity
     //  Public
     // ================================================================================================
 
-    public static void show(Album album, boolean allowsCommentInputFocus) {
-        Intent intent = new Intent(Application.applicationContext(), AlbumViewActivity.class);
+    public static void show(Album album) {
+        Intent intent = new Intent(Application.applicationContext(), CoeditViewActivity.class);
         intent.putExtra(ALBUM_KEY, album);
-        intent.putExtra(ALLOWS_COMMENT_INPUT_FOCUS, allowsCommentInputFocus);
         Application.getTopActivity().startActivity(intent);
     }
 
-    public static void show(long albumId, boolean allowsCommentInputFocus) {
-        Intent intent = new Intent(Application.applicationContext(), AlbumViewActivity.class);
+    public static void show(long albumId) {
+        Intent intent = new Intent(Application.applicationContext(), CoeditViewActivity.class);
         intent.putExtra(ALBUM_ID_KEY, albumId);
-        intent.putExtra(ALLOWS_COMMENT_INPUT_FOCUS, allowsCommentInputFocus);
         Application.getTopActivity().startActivity(intent);
     }
 
@@ -185,28 +166,11 @@ public class AlbumViewActivity extends PSActionBarActivity
     }
 
     /**
-     * CommentListView.Delegate
-     */
-    public void onChange(Comments comments) {
-        model.comments.participated = comments.participated;
-        model.comments.total_count = comments.total_count;
-
-        albumItemView.updateDisplayList();
-    }
-
-    /**
-     * CommentInputView.Delegate
-     */
-    public void onCompletePost(CommentInputView commentInputView, Comments comments) {
-        commentListView.add(comments);
-        scrollView.pageScroll(View.FOCUS_DOWN);
-    }
-
-    /**
      * AlbumItemViewDelete.DataSource
      */
     public CommentInputView getCommentInputView() {
-        return commentInputView;
+        CommentListActivity.show(model);
+        return null;
     }
 
     public PSScrollView getScrollView() {
@@ -216,11 +180,6 @@ public class AlbumViewActivity extends PSActionBarActivity
     // ================================================================================================
     //  Private
     // ================================================================================================
-
-    private void setAllowsCommentInputFocus(boolean focus) {
-        if (focus)
-            commentInputView.setFocus();
-    }
 
     private void setModel(Album model) {
         if (ObjectUtils.equals(model, this.model))
@@ -264,15 +223,15 @@ public class AlbumViewActivity extends PSActionBarActivity
         albumOptionsManager = new AlbumOptionsManager(this, model);
         getSupportActionBar().setTitle(model.name);
         albumItemView.setModel(model);
-        commentListView.setModel(model);
-        commentInputView.setModel(model.comments, model.id);
-        setScrollViewLayout();
+        contributorListView.setModel(model);
         scrollView.setVisibility(View.VISIBLE);
         invalidateOptionsMenu();
-    }
 
-    private void setScrollViewLayout() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollView.getLayoutParams();
-        params.bottomMargin = commentInputView.getVisibility() == View.VISIBLE ? commentInputView.getHeight() : 0;
+        try {
+            coeditButton.setModel(model);
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                Log.e(e.getMessage());
+        }
     }
 }

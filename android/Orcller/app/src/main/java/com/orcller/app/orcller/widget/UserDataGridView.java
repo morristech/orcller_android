@@ -28,6 +28,9 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import static com.orcller.app.orcller.BuildConfig.DEBUG;
+import static pisces.psfoundation.utils.Log.e;
+
 /**
  * Created by pisces on 12/11/15.
  */
@@ -35,10 +38,10 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     private int listCountAtOnce;
     private ArrayList<Model> items = new ArrayList<>();
     private Class itemViewClass;
-    private GridViewAdapter gridViewAdapter;
     private DataSource dataSource;
     private Delegate delegate;
     private ListEntity lastEntity;
+    private GridViewAdapter gridViewAdapter;
 
     public UserDataGridView(Context context) {
         super(context);
@@ -170,8 +173,8 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
                                 }
                             });
                         } else {
-                            if (BuildConfig.DEBUG)
-                                Log.e("Api Error", response.body());
+                            if (DEBUG)
+                                e("Api Error", response.body());
                         }
                     }
 

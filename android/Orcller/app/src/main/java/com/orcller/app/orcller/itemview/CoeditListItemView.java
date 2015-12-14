@@ -1,25 +1,24 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.method.MovementMethod;
-import android.text.util.Linkify;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.Coedit;
+import com.orcller.app.orcller.model.album.Contributors;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.CoeditButton;
 
 import pisces.psfoundation.utils.DateUtil;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 import pisces.psuikit.ext.PSTextView;
@@ -27,7 +26,7 @@ import pisces.psuikit.ext.PSTextView;
 /**
  * Created by pisces on 12/13/15.
  */
-public class CoeditListItemView extends PSLinearLayout {
+public class CoeditListItemView extends PSLinearLayout implements CoeditButton.Delegate {
     private Coedit model;
     private ImageView imageView;
     private ImageView lockIcon;
@@ -64,6 +63,7 @@ public class CoeditListItemView extends PSLinearLayout {
         coeditButton = (CoeditButton) findViewById(R.id.coeditButton);
 
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        coeditButton.setDelegate(this);
         contributorsTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -85,6 +85,21 @@ public class CoeditListItemView extends PSLinearLayout {
     }
 
     // ================================================================================================
+    //  Listener
+    // ================================================================================================
+
+    /**
+     * CoeditButton.Delegate
+     */
+    public void onChange(CoeditButton target, Contributors contributors) {
+        updateContributorsTextView();
+    }
+
+    public void onSync(CoeditButton target, Contributors contributors) {
+        updateContributorsTextView();
+    }
+
+    // ================================================================================================
     //  Private
     // ================================================================================================
 
@@ -95,8 +110,18 @@ public class CoeditListItemView extends PSLinearLayout {
         titleTextView.setText(model.name);
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         lockIcon.setVisibility(model.isMine() ||
-                model.permission == Album.Permission.Private.getValue() ? GONE : VISIBLE);
-        coeditButton.setModel(model);
+                model.permission == Album.Permission.Private.value() ? GONE : VISIBLE);
+        updateContributorsTextView();
+
+        try {
+            coeditButton.setModel(model);
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                Log.d(e.getMessage(), e);
+        }
+    }
+
+    private void updateContributorsTextView() {
         contributorsTextView.setText(CustomSchemeGenerator.createContributorsHtml(model.getUser(), model.contributors.data));
         contributorsTextView.setVisibility(TextUtils.isEmpty(contributorsTextView.getText()) ? GONE : VISIBLE);
     }

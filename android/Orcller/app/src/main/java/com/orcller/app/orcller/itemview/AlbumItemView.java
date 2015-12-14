@@ -10,8 +10,10 @@ import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.album.Coedit;
 import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.album.Contributors;
 import com.orcller.app.orcller.model.album.Favorites;
@@ -30,6 +32,11 @@ import pisces.psuikit.widget.PSButton;
  * Created by pisces on 12/6/15.
  */
 public class AlbumItemView extends PSLinearLayout implements View.OnClickListener {
+    public static final int COEDIT = 1<<0;
+    public static final int HEART = 1<<1;
+    public static final int COMMENT = 1<<2;
+    public static final int STAR = 1<<3;
+
     public enum ButtonType {
         None,
         Coedit,
@@ -43,6 +50,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     }
 
     private boolean allowsShowOptionIcon;
+    private int buttonVisiblity = COEDIT | HEART | COMMENT | STAR;
     private Album model;
     private Delegate delegate;
     private AlbumInfoProfileView albumInfoProfileView;
@@ -145,6 +153,22 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         optionsIcon.setVisibility(allowsShowOptionIcon ? VISIBLE : GONE);
     }
 
+    public int getButtonVisiblity() {
+        return buttonVisiblity;
+    }
+
+    public void setButtonVisiblity(int buttonVisiblity) {
+        if (buttonVisiblity == this.buttonVisiblity)
+            return;
+
+        this.buttonVisiblity = buttonVisiblity;
+
+        coeditButton.setVisibility((buttonVisiblity & COEDIT) == COEDIT ? VISIBLE : GONE);
+        heartButton.setVisibility((buttonVisiblity & HEART) == HEART ? VISIBLE : GONE);
+        commentButton.setVisibility((buttonVisiblity & COMMENT) == COMMENT ? VISIBLE : GONE);
+        starButton.setVisibility((buttonVisiblity & STAR) == STAR ? VISIBLE : GONE);
+    }
+
     public Album getModel() {
         return model;
     }
@@ -219,20 +243,22 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     }
 
     public void onEventMainThread(Object event) {
-        if (!(event instanceof Model.Event))
-            return;
+        if (event instanceof Model.Event) {
+            Model.Event casted = (Model.Event) event;
 
-        Model.Event casted = (Model.Event) event;
-
-        if (Model.Event.SYNCHRONIZE.equals(casted.getType())) {
-            if (casted.getTarget() instanceof Album) {
-                synchronizeAlbum((Album) casted.getTarget());
-            } else if (casted.getTarget() instanceof AlbumAdditionalListEntity) {
-                synchronizeAlbumInfo((AlbumAdditionalListEntity) casted.getTarget());
+            if (Model.Event.SYNCHRONIZE.equals(casted.getType())) {
+                if (casted.getTarget() instanceof Album) {
+                    synchronizeAlbum((Album) casted.getTarget());
+                } else if (casted.getTarget() instanceof AlbumAdditionalListEntity) {
+                    synchronizeAlbumInfo((AlbumAdditionalListEntity) casted.getTarget());
+                }
+            } else if (Model.Event.CHANGE.equals(casted.getType())) {
+                if (delegate != null)
+                    delegate.onPageChange(this);
             }
-        } else if (Model.Event.CHANGE.equals(casted.getType())) {
-            if (delegate != null)
-                delegate.onPageChange(this);
+        } else if (event instanceof CoeditEvent &&
+                CoeditEvent.CHANGE.equals(((CoeditEvent) event).getType())) {
+            synchronizeAlbumInfo(((CoeditEvent) event).getContributors());
         }
     }
 
@@ -278,18 +304,22 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     }
 
     private void postAlbumInfoSynchronizeEvent(AlbumAdditionalListEntity model) {
+        updateDisplayList();
+
         if (delegate != null)
             delegate.onAlbumInfoSynchronize(this, model);
     }
 
     private void postAlbumSynchronizeEvent() {
+        reload();
+
         if (delegate != null)
             delegate.onAlbumSynchronize(this);
     }
 
     private void setLeftMargin(View target, View relativeView) {
         LayoutParams params = (LayoutParams) target.getLayoutParams();
-        params.leftMargin = relativeView.isShown() ? GraphicUtils.convertDpToPixel(8) : 0;
+        params.leftMargin = relativeView.getVisibility() == View.VISIBLE ? GraphicUtils.convertDpToPixel(8) : 0;
     }
 
     private void synchronizeAlbum(Album album) {

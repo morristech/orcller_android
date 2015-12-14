@@ -54,7 +54,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -68,7 +68,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -82,7 +82,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -96,7 +96,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -110,7 +110,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -126,7 +126,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -142,7 +142,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -157,7 +157,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -195,7 +195,7 @@ public class CustomSchemeGenerator {
     public static String createUserProfile(long userId) {
         Map<String, String> param = new HashMap<>();
         param.put("user_uid", String.valueOf(userId));
-        return create(Category.Users, ViewTypeUsers.Profile.getValue(), param);
+        return create(Category.Users, ViewTypeUsers.Profile.value(), param);
     }
 
     public static String createUserProfile(BaseUser user) {

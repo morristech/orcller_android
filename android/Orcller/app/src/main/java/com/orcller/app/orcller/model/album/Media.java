@@ -16,7 +16,7 @@ public class Media extends Model {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     };
@@ -32,7 +32,7 @@ public class Media extends Model {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -44,6 +44,6 @@ public class Media extends Model {
     public Images images;
 
     public boolean isVideo() {
-        return type == Type.Video.getValue();
+        return type == Type.Video.value();
     }
 }

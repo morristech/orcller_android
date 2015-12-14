@@ -1,11 +1,11 @@
 package com.orcller.app.orcller.proxy;
 
 import android.view.View;
-import android.widget.PopupMenu;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.activity.AlbumHeartListActivity;
 import com.orcller.app.orcller.activity.AlbumStarListActivity;
+import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.itemview.AlbumItemView;
@@ -18,13 +18,15 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 
-import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSScrollView;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+
+import static com.orcller.app.orcller.BuildConfig.DEBUG;
+import static pisces.psfoundation.utils.Log.e;
 
 /**
  * Created by pisces on 12/10/15.
@@ -48,16 +50,16 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
      * AlbumItemView delegate
      */
     public void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model) {
-        itemView.reload();
+        invoker.invalidateOptionsMenu();
     }
 
     public void onAlbumSynchronize(AlbumItemView itemView) {
-        itemView.reload();
+        invoker.invalidateOptionsMenu();
     }
 
     public void onClick(AlbumItemView itemView, AlbumItemView.ButtonType type, View view) {
         if (AlbumItemView.ButtonType.Coedit.equals(type)) {
-            //TODO: Open CoeditActivity
+            CoeditViewActivity.show(itemView.getModel());
         } else if (AlbumItemView.ButtonType.Comment.equals(type)) {
             if (invoker.getCommentInputView() != null)
                 invoker.getCommentInputView().setFocus();
@@ -127,10 +129,10 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
                 endDataLoading();
 
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    album.likes.synchronize(response.body().entity);
+                    album.likes.synchronize(response.body().entity, true);
                 } else {
-                    if (BuildConfig.DEBUG)
-                        Log.e("Api Error", response.body());
+                    if (DEBUG)
+                        e("Api Error", response.body());
                 }
             }
 
@@ -159,10 +161,10 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
                 endDataLoading();
 
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    album.favorites.synchronize(response.body().entity);
+                    album.favorites.synchronize(response.body().entity, true);
                 } else {
-                    if (BuildConfig.DEBUG)
-                        Log.e("Api Error", response.body());
+                    if (DEBUG)
+                        e("Api Error", response.body());
                 }
             }
 
@@ -186,5 +188,6 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     public static interface Invoker {
         CommentInputView getCommentInputView();
         PSScrollView getScrollView();
+        void invalidateOptionsMenu();
     }
 }

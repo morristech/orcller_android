@@ -4,15 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.facebook.FacebookSdk;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.BuildConfig;
@@ -25,6 +21,7 @@ import com.orcller.app.orcller.activity.AlbumPageDeleteActivity;
 import com.orcller.app.orcller.activity.AlbumPageOrderActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CoeditListActivity;
+import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.FollowersActivity;
 import com.orcller.app.orcller.activity.FollowingActivity;
@@ -39,8 +36,6 @@ import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
-import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.fragment.UserAlbumGridFragment;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.ImageMedia;
@@ -70,7 +65,6 @@ import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.managers.GooglePlayServiceManager;
-import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.model.User;
 
@@ -81,7 +75,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
 import retrofit.Call;
 import retrofit.Callback;
@@ -220,7 +213,8 @@ public class ApplicationFacade {
 //        testFollowersActivity();
 //        testUserPictureActivity();
 //        testUserPictureEditActivity();
-        testCoeditListActivity();
+//        testCoeditListActivity();
+        testCoeditViewActivity();
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -242,7 +236,7 @@ public class ApplicationFacade {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 ImageMediaView view = new ImageMediaView(Application.applicationContext());
-                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
                 view.setModel(response.body().entity.pages.getPageAtIndex(0).media);
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
@@ -259,7 +253,7 @@ public class ApplicationFacade {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 VideoMediaView view = new VideoMediaView(Application.applicationContext());
-                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
                 view.setModel(response.body().entity.pages.getPageAtIndex(4).media);
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
@@ -276,7 +270,7 @@ public class ApplicationFacade {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 PageView view = new PageView(Application.applicationContext());
-                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
                 view.setModel(response.body().entity.pages.getPageAtIndex(4));
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
@@ -669,5 +663,9 @@ public class ApplicationFacade {
 
     private void testCoeditListActivity() {
         testActivity(CoeditListActivity.class, null);
+    }
+
+    private void testCoeditViewActivity() {
+        CoeditViewActivity.show(1);
     }
 }

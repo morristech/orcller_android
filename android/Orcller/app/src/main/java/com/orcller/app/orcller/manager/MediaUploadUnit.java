@@ -25,6 +25,9 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import static com.orcller.app.orcller.BuildConfig.DEBUG;
+import static pisces.psfoundation.utils.Log.e;
+
 /**
  * Created by pisces on 12/3/15.
  */
@@ -212,8 +215,8 @@ public class MediaUploadUnit implements Serializable {
                     MediaManager.getDefault().clearUploading(model);
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, response.body().entity));
                 } else {
-                    if (BuildConfig.DEBUG)
-                        Log.e("Api Error", response.body());
+                    if (DEBUG)
+                        e("Api Error", response.body());
 
                     errorState();
                 }

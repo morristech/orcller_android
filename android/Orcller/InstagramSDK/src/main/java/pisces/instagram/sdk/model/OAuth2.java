@@ -26,7 +26,7 @@ public class OAuth2 implements Serializable {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -41,7 +41,7 @@ public class OAuth2 implements Serializable {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -87,7 +87,7 @@ public class OAuth2 implements Serializable {
 
         for (int i=0; i<SCOPE_TYPES.length; i++) {
             int enumBitValueToCheck = 1 << i;
-            if (((int) scope.getValue() & enumBitValueToCheck) == 1)
+            if (((int) scope.value() & enumBitValueToCheck) == 1)
                 strings.add(SCOPE_TYPES[i]);
         }
 

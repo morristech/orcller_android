@@ -108,8 +108,8 @@ public class Application extends android.app.Application {
         activity.startActivity(intent);
     }
 
-    public static void run(final Runnable doInBackground, final Runnable onPostExecute) {
-        new AsyncTask<Void, Void, Void>() {
+    public static AsyncTask run(final Runnable doInBackground, final Runnable onPostExecute) {
+        return new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 if (doInBackground != null)

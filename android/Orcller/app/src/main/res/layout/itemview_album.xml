@@ -100,7 +100,7 @@
             android:background="@drawable/background_ripple_lightgray"
             android:drawableLeft="@drawable/icon_album_coedit"
             android:drawablePadding="5dp"
-            android:text="@string/w_coedit"
+            android:text="@string/w_collaboration"
             android:textColor="@drawable/color_album_coedit"
             android:textSize="12dp"/>
 

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -45,6 +46,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
     private ListView listView;
     private ListAdapter listAdapter;
     private FBAlbums lastResult;
+    private AsyncTask asyncTask;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -77,6 +79,11 @@ public class FBImagePickerActivity extends PSActionBarActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if (asyncTask != null) {
+            asyncTask.cancel(false);
+            asyncTask = null;
+        }
 
         ProgressBarManager.hide(this);
         listView.setOnItemClickListener(null);
@@ -146,7 +153,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
                         if (error == null) {
                             lastResult = result;
 
-                            Application.run(new Runnable() {
+                            asyncTask = Application.run(new Runnable() {
                                 @Override
                                 public void run() {
                                     if (after == null)
@@ -162,6 +169,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
                                 public void run() {
                                     endDataLoading();
                                     listAdapter.notifyDataSetChanged();
+                                    asyncTask = null;
                                 }
                             });
                         } else {

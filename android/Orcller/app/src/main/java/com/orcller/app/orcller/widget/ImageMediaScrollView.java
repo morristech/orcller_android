@@ -3,11 +3,7 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.TouchDelegate;
-import android.view.View;
 
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -15,8 +11,6 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.lang.ref.WeakReference;
-
-import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/22/15.
@@ -47,7 +41,7 @@ public class ImageMediaScrollView extends MediaView {
 
         scaleImageView = new WeakReference<>(new SubsamplingScaleImageView(context));
         scaleImageView.get().setDoubleTapZoomScale(2f);
-        setImageLoadType(ImageLoadType.StandardResoultion.getValue());
+        setImageLoadType(ImageLoadType.StandardResoultion.value());
         removeView(imageView);
         addView(scaleImageView.get(), 0);
     }
@@ -96,6 +90,11 @@ public class ImageMediaScrollView extends MediaView {
 
         progressBar.setVisibility(GONE);
         updateScaleEnabled();
+    }
+
+    @Override
+    protected void onError() {
+        progressBar.setVisibility(GONE);
     }
 
     @Override

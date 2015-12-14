@@ -3,17 +3,12 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -142,7 +137,7 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
         }
         if (model instanceof VideoMedia) {
             VideoMediaView view = new VideoMediaView(getContext());
-            view.setImageLoadType(MediaView.ImageLoadType.LowResolution.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+            view.setImageLoadType(MediaView.ImageLoadType.LowResolution.value() | MediaView.ImageLoadType.StandardResoultion.value());
             view.setProgressBar(new ProgressBar(getContext(), null, android.R.attr.progressBarStyle));
             return view;
         }

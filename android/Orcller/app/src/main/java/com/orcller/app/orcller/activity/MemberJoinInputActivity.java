@@ -286,7 +286,7 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
         ApiMember.JoinWithIdpReq req = new ApiMember.JoinWithIdpReq();
         req.user_id = idEditText.getText().toString().trim();
         req.user_password = pwEditText.getText().toString().trim();
-        req.idp_type = ApiMember.IDProviderType.Facebook.getValue();
+        req.idp_type = ApiMember.IDProviderType.Facebook.value();
         req.idp_user_id = user.id;
         req.user_link = user.link;
         req.user_name = user.name;

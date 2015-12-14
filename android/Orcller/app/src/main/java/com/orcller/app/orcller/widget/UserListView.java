@@ -27,16 +27,19 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import static com.orcller.app.orcller.BuildConfig.DEBUG;
+import static pisces.psfoundation.utils.Log.e;
+
 /**
  * Created by pisces on 12/10/15.
  */
 public class UserListView extends PSListView {
     private int listCountAtOnce;
     private List<BaseUser> items = new ArrayList<>();
-    private ListAdapter listAdapter;
     private DataSource dataSource;
     private Delegate delegate;
     private ListEntity lastEntity;
+    private ListAdapter listAdapter;
 
     public UserListView(Context context) {
         super(context);
@@ -134,8 +137,8 @@ public class UserListView extends PSListView {
                                 }
                             });
                         } else {
-                            if (BuildConfig.DEBUG)
-                                Log.e("Api Error", response.body());
+                            if (DEBUG)
+                                e("Api Error", response.body());
                         }
                     }
 

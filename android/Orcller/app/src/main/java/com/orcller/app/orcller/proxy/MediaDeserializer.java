@@ -20,9 +20,9 @@ public class MediaDeserializer implements JsonDeserializer<Media> {
             throws JsonParseException {
         int _type = je.getAsJsonObject().get("type").getAsInt();
 
-        if (_type == Media.Type.Video.getValue())
+        if (_type == Media.Type.Video.value())
             return new Gson().fromJson(je, VideoMedia.class);
-        else if (_type == Media.Type.Image.getValue())
+        else if (_type == Media.Type.Image.value())
             return new Gson().fromJson(je, ImageMedia.class);
         return null;
     }

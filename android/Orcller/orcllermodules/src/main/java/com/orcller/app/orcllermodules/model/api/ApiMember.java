@@ -25,7 +25,7 @@ public class ApiMember {
 
         private int value;
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }

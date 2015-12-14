@@ -198,7 +198,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     public void report(long albumId, Album.ReportType reportType, Callback<ApiResult> callback) {
-        enqueueCall(service().report(albumId, reportType.getValue()), callback);
+        enqueueCall(service().report(albumId, reportType.value()), callback);
     }
 
     public Service service() {

@@ -21,7 +21,6 @@ import java.util.List;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.GsonUtil;
-import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/26/15.
@@ -67,7 +66,7 @@ public class MediaConverter {
         images.standard_resolution = createImage(sorted.size() > 5 ? sorted.get(5) : sorted.get(sorted.size() - 1));
 
         ImageMedia media = new ImageMedia();
-        media.origin_type = Media.OriginType.Facebook.getValue();
+        media.origin_type = Media.OriginType.Facebook.value();
         media.origin_id = Long.valueOf(photo.id);
         media.images = images;
 
@@ -97,7 +96,7 @@ public class MediaConverter {
         videos.low_resolution = videos.standard_resolution = createVideo(video);
 
         VideoMedia media = new VideoMedia();
-        media.origin_type = Media.OriginType.Facebook.getValue();
+        media.origin_type = Media.OriginType.Facebook.value();
         media.origin_id = Long.valueOf(video.id);
         media.images = images;
         media.videos = videos;
@@ -116,7 +115,7 @@ public class MediaConverter {
         }
 
         result.images = GsonUtil.fromJson(GsonUtil.toGsonString(media.images), Images.class);
-        result.origin_type = Media.OriginType.Instagram.getValue();
+        result.origin_type = Media.OriginType.Instagram.value();
         result.origin_id = Long.valueOf(media.id.split("_")[0]);
 
         return result;
@@ -124,7 +123,7 @@ public class MediaConverter {
 
     public static Media convert(pisces.psuikit.imagepicker.Media media) {
         Media result = new ImageMedia();
-        result.origin_type = Media.OriginType.Local.getValue();
+        result.origin_type = Media.OriginType.Local.value();
         String originIdString = String.valueOf(AuthenticationCenter.getDefault().getUser().user_uid) +
                 String.valueOf(DateUtil.toUnixtimestamp(new Date())) +
                 (++MEDIA_UNIQUE_ID);

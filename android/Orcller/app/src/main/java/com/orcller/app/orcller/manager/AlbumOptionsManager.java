@@ -3,7 +3,6 @@ package com.orcller.app.orcller.manager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.internal.view.menu.MenuBuilder;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +26,7 @@ import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.DataLoadValidator;
+import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
@@ -37,10 +36,9 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/8/15.
  */
-public class AlbumOptionsManager {
+public class AlbumOptionsManager extends PSObject {
     private Context context;
     private Album album;
-    private DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     public AlbumOptionsManager(Context context, Album album) {
         this.context = context;
@@ -102,7 +100,7 @@ public class AlbumOptionsManager {
     // ================================================================================================
 
     private void chagePermission(final Album.Permission permission) {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
@@ -116,15 +114,15 @@ public class AlbumOptionsManager {
 
         try {
             Album clonedAlbum = (Album) album.clone();
-            clonedAlbum.permission = permission.getValue();
+            clonedAlbum.permission = permission.value();
 
             AlbumDataProxy.getDefault().update(clonedAlbum, new Callback<ApiAlbum.AlbumRes>() {
                 @Override
                 public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                     if (response.isSuccess() && response.body().isSuccess()) {
                         ProgressBarManager.hide();
-                        dataLoadValidator.endDataLoading();
-                        album.synchronize(response.body().entity);
+                        endDataLoading();
+                        album.synchronize(response.body().entity, true);
                     } else {
                         showFailAlertDialog(runnable, response.body());
                     }
@@ -142,7 +140,7 @@ public class AlbumOptionsManager {
     }
 
     private void delete() {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
@@ -159,7 +157,7 @@ public class AlbumOptionsManager {
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
-                    dataLoadValidator.endDataLoading();
+                    endDataLoading();
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, album));
                     finishActivity();
                 } else {
@@ -180,7 +178,7 @@ public class AlbumOptionsManager {
     }
 
     private void hide() {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
@@ -197,7 +195,7 @@ public class AlbumOptionsManager {
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
-                    dataLoadValidator.endDataLoading();
+                    endDataLoading();
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, album));
                     finishActivity();
                 } else {
@@ -213,7 +211,7 @@ public class AlbumOptionsManager {
     }
 
     private void hideAll() {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
@@ -230,7 +228,7 @@ public class AlbumOptionsManager {
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
-                    dataLoadValidator.endDataLoading();
+                    endDataLoading();
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, album));
                     finishActivity();
                 } else {
@@ -289,7 +287,7 @@ public class AlbumOptionsManager {
     }
 
     private void report() {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         ProgressBarManager.show();
@@ -306,7 +304,7 @@ public class AlbumOptionsManager {
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     ProgressBarManager.hide();
-                    dataLoadValidator.endDataLoading();
+                    endDataLoading();
                     AlertDialogUtils.show(R.string.m_complete_report_send, R.string.w_ok);
                 } else {
                     showFailAlertDialog(runnable, response.body());
@@ -369,14 +367,14 @@ public class AlbumOptionsManager {
     }
 
     private void showFailAlertDialog(final Runnable retry, Throwable t) {
-        if (BuildConfig.DEBUG && t != null)
+        if (BuildConfig.DEBUG)
             Log.e("onFailure", t);
 
         showFailAlertDialog(retry);
     }
 
     private void showFailAlertDialog(final Runnable retry, ApiResult result) {
-        if (BuildConfig.DEBUG && result != null)
+        if (BuildConfig.DEBUG)
             Log.e("Api Error", result);
 
         showFailAlertDialog(retry);
@@ -384,7 +382,7 @@ public class AlbumOptionsManager {
 
     private void showFailAlertDialog(final Runnable retry) {
         ProgressBarManager.hide();
-        dataLoadValidator.endDataLoading();
+        endDataLoading();
         AlertDialogUtils.retry(R.string.m_fail_common, retry);
     }
 }

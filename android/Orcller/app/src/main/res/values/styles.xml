@@ -82,6 +82,10 @@
         <item name="colorControlNormal">@color/theme_purple_control_normal</item>
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_primary_dark</item>
+        <item name="android:alertDialogStyle">@style/PurpleTheme.AlertDialog</item>
+    </style>
+    <style name="PurpleTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textAppearance">@style/PurpleTheme.Toolbar.MenuTextStyle</item>
     </style>
     <style name="PurpleTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:titleTextStyle">@android:color/white</item>

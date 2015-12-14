@@ -11,7 +11,6 @@ import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
 import com.orcller.app.orcller.model.album.VideoMedia;
 
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -21,7 +20,7 @@ import pisces.psuikit.ext.PSFrameLayout;
 public class MediaContainerView extends PSFrameLayout implements MediaContainer {
     private boolean controlEnabled = true;
     private boolean controlEnabledChanged;
-    private int imageLoadType = MediaView.ImageLoadType.Thumbnail.getValue();
+    private int imageLoadType = MediaView.ImageLoadType.Thumbnail.value();
     private Media model;
     private MediaView mediaView;
 

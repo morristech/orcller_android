@@ -40,15 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import pisces.instagram.sdk.InstagramApplicationCenter;
-import pisces.instagram.sdk.error.InstagramSDKError;
-import pisces.instagram.sdk.model.ApiInstagram;
-import pisces.instagram.sdk.model.ApiInstagramResult;
-import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
-import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -170,7 +163,7 @@ public class ApplicationService extends Service {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 ImageMediaView view = new ImageMediaView(Application.applicationContext());
-                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
                 view.setModel(response.body().entity.pages.getPageAtIndex(0).media);
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
@@ -187,7 +180,7 @@ public class ApplicationService extends Service {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 VideoMediaView view = new VideoMediaView(Application.applicationContext());
-                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
                 view.setModel(response.body().entity.pages.getPageAtIndex(4).media);
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
@@ -204,7 +197,7 @@ public class ApplicationService extends Service {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 PageView view = new PageView(Application.applicationContext());
-                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.getValue() | MediaView.ImageLoadType.StandardResoultion.getValue());
+                view.setImageLoadType(MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
                 view.setModel(response.body().entity.pages.getPageAtIndex(4));
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));

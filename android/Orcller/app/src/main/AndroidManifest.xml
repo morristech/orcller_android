@@ -182,6 +182,10 @@
             android:name=".activity.CoeditListActivity"
             android:theme="@style/PurpleTheme">
         </activity>
+        <activity
+            android:name=".activity.CoeditViewActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
 
         <!-- orcllermodules -->
         <activity

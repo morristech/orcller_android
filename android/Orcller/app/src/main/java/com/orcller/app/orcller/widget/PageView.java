@@ -51,7 +51,7 @@ public class PageView extends PSFrameLayout implements MediaView.Delegate {
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         controlEnabled = true;
-        imageLoadType = MediaView.ImageLoadType.LowResolution.getValue();
+        imageLoadType = MediaView.ImageLoadType.LowResolution.value();
 
         setBackgroundColor(Color.WHITE);
     }

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import pisces.psfoundation.proxy.AbstractRetrofitProxy;
+import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 
@@ -51,7 +52,8 @@ abstract public class AbstractDataProxy<T> extends AbstractRetrofitProxy {
                 try {
                     call.enqueue(calllback);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if (BuildConfig.DEBUG)
+                        Log.e(e.getMessage(), e);
                 }
             }
         }, "Background");

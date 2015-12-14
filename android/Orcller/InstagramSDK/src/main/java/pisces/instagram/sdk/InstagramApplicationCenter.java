@@ -195,7 +195,7 @@ public class InstagramApplicationCenter<T> {
                         command.getCompleteHandler().onComplete(response.body());
                     } else {
                         command.getCompleteHandler().onError(new InstagramSDKError(
-                                InstagramSDKError.Code.UnknownAPIError.getValue(),
+                                InstagramSDKError.Code.UnknownAPIError.value(),
                                 response.message()));
                     }
                     command.clear();
@@ -204,7 +204,7 @@ public class InstagramApplicationCenter<T> {
                 @Override
                 public void onFailure(Throwable t) {
                     command.getCompleteHandler().onError(new InstagramSDKError(
-                            InstagramSDKError.Code.UnknownAPIError.getValue(), t.getMessage()));
+                            InstagramSDKError.Code.UnknownAPIError.value(), t.getMessage()));
                     command.clear();
                 }
             });
@@ -293,7 +293,7 @@ public class InstagramApplicationCenter<T> {
                     handler.onComplete(result);
                 } else {
                     handler.onError(new InstagramSDKError(
-                            InstagramSDKError.Code.UnknownAPIError.getValue(),
+                            InstagramSDKError.Code.UnknownAPIError.value(),
                             response.message()));
                 }
             }
@@ -301,7 +301,7 @@ public class InstagramApplicationCenter<T> {
             @Override
             public void onFailure(Throwable t) {
                 handler.onError(new InstagramSDKError(
-                        InstagramSDKError.Code.UnknownAPIError.getValue(), t.getMessage()));
+                        InstagramSDKError.Code.UnknownAPIError.value(), t.getMessage()));
             }
         });
     }

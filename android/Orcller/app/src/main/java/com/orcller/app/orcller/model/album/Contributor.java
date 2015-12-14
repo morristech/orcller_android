@@ -18,11 +18,11 @@ public class Contributor extends User {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     };
 
     public String contributor_id;
-    public Status contributor_status;
+    public int contributor_status;
 }

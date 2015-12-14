@@ -31,7 +31,7 @@ public class Album extends AlbumInfo {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
@@ -45,7 +45,7 @@ public class Album extends AlbumInfo {
             this.value = value;
         }
 
-        public int getValue() {
+        public int value() {
             return value;
         }
     }
