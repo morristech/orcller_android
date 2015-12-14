@@ -56,6 +56,7 @@ public class CoeditListActivity extends PSActionBarActivity
         listView = (ListView) findViewById(R.id.listView);
         listAdapter = new ListAdapter(this);
 
+        swipeRefreshLayout.setColorSchemeResources(R.color.theme_lightgray_toolbar_control);
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
