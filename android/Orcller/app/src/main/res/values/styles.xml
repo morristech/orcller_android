@@ -1,35 +1,6 @@
 <resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
-        <item name="android:actionBarDivider">@null</item>
-        <item name="android:actionBarTabBarStyle">@style/AppTheme.ActionBar.TabBar</item>
-        <item name="android:actionBarTabStyle">@style/AppTheme.ActionBar.TabView</item>
-        <item name="android:actionBarTabTextStyle">@style/AppTheme.ActionBar.TabText</item>
-    </style>
-    <style name="AppTheme.ActionBar"
-        parent="android:style/Widget.Holo.Light.ActionBar" >
-        <item name="android:background">@color/theme_purple_primary</item>
-        <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
-        <!--<item name="android:homeAsUpIndicator">@android:drawable/btn_dropdown</item>-->
-
-        <!-- Support library compatibility -->
-        <item name="background">@color/theme_purple_primary</item>
-        <item name="titleTextStyle">@style/AppTheme.ActionBar.Title</item>
-    </style>
-    <style name="AppTheme.ActionBar.Title"
-        parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-    <style name="AppTheme.ActionBar.TabBar"
-        parent="android:style/Widget.Holo.Light.ActionBar.TabBar" >
-    </style>
-    <style name="AppTheme.ActionBar.TabText"
-        parent="android:style/Widget.Holo.ActionBar.TabText">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-    <style name="AppTheme.ActionBar.TabView" parent="android:style/Widget.Holo.ActionBar.TabView">
-        <item name="android:background">@drawable/background_main_tabbar</item>
     </style>
 
     <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">

@@ -27,7 +27,7 @@
     <color name="background_button_purple_disabled">#AD7EA3</color>
     <color name="background_gridview_album_create">#EFEFFF</color>
     <color name="background_pageprofile">#F8F8F8</color>
-    <color name="background_tabbar_main_normal">#282828</color>
+    <color name="background_tabbar_main_normal">#333333</color>
     <color name="background_tabbar_main_selected">#000000</color>
 
     <color name="border_hairline_lightgray">#E8E7EE</color>

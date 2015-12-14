@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape>
+            <solid android:color="@color/background_tabbar_main_selected"/>
+        </shape>
+    </item>
+
+    <item>
+        <shape>
+            <solid android:color="@color/background_tabbar_main_normal"/>
+        </shape>
+    </item>
+</selector>

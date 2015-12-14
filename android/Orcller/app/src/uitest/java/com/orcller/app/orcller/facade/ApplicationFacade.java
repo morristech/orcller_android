@@ -202,8 +202,9 @@ public class ApplicationFacade {
 //        testFollowersActivity();
 //        testUserPictureActivity();
 //        testUserPictureEditActivity();
-        testCoeditListActivity();
+//        testCoeditListActivity();
 //        testCoeditViewActivity();
+        testMainActivity();
     }
 
     private void startMainActivity() {
@@ -664,5 +665,9 @@ public class ApplicationFacade {
 
     private void testCoeditViewActivity() {
         CoeditViewActivity.show(41);
+    }
+
+    private void testMainActivity() {
+        testActivity(MainActivity.class, null);
     }
 }
