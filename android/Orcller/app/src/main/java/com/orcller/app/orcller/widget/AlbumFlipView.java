@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,12 +96,17 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         pageCountView = new AlbumPageCountView(context);
         progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
 
+        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER;
+
         background.setBackgroundColor(Color.BLACK);
+        progressBar.setVisibility(GONE);
         setClipChildren(false);
         addView(background);
         addView(container, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
+        addView(progressBar, params);
     }
 
     @Override
@@ -287,7 +293,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         dataLoading = true;
         final AlbumFlipView self = this;
-        addView(progressBar);
+
+        progressBar.setVisibility(VISIBLE);
 
         if (delegate != null)
             delegate.onStartLoadRemainPages(this);
@@ -296,7 +303,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             @Override
             public void onComplete(boolean isSuccess) {
                 dataLoading = false;
-                removeView(progressBar);
+                progressBar.setVisibility(GONE);
 
                 if (delegate != null)
                     delegate.onLoadRemainPages(self);

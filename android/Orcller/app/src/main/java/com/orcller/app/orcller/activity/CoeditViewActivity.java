@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -25,6 +26,7 @@ import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
@@ -75,6 +77,8 @@ public class CoeditViewActivity extends PSActionBarActivity
 
         albumItemView.setDelegate(albumItemViewDelegate);
         albumItemView.setButtonVisiblity(AlbumItemView.HEART | AlbumItemView.COMMENT | AlbumItemView.STAR);
+        coeditButton.setSelected(true);
+        coeditButton.setTextSize(GraphicUtils.convertDpToPixel(13));
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         SoftKeyboardNotifier.getDefault().register(this);
         EventBus.getDefault().register(this);
@@ -221,17 +225,24 @@ public class CoeditViewActivity extends PSActionBarActivity
 
     private void modelChanged() {
         albumOptionsManager = new AlbumOptionsManager(this, model);
-        getSupportActionBar().setTitle(model.name);
+        getSupportActionBar().setTitle(model.name + model.name + model.name + model.name);
         albumItemView.setModel(model);
+        contributorListView.setDataType(model.isMine() ? ContributorListView.STANDBY : ContributorListView.CONTRIBUTORS);
         contributorListView.setModel(model);
         scrollView.setVisibility(View.VISIBLE);
+        setScrollViewLayout();
         invalidateOptionsMenu();
 
         try {
-            coeditButton.setModel(model);
+            coeditButton.setModel(model, model.id);
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
                 Log.e(e.getMessage());
         }
+    }
+
+    private void setScrollViewLayout() {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollView.getLayoutParams();
+        params.bottomMargin = coeditButton.getVisibility() == View.VISIBLE ? coeditButton.getHeight() : 0;
     }
 }

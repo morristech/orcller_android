@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.TextView;
@@ -69,6 +70,7 @@ public class AlbumInfoProfileView extends PSLinearLayout {
 
         idTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model.getUser()));
         nameTextView.setText(model.user_name);
+        nameTextView.setVisibility(TextUtils.isEmpty(model.user_name) ? GONE : VISIBLE);
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         userPictureView.setModel(model.getUser());
     }

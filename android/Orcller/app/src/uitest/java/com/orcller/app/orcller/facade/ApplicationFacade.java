@@ -163,17 +163,6 @@ public class ApplicationFacade {
     //  Private
     // ================================================================================================
 
-    private void startMainActivity() {
-        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
-                MainActivity.class : MemberActivity.class;
-        Intent intent = new Intent(Application.applicationContext(), activityClass);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        Application.applicationContext().startActivity(intent);
-    }
-    // ================================================================================================
-    //  Private
-    // ================================================================================================
-
     private void runTestSuite() {
 //        testImageMediaView();
 //        testVideoMediaView();
@@ -213,8 +202,16 @@ public class ApplicationFacade {
 //        testFollowersActivity();
 //        testUserPictureActivity();
 //        testUserPictureEditActivity();
-//        testCoeditListActivity();
-        testCoeditViewActivity();
+        testCoeditListActivity();
+//        testCoeditViewActivity();
+    }
+
+    private void startMainActivity() {
+        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
+                MainActivity.class : MemberActivity.class;
+        Intent intent = new Intent(Application.applicationContext(), activityClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.applicationContext().startActivity(intent);
     }
 
     private void testActivity(Class activityClass, Interceptor interceptor) {
@@ -666,6 +663,6 @@ public class ApplicationFacade {
     }
 
     private void testCoeditViewActivity() {
-        CoeditViewActivity.show(1);
+        CoeditViewActivity.show(41);
     }
 }

@@ -42,7 +42,9 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:clipChildren="false">
                 <pisces.psuikit.widget.ClearableEditText
                     android:id="@+id/titleEditText"
                     android:layout_width="match_parent"
@@ -69,13 +71,13 @@
                     android:id="@+id/albumFlipView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
                     android:visibility="gone"/>
 
                 <com.orcller.app.orcller.widget.AlbumGridView
                     android:id="@+id/albumGridView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </pisces.psuikit.ext.PSScrollView>
 
@@ -85,7 +87,6 @@
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/background_borderd"
             android:visibility="gone">
             <pisces.psuikit.widget.PSButton
                 android:id="@+id/addButton"

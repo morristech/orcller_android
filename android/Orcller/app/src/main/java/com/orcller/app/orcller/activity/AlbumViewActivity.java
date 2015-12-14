@@ -101,8 +101,6 @@ public class AlbumViewActivity extends PSActionBarActivity
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        setScrollViewLayout();
-
         if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
             setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
             setAllowsCommentInputFocus(getIntent().getBooleanExtra(ALLOWS_COMMENT_INPUT_FOCUS, false));

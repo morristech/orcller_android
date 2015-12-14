@@ -62,7 +62,6 @@
         <item name="colorPrimary">@color/theme_lightgray_primary</item>
     </style>
     <style name="LightGrayTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@color/theme_lightgray_toolbar_text</item>
         <item name="colorControlNormal">@color/theme_lightgray_toolbar_control</item>
         <item name="titleTextColor">@color/theme_lightgray_toolbar_text</item>
         <item name="actionMenuTextColor">@drawable/textcolor_imagepicker_select_button</item>
@@ -88,7 +87,6 @@
         <item name="android:textAppearance">@style/PurpleTheme.Toolbar.MenuTextStyle</item>
     </style>
     <style name="PurpleTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
         <item name="titleTextColor">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>
@@ -110,7 +108,6 @@
         <item name="colorPrimaryDark">@color/theme_white_primary_dark</item>
     </style>
     <style name="WhiteTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@color/theme_white_toolbar_text</item>
         <item name="colorControlNormal">@drawable/textcolor_imagepicker_select_button</item>
         <item name="titleTextColor">@color/theme_white_toolbar_text</item>
         <item name="actionMenuTextColor">@drawable/textcolor_imagepicker_select_button</item>

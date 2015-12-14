@@ -1,6 +1,7 @@
 package pisces.psfoundation.utils;
 
 import android.content.res.Resources;
+import android.view.View;
 
 /**
  * Created by pisces on 11/28/15.

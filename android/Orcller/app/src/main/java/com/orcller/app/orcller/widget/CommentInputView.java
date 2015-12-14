@@ -80,7 +80,7 @@ public class CommentInputView extends PSLinearLayout implements View.OnClickList
             }
         });
 
-        setVisibility(GONE);
+        setVisibility(INVISIBLE);
         postButton.setOnClickListener(this);
         EventBus.getDefault().register(this);
     }

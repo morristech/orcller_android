@@ -486,6 +486,9 @@ public class AlbumCreateActivity extends PSActionBarActivity
         buttonContainer.setVisibility(View.VISIBLE);
         setOtherButtonsEnabled();
 
+        if (!model.isMine())
+            titleEditText.setBackground(null);
+
         if (clonedModel.pages.data.size() < 1)
             onClick(addButton);
     }

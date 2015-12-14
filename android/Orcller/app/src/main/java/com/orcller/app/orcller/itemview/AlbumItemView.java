@@ -13,7 +13,6 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
-import com.orcller.app.orcller.model.album.Coedit;
 import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.album.Contributors;
 import com.orcller.app.orcller.model.album.Favorites;
@@ -26,6 +25,7 @@ import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
+import pisces.psuikit.ext.PSView;
 import pisces.psuikit.widget.PSButton;
 
 /**
@@ -207,9 +207,14 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         commentButton.setSelected(model.comments.isParticipated());
         starButton.setText(getButtonText(starButton));
         starButton.setSelected(model.favorites.isParticipated());
-        starButton.setVisibility(model.isMine() ? VISIBLE : GONE);
+        optionsIcon.setVisibility(allowsShowOptionIcon ? VISIBLE : GONE);
+        infoContainer.setVisibility(heartTextView.isShown() ||
+                commentTextView.isShown() ||
+                starTextView.isShown() ||
+                optionsIcon.isShown() ? VISIBLE : GONE);
         setLeftMargin(commentTextView, heartTextView);
         setLeftMargin(starTextView, commentTextView);
+        setAlbumFlipViewMargin();
     }
 
     // ================================================================================================
@@ -320,6 +325,12 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     private void setLeftMargin(View target, View relativeView) {
         LayoutParams params = (LayoutParams) target.getLayoutParams();
         params.leftMargin = relativeView.getVisibility() == View.VISIBLE ? GraphicUtils.convertDpToPixel(8) : 0;
+    }
+
+    private void setAlbumFlipViewMargin() {
+        LayoutParams params = (LayoutParams) albumFlipView.getLayoutParams();
+        params.bottomMargin = GraphicUtils.convertDpToPixel(
+                PSView.isShown(descriptionTextView) || PSView.isShown(infoContainer) ? 15 : 32);
     }
 
     private void synchronizeAlbum(Album album) {

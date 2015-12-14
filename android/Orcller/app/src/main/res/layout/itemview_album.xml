@@ -22,8 +22,11 @@
         android:id="@+id/descriptionTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
+        android:textColor="@color/textcolor_pageprofile_date"
+        android:textSize="12dp"
         android:visibility="gone" />
 
     <LinearLayout
@@ -89,8 +92,6 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
         android:background="@drawable/background_itemview_comment_header">
         <pisces.psuikit.widget.PSButton
             android:id="@+id/coeditButton"
@@ -100,7 +101,7 @@
             android:background="@drawable/background_ripple_lightgray"
             android:drawableLeft="@drawable/icon_album_coedit"
             android:drawablePadding="5dp"
-            android:text="@string/w_collaboration"
+            android:text="@string/w_coation"
             android:textColor="@drawable/color_album_coedit"
             android:textSize="12dp"/>
 

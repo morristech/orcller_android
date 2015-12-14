@@ -52,6 +52,10 @@ public class PSView extends View implements PSComponent {
     //  Public
     // ================================================================================================
 
+    public static boolean isShown(View view) {
+        return view != null ? view.getVisibility() == View.VISIBLE : false;
+    }
+
     public boolean isImmediatelyUpdating() {
         return immediatelyUpdating;
     }

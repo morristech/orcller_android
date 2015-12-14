@@ -62,10 +62,6 @@ public class CoeditDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
-    public void standby(long albumId, Callback<ApiCoedit.ContributorsRes> callback) {
-        enqueueCall(service().standby(albumId), callback);
-    }
-
     public Service service() {
         return (Service) getCurrentService();
     }

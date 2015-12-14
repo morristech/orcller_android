@@ -2,6 +2,7 @@ package com.orcller.app.orcller.widget;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -62,10 +63,12 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         int pd = GraphicUtils.convertDpToPixel(12);
 
         textView.setTextColor(getResources().getColorStateList(R.drawable.color_button_follow));
+        textView.setTypeface(Typeface.DEFAULT_BOLD);
         textView.setTextSize(12);
         setPadding(pd, 0, pd, 0);
         setBackgroundResource(R.drawable.background_ripple_followbutton);
-        setVisibility(GONE);
+        setMinimumWidth(GraphicUtils.convertDpToPixel(70));
+        setVisibility(INVISIBLE);
         setOnClickListener(this);
     }
 
@@ -188,7 +191,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
             if (contributor().contributor_status == Contributor.Status.Ask.value())
                 return getContext().getString(R.string.w_confirm);
             if (contributor().contributor_status == Contributor.Status.None.value() && !contributor().isMe())
-                return getContext().getString(R.string.w_invite);
+                return getContext().getString(R.string.w_add);
         }
         return null;
     }
@@ -250,22 +253,24 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
                         album().contributors.synchronize(contributors, new Runnable() {
                             @Override
                             public void run() {
+                                album().contributors.contributor_status = toStatus.value();
+                                endDataLoading();
+                                modelChanged();
+
                                 if (delegate != null)
                                     delegate.onSync(target, contributors);
 
-                                endDataLoading();
-                                modelChanged();
                                 EventBus.getDefault().post(new CoeditEvent(CoeditEvent.SYNC, target, contributors));
                             }
                         }, true);
                     } else {
                         contributor().contributor_status = toStatus.value();
+                        endDataLoading();
+                        modelChanged();
 
                         if (delegate != null)
                             delegate.onChange(target, contributors);
 
-                        endDataLoading();
-                        modelChanged();
                         EventBus.getDefault().post(new CoeditEvent(CoeditEvent.CHANGE, target, contributors));
                     }
                 } else {

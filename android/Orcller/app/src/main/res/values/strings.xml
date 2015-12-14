@@ -28,14 +28,12 @@
 
     <!-- words -->
     <string name="w_add">Add</string>
-    <string name="w_ask">Ask</string>
-    <string name="w_asked">Asked</string>
-    <string name="w_asking_collaboration">Asking Collaboration</string>
-    <string name="w_available_invite">Available Invite</string>
+    <string name="w_add_collaborators">Add Collaborators</string>
     <string name="w_ask_collaboration">Ask Collaboration</string>
     <string name="w_cancel">Cancel</string>
     <string name="w_cancel_asking">Cancel Asking</string>
     <string name="w_change">Change</string>
+    <string name="w_coation">Coation</string>
     <string name="w_collaboration">Collaboration</string>
     <string name="w_collaborations">Collaborations</string>
     <string name="w_collaborators">Collaborators</string>
@@ -58,9 +56,7 @@
     <string name="w_heart">Heart</string>
     <string name="w_hearts">Hearts</string>
     <string name="w_instagram_photos">Instagram Photos</string>
-    <string name="w_invite">Invite</string>
-    <string name="w_invited">Invited</string>
-    <string name="w_inviting">Inviting</string>
+    <string name="w_invites">Invites</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
     <string name="w_me">Me</string>
@@ -72,6 +68,7 @@
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
     <string name="w_posting">Posting</string>
+    <string name="w_requests">Requests</string>
     <string name="w_preparing">Preparing...</string>
     <string name="w_previous_comments">Previous Comments</string>
     <string name="w_private">Private</string>

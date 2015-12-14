@@ -13,7 +13,6 @@ import android.widget.ListView;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
 import com.orcller.app.orcller.model.album.Coedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
@@ -22,7 +21,6 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -68,7 +66,6 @@ public class CoeditListActivity extends PSActionBarActivity
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -79,8 +76,6 @@ public class CoeditListActivity extends PSActionBarActivity
             asyncTask.cancel(false);
             asyncTask = null;
         }
-
-        EventBus.getDefault().unregister(this);
 
         swipeRefreshLayout = null;
         listView = null;
@@ -99,15 +94,8 @@ public class CoeditListActivity extends PSActionBarActivity
     //  Listener
     // ================================================================================================
 
-    public void onEventMainThread(Object event) {
-        if (event instanceof CoeditEvent &&
-                CoeditEvent.CHANGE.equals(((CoeditEvent) event).getType())) {
-            reload();
-        }
-    }
-
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d("onItemClick");
+        CoeditViewActivity.show(items.get(position).id);
     }
 
     public void onRefresh() {
