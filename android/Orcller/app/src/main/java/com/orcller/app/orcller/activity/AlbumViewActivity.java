@@ -210,8 +210,8 @@ public class AlbumViewActivity extends PSActionBarActivity
         return commentInputView;
     }
 
-    public PSScrollView getScrollView() {
-        return scrollView;
+    public void onChangePanningState(boolean isPanning) {
+        scrollView.setScrollable(!isPanning);
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {

@@ -180,8 +180,8 @@ public class CoeditViewActivity extends PSActionBarActivity
         return null;
     }
 
-    public PSScrollView getScrollView() {
-        return scrollView;
+    public void onChangePanningState(boolean isPanning) {
+        scrollView.setScrollable(!isPanning);
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {

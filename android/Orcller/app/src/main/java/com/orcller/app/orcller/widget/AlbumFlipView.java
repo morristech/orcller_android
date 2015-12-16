@@ -123,7 +123,6 @@ public class AlbumFlipView extends PSFrameLayout
             case MotionEvent.ACTION_DOWN:
                 startPoint = new PointF(event.getRawX(), event.getRawY());
                 pause();
-                loadRemainPages();
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -162,10 +161,10 @@ public class AlbumFlipView extends PSFrameLayout
                 float dx = startPoint.x - event.getRawX();
                 float dy = startPoint.y - event.getRawY();
 
-                if (dx == 0 || Math.abs(dy) > Math.abs(dx))
+                if (dx == 0)
                     break;
 
-                if (targetFlipView == null) {
+                if (targetFlipView == null && Math.abs(dy) < Math.abs(dx)) {
                     if (delegate != null)
                         delegate.onStartPanning(this);
 
@@ -173,6 +172,7 @@ public class AlbumFlipView extends PSFrameLayout
                     originRotation = targetFlipView.getRotationY();
                     targetFlipView.bringToFront();
                     targetFlipView.invalidate();
+                    loadRemainPages();
                 }
 
                 if (targetFlipView != null) {

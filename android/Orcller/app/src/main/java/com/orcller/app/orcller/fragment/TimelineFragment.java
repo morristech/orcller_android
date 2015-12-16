@@ -121,7 +121,7 @@ public class TimelineFragment extends PSFragment
     public void onResume() {
         super.onResume();
 
-        Log.d("onResume");
+        dequeueEvent();
     }
 
     @Override
@@ -171,7 +171,6 @@ public class TimelineFragment extends PSFragment
      * AdapterView.OnItemClickListener
      */
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d("onItemClick");
         AlbumViewActivity.show(items.get(position).id, false);
     }
 
@@ -215,11 +214,12 @@ public class TimelineFragment extends PSFragment
         return null;
     }
 
-    public Scrollable getScrollView() {
-        return listView;
+    public void invalidateOptionsMenu() {
     }
 
-    public void invalidateOptionsMenu() {
+    public void onChangePanningState(boolean isPanning) {
+        listView.setScrollable(!isPanning);
+        swipeRefreshLayout.setEnabled(!isPanning);
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {

@@ -81,13 +81,11 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     public void onCancelPanning(AlbumFlipView view) {
-        if (invoker.getScrollView() != null)
-            invoker.getScrollView().setScrollable(true);
+        invoker.onChangePanningState(false);
     }
 
     public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
-        if (invoker.getScrollView() != null)
-            invoker.getScrollView().setScrollable(true);
+        invoker.onChangePanningState(false);
     }
 
     public void onLoadRemainPages(AlbumFlipView view) {
@@ -100,8 +98,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     public void onStartPanning(AlbumFlipView view) {
-        if (invoker.getScrollView() != null)
-            invoker.getScrollView().setScrollable(false);
+        invoker.onChangePanningState(true);
     }
 
     public void onStop(AlbumFlipView view) {
@@ -186,8 +183,8 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
 
     public static interface Invoker {
         CommentInputView getCommentInputView();
-        Scrollable getScrollView();
         void invalidateOptionsMenu();
+        void onChangePanningState(boolean isPanning);
         void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }
