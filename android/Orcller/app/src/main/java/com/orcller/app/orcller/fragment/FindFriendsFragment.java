@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 
 import com.orcller.app.orcller.R;
 
+import pisces.psuikit.ext.PSFragment;
+
 /**
  * Created by pisces on 11/3/15.
  */
-public class FindFriendsFragment extends Fragment {
+public class FindFriendsFragment extends PSFragment {
     public FindFriendsFragment() {
     }
 

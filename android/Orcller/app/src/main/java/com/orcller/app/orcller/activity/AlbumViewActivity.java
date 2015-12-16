@@ -20,8 +20,11 @@ import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
+import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
+import com.orcller.app.orcller.widget.FlipView;
+import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
@@ -201,7 +204,7 @@ public class AlbumViewActivity extends PSActionBarActivity
     }
 
     /**
-     * AlbumItemViewDelete.DataSource
+     * AlbumItemViewDelete.Invoker
      */
     public CommentInputView getCommentInputView() {
         return commentInputView;
@@ -209,6 +212,9 @@ public class AlbumViewActivity extends PSActionBarActivity
 
     public PSScrollView getScrollView() {
         return scrollView;
+    }
+
+    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
     }
 
     // ================================================================================================

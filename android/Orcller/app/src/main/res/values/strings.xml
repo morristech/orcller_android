@@ -35,7 +35,6 @@
     <string name="w_change">Change</string>
     <string name="w_coation">Coation</string>
     <string name="w_collaboration">Collaboration</string>
-    <string name="w_collaborations">Collaborations</string>
     <string name="w_collaborators">Collaborators</string>
     <string name="w_comment">Comment</string>
     <string name="w_comments">Comments</string>
@@ -85,10 +84,12 @@
     <string name="w_slide_show">Slide Show</string>
     <string name="w_star">Star</string>
     <string name="w_stars">Stars</string>
+    <string name="w_title_activity">Activities</string>
     <string name="w_title_add_dialog">Import photos and videos</string>
     <string name="w_title_album_page_order">Edit Page Orders</string>
     <string name="w_title_album_page_default">Set as Default Page</string>
     <string name="w_title_album_page_delete">Delete Pages</string>
+    <string name="w_title_collaborations">Collaborations</string>
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
     <string name="w_title_new_album">New Album</string>

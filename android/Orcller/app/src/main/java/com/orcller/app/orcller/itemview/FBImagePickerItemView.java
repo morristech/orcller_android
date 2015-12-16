@@ -80,19 +80,6 @@ public class FBImagePickerItemView extends PSLinearLayout {
     private void loadImage(final FBPhotoImage image) {
         Glide.with(getContext())
                 .load(image.source)
-                .dontAnimate()
-                .listener(new RequestListener<Object, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        imageView.setImageDrawable(resource);
-                        return true;
-                    }
-                })
                 .into(imageView);
     }
 

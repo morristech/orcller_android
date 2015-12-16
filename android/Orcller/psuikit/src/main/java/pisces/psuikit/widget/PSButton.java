@@ -3,14 +3,17 @@ package pisces.psuikit.widget;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import pisces.android.R;
+import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -21,6 +24,8 @@ public class PSButton extends PSFrameLayout {
     private @DrawableRes int drawableTop;
     private @DrawableRes int drawableRight;
     private @DrawableRes int drawableBottom;
+    private int drawableWidth;
+    private int drawableHeight;
     protected TextView textView;
 
     public PSButton(Context context) {
@@ -47,6 +52,9 @@ public class PSButton extends PSFrameLayout {
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PSButton, defStyleAttr, defStyleRes);
         try {
+            drawableWidth = GraphicUtils.convertDpToPixel(ta.getDimension(R.styleable.PSButton_drawableWidth, 0));
+            drawableHeight = GraphicUtils.convertDpToPixel(ta.getDimension(R.styleable.PSButton_drawableHeight, 0));
+
             setDrawableBottom(ta.getResourceId(R.styleable.PSButton_android_drawableBottom, 0));
             setDrawableLeft(ta.getResourceId(R.styleable.PSButton_android_drawableLeft, 0));
             setDrawableRight(ta.getResourceId(R.styleable.PSButton_android_drawableRight, 0));
@@ -74,8 +82,8 @@ public class PSButton extends PSFrameLayout {
     //  Public
     // ================================================================================================
 
-    public @DrawableRes int getDrawableLeft() {
-        return drawableLeft;
+    public Drawable getDrawableLeft() {
+        return drawableLeft > 0 ? setDrawableSize(getResources().getDrawable(drawableLeft)) : null;
     }
 
     public void setDrawableLeft(@DrawableRes int drawableLeft) {
@@ -84,8 +92,8 @@ public class PSButton extends PSFrameLayout {
         setDrawables();
     }
 
-    public @DrawableRes int getDrawableTop() {
-        return drawableTop;
+    public Drawable getDrawableTop() {
+        return drawableTop > 0 ? setDrawableSize(getResources().getDrawable(drawableTop)) : null;
     }
 
     public void setDrawableTop(@DrawableRes int drawableTop) {
@@ -94,8 +102,8 @@ public class PSButton extends PSFrameLayout {
         setDrawables();
     }
 
-    public @DrawableRes int getDrawableRight() {
-        return drawableRight;
+    public Drawable getDrawableRight() {
+        return drawableRight > 0 ? setDrawableSize(getResources().getDrawable(drawableRight)) : null;
     }
 
     public void setDrawableRight(@DrawableRes int drawableRight) {
@@ -104,8 +112,8 @@ public class PSButton extends PSFrameLayout {
         setDrawables();
     }
 
-    public @DrawableRes int getDrawableBottom() {
-        return drawableBottom;
+    public Drawable getDrawableBottom() {
+        return drawableBottom > 0 ? setDrawableSize(getResources().getDrawable(drawableBottom)) : null;
     }
 
     public void setDrawableBottom(@DrawableRes int drawableBottom) {
@@ -120,6 +128,17 @@ public class PSButton extends PSFrameLayout {
 
     public void setDrawablePadding(int drawablePadding) {
         textView.setCompoundDrawablePadding(drawablePadding);
+    }
+
+    public void setDrawableBound(Rect rect) {
+        setDrawableSize(rect.width(), rect.height());
+    }
+
+    public void setDrawableSize(int width, int height) {
+        drawableWidth = width;
+        drawableHeight = height;
+
+        setDrawables();
     }
 
     public int getTextLayoutGravity() {
@@ -160,7 +179,15 @@ public class PSButton extends PSFrameLayout {
     // ================================================================================================
 
     private void setDrawables() {
-        textView.setCompoundDrawablesWithIntrinsicBounds(
-                getDrawableLeft(), getDrawableTop(), getDrawableRight(), getDrawableBottom());
+        if (drawableWidth <= 0 || drawableHeight <= 0)
+            textView.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, drawableTop, drawableRight, drawableBottom);
+        else
+            textView.setCompoundDrawables(getDrawableLeft(), getDrawableTop(), getDrawableRight(), getDrawableBottom());
+    }
+
+    private Drawable setDrawableSize(Drawable drawable) {
+        if (drawable != null && drawableWidth > 0 && drawableHeight > 0)
+            drawable.setBounds(0, 0, drawableWidth, drawableHeight);
+        return drawable;
     }
 }

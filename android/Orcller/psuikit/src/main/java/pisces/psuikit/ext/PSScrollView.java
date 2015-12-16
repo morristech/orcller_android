@@ -11,7 +11,7 @@ import pisces.psfoundation.utils.DataLoadValidator;
 /**
  * Created by pisces on 11/22/15.
  */
-public class PSScrollView extends ScrollView implements PSComponent {
+public class PSScrollView extends ScrollView implements PSComponent, Scrollable {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;

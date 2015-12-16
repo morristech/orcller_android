@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.activity;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,11 +13,17 @@ import android.widget.TabHost;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.fragment.ActivityFragment;
+import com.orcller.app.orcller.fragment.CoeditListFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.widget.PSButton;
@@ -24,6 +31,7 @@ import pisces.psuikit.widget.PSButton;
 public class MainActivity extends PSActionBarActivity
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
     private static final int TAB_COUNT = 5;
+    private Map<String, PSFragment> fragmentMap = new HashMap<>();
     private PagerAdapter pagerAdapter;
     private TabHost tabHost;
     private ViewPager viewPager;
@@ -58,14 +66,13 @@ public class MainActivity extends PSActionBarActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        tabHost = null;
+        viewPager = null;
     }
 
     // ================================================================================================
-    //  Public
-    // ================================================================================================
-
-    // ================================================================================================
-    //  Listener
+    //  Interface Implemetaion
     // ================================================================================================
 
     /**
@@ -85,7 +92,11 @@ public class MainActivity extends PSActionBarActivity
      * TabHost.OnTabChangeListener
      */
     public void onTabChanged(String tag) {
-        viewPager.setCurrentItem(Integer.valueOf(tag), true);
+        int position = Integer.valueOf(tag);
+        viewPager.setCurrentItem(position, false);
+        getSupportActionBar().setTitle(getTitle(position));
+        getToolbar().setVisibility(position == 0 ? View.GONE : View.VISIBLE);
+        ((PSFragment) pagerAdapter.getItem(position)).startFragment();
     }
 
     // ================================================================================================
@@ -93,23 +104,46 @@ public class MainActivity extends PSActionBarActivity
     // ================================================================================================
 
     private void addTabs() {
-        for (int i=0; i<TAB_COUNT; i++) {
+        for (int i = 0; i < TAB_COUNT; i++) {
             PSButton indicator = new PSButton(this);
             TabHost.TabSpec tabSpec = tabHost.newTabSpec(String.valueOf(i))
                     .setIndicator(indicator)
                     .setContent(new TabFactory(this));
             indicator.setBackgroundResource(R.drawable.background_ripple_tabbar_main);
             indicator.setDrawableLeft(getTabIconRes(i));
+            indicator.setDrawableBound(getTabIconBound(i));
             tabHost.addTab(tabSpec);
         }
     }
 
+    private Rect getTabIconBound(int position) {
+        if (position == 4)
+            return new Rect(0, 0, GraphicUtils.convertDpToPixel(17), GraphicUtils.convertDpToPixel(22));
+        return new Rect(0, 0, GraphicUtils.convertDpToPixel(21), GraphicUtils.convertDpToPixel(21));
+    }
+
     private int getTabIconRes(int position) {
-//        if (position == 0)
-//            return R.drawable.icon_profile_tab_album;
-//        if (position == 1)
-//            return R.drawable.icon_profile_tab_media;
+        if (position == 0)
+            return R.drawable.icon_tabbar_home;
+        if (position == 1)
+            return R.drawable.icon_tabbar_search;
+        if (position == 2)
+            return R.drawable.icon_tabbar_coedit;
+        if (position == 3)
+            return R.drawable.icon_tabbar_activity;
+        if (position == 4)
+            return R.drawable.icon_tabbar_profile;
         return 0;
+    }
+
+    private CharSequence getTitle(int position) {
+        if (position == 2)
+            return getString(R.string.w_title_collaborations);
+        if (position == 3)
+            return getString(R.string.w_title_activity);
+        if (position == 4)
+            return AuthenticationCenter.getDefault().getUser().user_id;
+        return null;
     }
 
     // ================================================================================================
@@ -148,16 +182,35 @@ public class MainActivity extends PSActionBarActivity
         @Override
         public Fragment getItem(int position) {
             if (position == 0)
-                return new TimelineFragment();
+                return getFragment(position, TimelineFragment.class);
             if (position == 1)
-                return new FindFriendsFragment();
+                return getFragment(position, FindFriendsFragment.class);
             if (position == 2)
-                return new Fragment();
+                return getFragment(position, CoeditListFragment.class);
             if (position == 3)
-                return new ActivityFragment();
+                return getFragment(position, ActivityFragment.class);
             if (position == 4)
-                return new ProfileFragment();
+                return getFragment(position, ProfileFragment.class);
             return null;
+        }
+
+        private Fragment getFragment(int position, Class fragmentClass) {
+            try {
+                String key = String.valueOf(position);
+                PSFragment fragment;
+
+                if (fragmentMap.containsKey(key)) {
+                    fragment = fragmentMap.get(key);
+                } else {
+                    fragment = (PSFragment) fragmentClass.newInstance();
+                    fragmentMap.put(key, fragment);
+                }
+
+                return fragment;
+            } catch (Exception e) {
+                Log.d("e", e);
+                return null;
+            }
         }
     }
 }

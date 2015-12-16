@@ -2,6 +2,7 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -28,7 +29,8 @@ import pisces.psuikit.ext.PSFrameLayout;
 /**
  * Created by pisces on 11/19/15.
  */
-public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDelegate {
+public class AlbumFlipView extends PSFrameLayout
+        implements FlipView.FlipViewDelegate {
     public static final int CENTER_INDEX_OF_VISIBLE_VIEWS = 2;
     public static final int COUNT_OF_VISIBLE_VIEWS = 5;
     public static final int PAGE_COUNT = 2;
@@ -46,14 +48,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private int pageWidth;
     private int pageIndex = -1;
     private float originRotation;
-    private float xPanningOffset;
+    private PointF startPoint;
+    private Delegate delegate;
+    private Album model;
     private View background;
     private PSFrameLayout container;
     private ProgressBar progressBar;
-    private Delegate delegate;
     private List<FlipView> visibleViews;
     private FlipView targetFlipView;
-    private Album model;
     private AlbumPageCountView pageCountView;
 
     public AlbumFlipView(Context context) {
@@ -119,8 +121,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                xPanningOffset = event.getRawX();
-
+                startPoint = new PointF(event.getRawX(), event.getRawY());
                 pause();
                 loadRemainPages();
                 break;
@@ -149,18 +150,19 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                             targetFlipView.doFlip(FlipView.Direction.Right, new DecelerateInterpolator());
                     }
                 } else {
-                    FlipView flipView = xPanningOffset > pageWidth ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    FlipView flipView = startPoint.x > pageWidth ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     onTap(flipView, flipView.getCurrentPageView());
                 }
 
-                xPanningOffset = 0;
+                startPoint = null;
                 targetFlipView = null;
                 return false;
 
             case MotionEvent.ACTION_MOVE:
-                float dx = xPanningOffset - event.getRawX();
+                float dx = startPoint.x - event.getRawX();
+                float dy = startPoint.y - event.getRawY();
 
-                if (dx == 0)
+                if (dx == 0 || Math.abs(dy) > Math.abs(dx))
                     break;
 
                 if (targetFlipView == null) {
@@ -174,13 +176,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 }
 
                 if (targetFlipView != null) {
+                    targetFlipView.bringToFront();
+
                     float mx = pageWidth * 0.65f;
                     float rotation = Math.min(0, Math.max(-180, originRotation + (180 * dx / mx * -1)));
                     targetFlipView.rotate(rotation);
                 }
                 break;
         }
-
         return true;
     }
 
@@ -379,10 +382,9 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             delegate.onStop(this);
     }
 
-    // ================================================================================================
-    //  Listener
-    // ================================================================================================
-
+    /**
+     * FlipView.Delegate
+     */
     public void onChangeDirection(FlipView view, FlipView.Direction direction) {
         updatePageCountView();
     }

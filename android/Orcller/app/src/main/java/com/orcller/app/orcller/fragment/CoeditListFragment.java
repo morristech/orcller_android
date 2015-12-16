@@ -1,10 +1,10 @@
-package com.orcller.app.orcller.activity;
+package com.orcller.app.orcller.fragment;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
 import com.orcller.app.orcller.model.album.Coedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
@@ -21,58 +22,51 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import java.util.ArrayList;
 import java.util.List;
 
-import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+
 /**
- * Created by pisces on 12/13/15.
+ * Created by pisces on 12/16/15.
  */
-public class CoeditListActivity extends PSActionBarActivity
-        implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class CoeditListFragment extends PSFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
     private List<Coedit> items = new ArrayList<>();
-    private AsyncTask asyncTask;
     private ApiUsers.CoeditList lastEntity;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
     private ListAdapter listAdapter;
 
     // ================================================================================================
-    //  Overridden: PSActionBarActivity
+    //  Overridden: PSFragment
     // ================================================================================================
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_coedit_list, null);
+    }
 
-        setContentView(R.layout.activity_coedit_list);
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(R.string.w_title_collaborations);
+    @Override
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-        listView = (ListView) findViewById(R.id.listView);
-        listAdapter = new ListAdapter(this);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        listView = (ListView) view.findViewById(R.id.listView);
+        listAdapter = new ListAdapter(getContext());
 
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_lightgray_toolbar_control);
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
-        reload();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
 
         swipeRefreshLayout = null;
         listView = null;
@@ -87,6 +81,11 @@ public class CoeditListActivity extends PSActionBarActivity
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void startFragment() {
+        reload();
     }
 
     // ================================================================================================
@@ -116,24 +115,14 @@ public class CoeditListActivity extends PSActionBarActivity
             @Override
             public void onResponse(final Response<ApiUsers.CoeditListRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    asyncTask = Application.run(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (after == null)
-                                items.clear();
+                    if (after == null)
+                        items.clear();
 
-                            lastEntity = response.body().entity;
+                    lastEntity = response.body().entity;
 
-                            items.addAll(lastEntity.data);
-                        }
-                    }, new Runnable() {
-                        @Override
-                        public void run() {
-                            endDataLoading();
-                            listAdapter.notifyDataSetChanged();
-                            asyncTask = null;
-                        }
-                    });
+                    items.addAll(lastEntity.data);
+                    listAdapter.notifyDataSetChanged();
+                    endDataLoading();
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());

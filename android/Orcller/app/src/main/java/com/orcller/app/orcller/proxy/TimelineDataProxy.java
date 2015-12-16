@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
@@ -12,8 +13,10 @@ import retrofit.Callback;
 import retrofit.Converter;
 import retrofit.GsonConverterFactory;
 import retrofit.http.FormUrlEncoded;
+import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * Created by pisces on 12/8/15.
@@ -40,7 +43,7 @@ public class TimelineDataProxy extends AbstractDataProxy {
 
     @Override
     protected String createBaseUrl() {
-        return BuildConfig.API_BASE_URL + "/newsfeed/";
+        return BuildConfig.API_BASE_URL + "/";
     }
 
     // ================================================================================================
@@ -66,6 +69,10 @@ public class TimelineDataProxy extends AbstractDataProxy {
         enqueueCall(service().hideAlbum(albumId), callback);
     }
 
+    public void list(int limit, String after, Callback<ApiUsers.AlbumListRes> callback) {
+        enqueueCall(service().list(limit, after), callback);
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -80,11 +87,14 @@ public class TimelineDataProxy extends AbstractDataProxy {
 
     public interface Service {
         @FormUrlEncoded
-        @POST("hidden/user/{userId}")
+        @POST("newsfeed/hidden/user/{userId}")
         Call<ApiResult> hideAllAlbums(@Path("userId") long userId);
 
         @FormUrlEncoded
-        @POST("hidden/album/{albumId}")
+        @POST("newsfeed/hidden/album/{albumId}")
         Call<ApiResult> hideAlbum(@Path("albumId") long albumId);
+
+        @GET("newsfeed")
+        Call<ApiUsers.AlbumListRes> list(@Query("limit") int limit, @Query("after") String after);
     }
 }

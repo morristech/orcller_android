@@ -5,6 +5,7 @@ import android.view.View;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.activity.AlbumHeartListActivity;
 import com.orcller.app.orcller.activity.AlbumStarListActivity;
+import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
@@ -21,12 +22,10 @@ import com.orcller.app.orcller.widget.PageView;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSScrollView;
+import pisces.psuikit.ext.Scrollable;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-
-import static com.orcller.app.orcller.BuildConfig.DEBUG;
-import static pisces.psfoundation.utils.Log.e;
 
 /**
  * Created by pisces on 12/10/15.
@@ -39,11 +38,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     // ================================================================================================
-    //  Public
-    // ================================================================================================
-
-    // ================================================================================================
-    //  Listener
+    //  Interface Implemetaion
     // ================================================================================================
 
     /**
@@ -61,8 +56,11 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         if (AlbumItemView.ButtonType.Coedit.equals(type)) {
             CoeditViewActivity.show(itemView.getModel());
         } else if (AlbumItemView.ButtonType.Comment.equals(type)) {
-            if (invoker.getCommentInputView() != null)
+            if (invoker.getCommentInputView() != null) {
                 invoker.getCommentInputView().setFocus();
+            } else {
+                AlbumViewActivity.show(itemView.getModel(), true);
+            }
         } else if (AlbumItemView.ButtonType.CommentList.equals(type)) {
             CommentListActivity.show(itemView.getModel());
         } else if (AlbumItemView.ButtonType.Heart.equals(type)) {
@@ -110,6 +108,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+        invoker.onTap(view, flipView, pageView);
         PageListActivity.show(view.getModel(), view.getModel().pages.getPageIndex(pageView.getModel()));
     }
 
@@ -131,8 +130,8 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
                 if (response.isSuccess() && response.body().isSuccess()) {
                     album.likes.synchronize(response.body().entity, true);
                 } else {
-                    if (DEBUG)
-                        e("Api Error", response.body());
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
                 }
             }
 
@@ -163,8 +162,8 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
                 if (response.isSuccess() && response.body().isSuccess()) {
                     album.favorites.synchronize(response.body().entity, true);
                 } else {
-                    if (DEBUG)
-                        e("Api Error", response.body());
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
                 }
             }
 
@@ -187,7 +186,8 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
 
     public static interface Invoker {
         CommentInputView getCommentInputView();
-        PSScrollView getScrollView();
+        Scrollable getScrollView();
         void invalidateOptionsMenu();
+        void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

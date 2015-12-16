@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -19,30 +20,34 @@
         android:id="@+id/tabHost"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="0dp"
-                android:layout_height="0dp"/>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@android:color/white"/>
+                android:layout_height="match_parent">
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"/>
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="49dp"
-                android:layout_alignParentBottom="true"
-                android:background="@null"
-                android:divider="@null"/>
-        </RelativeLayout>
+                <pisces.psuikit.ext.PSViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    app:pagingEnabled="false"/>
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:background="@drawable/background_bordered_white"
+                    android:divider="@null"/>
+            </LinearLayout>
+        </FrameLayout>
     </TabHost>
 </LinearLayout>

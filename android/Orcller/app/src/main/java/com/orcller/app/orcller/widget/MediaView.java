@@ -308,10 +308,12 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
                         public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             onCompleteImageLoad(resource);
 
-                            if (resource != null)
+                            if (resource != null) {
                                 handler.onComplete();
-                            else
+                            } else {
+                                onError();
                                 handler.onError();
+                            }
                             return true;
                         }
                     })

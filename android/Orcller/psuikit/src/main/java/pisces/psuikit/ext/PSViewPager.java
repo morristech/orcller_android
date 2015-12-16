@@ -1,12 +1,14 @@
 package pisces.psuikit.ext;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 
+import pisces.android.R;
 import pisces.psfoundation.utils.DataLoadValidator;
 
 /**
@@ -14,6 +16,7 @@ import pisces.psfoundation.utils.DataLoadValidator;
  */
 public class PSViewPager extends ViewPager implements PSComponent, DataLoadValidator.Client {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
+    private boolean pagingEnabled = true;
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
 
@@ -71,9 +74,36 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
         }
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!pagingEnabled)
+            return false;
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        switch (ev.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                if (pagingEnabled)
+                    return super.onTouchEvent(ev);
+                return pagingEnabled;
+            default:
+                return super.onTouchEvent(ev);
+        }
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isPagingEnabled() {
+        return pagingEnabled;
+    }
+
+    public void setPagingEnabled(boolean pagingEnabled) {
+        this.pagingEnabled = pagingEnabled;
+    }
 
     public boolean isImmediatelyUpdating() {
         return immediatelyUpdating;
@@ -112,6 +142,14 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
     }
 
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PSViewPager, defStyleAttr, defStyleRes);
+        try {
+
+            setPagingEnabled(ta.getBoolean(R.styleable.PSViewPager_pagingEnabled, true));
+        } finally {
+            ta.recycle();
+        }
     }
 
     protected void setUpSubviews(Context context) {

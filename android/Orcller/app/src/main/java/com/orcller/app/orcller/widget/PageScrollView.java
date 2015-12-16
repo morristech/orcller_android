@@ -216,7 +216,7 @@ public class PageScrollView extends PSLinearLayout
 
     public void onEventMainThread(Object event) {
         if (event instanceof Model.Event) {
-            Model.Event casted = Model.Event.cast(event);
+            Model.Event casted = (Model.Event) event;
 
             if (casted.getType().equals(Model.Event.SYNCHRONIZE)) {
                 if (casted.getTarget().equals(model)) {

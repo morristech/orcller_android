@@ -129,7 +129,7 @@ public class PSImageView extends ImageView implements PSComponent {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PSImageView, 0, 0);
         try {
             borderColor = ta.getColor(R.styleable.PSImageView_borderColor, 0xFFE6E6F4);
-            borderWidth = ta.getDimension(R.styleable.PSImageView_borderWidth, 0.0f);
+            borderWidth = ta.getDimension(R.styleable.PSImageView_strokeWidth, 0.0f);
             cornerRadius = ta.getDimension(R.styleable.PSImageView_cornerRadius, 0.0f);
         } finally {
             ta.recycle();
