@@ -46,13 +46,6 @@ public class PSActionBarActivity extends ActionBarActivity implements DataLoadVa
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        toolbar = null;
-    }
-
-    @Override
     public void startActivity(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         super.startActivity(intent);

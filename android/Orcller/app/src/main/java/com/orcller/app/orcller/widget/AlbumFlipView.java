@@ -29,15 +29,13 @@ import pisces.psuikit.ext.PSFrameLayout;
 /**
  * Created by pisces on 11/19/15.
  */
-public class AlbumFlipView extends PSFrameLayout
-        implements FlipView.FlipViewDelegate {
+public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDelegate {
     public static final int CENTER_INDEX_OF_VISIBLE_VIEWS = 2;
     public static final int COUNT_OF_VISIBLE_VIEWS = 5;
     public static final int PAGE_COUNT = 2;
 
     private boolean allowsAutoSlide;
     private boolean allowsShowPageCount;
-    private boolean dataLoading;
     private boolean pageOpened;
     private boolean playing;
     private boolean slideFinished;
@@ -291,10 +289,9 @@ public class AlbumFlipView extends PSFrameLayout
     }
 
     public void loadRemainPages() {
-        if (model == null || dataLoading || model.pages.count >= model.pages.total_count)
+        if (model == null || model.pages.data.size() >= model.pages.total_count || invalidDataLoading())
             return;
 
-        dataLoading = true;
         final AlbumFlipView self = this;
 
         progressBar.setVisibility(VISIBLE);
@@ -305,7 +302,7 @@ public class AlbumFlipView extends PSFrameLayout
         AlbumDataProxy.getDefault().remainPages(model, new AlbumDataProxy.CompleteHandler() {
             @Override
             public void onComplete(boolean isSuccess) {
-                dataLoading = false;
+                endDataLoading();
                 progressBar.setVisibility(GONE);
 
                 if (delegate != null)

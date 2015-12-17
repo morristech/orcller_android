@@ -85,10 +85,6 @@ public class UserPictureActivity extends PSActionBarActivity {
         super.onDestroy();
 
         EventBus.getDefault().unregister(this);
-
-        toolbarTextView = null;
-        imageView = null;
-        model = null;
     }
 
     @Override

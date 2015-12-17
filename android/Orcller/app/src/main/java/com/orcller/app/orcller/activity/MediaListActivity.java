@@ -71,11 +71,6 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
         stopSelectedVideoMediaView();
         recyclerView.removeOnPageChangedListener(this);
         recyclerView.removeAllViews();
-
-        items = null;
-        recyclerView = null;
-        adapter = null;
-        selectedView = null;
     }
 
     // ================================================================================================

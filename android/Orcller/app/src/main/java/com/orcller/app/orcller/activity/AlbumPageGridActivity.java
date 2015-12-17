@@ -77,10 +77,6 @@ public class AlbumPageGridActivity extends PSActionBarActivity implements Adapte
         super.onDestroy();
 
         gridView.setOnItemClickListener(null);
-
-        gridView = null;
-        gridViewAdapter = null;
-        model = null;
     }
 
     // ================================================================================================

@@ -74,13 +74,6 @@ public class ImagePickerViewActivity extends PSActionBarActivity
         super.onDestroy();
 
         recyclerView.removeOnPageChangedListener(this);
-
-        adapter = null;
-        items = null;
-        toolbarTextView = null;
-        recyclerView = null;
-        pagerTextView = null;
-        selectedView = null;
     }
 
     // ================================================================================================

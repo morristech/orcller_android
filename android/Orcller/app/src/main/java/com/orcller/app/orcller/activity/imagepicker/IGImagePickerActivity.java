@@ -2,7 +2,6 @@ package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -21,13 +20,11 @@ import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.instagram.sdk.error.InstagramSDKError;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.itemview.HeaderItemView;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -41,7 +38,6 @@ public class IGImagePickerActivity extends PSActionBarActivity
     private static final int FOLLOWING_LOAD_LIMIT = 50;
     private int choiceMode;
     private List<ApiInstagram.User> items = new ArrayList<>();
-    private AsyncTask asyncTask;
     private Button popularButton;
     private ListView listView;
     private ListAdapter listAdapter;
@@ -90,21 +86,11 @@ public class IGImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
-
         ProgressBarManager.hide(this);
         listView.setOnItemClickListener(null);
         popularButton.setOnClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
         FBPhotoCaches.getDefault().clear();
-
-        items = null;
-        listView = null;
-        listAdapter = null;
-        popularButton = null;
     }
 
     @Override
@@ -176,7 +162,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
 
                     @Override
                     public void onComplete(final ApiInstagram.UserListRes result) {
-                        asyncTask = Application.run(new Runnable() {
+                        Application.run(new Runnable() {
                             @Override
                             public void run() {
                                 lastRes = result;
@@ -187,7 +173,6 @@ public class IGImagePickerActivity extends PSActionBarActivity
                             public void run() {
                                 ProgressBarManager.hide(self);
                                 listAdapter.notifyDataSetChanged();
-                                asyncTask = null;
                             }
                         });
                     }

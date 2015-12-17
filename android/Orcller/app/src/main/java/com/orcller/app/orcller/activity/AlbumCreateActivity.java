@@ -71,7 +71,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private static final int PAGE_COUNT_MIN = 1;
     private int selectedIndexForAppending;
     private int processCountForAppending;
-    private AsyncTask asyncTask;
     private Validator validator;
     private Album model;
     private LinearLayout rootLayout;
@@ -187,11 +186,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
-
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
         spinner.setOnItemSelectedListener(null);
@@ -199,14 +193,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
         orderButton.setOnClickListener(null);
         defaultButton.setOnClickListener(null);
         deleteButton.setOnClickListener(null);
-
-        spinnerContainer = null;
-        spinner = null;
-        titleEditText = null;
-        descriptionInputView = null;
-        albumFlipView = null;
-        albumGridView = null;
-        validator = null;
     }
 
     @Override
@@ -277,7 +263,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
             final Album model = (Album) casted.getObject();
 
             if (casted.getType() == PageListEvent.PAGE_EDIT_COMPLETE) {
-                asyncTask = Application.run(new Runnable() {
+                Application.run(new Runnable() {
                     @Override
                     public void run() {
                         clonedModel.removeAllPages();
@@ -293,7 +279,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
                         reload();
                         setPostItemEnabled();
                         setOtherButtonsEnabled();
-                        asyncTask = null;
                     }
                 });
             } else if (casted.getType() == PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE) {

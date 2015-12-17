@@ -36,7 +36,6 @@ public class CoeditListActivity extends PSActionBarActivity
         implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
     private List<Coedit> items = new ArrayList<>();
-    private AsyncTask asyncTask;
     private ApiUsers.CoeditList lastEntity;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
@@ -63,20 +62,6 @@ public class CoeditListActivity extends PSActionBarActivity
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
         reload();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
-
-        swipeRefreshLayout = null;
-        listView = null;
-        listAdapter = null;
     }
 
     @Override
@@ -116,7 +101,7 @@ public class CoeditListActivity extends PSActionBarActivity
             @Override
             public void onResponse(final Response<ApiUsers.CoeditListRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    asyncTask = Application.run(new Runnable() {
+                    Application.run(new Runnable() {
                         @Override
                         public void run() {
                             if (after == null)
@@ -131,7 +116,6 @@ public class CoeditListActivity extends PSActionBarActivity
                         public void run() {
                             endDataLoading();
                             listAdapter.notifyDataSetChanged();
-                            asyncTask = null;
                         }
                     });
                 } else {

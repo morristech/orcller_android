@@ -4,7 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,11 +56,9 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     private AlbumFlipView albumFlipView;
     private TextView descriptionTextView;
     private LinearLayout infoContainer;
-    private LinearLayout buttonContainer;
     private TextView heartTextView;
     private TextView commentTextView;
     private TextView starTextView;
-    private ImageView optionsIcon;
     private PSButton coeditButton;
     private PSButton heartButton;
     private PSButton commentButton;
@@ -80,7 +77,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     }
 
     // ================================================================================================
-    //  Overridden: PSScrollView
+    //  Overridden: PSLinearLayout
     // ================================================================================================
 
     @Override
@@ -91,21 +88,19 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
         infoContainer = (LinearLayout) findViewById(R.id.infoContainer);
-        buttonContainer = (LinearLayout) findViewById(R.id.buttonContainer);
         heartTextView = (TextView) findViewById(R.id.heartTextView);
         commentTextView = (TextView) findViewById(R.id.commentTextView);
         starTextView = (TextView) findViewById(R.id.starTextView);
-        optionsIcon = (ImageView) findViewById(R.id.optionsIcon);
         coeditButton = (PSButton) findViewById(R.id.coeditButton);
         heartButton = (PSButton) findViewById(R.id.heartButton);
         commentButton = (PSButton) findViewById(R.id.commentButton);
         starButton = (PSButton) findViewById(R.id.starButton);
-        albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
 
+        albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
+        albumInfoProfileView.getOptionsIcon().setOnClickListener(this);
         heartTextView.setOnClickListener(this);
         commentTextView.setOnClickListener(this);
         starTextView.setOnClickListener(this);
-        optionsIcon.setOnClickListener(this);
         coeditButton.setOnClickListener(this);
         heartButton.setOnClickListener(this);
         commentButton.setOnClickListener(this);
@@ -150,7 +145,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
             return;
 
         this.allowsShowOptionIcon = allowsShowOptionIcon;
-        optionsIcon.setVisibility(allowsShowOptionIcon ? VISIBLE : GONE);
+        albumInfoProfileView.getOptionsIcon().setVisibility(allowsShowOptionIcon ? VISIBLE : GONE);
     }
 
     public int getButtonVisiblity() {
@@ -167,6 +162,14 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         heartButton.setVisibility((buttonVisiblity & HEART) == HEART ? VISIBLE : GONE);
         commentButton.setVisibility((buttonVisiblity & COMMENT) == COMMENT ? VISIBLE : GONE);
         starButton.setVisibility((buttonVisiblity & STAR) == STAR ? VISIBLE : GONE);
+    }
+
+    public int getDescriptionMode() {
+        return albumInfoProfileView.getDescriptionMode();
+    }
+
+    public void setDescriptionMode(int descriptionMode) {
+        albumInfoProfileView.setDescriptionMode(descriptionMode);
     }
 
     public Album getModel() {
@@ -207,11 +210,9 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         commentButton.setSelected(model.comments.isParticipated());
         starButton.setText(getButtonText(starButton));
         starButton.setSelected(model.favorites.isParticipated());
-        optionsIcon.setVisibility(allowsShowOptionIcon ? VISIBLE : GONE);
-        infoContainer.setVisibility(heartTextView.isShown() ||
-                commentTextView.isShown() ||
-                starTextView.isShown() ||
-                optionsIcon.isShown() ? VISIBLE : GONE);
+        infoContainer.setVisibility(PSView.isShown(heartTextView) ||
+                PSView.isShown(commentTextView) ||
+                PSView.isShown(starTextView) ? VISIBLE : GONE);
         setLeftMargin(commentTextView, heartTextView);
         setLeftMargin(starTextView, commentTextView);
         setAlbumFlipViewMargin();
@@ -233,7 +234,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
             type = ButtonType.CommentList;
         else if (starTextView.equals(v))
             type = ButtonType.StarList;
-        else if (optionsIcon.equals(v))
+        else if (albumInfoProfileView.getOptionsIcon().equals(v))
             type = ButtonType.Options;
         else if (coeditButton.equals(v))
             type = ButtonType.Coedit;

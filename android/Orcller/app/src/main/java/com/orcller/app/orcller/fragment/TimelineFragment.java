@@ -24,12 +24,16 @@ import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.model.api.ApiUsers;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.proxy.TimelineDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
+import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
@@ -46,7 +50,6 @@ import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.ext.PSListView;
-import pisces.psuikit.ext.Scrollable;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
@@ -60,9 +63,10 @@ public class TimelineFragment extends PSFragment
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final int LIST_COUNT = 20;
     private boolean isCreateButtonAnimating;
+    private boolean isDequeueProcessing;
     private int scrollState;
     private Point startPoint;
-    private List<Album> items = new ArrayList<>();
+    private List<Object> items = new ArrayList<>();
     private Queue<Event> eventQueue = new ConcurrentLinkedQueue<>();
     private ApiUsers.AlbumList lastEntity;
     private AlbumItemViewDelegate albumItemViewDelegate;
@@ -154,8 +158,7 @@ public class TimelineFragment extends PSFragment
                 selectedAlbumFlipView.setPageIndex(
                         SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
         } else if (event instanceof AlbumEvent || event instanceof MediaUploadUnit.Event) {
-            Log.d("onEventMainThread");
-            eventQueue.offer((AlbumEvent) event);
+            eventQueue.offer((Event) event);
             dequeueEvent();
         }
     }
@@ -171,7 +174,9 @@ public class TimelineFragment extends PSFragment
      * AdapterView.OnItemClickListener
      */
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        AlbumViewActivity.show(items.get(position).id, false);
+        Object item = items.get(position);
+        if (item instanceof Album)
+            AlbumViewActivity.show(((Album) item).id, false);
     }
 
     /**
@@ -230,22 +235,29 @@ public class TimelineFragment extends PSFragment
     //  Private
     // ================================================================================================
 
-    private void addItem(Album album) {
-        if (album != null) {
-            items.add(0, album);
+    private void addItem(Object item) {
+        if (!items.contains(item)) {
+            items.add(0, item);
             listAdapter.notifyDataSetChanged();
         }
     }
 
-    private void deleteItem(final Album album, Runnable runnable) {
-        if (album == null)
+    private void deleteItem(Object item) {
+        if (items.contains(item)) {
+            items.remove(item);
+            listAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void deleteItem(final MediaUploadUnit unit, Runnable runnable) {
+        if (unit == null)
             return;
 
         Application.run(new Runnable() {
             @Override
             public void run() {
-                for (Album item : items) {
-                    if (item.id == album.id) {
+                for (Object item : items) {
+                    if (item instanceof Album && ((Album) item).id == unit.getModel().id) {
                         items.remove(item);
                         break;
                     }
@@ -255,50 +267,50 @@ public class TimelineFragment extends PSFragment
     }
 
     private void dequeueEvent() {
-        if (!isResumed() || eventQueue.size() < 1)
+        Log.d("dequeueEvent", isDequeueProcessing);
+        if (eventQueue.size() < 1)
             return;
 
+        isDequeueProcessing = true;
+
         final Event event = eventQueue.poll();
-        final Album album = getAlbum(event);
-        final Runnable reload = new Runnable() {
+        final String type = event.getType();
+        final Object target = event.getTarget();
+        final Runnable complete = new Runnable() {
             @Override
             public void run() {
-                if (listAdapter != null)
-                    listAdapter.notifyDataSetChanged();
+                isDequeueProcessing = false;
+//                eventQueue.remove(event);
+                dequeueEvent();
             }
         };
 
-        if (MediaUploadUnit.Event.START_UPLOADING.equals(event.getType())) {
-            deleteItem(album, new Runnable() {
+        Log.d("event.getType()", event.getType());
+
+        if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
+            final MediaUploadUnit unit = (MediaUploadUnit) target;
+
+            deleteItem(unit, new Runnable() {
                 @Override
                 public void run() {
-                    MediaUploadUnit unit = (MediaUploadUnit) event.getTarget();
-                    if (MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState()))
-                        reload.run();
-                    else
-                        addItem(album);
+                    if (MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
+                        listAdapter.notifyDataSetChanged();
+                    } else {
+                        addItem(unit);
+                    }
+
+                    complete.run();
                 }
             });
-        } else if (AlbumEvent.CREATE.equals(event.getType())) {
-            addItem(album);
-        } else if (AlbumEvent.DELETE.equals(event.getType())) {
-            deleteItem(album, reload);
-        } else if (AlbumEvent.MODIFY.equals(event.getType())) {
-            deleteItem(album, new Runnable() {
-                @Override
-                public void run() {
-                    addItem(album);
-                }
-            });
+        } else if (target instanceof MediaUploadUnit &&
+                (AlbumEvent.CREATE.equals(type) || AlbumEvent.MODIFY.equals(type))) {
+            deleteItem(target);
+            addItem(((MediaUploadUnit) target).getModel());
+            complete.run();
+        } else if (AlbumEvent.DELETE.equals(type)) {
+            deleteItem(event.getObject());
+            complete.run();
         }
-
-        dequeueEvent();
-    }
-
-    private Album getAlbum(Event event) {
-        if (event instanceof MediaUploadUnit.Event)
-            return ((MediaUploadUnit) event.getTarget()).getModel();
-        return (Album) event.getObject();
     }
 
     private Point getScrollPoint() {
@@ -329,12 +341,10 @@ public class TimelineFragment extends PSFragment
 
                     @Override
                     public void onAnimationCancel(Animator animation) {
-
                     }
 
                     @Override
                     public void onAnimationRepeat(Animator animation) {
-
                     }
                 })
                 .start();
@@ -357,9 +367,24 @@ public class TimelineFragment extends PSFragment
                     lastEntity = response.body().entity;
 
                     items.addAll(lastEntity.data);
-                    endDataLoading();
-                    listAdapter.notifyDataSetChanged();
-                    listView.setVisibility(View.VISIBLE);
+
+                    AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+                        @Override
+                        public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                            MediaUploadUnit unit = new MediaUploadUnit(response.body().entity);
+                            items.add(0, unit);
+                            endDataLoading();
+                            listAdapter.notifyDataSetChanged();
+                            listView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                        }
+                    });
+
+
+
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
@@ -432,6 +457,8 @@ public class TimelineFragment extends PSFragment
     // ================================================================================================
 
     private class ListAdapter extends BaseAdapter {
+        private static final int REAL = 1;
+        private static final int TEMP = 2;
         private Context context;
 
         public ListAdapter(Context context) {
@@ -444,7 +471,7 @@ public class TimelineFragment extends PSFragment
         }
 
         @Override
-        public Album getItem(int position) {
+        public Object getItem(int position) {
             return items.get(position);
         }
 
@@ -454,21 +481,54 @@ public class TimelineFragment extends PSFragment
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            AlbumItemView itemView;
+        public int getItemViewType(int position) {
+            return getItem(position) instanceof Album ? REAL : TEMP;
+        }
 
-            if (convertView == null) {
-                itemView = new AlbumItemView(context);
-                itemView.setDelegate(albumItemViewDelegate);
-                convertView = itemView;
-            } else {
-                itemView = (AlbumItemView) convertView;
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Object item = getItem(position);
+            int type = getItemViewType(position);
+
+            switch (type) {
+                case REAL:
+                    AlbumItemView albumItemView;
+
+                    if (convertView == null || !(convertView instanceof AlbumItemView)) {
+                        albumItemView = new AlbumItemView(context);
+                        albumItemView.setAllowsShowOptionIcon(true);
+                        albumItemView.setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
+                        albumItemView.setDelegate(albumItemViewDelegate);
+                        convertView = albumItemView;
+                    } else {
+                        albumItemView = (AlbumItemView) convertView;
+                    }
+
+                    albumItemView.setModel((Album) item);
+                    break;
+
+                case TEMP:
+                    TempAlbumItemView tempAlbumItemView;
+
+                    if (convertView == null || !(convertView instanceof TempAlbumItemView)) {
+                        tempAlbumItemView = new TempAlbumItemView(context);
+                        convertView = tempAlbumItemView;
+                    } else {
+                        tempAlbumItemView = (TempAlbumItemView) convertView;
+                    }
+
+                    tempAlbumItemView.setUnit((MediaUploadUnit) item);
+                    break;
             }
 
-            itemView.setModel(getItem(position));
             loadMore(position);
 
             return convertView;
+        }
+
+        @Override
+        public int getViewTypeCount(){
+            return 2;
         }
     }
 }

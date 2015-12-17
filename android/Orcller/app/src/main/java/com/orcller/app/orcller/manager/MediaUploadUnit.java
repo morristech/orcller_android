@@ -45,6 +45,7 @@ public class MediaUploadUnit implements Serializable {
     private CompletionState completionState = CompletionState.None;
     private ConcurrentLinkedQueue<Image> queue = new ConcurrentLinkedQueue<>();
     private HashMap<String, Image> map = new HashMap<>();
+    private Delegate delegate;
     private Album model;
 
     public MediaUploadUnit(Album model) {
@@ -59,16 +60,19 @@ public class MediaUploadUnit implements Serializable {
         return processing;
     }
 
-    public float getProcess() {
-        return process;
-    }
-
     public CompletionState getCompletionState() {
         return completionState;
     }
 
     public void setCompletionState(CompletionState completionState) {
         this.completionState = completionState;
+    }
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
     }
 
     public Album getModel() {
@@ -79,6 +83,10 @@ public class MediaUploadUnit implements Serializable {
         AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
         map.clear();
         queue.clear();
+    }
+
+    public float getProcess() {
+        return process;
     }
 
     public void clearAll() {
@@ -95,8 +103,12 @@ public class MediaUploadUnit implements Serializable {
     }
 
     public void upload() {
-        if (!isProcessing())
+        if (!isProcessing()) {
+            if (delegate != null)
+                delegate.onStartUploading(this);
+
             EventBus.getDefault().post(new Event(Event.START_UPLOADING, this));
+        }
 
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -123,6 +135,9 @@ public class MediaUploadUnit implements Serializable {
     // ================================================================================================
 
     private void checkCompletion() {
+        if (delegate != null)
+            delegate.onProcessUploading(this);
+
         EventBus.getDefault().post(new Event(Event.PROCESS_UPLOADING, this));
 
         if (current >= total) {
@@ -139,12 +154,21 @@ public class MediaUploadUnit implements Serializable {
     private void errorState() {
         cancelAll();
         queue.clear();
+
+        if (delegate != null)
+            delegate.onFailUploading(this);
+
         EventBus.getDefault().post(new Event(Event.FAILED_UPLOADING, this));
         processing = false;
     }
 
     private void executeCompletionState() {
+        if (delegate != null)
+            delegate.onCompleteUploading(this);
+
         EventBus.getDefault().post(new Event(Event.COMPLETE_UPLOADING, this));
+
+        Log.d("completionState", completionState);
 
         if (completionState.equals(CompletionState.Creation)) {
             requestAlbumCreation();
@@ -208,12 +232,13 @@ public class MediaUploadUnit implements Serializable {
     }
 
     private void requestAlbumCreation() {
+        final Object target = this;
         AlbumDataProxy.getDefault().create(model, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     MediaManager.getDefault().clearUploading(model);
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, response.body().entity));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, target, response.body().entity));
                 } else {
                     if (DEBUG)
                         e("Api Error", response.body());
@@ -233,12 +258,13 @@ public class MediaUploadUnit implements Serializable {
     }
 
     private void requestAlbumModification() {
+        final Object target = this;
         AlbumDataProxy.getDefault().update(model, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     MediaManager.getDefault().clearUploading(model);
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, response.body().entity));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, target, response.body().entity));
                 } else {
                     errorState();
                 }
@@ -262,6 +288,17 @@ public class MediaUploadUnit implements Serializable {
         } else {
             executeUploading();
         }
+    }
+
+    // ================================================================================================
+    //  Interface: Delegate
+    // ================================================================================================
+
+    public static interface Delegate {
+        void onCompleteUploading(MediaUploadUnit unit);
+        void onFailUploading(MediaUploadUnit unit);
+        void onProcessUploading(MediaUploadUnit unit);
+        void onStartUploading(MediaUploadUnit unit);
     }
 
     // ================================================================================================

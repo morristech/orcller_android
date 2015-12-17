@@ -46,7 +46,6 @@ public class FBImagePickerActivity extends PSActionBarActivity
     private ListView listView;
     private ListAdapter listAdapter;
     private FBAlbums lastResult;
-    private AsyncTask asyncTask;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -80,20 +79,10 @@ public class FBImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
-
         ProgressBarManager.hide(this);
         listView.setOnItemClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
         FBPhotoCaches.getDefault().clear();
-
-        items = null;
-        listView = null;
-        listAdapter = null;
-        lastResult = null;
     }
 
     @Override
@@ -153,7 +142,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
                         if (error == null) {
                             lastResult = result;
 
-                            asyncTask = Application.run(new Runnable() {
+                            Application.run(new Runnable() {
                                 @Override
                                 public void run() {
                                     if (after == null)
@@ -169,7 +158,6 @@ public class FBImagePickerActivity extends PSActionBarActivity
                                 public void run() {
                                     endDataLoading();
                                     listAdapter.notifyDataSetChanged();
-                                    asyncTask = null;
                                 }
                             });
                         } else {

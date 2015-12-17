@@ -63,14 +63,6 @@ public class MainActivity extends PSActionBarActivity
         addTabs();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        tabHost = null;
-        viewPager = null;
-    }
-
     // ================================================================================================
     //  Interface Implemetaion
     // ================================================================================================

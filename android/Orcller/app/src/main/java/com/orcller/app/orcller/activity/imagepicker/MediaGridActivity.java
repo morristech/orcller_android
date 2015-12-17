@@ -1,7 +1,6 @@
 package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.Toolbar;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 
 import com.orcller.app.orcller.R;
@@ -40,7 +38,6 @@ import pisces.psuikit.manager.ProgressBarManager;
 abstract public class MediaGridActivity extends PSActionBarActivity
         implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     public static final String CHOICE_MODE_KEY = "choiceMode";
-    private AsyncTask asyncTask;
     protected ArrayList<Media> items = new ArrayList<>();
     private GridView gridView;
     private GridViewAdapter gridViewAdapter;
@@ -98,21 +95,12 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
-
         EventBus.getDefault().unregister(this);
         ProgressBarManager.hide(this);
         gridView.setOnItemClickListener(null);
         gridView.setOnItemLongClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
         FBPhotoCaches.getDefault().clear();
-
-        gridView = null;
-        gridViewAdapter = null;
-        items = null;
     }
 
     @Override
@@ -162,7 +150,7 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     protected void loadComplete(final List<?> data, Error error, final boolean refresh) {
         if (error == null) {
             if (data.size() > 0) {
-                asyncTask = Application.run(new Runnable() {
+                Application.run(new Runnable() {
                     @Override
                     public void run() {
                         if (refresh)
@@ -182,8 +170,6 @@ abstract public class MediaGridActivity extends PSActionBarActivity
                             gridView.clearChoices();
                             onItemClick(gridView, null, 0, 0);
                         }
-
-                        asyncTask = null;
                     }
                 });
             }
@@ -200,7 +186,7 @@ abstract public class MediaGridActivity extends PSActionBarActivity
         final List<Media> list = new ArrayList<>();
         final Object self = this;
 
-        asyncTask = Application.run(new Runnable() {
+        Application.run(new Runnable() {
             @Override
             public void run() {
                 SparseBooleanArray array = gridView.getCheckedItemPositions();
@@ -218,7 +204,6 @@ abstract public class MediaGridActivity extends PSActionBarActivity
                                 ImagePickerEvent.COMPLETE_SELECTION,
                                 self,
                                 list));
-                asyncTask = null;
             }
         });
     }

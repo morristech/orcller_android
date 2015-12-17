@@ -46,20 +46,6 @@ public class WebViewActivity extends PSActionBarActivity {
             webView.loadUrl(url);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        title = null;
-        url = null;
-        webView = null;
-    }
-
     // ================================================================================================
     //  Private
     // ================================================================================================

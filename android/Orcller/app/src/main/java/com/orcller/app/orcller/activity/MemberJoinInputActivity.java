@@ -105,15 +105,6 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
         pwEditText.setOnKeyListener(null);
         joinButton.setOnClickListener(null);
         container.setOnTouchListener(null);
-
-        container = null;
-        joinButton = null;
-        descTextView = null;
-        extraTextView = null;
-        idEditText = null;
-        pwEditText = null;
-        textWatcher = null;
-        validator = null;
     }
 
     @Override

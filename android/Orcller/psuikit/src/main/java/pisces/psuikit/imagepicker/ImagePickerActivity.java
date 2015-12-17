@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +36,6 @@ public class ImagePickerActivity extends PSActionBarActivity
         implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private static final String CHOICE_MODE_KEY = "choiceMode";
     private ArrayList<Media> items = new ArrayList<>();
-    private AsyncTask asyncTask;
     private GridView gridView;
 
     // ================================================================================================
@@ -92,17 +90,9 @@ public class ImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if (asyncTask != null) {
-            asyncTask.cancel(false);
-            asyncTask = null;
-        }
-
         EventBus.getDefault().unregister(this);
         gridView.setOnItemClickListener(null);
         gridView.setOnItemLongClickListener(null);
-
-        items = null;
-        gridView = null;
     }
 
     // ================================================================================================
@@ -167,7 +157,7 @@ public class ImagePickerActivity extends PSActionBarActivity
         final int count = cursor.getCount();
         final ImagePickerActivity self = this;
 
-        asyncTask = Application.run(new Runnable() {
+        Application.run(new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < count; i++) {
@@ -190,7 +180,6 @@ public class ImagePickerActivity extends PSActionBarActivity
                 ProgressBarManager.hide(self);
                 gridView.setVisibility(View.VISIBLE);
                 gridView.setAdapter(new ImageAdapter(self));
-                asyncTask = null;
             }
         });
     }
@@ -199,7 +188,7 @@ public class ImagePickerActivity extends PSActionBarActivity
         final List<Media> list = new ArrayList<>();
         final Object self = this;
 
-        asyncTask = Application.run(new Runnable() {
+        Application.run(new Runnable() {
             @Override
             public void run() {
                 SparseBooleanArray array = gridView.getCheckedItemPositions();
@@ -217,7 +206,6 @@ public class ImagePickerActivity extends PSActionBarActivity
                                 ImagePickerEvent.COMPLETE_SELECTION,
                                 self,
                                 list));
-                asyncTask = null;
             }
         });
     }

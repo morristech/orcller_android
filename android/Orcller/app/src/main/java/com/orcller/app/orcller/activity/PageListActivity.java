@@ -131,14 +131,6 @@ public class PageListActivity extends PSActionBarActivity
         stopSelectedVideoMediaView();
         recyclerView.removeOnPageChangedListener(this);
         recyclerView.removeAllViews();
-
-        model = null;
-        adapter = null;
-        rootLayout = null;
-        toolbarTextView = null;
-        recyclerView = null;
-        commentInputView = null;
-        selectedView = null;
     }
 
     @Override

@@ -126,12 +126,6 @@ public class CoeditViewActivity extends PSActionBarActivity
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
         ProgressBarManager.hide(this);
-
-        rootLayout = null;
-        albumItemView = null;
-        albumOptionsManager = null;
-        contributorListView = null;
-        coeditButton = null;
     }
 
     @Override

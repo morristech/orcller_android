@@ -21,8 +21,6 @@ import com.orcller.app.orcller.widget.PageView;
 
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSScrollView;
-import pisces.psuikit.ext.Scrollable;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;

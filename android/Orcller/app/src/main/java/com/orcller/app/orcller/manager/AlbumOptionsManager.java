@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.manager;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.ContextThemeWrapper;
@@ -28,7 +29,6 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -39,10 +39,31 @@ import retrofit.Retrofit;
 public class AlbumOptionsManager extends PSObject {
     private Context context;
     private Album album;
+    private ProgressDialog progressDialog;
 
     public AlbumOptionsManager(Context context, Album album) {
         this.context = context;
         this.album = album;
+    }
+
+    @Override
+    public void endDataLoading() {
+        super.endDataLoading();
+
+        if (progressDialog != null) {
+            progressDialog.hide();
+            progressDialog = null;
+        }
+    }
+
+    @Override
+    public boolean invalidDataLoading() {
+        boolean invalid = super.invalidDataLoading();
+
+        if (!invalid)
+            progressDialog = ProgressDialog.show(context, null, context.getString(R.string.w_processing));
+
+        return invalid;
     }
 
     // ================================================================================================
@@ -103,8 +124,6 @@ public class AlbumOptionsManager extends PSObject {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show();
-
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -120,7 +139,6 @@ public class AlbumOptionsManager extends PSObject {
                 @Override
                 public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                     if (response.isSuccess() && response.body().isSuccess()) {
-                        ProgressBarManager.hide();
                         endDataLoading();
                         album.synchronize(response.body().entity, true);
                     } else {
@@ -143,8 +161,6 @@ public class AlbumOptionsManager extends PSObject {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show();
-
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -156,9 +172,8 @@ public class AlbumOptionsManager extends PSObject {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    ProgressBarManager.hide();
                     endDataLoading();
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, album));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, this, album));
                     finishActivity();
                 } else {
                     showFailAlertDialog(runnable, response.body());
@@ -181,8 +196,7 @@ public class AlbumOptionsManager extends PSObject {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show();
-
+        final Object target = this;
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -194,9 +208,8 @@ public class AlbumOptionsManager extends PSObject {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    ProgressBarManager.hide();
                     endDataLoading();
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, album));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.DELETE, target, album));
                     finishActivity();
                 } else {
                     showFailAlertDialog(runnable, response.body());
@@ -214,8 +227,7 @@ public class AlbumOptionsManager extends PSObject {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show();
-
+        final Object target = this;
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -227,9 +239,8 @@ public class AlbumOptionsManager extends PSObject {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    ProgressBarManager.hide();
                     endDataLoading();
-                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, album));
+                    EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, target, album));
                     finishActivity();
                 } else {
                     showFailAlertDialog(runnable, response.body());
@@ -290,8 +301,6 @@ public class AlbumOptionsManager extends PSObject {
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show();
-
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -303,7 +312,6 @@ public class AlbumOptionsManager extends PSObject {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    ProgressBarManager.hide();
                     endDataLoading();
                     AlertDialogUtils.show(R.string.m_complete_report_send, R.string.w_ok);
                 } else {
@@ -381,7 +389,6 @@ public class AlbumOptionsManager extends PSObject {
     }
 
     private void showFailAlertDialog(final Runnable retry) {
-        ProgressBarManager.hide();
         endDataLoading();
         AlertDialogUtils.retry(R.string.m_fail_common, retry);
     }

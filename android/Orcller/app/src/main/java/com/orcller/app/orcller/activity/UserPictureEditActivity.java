@@ -110,9 +110,6 @@ public class UserPictureEditActivity extends PSActionBarActivity {
         super.onDestroy();
 
         endDataLoading();
-
-        imageView = null;
-        model = null;
     }
 
     @Override

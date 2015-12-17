@@ -10,7 +10,7 @@ public class AlbumEvent extends Event {
     public static final String DELETE = "delete";
     public static final String MODIFY = "modify";
 
-    public AlbumEvent(String type, Object target) {
-        super(type, target);
+    public AlbumEvent(String type, Object target, Object object) {
+        super(type, target, object);
     }
 }

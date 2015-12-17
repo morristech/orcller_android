@@ -136,13 +136,6 @@ public class AlbumViewActivity extends PSActionBarActivity
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
         ProgressBarManager.hide(this);
-
-        rootLayout = null;
-        scrollView = null;
-        albumItemView = null;
-        commentListView = null;
-        commentInputView = null;
-        albumOptionsManager = null;
     }
 
     @Override

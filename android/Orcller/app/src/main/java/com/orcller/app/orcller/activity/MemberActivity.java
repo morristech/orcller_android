@@ -83,12 +83,6 @@ public class MemberActivity extends PSFragmentActivity {
         tabHost.setOnTabChangedListener(null);
         viewPager.setOnPageChangeListener(null);
         container.setOnTouchListener(null);
-
-        tabHost = null;
-        viewPager = null;
-        container = null;
-        titleContainer = null;
-        titleLinear = null;
     }
 
     // ================================================================================================

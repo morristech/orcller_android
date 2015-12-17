@@ -37,13 +37,6 @@ abstract public class UserListActivity extends PSActionBarActivity implements Us
         userListView.setDataSource(createDataSource());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        userListView = null;
-    }
-
     // ================================================================================================
     //  Listener
     // ================================================================================================

@@ -53,14 +53,6 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity implements Alb
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        gridView = null;
-        model = null;
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:

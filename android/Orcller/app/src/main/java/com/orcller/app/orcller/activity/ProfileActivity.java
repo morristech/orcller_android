@@ -106,9 +106,6 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
         super.onDestroy();
 
         SoftKeyboardNotifier.getDefault().unregister(this);
-
-        profileHearderView = null;
-        profileContentView = null;
     }
 
     @Override

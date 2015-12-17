@@ -37,6 +37,8 @@ import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.itemview.TempAlbumItemView;
+import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.model.album.ImageMedia;
 import com.orcller.app.orcller.model.album.Media;
@@ -205,6 +207,7 @@ public class ApplicationFacade {
 //        testCoeditListActivity();
 //        testCoeditViewActivity();
         testMainActivity();
+//        testTempAlbumItemView();
     }
 
     private void startMainActivity() {
@@ -669,5 +672,24 @@ public class ApplicationFacade {
 
     private void testMainActivity() {
         testActivity(MainActivity.class, null);
+    }
+
+    private void testTempAlbumItemView() {
+        final TempAlbumItemView view = new TempAlbumItemView(Application.applicationContext());
+
+        Application.getTopActivity().addContentView(
+                view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                MediaUploadUnit unit = new MediaUploadUnit(response.body().entity);
+                view.setUnit(unit);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 }

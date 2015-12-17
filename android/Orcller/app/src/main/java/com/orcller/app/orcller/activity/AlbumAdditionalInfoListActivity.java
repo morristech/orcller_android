@@ -39,13 +39,6 @@ abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivit
         userListView.setDataSource(createDataSource());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        userListView = null;
-    }
-
     // ================================================================================================
     //  Listener
     // ================================================================================================

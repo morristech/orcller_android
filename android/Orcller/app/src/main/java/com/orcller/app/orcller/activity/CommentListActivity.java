@@ -73,10 +73,6 @@ public class CommentListActivity extends PSActionBarActivity
         super.onDestroy();
 
         SoftKeyboardNotifier.getDefault().unregister(this);
-
-        rootLayout = null;
-        commentListView = null;
-        commentInputView = null;
     }
 
     @Override
