@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -46,7 +47,6 @@ import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
-import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
@@ -56,7 +56,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/15/15.
  */
-public class TimelineFragment extends PSFragment
+public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final int LIST_COUNT = 20;
@@ -78,7 +78,7 @@ public class TimelineFragment extends PSFragment
     }
 
     // ================================================================================================
-    //  Overridden: PSFragment
+    //  Overridden: MainTabFragment
     // ================================================================================================
 
     @Override
@@ -111,18 +111,11 @@ public class TimelineFragment extends PSFragment
 
         EventBus.getDefault().unregister(this);
         ProgressBarManager.hide();
-
-        listAdapter = null;
-        albumItemViewDelegate = null;
-        listView = null;
-        createButton = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        dequeueEvent();
     }
 
     @Override
@@ -136,7 +129,24 @@ public class TimelineFragment extends PSFragment
     }
 
     @Override
-    public void startFragment() {
+    protected void resumeFragment() {
+        if (isViewCreated()) {
+            listView.setAlpha(0);
+            listView.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    listView.setAlpha(1);
+                }
+            }, 200);
+        } else {
+            listView.setAlpha(1);
+            listView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void startFragment() {
         reload();
     }
 
@@ -352,7 +362,7 @@ public class TimelineFragment extends PSFragment
 
                     items.addAll(lastEntity.data);
                     listAdapter.notifyDataSetChanged();
-                    listView.setVisibility(View.VISIBLE);
+                    resumeFragment();
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());

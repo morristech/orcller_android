@@ -3,6 +3,7 @@ package pisces.psuikit.ext;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -12,7 +13,7 @@ import pisces.psfoundation.utils.DataLoadValidator;
 /**
  * Created by pisces on 11/12/15.
  */
-public class PSActionBarActivity extends ActionBarActivity implements DataLoadValidator.Client {
+public class PSActionBarActivity extends AppCompatActivity implements DataLoadValidator.Client {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private Toolbar toolbar;
 

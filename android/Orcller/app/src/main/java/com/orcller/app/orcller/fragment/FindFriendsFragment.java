@@ -15,7 +15,7 @@ import pisces.psuikit.ext.PSFragment;
 /**
  * Created by pisces on 11/3/15.
  */
-public class FindFriendsFragment extends PSFragment {
+public class FindFriendsFragment extends MainTabFragment {
     public FindFriendsFragment() {
     }
 

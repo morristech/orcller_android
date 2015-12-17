@@ -393,10 +393,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     public void onTap(FlipView view, PageView pageView) {
-        if (!allowsAutoSlide) {
+        if (!allowsAutoSlide)
             pause();
-            loadRemainPages();
-        }
 
         if (delegate != null)
             delegate.onTap(this, view, pageView);

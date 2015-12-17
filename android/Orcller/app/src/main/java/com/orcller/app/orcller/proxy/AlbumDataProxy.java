@@ -209,10 +209,6 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().view(albumId), callback);
     }
 
-    public void view1(long albumId, Callback<ApiResult> callback) {
-        enqueueCall(service().view(albumId), callback);
-    }
-
     public void viewByPageId(long pageId, Callback<ApiAlbum.AlbumRes> callback) {
         enqueueCall(service().viewByPageId(pageId), callback);
     }
@@ -249,7 +245,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
                     album.pages.count += pages.count;
                     album.pages.total_count = album.pages.count;
                     album.pages.data.addAll(pages.data);
-                    album.pages.didChangeProperties();
+                    album.didChangeProperties();
 
                     Application.runOnMainThread(runnable);
                 } catch (Exception e) {

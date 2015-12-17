@@ -20,6 +20,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.FollowersActivity;
 import com.orcller.app.orcller.activity.FollowingActivity;
 import com.orcller.app.orcller.activity.UserPictureActivity;
+import com.orcller.app.orcller.model.album.Album;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -184,10 +185,9 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
                 delegate.onChangeState();
         } else if (event instanceof Model.Event) {
             Model.Event casted = (Model.Event) event;
-
             if (Model.Event.SYNCHRONIZE.equals(casted.getType()) &&
-                    casted.getTarget().equals(model)) {
-                modelChanged();
+                    casted.getTarget() instanceof User) {
+                synchronizeModel((User) casted.getTarget());
             }
         }
     }
@@ -303,6 +303,19 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
             messageEditText.setBackground(null);
             messageEditText.setPadding(messageEditText.getPaddingLeft(), GraphicUtils.convertDpToPixel(8), 0, 0);
             separator.setVisibility(VISIBLE);
+        }
+    }
+
+    private void synchronizeModel(User user) {
+        if (user.equals(model)) {
+            userPictureView.reload();
+        } else if (user.user_uid == model.user_uid) {
+            model.synchronize(user, new Runnable() {
+                @Override
+                public void run() {
+                    modelChanged();
+                }
+            });
         }
     }
 

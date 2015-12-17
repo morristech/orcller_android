@@ -46,6 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:background="@drawable/background_ripple_lightgray"
             android:textColor="@android:color/black"
             android:textColorLink="@color/textcolor_dark_blue"
             android:textSize="12dp"/>

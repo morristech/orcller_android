@@ -39,7 +39,8 @@ import static pisces.psfoundation.utils.Log.e;
 /**
  * Created by pisces on 12/10/15.
  */
-public class ProfileActivity extends PSActionBarActivity implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
+public class ProfileActivity extends PSActionBarActivity
+        implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
     private static final String USER_UID_KEY = "user_uid";
     private long userId;
     private User model;
@@ -75,7 +76,6 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
         profileContentView.setUserId(userId);
         SoftKeyboardNotifier.getDefault().register(this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -179,7 +179,6 @@ public class ProfileActivity extends PSActionBarActivity implements ProfileHeard
             return;
 
         ProgressBarManager.show();
-
         UserDataProxy.getDefault().profile(userId, new Callback<ApiUser.Profile>() {
             @Override
             public void onResponse(Response<ApiUser.Profile> response, Retrofit retrofit) {

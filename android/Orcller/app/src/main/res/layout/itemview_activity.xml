@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        android:padding="8dp">
+        <com.orcller.app.orcller.widget.UserPictureView
+            android:id="@+id/userPictureView"
+            android:layout_width="34dp"
+            android:layout_height="34dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp">
+            <TextView
+                android:id="@+id/contentTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/background_ripple_lightgray"
+                android:clickable="true"
+                android:textColor="@android:color/black"
+                android:textColorLink="@color/textcolor_dark_blue"
+                android:textSize="13dp"/>
+
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:singleLine="true"
+                android:textColor="@color/textcolor_pageprofile_date"
+                android:textSize="11dp"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginLeft="15dp">
+            <pisces.psuikit.ext.PSImageView
+                android:id="@+id/contentImageView"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="right|center_vertical"
+                android:scaleType="centerCrop"
+                app:borderColor="@color/border_hairline_lightgray"
+                app:strokeWidth="1dp"/>
+
+            <com.orcller.app.orcller.widget.FollowButton
+                android:id="@+id/followButton"
+                android:layout_width="84dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:visibility="gone"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="50dp"
+        android:background="@color/border_hairline_lightgray"/>
+</LinearLayout>

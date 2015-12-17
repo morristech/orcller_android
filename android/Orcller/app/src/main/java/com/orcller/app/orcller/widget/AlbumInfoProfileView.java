@@ -14,6 +14,7 @@ import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.DateUtil;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 
@@ -98,8 +99,9 @@ public class AlbumInfoProfileView extends PSLinearLayout {
 
     public void reload() {
         idTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model.getUser()));
-        nameTextView.setText(model.user_name);
+        dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         userPictureView.reload();
+        updateDescription();
     }
 
     // ================================================================================================

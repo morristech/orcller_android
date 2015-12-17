@@ -33,7 +33,8 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/16/15.
  */
-public class CoeditListFragment extends PSFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class CoeditListFragment extends MainTabFragment
+        implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
     private List<Coedit> items = new ArrayList<>();
     private ApiUsers.CoeditList lastEntity;

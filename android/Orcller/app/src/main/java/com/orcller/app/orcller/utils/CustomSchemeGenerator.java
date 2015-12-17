@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.HtmlUtils;
 import pisces.psfoundation.utils.MapUtils;
 
@@ -182,8 +183,35 @@ public class CustomSchemeGenerator {
         return HtmlUtils.removeUnderlines(spannable);
     }
 
+    public static String createNotificationSenders(List<User> senders, int limit) {
+        String[] links = new String[Math.min(limit, senders.size())];
+        String honorific = Resources.getString(R.string.w_user_honorific);
+        int i = 0;
+
+        for (User sender : senders) {
+            links[i++] = createLinkTag(sender) + honorific;
+
+            if (i >= limit)
+                break;
+        }
+
+        int difference = senders.size() - links.length;
+        String endfix = difference > 0 ?
+                " " + Resources.getString(R.string.w_et_al)
+                        + String.valueOf(difference)
+                        + Resources.getString(R.string.w_people)
+                : "";
+        return StringUtils.join(", ", links) + endfix;
+    }
+
     public static String createLinkTag(BaseUser user) {
         return "<a href=\"" + createUserProfile(user) + "\" ><b>" + user.user_id + "</b></a>";
+    }
+
+    public static CharSequence createSpannable(String source) {
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(
+                Html.fromHtml(source));
+        return HtmlUtils.removeUnderlines(spannable);
     }
 
     public static CharSequence createUserProfileHtml(BaseUser user) {

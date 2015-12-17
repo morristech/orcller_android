@@ -1,9 +1,11 @@
 package com.orcller.app.orcller.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +43,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
@@ -58,16 +61,18 @@ import retrofit.Retrofit;
 public class PageListActivity extends PSActionBarActivity
         implements RecyclerViewPager.OnPageChangedListener, CommentInputView.Delegate, PageScrollView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String ALBUM_KEY = "album";
+    public static final String PAGE_ID_KEY = "pageId";
     public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private int selectedIndex = -1;
     private ArrayList<Media> mediaList = new ArrayList<>();
+    private Adapter adapter;
     private Album model;
     private LinearLayout rootLayout;
     private TextView toolbarTextView;
+    private ProgressDialog progressDialog;
     private PSRecyclerViewPager recyclerView;
     private PageScrollView selectedView;
     private CommentInputView commentInputView;
-    private Adapter adapter;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -104,46 +109,12 @@ public class PageListActivity extends PSActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_pagelist, menu);
-        return true;
-    }
-
-    @Override
-    public void onGlobalLayout() {
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        } else {
-            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        if (model.isMine() || selectedView != null && selectedView.getModel().isMine()) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_pagelist, menu);
+            return true;
         }
-
-        setRecyclerViewLayout();
-        setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        EventBus.getDefault().unregister(this);
-        SoftKeyboardNotifier.getDefault().unregister(this);
-        ProgressBarManager.hide(this);
-        stopSelectedVideoMediaView();
-        recyclerView.removeOnPageChangedListener(this);
-        recyclerView.removeAllViews();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                if (selectedView.isEditEnabled()) {
-                    setEditEnabled();
-                    return true;
-                }
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
+        return false;
     }
 
     @Override
@@ -172,10 +143,57 @@ public class PageListActivity extends PSActionBarActivity
     }
 
     @Override
+    public void onGlobalLayout() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
+
+        setRecyclerViewLayout();
+
+        if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
+            setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
+        } else if (getIntent().getLongExtra(PAGE_ID_KEY, 0) > 0) {
+            load(getIntent().getLongExtra(PAGE_ID_KEY, 0));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getDefault().unregister(this);
+        SoftKeyboardNotifier.getDefault().unregister(this);
+        ProgressBarManager.hide(this);
+        stopSelectedVideoMediaView();
+        recyclerView.removeOnPageChangedListener(this);
+        recyclerView.removeAllViews();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                if (selectedView.isEditEnabled()) {
+                    setEditEnabled();
+                    return true;
+                }
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(this);
+        ProgressBarManager.hide();
+
+        if (progressDialog != null) {
+            progressDialog.hide();
+            progressDialog = null;
+        }
     }
 
     // ================================================================================================
@@ -186,7 +204,13 @@ public class PageListActivity extends PSActionBarActivity
         Intent intent = new Intent(Application.applicationContext(), PageListActivity.class);
         intent.putExtra(ALBUM_KEY, model);
         intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
-        Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);
+        Application.getTopActivity().startActivity(intent);
+    }
+
+    public static void show(long pageId) {
+        Intent intent = new Intent(Application.applicationContext(), PageListActivity.class);
+        intent.putExtra(PAGE_ID_KEY, pageId);
+        Application.getTopActivity().startActivity(intent);
     }
 
     // ================================================================================================
@@ -279,6 +303,7 @@ public class PageListActivity extends PSActionBarActivity
             if (viewHolder != null) {
                 selectedView = (PageScrollView) viewHolder.itemView;
                 commentInputView.setModel(selectedView.getModel().comments, selectedView.getModel().id);
+                invalidateOptionsMenu();
             }
 
             if (!initialSelection)
@@ -309,6 +334,7 @@ public class PageListActivity extends PSActionBarActivity
         });
 
         modelChanged();
+        loadRemainPages();
     }
 
     private void setSelectedIndex(int selectedIndex) {
@@ -331,6 +357,70 @@ public class PageListActivity extends PSActionBarActivity
         updateTitle();
     }
 
+    private void load(final long pageId) {
+        if (invalidDataLoading())
+            return;
+
+        if (isFirstLoading())
+            ProgressBarManager.show();
+
+        AlbumDataProxy.getDefault().viewByPageId(pageId, new Callback<ApiAlbum.AlbumRes>() {
+            @Override
+            public void onResponse(final Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    final Album album = response.body().entity;
+                    new AsyncTask<Void, Void, Integer>() {
+                        @Override
+                        protected Integer doInBackground(Void... params) {
+                            int i = 0;
+                            for (Page page : album.pages.data) {
+                                if (page.id == pageId)
+                                    return i;
+                                i++;
+                            }
+                            return 0;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Integer result) {
+                            super.onPostExecute(result);
+
+                            setModel(album);
+                            setSelectedIndex(result);
+                            endDataLoading();
+                        }
+                    }.execute();
+                } else {
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
+
+                    endDataLoading();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                if (BuildConfig.DEBUG)
+                    Log.e("onFailure", t);
+
+                endDataLoading();
+            }
+        });
+    }
+
+    public void loadRemainPages() {
+        if (model == null || model.pages.data.size() >= model.pages.total_count || invalidDataLoading())
+            return;
+
+        AlbumDataProxy.getDefault().remainPages(model, new AlbumDataProxy.CompleteHandler() {
+            @Override
+            public void onComplete(boolean isSuccess) {
+                updateTitle();
+                adapter.setItems(model.pages.data);
+            }
+        });
+    }
+
     private void modelChanged() {
         adapter.setItems(model.pages.data);
         setSelectedIndex(getIntent().getIntExtra(SELECTED_INDEX_KEY, 0));
@@ -340,7 +430,7 @@ public class PageListActivity extends PSActionBarActivity
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show(this, true);
+        progressDialog = ProgressDialog.show(this, null, getString(R.string.w_processing));
 
         final Runnable error = new Runnable() {
             @Override
@@ -396,7 +486,7 @@ public class PageListActivity extends PSActionBarActivity
         updateTitle();
 
         Drawable icon = selectedView.isEditEnabled() ? null : getDrawable(R.drawable.icon_page_edit);
-        String title = selectedView.isEditEnabled() ? getString(R.string.w_done) : null;
+        String title = selectedView.isEditEnabled() ? getString(R.string.w_save) : null;
         MenuItem item = getToolbar().getMenu().findItem(R.id.edit);
         item.setIcon(icon);
         item.setTitle(title);

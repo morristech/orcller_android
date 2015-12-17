@@ -39,7 +39,4 @@ public class PSFragment extends Fragment implements DataLoadValidator.Client {
     public boolean invalidDataLoading() {
         return dataLoadValidator.invalidDataLoading();
     }
-
-    public void startFragment() {
-    }
 }

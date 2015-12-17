@@ -11,27 +11,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TabHost;
 
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.CoeditListFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
+import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.widget.PSButton;
 
 public class MainActivity extends PSActionBarActivity
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
     private static final int TAB_COUNT = 5;
-    private Map<String, PSFragment> fragmentMap = new HashMap<>();
+    private Map<String, MainTabFragment> fragmentMap = new HashMap<>();
     private PagerAdapter pagerAdapter;
     private TabHost tabHost;
     private ViewPager viewPager;
@@ -51,16 +54,23 @@ public class MainActivity extends PSActionBarActivity
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         tabHost.setup();
         tabHost.setOnTabChangedListener(this);
+        viewPager.setAdapter(pagerAdapter);
         viewPager.setPageMargin(GraphicUtils.convertDpToPixel(15));
         viewPager.setPageMarginDrawable(android.R.color.white);
         viewPager.addOnPageChangeListener(this);
-
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
         addTabs();
+        SoftKeyboardNotifier.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        SoftKeyboardNotifier.getDefault().unregister(this);
     }
 
     // ================================================================================================
@@ -88,7 +98,7 @@ public class MainActivity extends PSActionBarActivity
         viewPager.setCurrentItem(position, false);
         getSupportActionBar().setTitle(getTitle(position));
         getToolbar().setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-        ((PSFragment) pagerAdapter.getItem(position)).startFragment();
+        ((MainTabFragment) pagerAdapter.getItem(position)).invalidateFragment();
     }
 
     // ================================================================================================
@@ -189,18 +199,19 @@ public class MainActivity extends PSActionBarActivity
         private Fragment getFragment(int position, Class fragmentClass) {
             try {
                 String key = String.valueOf(position);
-                PSFragment fragment;
+                MainTabFragment fragment;
 
                 if (fragmentMap.containsKey(key)) {
                     fragment = fragmentMap.get(key);
                 } else {
-                    fragment = (PSFragment) fragmentClass.newInstance();
+                    fragment = (MainTabFragment) fragmentClass.newInstance();
                     fragmentMap.put(key, fragment);
                 }
 
                 return fragment;
             } catch (Exception e) {
-                Log.d("e", e);
+                if (BuildConfig.DEBUG)
+                    Log.d("e", e);
                 return null;
             }
         }

@@ -24,7 +24,7 @@
     <string name="host_relationships">relationships</string>
     <string name="host_users">users</string>
 
-    <string name="facebook_share_content_title">Orcller - Live and Put Together</string>
+    <string name="facebook_share_content_title">UStory - Live and Put Together</string>
 
     <!-- words -->
     <string name="w_add">Add</string>
@@ -45,6 +45,7 @@
     <string name="w_dismiss">Dismiss</string>
     <string name="w_done">Done</string>
     <string name="w_edit">Edit</string>
+    <string name="w_et_al">et al</string>
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
     <string name="w_follow">Follow</string>
@@ -64,6 +65,7 @@
     <string name="w_open_to_followers">Open to Followers</string>
     <string name="w_order">Order</string>
     <string name="w_password">Password</string>
+    <string name="w_people">people</string>
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
     <string name="w_posting">Posting</string>
@@ -84,7 +86,7 @@
     <string name="w_slide_show">Slide Show</string>
     <string name="w_star">Star</string>
     <string name="w_stars">Stars</string>
-    <string name="w_title_activity">Activities</string>
+    <string name="w_title_activity">Activity</string>
     <string name="w_title_add_dialog">Import photos and videos</string>
     <string name="w_title_album_page_order">Edit Page Orders</string>
     <string name="w_title_album_page_default">Set as Default Page</string>
@@ -104,6 +106,7 @@
     <string name="w_untitled">Untitled</string>
     <string name="w_update">Update</string>
     <string name="w_user_name">User Name</string>
+    <string name="w_user_honorific"></string>
 
     <!-- messages -->
     <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
@@ -140,4 +143,19 @@
     <string name="m_validate_profile_message_length">The profile message must be a maximum of 50 characters!</string>
     <string name="m_validate_user_name_length">The user name is required at least 6 characters and maximum 16 characters!</string>
     <string name="m_validate_user_nickname_length">The user nickname must be a maximum of 16 characters!</string>
+
+    <string name="m_noty_album_create">has created an album.</string>
+    <string name="m_noty_album_modify">has been change an album.</string>
+    <string name="m_noty_collaboration_accept_invite">has accepted invitation to album for collaboration.</string>
+    <string name="m_noty_collaboration_accept_ask">has accepted request of participation to album for collaboration.</string>
+    <string name="m_noty_collaboration_ask">has asked joining album for collaboration.</string>
+    <string name="m_noty_collaboration_cancel_ask">was cancel asking album for collaboration.</string>
+    <string name="m_noty_collaboration_cancel_invite">was cancel invitation album for collaboration.</string>
+    <string name="m_noty_collaboration_invite">has invited you to album for collaboration.</string>
+    <string name="m_noty_comment">commented on the album.</string>
+    <string name="m_noty_star">stared the album.</string>
+    <string name="m_noty_start_follow">started to follow you.</string>
+    <string name="m_noty_heart">has sent heart to your album.</string>
+    <string name="m_noty_page_comment">commented on the album page.</string>
+    <string name="m_noty_page_heart">has sent heart to your album.</string>
 </resources>

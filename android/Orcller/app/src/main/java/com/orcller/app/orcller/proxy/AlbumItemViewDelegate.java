@@ -86,7 +86,6 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     public void onPageChange(AlbumItemView itemView) {
-        itemView.reload();
     }
 
     public void onCancelPanning(AlbumFlipView view) {

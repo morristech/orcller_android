@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,12 +17,14 @@ import com.orcller.app.orcller.model.album.Comments;
 import com.orcller.app.orcller.model.album.Contributors;
 import com.orcller.app.orcller.model.album.Favorites;
 import com.orcller.app.orcller.model.album.Likes;
+import com.orcller.app.orcller.model.album.Pages;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 import pisces.psuikit.ext.PSView;
@@ -258,9 +261,9 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
                 } else if (casted.getTarget() instanceof AlbumAdditionalListEntity) {
                     synchronizeAlbumInfo((AlbumAdditionalListEntity) casted.getTarget());
                 }
-            } else if (Model.Event.CHANGE.equals(casted.getType())) {
-                if (delegate != null)
-                    delegate.onPageChange(this);
+            } else if (Model.Event.CHANGE.equals(casted.getType()) &&
+                    casted.getTarget() instanceof Album) {
+                changeAlbum((Album) casted.getTarget());
             }
         } else if (event instanceof CoeditEvent &&
                 CoeditEvent.CHANGE.equals(((CoeditEvent) event).getType())) {
@@ -316,6 +319,13 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
             delegate.onAlbumInfoSynchronize(this, model);
     }
 
+    private void postPageChangeEvent() {
+        albumFlipView.reload();
+
+        if (delegate != null)
+            delegate.onPageChange(this);
+    }
+
     private void postAlbumSynchronizeEvent() {
         reload();
 
@@ -332,6 +342,19 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         LayoutParams params = (LayoutParams) albumFlipView.getLayoutParams();
         params.bottomMargin = GraphicUtils.convertDpToPixel(
                 PSView.isShown(descriptionTextView) || PSView.isShown(infoContainer) ? 15 : 32);
+    }
+
+    private void changeAlbum(Album album) {
+        if (album.equals(model)) {
+            postPageChangeEvent();
+        } else if (album.id == model.id) {
+            model.pages.synchronize(album.pages, new Runnable() {
+                @Override
+                public void run() {
+                    postPageChangeEvent();
+                }
+            });
+        }
     }
 
     private void synchronizeAlbum(Album album) {

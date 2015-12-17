@@ -120,7 +120,7 @@ public class SharedObject {
     }
 
     public static String toFullMediaUrl(String url) {
-        if (URLUtils.isWebURL(url) || URLUtils.isLocal(url))
+        if (url == null || URLUtils.isWebURL(url) || URLUtils.isLocal(url))
             return url;
         return Application.applicationContext().getString(R.string.s3_domain) + "/" + url;
     }
