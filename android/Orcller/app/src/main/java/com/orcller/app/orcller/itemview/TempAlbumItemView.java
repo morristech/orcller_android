@@ -59,6 +59,7 @@ public class TempAlbumItemView extends PSLinearLayout implements MediaUploadUnit
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
 
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
+        albumInfoProfileView.setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
         retryButton.setOnClickListener(this);
     }
 

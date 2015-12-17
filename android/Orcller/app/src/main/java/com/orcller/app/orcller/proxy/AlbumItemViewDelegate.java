@@ -29,10 +29,25 @@ import retrofit.Retrofit;
  * Created by pisces on 12/10/15.
  */
 public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Delegate {
+    public static final int COMMENT_ACTION_ALBUM = 1;
+    public static final int COMMENT_ACTION_COMMENTS = 1;
+    private int commentActionType = COMMENT_ACTION_ALBUM;
     private Invoker invoker;
 
     public AlbumItemViewDelegate(Invoker invoker) {
         this.invoker = invoker;
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public int getCommentActionType() {
+        return commentActionType;
+    }
+
+    public void setCommentActionType(int commentActionType) {
+        this.commentActionType = commentActionType;
     }
 
     // ================================================================================================
@@ -54,11 +69,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         if (AlbumItemView.ButtonType.Coedit.equals(type)) {
             CoeditViewActivity.show(itemView.getModel());
         } else if (AlbumItemView.ButtonType.Comment.equals(type)) {
-            if (invoker.getCommentInputView() != null) {
-                invoker.getCommentInputView().setFocus();
-            } else {
-                AlbumViewActivity.show(itemView.getModel(), true);
-            }
+            doCommentAction(itemView.getModel());
         } else if (AlbumItemView.ButtonType.CommentList.equals(type)) {
             CommentListActivity.show(itemView.getModel());
         } else if (AlbumItemView.ButtonType.Heart.equals(type)) {
@@ -110,6 +121,16 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private void doCommentAction(Album album) {
+        if (invoker.getCommentInputView() != null)
+            invoker.getCommentInputView().setFocus();
+
+        if (commentActionType == COMMENT_ACTION_ALBUM)
+            AlbumViewActivity.show(album, true);
+        else if (commentActionType == COMMENT_ACTION_COMMENTS)
+            CommentListActivity.show(album);
+    }
 
     private void heart(AlbumItemView itemView) {
         if (invalidDataLoading())

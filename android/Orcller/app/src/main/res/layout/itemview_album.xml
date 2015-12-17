@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:clipChildren="false">
+    android:clipChildren="false"
+    android:descendantFocusability="blocksDescendants">
     <com.orcller.app.orcller.widget.AlbumInfoProfileView
         android:id="@+id/albumInfoProfileView"
         android:layout_width="match_parent"
@@ -45,6 +46,7 @@
             android:paddingBottom="5dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
+            android:background="@drawable/background_ripple_lightgray"
             android:clickable="true"
             android:textColor="@drawable/color_album_info"
             android:textSize="11dp"/>
@@ -54,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:background="@drawable/background_ripple_lightgray"
             android:padding="5dp"
             android:clickable="true"
             android:textColor="@drawable/color_album_info"
@@ -64,6 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:background="@drawable/background_ripple_lightgray"
             android:padding="5dp"
             android:clickable="true"
             android:textColor="@drawable/color_album_info"

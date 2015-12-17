@@ -67,6 +67,7 @@
                 android:paddingBottom="10dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="10dp"
+                android:background="@drawable/background_ripple_lightgray"
                 android:clickable="true"
                 android:src="@drawable/icon_album_options"
                 android:visibility="invisible"/>

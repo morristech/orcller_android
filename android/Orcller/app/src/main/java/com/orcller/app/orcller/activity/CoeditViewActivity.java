@@ -80,6 +80,7 @@ public class CoeditViewActivity extends PSActionBarActivity
 
         albumItemView.setDelegate(albumItemViewDelegate);
         albumItemView.setButtonVisiblity(AlbumItemView.HEART | AlbumItemView.COMMENT | AlbumItemView.STAR);
+        albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_COMMENTS);
         coeditButton.setSelected(true);
         coeditButton.setTextSize(GraphicUtils.convertDpToPixel(13));
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
@@ -170,7 +171,6 @@ public class CoeditViewActivity extends PSActionBarActivity
      * AlbumItemViewDelete.Invoker
      */
     public CommentInputView getCommentInputView() {
-        CommentListActivity.show(model);
         return null;
     }
 
