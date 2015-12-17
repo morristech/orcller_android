@@ -1,12 +1,9 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -16,11 +13,10 @@ import com.orcller.app.orcller.model.album.Notification;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.UserPictureView;
-import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.model.Resources;
-import pisces.psfoundation.utils.Log;
+import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSImageView;
 import pisces.psuikit.ext.PSLinearLayout;
@@ -150,7 +146,7 @@ public class ActivityItemView extends PSLinearLayout {
         Glide.clear(contentImageView);
         userPictureView.setModel(model.senders.getFirstUser());
         contentTextView.setText(CustomSchemeGenerator.createSpannable(content));
-        dateTextView.setText(DateUtils.getRelativeTimeSpanString(model.created_time));
+        dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.created_time));
         followButton.setModel(model.senders.getFirstUser());
         followButton.setVisibility(Notification.Type.Follow.equals(model.type) && !model.senders.getFirstUser().isFollowing() ? VISIBLE : GONE);
         contentImageView.setVisibility(PSView.isShown(followButton) ? GONE : VISIBLE);

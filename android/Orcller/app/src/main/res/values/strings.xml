@@ -146,8 +146,8 @@
 
     <string name="m_noty_album_create">has created an album.</string>
     <string name="m_noty_album_modify">has been change an album.</string>
-    <string name="m_noty_collaboration_accept_invite">has accepted invitation to album for collaboration.</string>
-    <string name="m_noty_collaboration_accept_ask">has accepted request of participation to album for collaboration.</string>
+    <string name="m_noty_collaboration_accept_invite">has accepted invitation album for collaboration.</string>
+    <string name="m_noty_collaboration_accept_ask">has accepted asking album for collaboration.</string>
     <string name="m_noty_collaboration_ask">has asked joining album for collaboration.</string>
     <string name="m_noty_collaboration_cancel_ask">was cancel asking album for collaboration.</string>
     <string name="m_noty_collaboration_cancel_invite">was cancel invitation album for collaboration.</string>

@@ -86,7 +86,10 @@ public class ProfileFragment extends MainTabFragment
 
     @Override
     protected void resumeFragment() {
-        modelChanged();
+        if (isViewCreated())
+            modelChanged();
+        else
+            reload();
     }
 
     @Override
@@ -147,5 +150,11 @@ public class ProfileFragment extends MainTabFragment
         profileHearderView.setVisibility(View.VISIBLE);
         profileContentView.setVisibility(View.VISIBLE);
         profileContentView.setUserId(model.user_uid);
+    }
+
+    private void reload() {
+        profileHearderView.setVisibility(View.VISIBLE);
+        profileContentView.setVisibility(View.VISIBLE);
+        profileContentView.reload();
     }
 }

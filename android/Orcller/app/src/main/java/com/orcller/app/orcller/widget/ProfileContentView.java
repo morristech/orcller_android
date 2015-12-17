@@ -94,9 +94,17 @@ public class ProfileContentView extends PSTabHost
     }
 
     public void setUserId(long userId) {
+        if (userId == this.userId)
+            return;
+
         this.userId = userId;
 
         addTabs();
+        loadCount();
+    }
+
+    public void reload() {
+        pagerAdapter.notifyDataSetChanged();
         loadCount();
     }
 
