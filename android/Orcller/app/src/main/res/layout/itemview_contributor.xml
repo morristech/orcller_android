@@ -41,6 +41,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_tab_profile_content"
                 android:clickable="true"
+                android:singleLine="true"
                 android:textColorLink="@color/textcolor_dark_blue"
                 android:textStyle="bold"
                 android:textSize="13dp"/>
@@ -50,6 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
+                android:singleLine="true"
                 android:textColor="@color/textcolor_pageprofile_date"
                 android:textSize="12dp"/>
         </LinearLayout>

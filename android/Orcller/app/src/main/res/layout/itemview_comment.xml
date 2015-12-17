@@ -27,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:singleLine="true"
                 android:textColorLink="@color/textcolor_dark_blue"
                 android:textStyle="bold"
                 android:textSize="13dp"/>
