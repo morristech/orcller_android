@@ -2,9 +2,11 @@ package com.orcller.app.orcller.common;
 
 import android.graphics.Point;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.Comments;
@@ -13,7 +15,10 @@ import com.orcller.app.orcller.model.Likes;
 import com.orcller.app.orcller.model.NewsCount;
 import com.orcller.app.orcller.model.api.ApiCount;
 import com.orcller.app.orcller.proxy.CountDataProxy;
+import com.orcller.app.orcller.widget.FollowButton;
+import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -50,6 +55,10 @@ public class SharedObject {
         Small,
         Medium,
         Large
+    }
+
+    public SharedObject() {
+        EventBus.getDefault().register(this);
     }
 
     // ================================================================================================
@@ -262,6 +271,21 @@ public class SharedObject {
                     Log.e("onFailure", t);
             }
         });
+    }
+
+    // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(final Object event) {
+        if (event instanceof FollowButton.OnChangeRelationships ||
+                event instanceof AuthenticationCenter.LoginComplete ||
+                event instanceof CoeditEvent) {
+            loadNewsCountDireclty();
+        }
     }
 
     // ================================================================================================

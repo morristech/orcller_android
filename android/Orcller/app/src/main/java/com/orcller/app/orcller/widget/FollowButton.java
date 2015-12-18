@@ -13,6 +13,8 @@ import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
+import de.greenrobot.event.EventBus;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
@@ -134,6 +136,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
                         clonedUser.user_options.follow_count = response.body().entity.follow_count;
 
                         AuthenticationCenter.getDefault().synchorinzeUser(clonedUser);
+                        EventBus.getDefault().post(new OnChangeRelationships());
                     } catch (CloneNotSupportedException e) {
                         if (BuildConfig.DEBUG)
                             Log.e(e.getMessage(), e);
@@ -174,5 +177,12 @@ public class FollowButton extends PSButton implements View.OnClickListener {
                 unfollow();
             }
         }));
+    }
+
+    // ================================================================================================
+    //  Class: OnChangeRelationships
+    // ================================================================================================
+
+    public static class OnChangeRelationships {
     }
 }
