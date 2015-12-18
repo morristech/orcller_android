@@ -6,10 +6,12 @@ import android.os.Bundle;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.api.ApiRelationships;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
+import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
@@ -51,6 +53,11 @@ public class FollowingActivity extends UserListActivity {
             @Override
             public Call<ApiRelationships.UserListRes> createDataLoadCall(int limit, String after) {
                 return RelationshipsDataProxy.getDefault().service().following(userId);
+            }
+
+            @Override
+            public AbstractDataProxy createDataProxy() {
+                return RelationshipsDataProxy.getDefault();
             }
         };
     }

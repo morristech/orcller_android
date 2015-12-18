@@ -57,7 +57,7 @@
     <style name="PurpleTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textAppearance">@style/PurpleTheme.Toolbar.MenuTextStyle</item>
     </style>
-    <style name="PurpleTheme.Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+    <style name="PurpleTheme.Toolbar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="colorControlNormal">@android:color/white</item>
         <item name="titleTextColor">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>

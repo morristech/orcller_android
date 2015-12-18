@@ -57,8 +57,10 @@
     <string name="w_hearts">Hearts</string>
     <string name="w_instagram_photos">Instagram Photos</string>
     <string name="w_invites">Invites</string>
+    <string name="w_login">Login...</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
+    <string name="w_logout">Logout...</string>
     <string name="w_me">Me</string>
     <string name="w_no">No</string>
     <string name="w_ok">Ok</string>
@@ -94,6 +96,7 @@
     <string name="w_title_collaborations">Collaborations</string>
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
+    <string name="w_title_find_friends">Find Friends</string>
     <string name="w_title_new_album">New Album</string>
     <string name="w_title_profile">Edit Profile</string>
     <string name="w_yes">Yes</string>
@@ -117,6 +120,7 @@
     <string name="m_hint_papge_description">Say something about this page...</string>
     <string name="m_hint_profile_message">No profile message</string>
     <string name="m_hint_profile_message_me">Enter profile message</string>
+    <string name="m_hint_search_friend">Search by Name or Nickname</string>
     <string name="m_hint_user_name">No nickname</string>
     <string name="m_hint_user_name_me">Enter your nickname</string>
     <string name="m_member_joininput_desc">

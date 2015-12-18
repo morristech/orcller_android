@@ -26,7 +26,7 @@ import retrofit.Callback;
  */
 abstract public class AbstractDataProxy<T> extends AbstractRetrofitProxy {
     private long lastViewDate;
-    private String lastViewDateKey = getClass().getSimpleName();
+    private String lastViewDateKey = getClass().getName();
 
     // ================================================================================================
     //  Overridden: AbstractRetrofitProxy
@@ -94,6 +94,8 @@ abstract public class AbstractDataProxy<T> extends AbstractRetrofitProxy {
     // ================================================================================================
 
     private String getLastViewDateKey() {
-        return lastViewDateKey + "-" + String.valueOf(AuthenticationCenter.getDefault().getUser().user_uid);
+        if (AuthenticationCenter.getDefault().getUser() != null)
+            return lastViewDateKey + "-" + String.valueOf(AuthenticationCenter.getDefault().getUser().user_uid);
+        return null;
     }
 }

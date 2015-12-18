@@ -1,7 +1,5 @@
 package com.orcller.app.orcller.fragment;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,22 +24,21 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import pisces.psuikit.widget.ClearableEditText;
-import pisces.psuikit.ext.PSFragment;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import pisces.psuikit.manager.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
+import com.orcller.app.orcllermodules.model.facebook.FBUser;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
-import org.json.JSONObject;
-
 import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.psuikit.ext.PSFragment;
+import pisces.psuikit.manager.ProgressDialogManager;
+import pisces.psuikit.widget.ClearableEditText;
 
 /**
  * Created by pisces on 11/7/15.
@@ -131,7 +128,7 @@ public class MemberJoinFragment extends PSFragment {
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(getActivity());
+        ProgressDialogManager.hide();
     }
 
     // ================================================================================================
@@ -144,11 +141,11 @@ public class MemberJoinFragment extends PSFragment {
 
         SoftKeyboardUtils.hide(getView());
 
-        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler<JSONObject>() {
+        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler<FBUser>() {
             @Override
-            public void onComplete(JSONObject result, APIError error) {
+            public void onComplete(FBUser result, APIError error) {
                 if (error == null)
-                    ProgressBarManager.show(getActivity(), true);
+                    ProgressDialogManager.show(R.string.w_login);
             }
         }, new Api.CompleteHandler() {
             @Override
@@ -159,17 +156,12 @@ public class MemberJoinFragment extends PSFragment {
                     if (error.getCode() == APIError.APIErrorCodeUserDoesNotExist) {
                         openMemberJoinInputActivity(result);
                     } else {
-                        AlertDialogUtils.show(error.getMessage(),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (which == AlertDialog.BUTTON_POSITIVE)
-                                            loginWithFacebook();
-                                    }
-                                },
-                                getResources().getString(R.string.w_dismiss),
-                                getResources().getString(R.string.w_retry)
-                        );
+                        AlertDialogUtils.retry(error.getMessage(), new Runnable() {
+                            @Override
+                            public void run() {
+                                loginWithFacebook();
+                            }
+                        });
                     }
                 }
             }
@@ -246,7 +238,7 @@ public class MemberJoinFragment extends PSFragment {
             return;
 
         SoftKeyboardUtils.hide(getView());
-        ProgressBarManager.show(getActivity(), true);
+        ProgressDialogManager.show(R.string.w_processing);
 
         AuthenticationCenter.getDefault().sendCertificationEmail(
                 editText.getText().toString().trim(),

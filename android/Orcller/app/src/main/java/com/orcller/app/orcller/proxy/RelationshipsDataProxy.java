@@ -11,6 +11,7 @@ import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * Created by pisces on 12/12/15.
@@ -74,7 +75,9 @@ public class RelationshipsDataProxy extends AbstractDataProxy {
         Call<ApiRelationships.UserListRes> following(@Path("userId") long userId);
 
         @GET("recommends")
-        Call<ApiRelationships.UserListRes> recommends();
+        Call<ApiRelationships.RecommendRes> recommends(
+                @Query(value = "fb_access_token", encoded = true) String fb_access_token,
+                @Query(value = "ig_access_token", encoded = true) String ig_access_token);
 
         @DELETE("{userId}/follow")
         Call<ApiRelationships.FollowRes> unfollow(@Path("userId") long userId);

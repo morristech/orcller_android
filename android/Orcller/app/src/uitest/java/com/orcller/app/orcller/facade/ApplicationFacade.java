@@ -46,6 +46,7 @@ import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.FBShareProxy;
+import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.utils.ImageGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
@@ -69,6 +70,7 @@ import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.managers.GooglePlayServiceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.model.User;
+import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -608,6 +610,11 @@ public class ApplicationFacade {
             @Override
             public Call<ApiAlbum.LikesRes> createDataLoadCall(int limit, String after) {
                 return AlbumDataProxy.getDefault().service().likes(5, limit, after);
+            }
+
+            @Override
+            public AbstractDataProxy createDataProxy() {
+                return AlbumDataProxy.getDefault();
             }
         };
 

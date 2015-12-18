@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.fragment;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -15,25 +16,21 @@ import com.orcller.app.orcller.widget.ProfileContentView;
 import com.orcller.app.orcller.widget.ProfileHearderView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import java.util.Arrays;
 import java.util.List;
 
-import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSFragment;
 
 /**
  * Created by pisces on 11/3/15.
  */
 public class ProfileFragment extends MainTabFragment
         implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
+    private List<Class<? extends UserDataGridFragment>> fragments;
     private User model;
     private ProfileHearderView profileHearderView;
     private ProfileContentView profileContentView;
-    private List<Class<? extends UserDataGridFragment>> fragments;
 
     public ProfileFragment() {
         super();
@@ -85,6 +82,11 @@ public class ProfileFragment extends MainTabFragment
     }
 
     @Override
+    public String getToolbarTitle() {
+        return AuthenticationCenter.getDefault().getUser().user_id;
+    }
+
+    @Override
     public boolean isUseSoftKeyboard() {
         return true;
     }
@@ -123,6 +125,10 @@ public class ProfileFragment extends MainTabFragment
 
     public FragmentManager getGridFragmentManager() {
         return getChildFragmentManager();
+    }
+
+    public UserDataGridFragment.Delegate getUserDataGridFragmentDelegate() {
+        return null;
     }
 
     public int getTabCount() {

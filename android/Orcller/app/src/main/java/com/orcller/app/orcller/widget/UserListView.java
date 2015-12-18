@@ -11,9 +11,9 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.UserItemView;
 import com.orcller.app.orcller.model.ListEntity;
-import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.BaseUser;
+import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +26,6 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-
-import static com.orcller.app.orcller.BuildConfig.DEBUG;
-import static pisces.psfoundation.utils.Log.e;
 
 /**
  * Created by pisces on 12/10/15.
@@ -110,7 +107,7 @@ public class UserListView extends PSListView {
         if (delegate != null)
             delegate.onLoad(this);
 
-        AlbumDataProxy.getDefault().enqueueCall(
+        dataSource.createDataProxy().enqueueCall(
                 dataSource.createDataLoadCall(listCountAtOnce, after),
                 new Callback<ApiResult>() {
                     @Override
@@ -122,9 +119,12 @@ public class UserListView extends PSListView {
                                     if (after == null)
                                         items.clear();
 
-                                    lastEntity = (ListEntity) response.body().entity;
-
-                                    items.addAll(lastEntity.data);
+                                    if (response.body().entity != null) {
+                                        lastEntity = (ListEntity) response.body().entity;
+                                        items.addAll(lastEntity.data);
+                                    } else if (response.body().entities != null) {
+                                        items.addAll(response.body().entities);
+                                    }
                                 }
                             }, new Runnable() {
                                 @Override
@@ -137,8 +137,10 @@ public class UserListView extends PSListView {
                                 }
                             });
                         } else {
-                            if (DEBUG)
-                                e("Api Error", response.body());
+                            if (BuildConfig.DEBUG)
+                                Log.e("Api Error", response.body());
+
+                            endDataLoading();
                         }
                     }
 
@@ -171,6 +173,7 @@ public class UserListView extends PSListView {
     public static interface DataSource<T> {
         boolean followButtonHidden();
         Call<T> createDataLoadCall(int limit, String after);
+        AbstractDataProxy createDataProxy();
     }
 
     // ================================================================================================

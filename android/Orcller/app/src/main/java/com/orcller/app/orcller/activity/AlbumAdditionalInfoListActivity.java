@@ -7,7 +7,9 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.ListEntity;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
+import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -29,12 +31,12 @@ abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivit
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_album_additionalinfo_list);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle(null);
 
         albumId = getIntent().getLongExtra(ALBUM_ID_KEY, 0);
         userListView = (UserListView) findViewById(R.id.userListView);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(null);
         userListView.setDelegate(this);
         userListView.setDataSource(createDataSource());
     }

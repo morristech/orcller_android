@@ -45,6 +45,10 @@ public class MainTabFragment extends PSFragment {
         return false;
     }
 
+    public String getToolbarTitle() {
+        return null;
+    }
+
     // ================================================================================================
     //  Protected
     // ================================================================================================

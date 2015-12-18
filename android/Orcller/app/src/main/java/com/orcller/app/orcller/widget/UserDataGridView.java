@@ -2,6 +2,7 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ import static pisces.psfoundation.utils.Log.e;
 /**
  * Created by pisces on 12/11/15.
  */
-public class UserDataGridView extends PSGridView implements AdapterView.OnItemClickListener {
+public class UserDataGridView extends PSGridView implements AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
     private int listCountAtOnce;
     private ArrayList<Model> items = new ArrayList<>();
     private Class itemViewClass;
@@ -81,6 +82,7 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
         setHorizontalSpacing(GraphicUtils.convertDpToPixel(1));
         setVerticalSpacing(GraphicUtils.convertDpToPixel(1));
         setOnItemClickListener(this);
+        setOnScrollListener(this);
     }
 
     // ================================================================================================
@@ -125,9 +127,28 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     //  Listener
     // ================================================================================================
 
+    /**
+     * AdapterView.OnItemClickListener
+     */
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (delegate != null)
             delegate.onSelect(this, position, items.get(position));
+    }
+
+    /**
+     * AbsListView.OnScrollListener
+     */
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (delegate != null)
+            delegate.onScrollStateChanged(view, scrollState);
+    }
+
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        View itemView = view.getChildAt(0);
+        Point point = itemView != null ? new Point(itemView.getLeft(), itemView.getTop()) : new Point();
+
+        if (delegate != null)
+            delegate.onScroll(view, point);
     }
 
     // ================================================================================================
@@ -266,6 +287,8 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     public static interface Delegate {
         void onLoad(UserDataGridView gridView);
         void onLoadComplete(UserDataGridView gridView, ListEntity listEntity);
+        void onScroll(AbsListView view, Point scrollPoint);
+        void onScrollStateChanged(AbsListView view, int scrollState);
         void onSelect(UserDataGridView gridView, int position, Model item);
     }
 }

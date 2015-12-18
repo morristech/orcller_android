@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TabHost;
 
@@ -129,10 +130,12 @@ public class MainActivity extends PSActionBarActivity
     public void onTabChanged(String tag) {
         int position = Integer.valueOf(tag);
         viewPager.setCurrentItem(position, false);
-        getSupportActionBar().setTitle(getTitle(position));
-        getToolbar().setVisibility(position == 0 ? View.GONE : View.VISIBLE);
 
         MainTabFragment fragment = (MainTabFragment) pagerAdapter.getItem(position);
+        String title = fragment.getToolbarTitle();
+
+        getSupportActionBar().setTitle(title);
+        getToolbar().setVisibility(TextUtils.isEmpty(title) ? View.GONE : View.VISIBLE);
 
         if (fragment.isUseSoftKeyboard())
             SoftKeyboardNotifier.getDefault().register(this);
@@ -177,16 +180,6 @@ public class MainActivity extends PSActionBarActivity
         if (position == 4)
             return R.drawable.icon_tabbar_profile;
         return 0;
-    }
-
-    private CharSequence getTitle(int position) {
-        if (position == 2)
-            return getString(R.string.w_title_collaborations);
-        if (position == 3)
-            return getString(R.string.w_title_activity);
-        if (position == 4)
-            return AuthenticationCenter.getDefault().getUser().user_id;
-        return null;
     }
 
     private int getBadgeCount(int position) {

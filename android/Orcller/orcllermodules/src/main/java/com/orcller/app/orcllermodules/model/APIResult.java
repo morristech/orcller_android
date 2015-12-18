@@ -1,5 +1,7 @@
 package com.orcller.app.orcllermodules.model;
 
+import java.util.List;
+
 import pisces.psfoundation.model.Model;
 
 /**
@@ -27,6 +29,7 @@ public class ApiResult<T> extends Model {
     public String code_message;
     public String error_message;
     public T entity;
+    public List<T> entities;
 
     public boolean isSuccess() {
         return this.code == ApiResultCode.Ok.value();

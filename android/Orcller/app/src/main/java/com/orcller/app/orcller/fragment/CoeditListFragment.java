@@ -86,6 +86,11 @@ public class CoeditListFragment extends MainTabFragment
     }
 
     @Override
+    public String getToolbarTitle() {
+        return getString(R.string.w_title_collaborations);
+    }
+
+    @Override
     public void startFragment() {
         reload();
     }

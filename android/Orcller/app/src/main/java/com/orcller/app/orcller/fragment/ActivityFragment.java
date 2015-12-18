@@ -96,6 +96,11 @@ public class ActivityFragment extends MainTabFragment
     }
 
     @Override
+    public String getToolbarTitle() {
+        return getString(R.string.w_title_activity);
+    }
+
+    @Override
     protected void resumeFragment() {
     }
 

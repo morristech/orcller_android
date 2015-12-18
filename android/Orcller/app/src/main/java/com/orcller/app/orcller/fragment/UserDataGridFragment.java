@@ -1,10 +1,12 @@
 package com.orcller.app.orcller.fragment;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
@@ -17,9 +19,10 @@ import pisces.psuikit.ext.PSFragment;
 /**
  * Created by pisces on 12/11/15.
  */
-abstract public class UserDataGridFragment extends PSFragment implements UserDataGridView.Delegate {
+abstract public class UserDataGridFragment extends PSFragment
+        implements UserDataGridView.Delegate {
     private long userId;
-    private UserDataGridView.Delegate delegate;
+    private Delegate delegate;
     private ProgressBar progressBar;
     protected UserDataGridView gridView;
 
@@ -55,13 +58,21 @@ abstract public class UserDataGridFragment extends PSFragment implements UserDat
     public void onDestroyView() {
         super.onDestroyView();
 
-        delegate = null;
+        setDelegate(null);
         gridView = null;
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
+    }
 
     public long getUserId() {
         return userId;
@@ -91,16 +102,6 @@ abstract public class UserDataGridFragment extends PSFragment implements UserDat
      */
     abstract protected Class getItemViewClass();
 
-    public UserDataGridView.Delegate getDelegate() {
-        return delegate;
-    }
-
-    public void setDelegate(UserDataGridView.Delegate delegate) {
-        this.delegate = delegate;
-
-        gridView.setDelegate(delegate);
-    }
-
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -117,6 +118,25 @@ abstract public class UserDataGridFragment extends PSFragment implements UserDat
         progressBar.setVisibility(View.GONE);
     }
 
+    public void onScroll(AbsListView view, Point scrollPoint) {
+        if (delegate != null)
+            delegate.onScroll(view, scrollPoint);
+    }
+
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (delegate != null)
+            delegate.onScrollStateChanged(view, scrollState);
+    }
+
     public void onSelect(UserDataGridView gridView, int position, Model item) {
+    }
+
+    // ================================================================================================
+    //  Interface: Delegate
+    // ================================================================================================
+
+    public static interface Delegate {
+        void onScroll(AbsListView view, Point scrollPoint);
+        void onScrollStateChanged(AbsListView view, int scrollState);
     }
 }

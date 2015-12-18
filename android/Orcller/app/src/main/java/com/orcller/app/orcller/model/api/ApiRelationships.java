@@ -13,7 +13,10 @@ public class ApiRelationships {
     public class FollowRes extends ApiResult<FollowEntity> {
     }
 
-    public static class UserListRes extends ApiResult<UserList> {
+    public class RecommendRes extends ApiResult<User> {
+    }
+
+    public class UserListRes extends ApiResult<UserList> {
     }
 
     public class UserList extends ListEntity<User> {

@@ -82,7 +82,8 @@ public class ProfileContentView extends PSTabHost
         this.dataSource = dataSource;
 
         if (pagerAdapter == null) {
-            pagerAdapter = new PagerAdapter(dataSource.getGridFragmentManager());
+            pagerAdapter = new PagerAdapter(
+                    dataSource.getGridFragmentManager(), dataSource.getUserDataGridFragmentDelegate());
             viewPager.setAdapter(pagerAdapter);
         }
 
@@ -242,8 +243,12 @@ public class ProfileContentView extends PSTabHost
     // ================================================================================================
 
     private class PagerAdapter extends FragmentPagerAdapter {
-        public PagerAdapter(FragmentManager fm) {
+        private UserDataGridFragment.Delegate delegate;
+
+        public PagerAdapter(FragmentManager fm, UserDataGridFragment.Delegate delegate) {
             super(fm);
+
+            this.delegate = delegate;
         }
 
         @Override
@@ -256,6 +261,8 @@ public class ProfileContentView extends PSTabHost
             try {
                 Class clazz = dataSource.getFragments().get(position);
                 UserDataGridFragment fragment = (UserDataGridFragment) clazz.newInstance();
+
+                fragment.setDelegate(delegate);
 
                 if (fragment != null) {
                     fragment.setUserId(userId);
@@ -275,6 +282,7 @@ public class ProfileContentView extends PSTabHost
     public static interface DataSource {
         List<Class<? extends UserDataGridFragment>> getFragments();
         FragmentManager getGridFragmentManager();
+        UserDataGridFragment.Delegate getUserDataGridFragmentDelegate();
         int getTabCount();
     }
 }

@@ -25,23 +25,22 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import pisces.psuikit.widget.ClearableEditText;
-import pisces.psuikit.ext.PSFragment;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
-import pisces.psuikit.manager.ProgressBarManager;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
+import com.orcller.app.orcllermodules.model.facebook.FBUser;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
-import org.json.JSONObject;
-
 import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.psuikit.ext.PSFragment;
+import pisces.psuikit.manager.ProgressDialogManager;
+import pisces.psuikit.widget.ClearableEditText;
 
 /**
  * Created by pisces on 11/7/15.
@@ -136,7 +135,7 @@ public class MemberLoginFragment extends PSFragment {
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(getActivity());
+        ProgressDialogManager.hide();
     }
 
     // ================================================================================================
@@ -148,7 +147,7 @@ public class MemberLoginFragment extends PSFragment {
             return;
 
         SoftKeyboardUtils.hide(getView());
-        ProgressBarManager.show(getActivity(), true);
+        ProgressDialogManager.show(R.string.w_login);
 
         ApiMember.LoginReq req = new ApiMember.LoginReq();
         req.user_id = idEditText.getText().toString().trim();
@@ -185,11 +184,11 @@ public class MemberLoginFragment extends PSFragment {
 
         SoftKeyboardUtils.hide(getView());
 
-        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler<JSONObject>() {
+        AuthenticationCenter.getDefault().loginWithFacebook(this, new FBSDKRequest.CompleteHandler<FBUser>() {
             @Override
-            public void onComplete(JSONObject result, APIError error) {
+            public void onComplete(FBUser result, APIError error) {
                 if (error == null)
-                    ProgressBarManager.show(getActivity(), true);
+                    ProgressDialogManager.show(R.string.w_login);
             }
         }, new Api.CompleteHandler() {
             @Override

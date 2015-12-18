@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
+import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import pisces.psfoundation.ext.Application;
 import retrofit.Call;
@@ -29,6 +30,11 @@ public class AlbumStarListActivity extends AlbumAdditionalInfoListActivity {
             @Override
             public Call<ApiAlbum.FavoritesRes> createDataLoadCall(int limit, String after) {
                 return AlbumDataProxy.getDefault().service().favorites(albumId, limit, after);
+            }
+
+            @Override
+            public AbstractDataProxy createDataProxy() {
+                return AlbumDataProxy.getDefault();
             }
         };
     }

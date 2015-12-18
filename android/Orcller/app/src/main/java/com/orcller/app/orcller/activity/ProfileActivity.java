@@ -140,6 +140,10 @@ public class ProfileActivity extends PSActionBarActivity
         return getSupportFragmentManager();
     }
 
+    public UserDataGridFragment.Delegate getUserDataGridFragmentDelegate() {
+        return null;
+    }
+
     public int getTabCount() {
         return fragments.size();
     }

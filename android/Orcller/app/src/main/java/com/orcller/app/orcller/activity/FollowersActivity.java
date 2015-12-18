@@ -5,8 +5,10 @@ import android.content.Intent;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.api.ApiRelationships;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
+import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import pisces.psfoundation.ext.Application;
 import retrofit.Call;
@@ -31,6 +33,11 @@ public class FollowersActivity extends UserListActivity {
             @Override
             public Call<ApiRelationships.UserListRes> createDataLoadCall(int limit, String after) {
                 return RelationshipsDataProxy.getDefault().service().followers(userId);
+            }
+
+            @Override
+            public AbstractDataProxy createDataProxy() {
+                return RelationshipsDataProxy.getDefault();
             }
         };
     }
