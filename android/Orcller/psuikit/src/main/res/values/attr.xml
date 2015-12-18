@@ -38,4 +38,10 @@
     <declare-styleable name="PSViewPager">
         <attr name="pagingEnabled" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="Badge">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
+    </declare-styleable>
 </resources>

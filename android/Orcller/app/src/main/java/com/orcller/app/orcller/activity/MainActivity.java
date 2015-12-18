@@ -19,13 +19,13 @@ import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcller.widget.TabIndicator;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -106,8 +106,8 @@ public class MainActivity extends PSActionBarActivity
     // ================================================================================================
 
     private void addTabs() {
-        for (int i = 0; i < TAB_COUNT; i++) {
-            PSButton indicator = new PSButton(this);
+        for (int i=0; i<TAB_COUNT; i++) {
+            TabIndicator indicator = new TabIndicator(this);
             TabHost.TabSpec tabSpec = tabHost.newTabSpec(String.valueOf(i))
                     .setIndicator(indicator)
                     .setContent(new TabFactory(this));
