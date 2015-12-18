@@ -10,7 +10,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.VideoMedia;
+import com.orcller.app.orcller.model.VideoMedia;
 
 import de.greenrobot.event.EventBus;
 import pisces.psuikit.ext.PSVideoView;

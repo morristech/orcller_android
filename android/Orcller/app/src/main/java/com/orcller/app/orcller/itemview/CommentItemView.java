@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Comment;
+import com.orcller.app.orcller.model.Comment;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.UserPictureView;
 

@@ -1,4 +1,4 @@
-package com.orcller.app.orcller.model.album;
+package com.orcller.app.orcller.model;
 
 import java.util.Collections;
 import java.util.Comparator;

@@ -6,7 +6,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.Album;
 
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;

@@ -1,10 +1,10 @@
 package com.orcller.app.orcller.model.api;
 
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Comments;
-import com.orcller.app.orcller.model.album.Favorites;
-import com.orcller.app.orcller.model.album.Likes;
-import com.orcller.app.orcller.model.album.Pages;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Comments;
+import com.orcller.app.orcller.model.Favorites;
+import com.orcller.app.orcller.model.Likes;
+import com.orcller.app.orcller.model.Pages;
 import com.orcller.app.orcllermodules.model.ApiResult;
 
 /**

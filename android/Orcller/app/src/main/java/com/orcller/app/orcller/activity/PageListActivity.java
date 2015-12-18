@@ -24,10 +24,10 @@ import android.widget.TextView;
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Comments;
-import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Comments;
+import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.CommentInputView;
@@ -43,7 +43,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
@@ -175,7 +174,7 @@ public class PageListActivity extends PSActionBarActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (selectedView.isEditEnabled()) {
+                if (selectedView != null && selectedView.isEditEnabled()) {
                     setEditEnabled();
                     return true;
                 }

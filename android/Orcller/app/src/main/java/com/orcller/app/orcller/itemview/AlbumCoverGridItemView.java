@@ -6,13 +6,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Media;
 
 import pisces.psfoundation.utils.GraphicUtils;
 

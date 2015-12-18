@@ -3,9 +3,8 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Comment;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Comment;
+import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 

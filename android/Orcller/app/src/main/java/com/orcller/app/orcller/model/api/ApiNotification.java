@@ -1,7 +1,7 @@
 package com.orcller.app.orcller.model.api;
 
-import com.orcller.app.orcller.model.album.ListEntity;
-import com.orcller.app.orcller.model.album.Notification;
+import com.orcller.app.orcller.model.ListEntity;
+import com.orcller.app.orcller.model.Notification;
 import com.orcller.app.orcllermodules.model.ApiResult;
 
 /**

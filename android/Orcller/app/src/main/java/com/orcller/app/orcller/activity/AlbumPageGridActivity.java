@@ -14,8 +14,8 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.PageListEvent;
 import com.orcller.app.orcller.itemview.AlbumPageGridItemView;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Page;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

@@ -19,8 +19,8 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.MediaEvent;
-import com.orcller.app.orcller.model.album.Image;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Image;
+import com.orcller.app.orcller.model.Media;
 
 import java.io.File;
 import java.net.URL;

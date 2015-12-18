@@ -15,7 +15,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
-import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;

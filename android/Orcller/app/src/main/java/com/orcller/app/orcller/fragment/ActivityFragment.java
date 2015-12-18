@@ -12,15 +12,15 @@ import android.widget.BaseAdapter;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
+import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.ActivityItemView;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Notification;
+import com.orcller.app.orcller.model.Notification;
 import com.orcller.app.orcller.model.api.ApiNotification;
 import com.orcller.app.orcller.proxy.ActivityDataProxy;
+import com.orcller.app.orcller.proxy.UserDataProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -163,6 +163,8 @@ public class ActivityFragment extends MainTabFragment
 
                     items.addAll(lastEntity.data);
                     listAdapter.notifyDataSetChanged();
+                    ActivityDataProxy.getDefault().setLastViewDate(lastEntity.time);
+                    SharedObject.get().setActivityCount(0);
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());

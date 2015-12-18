@@ -5,9 +5,9 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.ProgressBar;
 
-import com.orcller.app.orcller.model.album.ImageMedia;
-import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.model.album.VideoMedia;
+import com.orcller.app.orcller.model.ImageMedia;
+import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.model.VideoMedia;
 
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;

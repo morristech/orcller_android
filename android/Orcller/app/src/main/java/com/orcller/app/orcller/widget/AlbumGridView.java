@@ -12,8 +12,8 @@ import android.widget.BaseAdapter;
 
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumGridItemView;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Page;
 
 import java.util.List;
 

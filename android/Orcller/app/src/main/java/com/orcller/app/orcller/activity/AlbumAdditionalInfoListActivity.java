@@ -5,8 +5,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
-import com.orcller.app.orcller.model.album.ListEntity;
+import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.widget.UserListView;
 
 import pisces.psuikit.ext.PSActionBarActivity;

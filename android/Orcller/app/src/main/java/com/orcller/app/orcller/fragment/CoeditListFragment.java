@@ -14,16 +14,17 @@ import android.widget.ListView;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
+import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
-import com.orcller.app.orcller.model.album.Coedit;
+import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
+import com.orcller.app.orcller.proxy.TimelineDataProxy;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
@@ -124,6 +125,8 @@ public class CoeditListFragment extends MainTabFragment
                     items.addAll(lastEntity.data);
                     listAdapter.notifyDataSetChanged();
                     endDataLoading();
+                    UserDataProxy.getDefault().setLastViewDate(lastEntity.time);
+                    SharedObject.get().setCoeditCount(0);
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());

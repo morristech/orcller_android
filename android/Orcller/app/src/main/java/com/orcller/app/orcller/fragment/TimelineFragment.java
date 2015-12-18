@@ -27,7 +27,7 @@ import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
-import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.proxy.TimelineDataProxy;
@@ -363,6 +363,8 @@ public class TimelineFragment extends MainTabFragment
                     items.addAll(lastEntity.data);
                     listAdapter.notifyDataSetChanged();
                     resumeFragment();
+                    TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
+                    SharedObject.get().setTimelineCount(0);
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());

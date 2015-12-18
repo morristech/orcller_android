@@ -10,8 +10,8 @@ import android.widget.RelativeLayout;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Comments;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;

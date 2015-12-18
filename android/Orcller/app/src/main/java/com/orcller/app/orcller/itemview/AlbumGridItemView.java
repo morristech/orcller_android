@@ -6,7 +6,7 @@ import android.view.Gravity;
 import android.widget.ImageView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.widget.PageSelectionIndicatorView;
 
 import pisces.psfoundation.utils.GraphicUtils;

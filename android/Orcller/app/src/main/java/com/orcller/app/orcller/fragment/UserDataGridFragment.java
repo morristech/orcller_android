@@ -8,12 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.ListEntity;
+import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.widget.UserDataGridView;
 
 import pisces.psfoundation.model.Model;
 import pisces.psuikit.ext.PSFragment;
-import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 12/11/15.

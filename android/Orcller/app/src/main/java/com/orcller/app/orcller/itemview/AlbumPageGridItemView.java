@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Page;
 
 import pisces.psfoundation.utils.ObjectUtils;
 

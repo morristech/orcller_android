@@ -3,12 +3,11 @@ package com.orcller.app.orcller.proxy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.api.ApiCoedit;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import retrofit.Call;
-import retrofit.Callback;
 import retrofit.Converter;
 import retrofit.GsonConverterFactory;
 import retrofit.http.DELETE;
@@ -17,7 +16,6 @@ import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
-import retrofit.http.Query;
 
 /**
  * Created by pisces on 12/11/15.

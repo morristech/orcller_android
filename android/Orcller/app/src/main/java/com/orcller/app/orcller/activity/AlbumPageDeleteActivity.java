@@ -7,11 +7,10 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Page;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 12/2/15.

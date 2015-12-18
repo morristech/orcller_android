@@ -13,7 +13,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.PageListEvent;
-import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 

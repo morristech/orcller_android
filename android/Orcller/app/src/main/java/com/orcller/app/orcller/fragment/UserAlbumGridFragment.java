@@ -2,7 +2,7 @@ package com.orcller.app.orcller.fragment;
 
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.itemview.AlbumCoverGridItemView;
-import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserDataGridView;

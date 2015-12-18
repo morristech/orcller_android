@@ -12,7 +12,7 @@ import android.widget.BaseAdapter;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.AbstractDataGridItemView;
-import com.orcller.app.orcller.model.album.ListEntity;
+import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.model.ApiResult;
 

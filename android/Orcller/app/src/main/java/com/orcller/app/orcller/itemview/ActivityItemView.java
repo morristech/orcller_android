@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.Notification;
+import com.orcller.app.orcller.model.Notification;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.UserPictureView;

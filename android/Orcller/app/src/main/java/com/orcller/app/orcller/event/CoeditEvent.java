@@ -1,6 +1,6 @@
 package com.orcller.app.orcller.event;
 
-import com.orcller.app.orcller.model.album.Contributors;
+import com.orcller.app.orcller.model.Contributors;
 
 import pisces.psfoundation.event.Event;
 

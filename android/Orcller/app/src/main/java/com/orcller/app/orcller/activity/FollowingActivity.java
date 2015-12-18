@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.ListEntity;
+import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.widget.UserListView;

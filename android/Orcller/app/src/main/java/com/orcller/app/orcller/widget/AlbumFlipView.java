@@ -14,8 +14,8 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 
 import java.util.ArrayList;

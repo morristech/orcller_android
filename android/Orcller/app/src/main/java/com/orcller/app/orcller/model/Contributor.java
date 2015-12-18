@@ -1,4 +1,4 @@
-package com.orcller.app.orcller.model.album;
+package com.orcller.app.orcller.model;
 
 import com.orcller.app.orcllermodules.model.User;
 

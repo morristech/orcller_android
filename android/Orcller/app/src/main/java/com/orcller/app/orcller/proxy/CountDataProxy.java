@@ -1,36 +1,23 @@
 package com.orcller.app.orcller.proxy;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
-import com.orcller.app.orcller.model.Media;
-import com.orcller.app.orcller.model.api.ApiNotification;
+import com.orcller.app.orcller.model.api.ApiCount;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.Converter;
-import retrofit.GsonConverterFactory;
 import retrofit.http.GET;
 import retrofit.http.Query;
 
 /**
  * Created by pisces on 12/18/15.
  */
-public class ActivityDataProxy extends AbstractDataProxy {
-    private static ActivityDataProxy uniqueInstance;
+public class CountDataProxy extends AbstractDataProxy {
+    private static CountDataProxy uniqueInstance;
 
     // ================================================================================================
     //  Overridden: AbstractDataProxy
     // ================================================================================================
-
-    @Override
-    protected Converter.Factory createConverterFactory() {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Media.class, new MediaDeserializer())
-                .create();
-        return GsonConverterFactory.create(gson);
-    }
 
     @Override
     protected Class<Service> createServiceClass() {
@@ -39,26 +26,29 @@ public class ActivityDataProxy extends AbstractDataProxy {
 
     @Override
     protected String createBaseUrl() {
-        return BuildConfig.API_BASE_URL + "/";
+        return BuildConfig.API_BASE_URL + "/count/";
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
 
-    public static ActivityDataProxy getDefault() {
+    public static CountDataProxy getDefault() {
         if(uniqueInstance == null) {
-            synchronized(ActivityDataProxy.class) {
+            synchronized(CountDataProxy.class) {
                 if(uniqueInstance == null) {
-                    uniqueInstance = new ActivityDataProxy();
+                    uniqueInstance = new CountDataProxy();
                 }
             }
         }
         return uniqueInstance;
     }
 
-    public void list(int limit, String after, Callback<ApiNotification.NotificationListRes> callback) {
-        enqueueCall(service().list(limit, after), callback);
+    public void news(Callback<ApiCount.NewsCountRes> callback) {
+        enqueueCall(service().news(
+                UserDataProxy.getDefault().getLastViewDate(),
+                TimelineDataProxy.getDefault().getLastViewDate(),
+                ActivityDataProxy.getDefault().getLastViewDate()), callback);
     }
 
     // ================================================================================================
@@ -74,7 +64,10 @@ public class ActivityDataProxy extends AbstractDataProxy {
     // ================================================================================================
 
     public interface Service {
-        @GET("notification")
-        Call<ApiNotification.NotificationListRes> list(@Query("limit") int limit, @Query("after") String after);
+        @GET("news")
+        Call<ApiCount.NewsCountRes> news(
+                @Query("coediting_time") long coediting_time,
+                @Query("newsfeed_time") long newsfeed_time,
+                @Query("notification_time") long notification_time);
     }
 }

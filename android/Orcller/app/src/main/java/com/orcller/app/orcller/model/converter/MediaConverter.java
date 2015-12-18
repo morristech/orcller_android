@@ -1,12 +1,12 @@
 package com.orcller.app.orcller.model.converter;
 
-import com.orcller.app.orcller.model.album.Image;
-import com.orcller.app.orcller.model.album.ImageMedia;
-import com.orcller.app.orcller.model.album.Images;
-import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.model.album.Video;
-import com.orcller.app.orcller.model.album.VideoMedia;
-import com.orcller.app.orcller.model.album.Videos;
+import com.orcller.app.orcller.model.Image;
+import com.orcller.app.orcller.model.ImageMedia;
+import com.orcller.app.orcller.model.Images;
+import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.model.Video;
+import com.orcller.app.orcller.model.VideoMedia;
+import com.orcller.app.orcller.model.Videos;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.facebook.FBPhoto;
 import com.orcller.app.orcllermodules.model.facebook.FBPhotoImage;

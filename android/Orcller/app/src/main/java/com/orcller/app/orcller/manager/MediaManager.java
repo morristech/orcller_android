@@ -12,10 +12,10 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Image;
-import com.orcller.app.orcller.model.album.Images;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Image;
+import com.orcller.app.orcller.model.Images;
+import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcller.proxy.MediaDataProxy;
 

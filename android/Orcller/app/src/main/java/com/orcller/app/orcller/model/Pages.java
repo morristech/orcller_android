@@ -1,7 +1,4 @@
-package com.orcller.app.orcller.model.album;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.orcller.app.orcller.model;
 
 /**
  * Created by pisces on 11/16/15.

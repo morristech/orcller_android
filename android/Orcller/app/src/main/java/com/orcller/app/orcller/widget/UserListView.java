@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.UserItemView;
-import com.orcller.app.orcller.model.album.ListEntity;
+import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.BaseUser;

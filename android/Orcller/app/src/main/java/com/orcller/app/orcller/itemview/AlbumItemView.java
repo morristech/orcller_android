@@ -1,7 +1,6 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,20 +10,18 @@ import android.widget.TextView;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.CoeditEvent;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.AlbumAdditionalListEntity;
-import com.orcller.app.orcller.model.album.Comments;
-import com.orcller.app.orcller.model.album.Contributors;
-import com.orcller.app.orcller.model.album.Favorites;
-import com.orcller.app.orcller.model.album.Likes;
-import com.orcller.app.orcller.model.album.Pages;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.Comments;
+import com.orcller.app.orcller.model.Contributors;
+import com.orcller.app.orcller.model.Favorites;
+import com.orcller.app.orcller.model.Likes;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.GraphicUtils;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 import pisces.psuikit.ext.PSView;
@@ -225,6 +222,9 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     //  Listener
     // ================================================================================================
 
+    /**
+     * View.OnClickListener
+     */
     public void onClick(View v) {
         if (delegate == null)
             return;
@@ -251,6 +251,9 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         delegate.onClick(this, type, v);
     }
 
+    /**
+     * EventBus listener
+     */
     public void onEventMainThread(Object event) {
         if (event instanceof Model.Event) {
             Model.Event casted = (Model.Event) event;

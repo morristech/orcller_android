@@ -1,9 +1,9 @@
 package com.orcller.app.orcller.model.api;
 
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Coedit;
-import com.orcller.app.orcller.model.album.ListEntity;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Coedit;
+import com.orcller.app.orcller.model.ListEntity;
+import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcllermodules.model.ApiResult;
 
 import pisces.psfoundation.model.Model;

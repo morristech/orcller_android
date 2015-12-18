@@ -5,9 +5,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.orcller.app.orcller.model.album.ImageMedia;
-import com.orcller.app.orcller.model.album.Media;
-import com.orcller.app.orcller.model.album.VideoMedia;
+import com.orcller.app.orcller.model.ImageMedia;
+import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.model.VideoMedia;
 
 import java.lang.reflect.Type;
 

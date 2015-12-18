@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.widget.MediaScrollView;
 
 import java.util.ArrayList;

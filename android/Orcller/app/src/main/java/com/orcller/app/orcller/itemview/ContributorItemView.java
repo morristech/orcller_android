@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Contributor;
+import com.orcller.app.orcller.model.Contributor;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.CoeditButton;
 import com.orcller.app.orcller.widget.FollowButton;

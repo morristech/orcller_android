@@ -15,8 +15,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Image;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Image;
 
 import java.util.ArrayList;
 import java.util.Collections;

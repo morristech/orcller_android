@@ -1,8 +1,6 @@
 package com.orcller.app.orcller.widget;
 
-import android.widget.ImageView;
-
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Media;
 
 /**
  * Created by pisces on 11/24/15.

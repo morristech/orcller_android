@@ -1,6 +1,6 @@
 package com.orcller.app.orcller.model.api;
 
-import com.orcller.app.orcller.model.album.Contributors;
+import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcllermodules.model.ApiResult;
 
 /**

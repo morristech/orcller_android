@@ -1,7 +1,6 @@
 package com.orcller.app.orcller.activity;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -14,7 +13,7 @@ import android.widget.ListView;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
-import com.orcller.app.orcller.model.album.Coedit;
+import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 

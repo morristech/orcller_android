@@ -13,12 +13,16 @@ import android.widget.TabHost;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.CoeditListFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.widget.TabIndicator;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
@@ -26,6 +30,8 @@ import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.greenrobot.event.EventBus;
+import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -63,19 +69,39 @@ public class MainActivity extends PSActionBarActivity
         viewPager.setPageMarginDrawable(android.R.color.white);
         viewPager.addOnPageChangeListener(this);
         addTabs();
-        SoftKeyboardNotifier.getDefault().register(this);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d("onResume");
+
+        SharedObject.get().loadNewsCount();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
     }
 
     // ================================================================================================
     //  Interface Implemetaion
     // ================================================================================================
+
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(Object event) {
+        if (event instanceof SharedObject.Event &&
+                SharedObject.Event.CHANGE_NEWS_COUNT.equals(((SharedObject.Event) event).getType())) {
+            updateBadges();
+        }
+    }
 
     /**
      * ViewPager.OnPageChangeListener
@@ -99,6 +125,11 @@ public class MainActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(getTitle(position));
         getToolbar().setVisibility(position == 0 ? View.GONE : View.VISIBLE);
         ((MainTabFragment) pagerAdapter.getItem(position)).invalidateFragment();
+
+        if (position == 4)
+            SoftKeyboardNotifier.getDefault().register(this);
+        else
+            SoftKeyboardNotifier.getDefault().unregister(this);
     }
 
     // ================================================================================================
@@ -146,6 +177,30 @@ public class MainActivity extends PSActionBarActivity
         if (position == 4)
             return AuthenticationCenter.getDefault().getUser().user_id;
         return null;
+    }
+
+    private int getBadgeCount(int position) {
+        if (position == 0)
+            return SharedObject.get().getTimelineCount();
+        if (position == 1)
+            return SharedObject.get().getRecommendCount();
+        if (position == 2)
+            return SharedObject.get().getCoeditCount();
+        if (position == 3)
+            return SharedObject.get().getActivityCount();
+        if (position == 4)
+            return SharedObject.get().getOptionsCount();
+        return 0;
+    }
+
+    private void updateBadges() {
+        int count = tabHost.getTabWidget().getTabCount();
+
+        for (int i=0; i<count; i++) {
+            int badgeCount = getBadgeCount(i);
+            TabIndicator indicator = (TabIndicator) tabHost.getTabWidget().getChildAt(i);
+            indicator.getBadge().setText(badgeCount > 0 ? String.valueOf(badgeCount) : null);
+        }
     }
 
     // ================================================================================================

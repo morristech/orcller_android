@@ -17,7 +17,7 @@ import com.orcller.app.orcller.activity.AlbumEditActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.itemview.PublicSettingsAlertDialogView;
-import com.orcller.app.orcller.model.album.Album;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.FBShareProxy;

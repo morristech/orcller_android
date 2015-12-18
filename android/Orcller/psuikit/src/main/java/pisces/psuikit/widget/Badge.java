@@ -12,6 +12,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.support.annotation.ColorRes;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -82,7 +83,7 @@ public class Badge extends PSFrameLayout {
         try {
             setText(ta.getString(R.styleable.Badge_android_text));
             setTextColor(ta.getColorStateList(R.styleable.Badge_android_textColor));
-            setTextSize((float) ta.getDimensionPixelSize(R.styleable.Badge_android_textSize, (int) getTextSize()));
+            setTextSize(ta.getDimension(R.styleable.Badge_android_textSize, (int) getTextSize()));
         } finally {
             ta.recycle();
         }
@@ -98,6 +99,7 @@ public class Badge extends PSFrameLayout {
 
     public void setText(CharSequence text) {
         textView.setText(text);
+        setVisibility(TextUtils.isEmpty(text) ? GONE : VISIBLE);
     }
 
     public ColorStateList getTextColor() {
@@ -118,7 +120,7 @@ public class Badge extends PSFrameLayout {
     }
 
     public void setTextSize(float textSize) {
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
     }
 
     // ================================================================================================

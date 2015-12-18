@@ -1,6 +1,6 @@
 package com.orcller.app.orcller.model.api;
 
-import com.orcller.app.orcller.model.album.ListEntity;
+import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.User;
 

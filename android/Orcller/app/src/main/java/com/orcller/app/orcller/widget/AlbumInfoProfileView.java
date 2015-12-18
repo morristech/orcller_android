@@ -8,13 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.AlbumInfo;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumInfo;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.DateUtil;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 

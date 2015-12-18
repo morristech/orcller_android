@@ -3,18 +3,16 @@ package com.orcller.app.orcller.widget;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Page;
 
 import java.util.List;
 
-import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 

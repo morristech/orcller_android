@@ -17,7 +17,7 @@ import android.widget.GridView;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MediaListActivity;
 import com.orcller.app.orcller.itemview.ImagePickerMediaItemView;
-import com.orcller.app.orcller.model.album.Media;
+import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.converter.MediaConverter;
 import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;

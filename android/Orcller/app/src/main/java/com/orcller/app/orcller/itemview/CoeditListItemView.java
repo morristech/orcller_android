@@ -11,9 +11,9 @@ import com.bumptech.glide.Glide;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
-import com.orcller.app.orcller.model.album.Album;
-import com.orcller.app.orcller.model.album.Coedit;
-import com.orcller.app.orcller.model.album.Contributors;
+import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.Coedit;
+import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.CoeditButton;
 

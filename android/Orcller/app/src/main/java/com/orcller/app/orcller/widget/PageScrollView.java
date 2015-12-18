@@ -9,8 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.model.album.Comments;
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Comments;
+import com.orcller.app.orcller.model.Page;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;

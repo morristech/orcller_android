@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 
-import com.orcller.app.orcller.model.album.Page;
+import com.orcller.app.orcller.model.Page;
 
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
