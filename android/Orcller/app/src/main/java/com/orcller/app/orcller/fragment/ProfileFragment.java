@@ -85,6 +85,11 @@ public class ProfileFragment extends MainTabFragment
     }
 
     @Override
+    public boolean isUseSoftKeyboard() {
+        return true;
+    }
+
+    @Override
     protected void resumeFragment() {
         if (isViewCreated())
             modelChanged();

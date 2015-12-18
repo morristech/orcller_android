@@ -41,6 +41,10 @@ public class MainTabFragment extends PSFragment {
         viewCreated = false;
     }
 
+    public boolean isUseSoftKeyboard() {
+        return false;
+    }
+
     // ================================================================================================
     //  Protected
     // ================================================================================================

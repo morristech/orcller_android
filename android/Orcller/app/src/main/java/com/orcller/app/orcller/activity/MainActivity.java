@@ -24,6 +24,7 @@ import com.orcller.app.orcller.fragment.TimelineFragment;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.widget.TabIndicator;
+import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
@@ -76,8 +77,6 @@ public class MainActivity extends PSActionBarActivity
     protected void onResume() {
         super.onResume();
 
-        Log.d("onResume");
-
         SharedObject.get().loadNewsCount();
     }
 
@@ -100,6 +99,14 @@ public class MainActivity extends PSActionBarActivity
         if (event instanceof SharedObject.Event &&
                 SharedObject.Event.CHANGE_NEWS_COUNT.equals(((SharedObject.Event) event).getType())) {
             updateBadges();
+        } else if (event instanceof SoftKeyboardEvent) {
+            SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
+
+            if (casted.getType().equals(SoftKeyboardEvent.SHOW)) {
+                tabHost.getTabWidget().setVisibility(View.INVISIBLE);
+            } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
+                tabHost.getTabWidget().setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -124,12 +131,15 @@ public class MainActivity extends PSActionBarActivity
         viewPager.setCurrentItem(position, false);
         getSupportActionBar().setTitle(getTitle(position));
         getToolbar().setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-        ((MainTabFragment) pagerAdapter.getItem(position)).invalidateFragment();
 
-        if (position == 4)
+        MainTabFragment fragment = (MainTabFragment) pagerAdapter.getItem(position);
+
+        if (fragment.isUseSoftKeyboard())
             SoftKeyboardNotifier.getDefault().register(this);
         else
             SoftKeyboardNotifier.getDefault().unregister(this);
+
+        fragment.invalidateFragment();
     }
 
     // ================================================================================================

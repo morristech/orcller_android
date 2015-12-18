@@ -24,4 +24,9 @@ public class FindFriendsFragment extends MainTabFragment {
                              ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_findfrineds, null);
     }
+
+    @Override
+    public boolean isUseSoftKeyboard() {
+        return true;
+    }
 }
