@@ -85,7 +85,7 @@ public class ActivityFragment extends MainTabFragment
         super.onDestroyView();
 
         EventBus.getDefault().unregister(this);
-        ProgressBarManager.hide();
+        ProgressBarManager.hide(container);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ActivityFragment extends MainTabFragment
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide();
+        ProgressBarManager.hide(container);
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
@@ -184,7 +184,7 @@ public class ActivityFragment extends MainTabFragment
             return;
 
         if (isFirstLoading())
-            ProgressBarManager.show();
+            ProgressBarManager.show(container);
 
         loadError = null;
 

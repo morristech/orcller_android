@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -48,8 +47,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
+import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -60,7 +61,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/15/15.
  */
-public class TimelineFragment extends MainTabFragment
+public class TimelineFragment extends PSFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final int LIST_COUNT = 20;
@@ -105,6 +106,7 @@ public class TimelineFragment extends MainTabFragment
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoTimeline, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
+        swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setItemsCanFocus(true);
@@ -137,6 +139,11 @@ public class TimelineFragment extends MainTabFragment
             swipeRefreshLayout.setRefreshing(false);
 
         exceptionViewManager.validate();
+    }
+
+    @Override
+    public String getToolbarTitle() {
+        return Resources.getString(R.string.w_title_timeline);
     }
 
     @Override

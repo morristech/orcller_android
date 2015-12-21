@@ -11,7 +11,7 @@
 
     <color name="theme_purple_accent">#C54694</color>
     <color name="theme_purple_primary">#762866</color>
-    <color name="theme_purple_primary_dark">@color/theme_purple_primary</color>
+    <color name="theme_purple_primary_dark">#21091C</color>
     <color name="theme_purple_control_normal">#E1E1E1</color>
 
     <color name="theme_white_accent">#F2F2F2</color>

@@ -32,6 +32,10 @@ public class ExceptionViewManager {
         }
     }
 
+    public int getViewCount() {
+        return views.size();
+    }
+
     public int getViewIndex(ExceptionView view) {
         return views.indexOf(view);
     }
@@ -39,6 +43,11 @@ public class ExceptionViewManager {
     public void add(ExceptionView view) {
         view.setDelegate(delegate);
         views.add(view);
+    }
+
+    public void add(int location, ExceptionView view) {
+        view.setDelegate(delegate);
+        views.add(location, view);
     }
 
     public void add(ExceptionView... views) {
@@ -56,6 +65,11 @@ public class ExceptionViewManager {
     public void remove(ExceptionView view) {
         view.removeFromParent();
         views.remove(view);
+    }
+
+    public void remove(int location) {
+        views.get(location).removeFromParent();
+        views.remove(location);
     }
 
     public void removeAll() {

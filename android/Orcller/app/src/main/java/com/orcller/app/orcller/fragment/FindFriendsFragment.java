@@ -36,7 +36,7 @@ import java.lang.reflect.Field;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
+import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.ext.PSView;
 import pisces.psuikit.manager.ExceptionViewManager;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -47,7 +47,7 @@ import retrofit.Call;
 /**
  * Created by pisces on 11/3/15.
  */
-public class FindFriendsFragment extends MainTabFragment
+public class FindFriendsFragment extends PSFragment
         implements SearchView.OnCloseListener, SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, UserListView.Delegate {
     private Error loadError;
@@ -117,6 +117,7 @@ public class FindFriendsFragment extends MainTabFragment
         searchView.setOnQueryTextListener(this);
         facebookButton.setOnClickListener(this);
         SearchViewCompat.setInputType(searchView, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+        setHasOptionsMenu(true);
         EventBus.getDefault().register(this);
     }
 
@@ -260,8 +261,8 @@ public class FindFriendsFragment extends MainTabFragment
         loadError = null;
 
         if (listView.equals(searchListView)) {
-            ProgressBarManager.show(secondViewContainer, android.R.attr.progressBarStyleSmall);
-        } else {
+            ProgressBarManager.show(secondViewContainer);
+        } else if (listView.equals(userListView) && listView.isFirstLoading()) {
             ProgressBarManager.show(userListViewContainer);
         }
     }

@@ -102,6 +102,7 @@
     <string name="w_title_find_friends">Find Friends</string>
     <string name="w_title_new_album">New Album</string>
     <string name="w_title_profile">Edit Profile</string>
+    <string name="w_title_timeline">Timeline</string>
     <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>
     <string name="w_unask">Unask</string>
@@ -170,6 +171,8 @@
     <string name="m_exception_desc_error_network">Please try again after checking the connection status.</string>
     <string name="m_exception_desc_error_unknown">Please try again.</string>
     <string name="m_exception_desc_no_activity">Activities of acquaintances will be display.</string>
+    <string name="m_exception_desc_no_album">Try send invite message to my album collaboration.</string>
+    <string name="m_exception_desc_no_album_mine">Now you can create an album easily.</string>
     <string name="m_exception_desc_no_collaborations">Please join to album collaboration with friends.</string>
     <string name="m_exception_desc_no_permissions">This album can be private or you do not follow the author.</string>
     <string name="m_exception_desc_no_photos">Photos used in the album, you can see apart here.</string>
@@ -180,6 +183,7 @@
     <string name="m_exception_title_error_network">Network status is not smooth.</string>
     <string name="m_exception_title_error_unknown">Oops! An error occurred.</string>
     <string name="m_exception_title_no_activity">There is no activity.</string>
+    <string name="m_exception_title_no_album">No album created yet.</string>
     <string name="m_exception_title_no_collaborations">There is no album collaborations.</string>
     <string name="m_exception_title_no_list">There is no results.</string>
     <string name="m_exception_title_no_permissions">You don\'t have any permission for the album.</string>

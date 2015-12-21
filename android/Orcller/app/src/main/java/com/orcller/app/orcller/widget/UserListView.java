@@ -122,15 +122,15 @@ public class UserListView extends PSListView {
         if (invalidDataLoading())
             return;
 
-        final UserListView self = this;
-
-        if (delegate != null)
-            delegate.onLoad(this);
-
         if (call != null)
             call.cancel();
 
+        final UserListView self = this;
+
         call = dataSource.createDataLoadCall(listCountAtOnce, after);
+
+        if (delegate != null)
+            delegate.onLoad(this);
 
         dataSource.createDataProxy().enqueueCall(
                 call,

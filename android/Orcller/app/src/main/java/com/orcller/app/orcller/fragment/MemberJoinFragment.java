@@ -2,7 +2,6 @@ package com.orcller.app.orcller.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -71,9 +70,7 @@ public class MemberJoinFragment extends PSFragment {
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void setUpViews(View view) {
         editText = (ClearableEditText) getView().findViewById(R.id.editText);
         facebookButton = (Button) getView().findViewById(R.id.facebookButton);
         nextButton = (Button) getView().findViewById(R.id.nextButton);

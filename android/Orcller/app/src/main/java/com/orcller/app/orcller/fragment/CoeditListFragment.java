@@ -13,7 +13,6 @@ import android.widget.ListView;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
@@ -28,6 +27,7 @@ import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
+import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
@@ -38,7 +38,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/16/15.
  */
-public class CoeditListFragment extends MainTabFragment
+public class CoeditListFragment extends PSFragment
         implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
     private List<Coedit> items = new ArrayList<>();
@@ -66,10 +66,10 @@ public class CoeditListFragment extends MainTabFragment
         listAdapter = new ListAdapter(getContext());
 
         exceptionViewManager.add(
-                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoCollaborations, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoCollaboration, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
-        swipeRefreshLayout.setColorSchemeResources(R.color.theme_lightgray_toolbar_control);
+        swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);

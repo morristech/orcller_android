@@ -92,7 +92,7 @@ public class ProgressBarManager {
     }
 
     public static void show(ViewGroup viewGroup) {
-        show(viewGroup, android.R.attr.progressBarStyle);
+        show(viewGroup, android.R.attr.progressBarStyleSmallInverse);
     }
 
     public static void show(ViewGroup viewGroup, int progressStyle) {

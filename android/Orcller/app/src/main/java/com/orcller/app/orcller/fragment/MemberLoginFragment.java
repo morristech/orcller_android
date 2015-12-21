@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -75,9 +74,7 @@ public class MemberLoginFragment extends PSFragment {
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void setUpViews(View view) {
         idEditText = (ClearableEditText) getView().findViewById(R.id.idEditText);
         pwEditText = (ClearableEditText) getView().findViewById(R.id.pwEditText);
         facebookButton = (Button) getView().findViewById(R.id.facebookButton);

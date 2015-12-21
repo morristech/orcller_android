@@ -15,6 +15,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.AbstractDataGridItemView;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.proxy.UserDataProxy;
+import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.ApiResult;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     private int listCountAtOnce;
     private ArrayList<Model> items = new ArrayList<>();
     private Class itemViewClass;
+    private Call call;
     private DataSource dataSource;
     private Delegate delegate;
     private ListEntity lastEntity;
@@ -95,8 +97,6 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
-
-        reload();
     }
 
     public Delegate getDelegate() {
@@ -156,12 +156,15 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     // ================================================================================================
 
     private void load(final String after) {
-        Call call = dataSource != null ? dataSource.createDataLoadCall(listCountAtOnce, after) : null;
-
-        if (call == null || invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         final UserDataGridView self = this;
+
+        if (call != null)
+            call.cancel();
+
+        call = dataSource.createDataLoadCall(listCountAtOnce, after);
 
         if (delegate != null)
             delegate.onLoad(this);
@@ -171,8 +174,6 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
                 new Callback<ApiResult>() {
                     @Override
                     public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {
-                        endDataLoading();
-
                         if (response.isSuccess() && response.body().isSuccess()) {
                             Application.run(new Runnable() {
                                 @Override
@@ -188,6 +189,7 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
                                 @Override
                                 public void run() {
                                     gridViewAdapter.notifyDataSetChanged();
+                                    endDataLoading();
 
                                     if (delegate != null)
                                         delegate.onLoadComplete(self, lastEntity);
@@ -196,6 +198,11 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
                         } else {
                             if (DEBUG)
                                 e("Api Error", response.body());
+
+                            endDataLoading();
+
+                            if (delegate != null)
+                                delegate.onFailure(self, new APIError(response.body()));
                         }
                     }
 
@@ -205,6 +212,9 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
                             Log.e("onFailure", t);
 
                         endDataLoading();
+
+                        if (delegate != null)
+                            delegate.onFailure(self, new Error(t.getMessage()));
                     }
                 });
     }
@@ -276,7 +286,7 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     //  Interface: DataSource
     // ================================================================================================
 
-    public static interface DataSource<T> {
+    public interface DataSource<T> {
         Call<T> createDataLoadCall(int limit, String after);
     }
 
@@ -284,7 +294,8 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
+        void onFailure(UserDataGridView gridView, Error error);
         void onLoad(UserDataGridView gridView);
         void onLoadComplete(UserDataGridView gridView, ListEntity listEntity);
         void onScroll(AbsListView view, Point scrollPoint);

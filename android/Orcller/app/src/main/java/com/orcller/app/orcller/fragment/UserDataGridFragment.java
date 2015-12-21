@@ -7,23 +7,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.widget.UserDataGridView;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFragment;
+import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ExceptionView;
 
 /**
  * Created by pisces on 12/11/15.
  */
 abstract public class UserDataGridFragment extends PSFragment
         implements UserDataGridView.Delegate {
+    private boolean userIdChanged;
     private long userId;
     private Delegate delegate;
-    private ProgressBar progressBar;
+    protected Error loadError;
+    protected FrameLayout container;
     protected UserDataGridView gridView;
 
     public UserDataGridFragment() {
@@ -43,23 +51,40 @@ abstract public class UserDataGridFragment extends PSFragment
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+    protected void setUpViews(View view) {
+        container = (FrameLayout) view.findViewById(R.id.container);
         gridView = (UserDataGridView) view.findViewById(R.id.gridView);
 
+        exceptionViewManager.add(
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         gridView.setItemViewClass(getItemViewClass());
         gridView.setDataSource(createDataSource());
         gridView.setDelegate(this);
+        userIdChanged();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
 
-        setDelegate(null);
-        gridView = null;
+    @Override
+    public void onClick(ExceptionView view) {
+        gridView.reload();
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (gridView.getItems().size() > 1)
+            return false;
+
+        int index = exceptionViewManager.getViewIndex(view);
+        if (index == 0)
+            return !Application.isNetworkConnected();
+        if (index == 1)
+            return loadError != null;
+        return false;
     }
 
     // ================================================================================================
@@ -83,9 +108,9 @@ abstract public class UserDataGridFragment extends PSFragment
             return;
 
         this.userId = userId;
+        userIdChanged = true;
 
-        if (gridView != null)
-            gridView.reload();
+        userIdChanged();
     }
 
     // ================================================================================================
@@ -102,6 +127,18 @@ abstract public class UserDataGridFragment extends PSFragment
      */
     abstract protected Class getItemViewClass();
 
+    protected void reload() {
+        if (gridView != null)
+            gridView.reload();
+    }
+
+    protected void userIdChanged() {
+        if (userIdChanged && gridView != null) {
+            userIdChanged = false;
+            reload();
+        }
+    }
+
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -109,13 +146,22 @@ abstract public class UserDataGridFragment extends PSFragment
     /**
      * UserDataGridView.Delegate
      */
+    public void onFailure(UserDataGridView gridView, Error error) {
+        loadError = gridView.getItems().size() < 1 ? error : null;
+        ProgressBarManager.hide(container);
+        exceptionViewManager.validate();
+    }
+
     public void onLoad(UserDataGridView gridView) {
+        loadError = null;
+
         if (gridView.isFirstLoading())
-            progressBar.setVisibility(View.VISIBLE);
+            ProgressBarManager.show(container);
     }
 
     public void onLoadComplete(UserDataGridView gridView, ListEntity listEntity) {
-        progressBar.setVisibility(View.GONE);
+        ProgressBarManager.hide(container);
+        exceptionViewManager.validate();
     }
 
     public void onScroll(AbsListView view, Point scrollPoint) {
@@ -135,7 +181,7 @@ abstract public class UserDataGridFragment extends PSFragment
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onScroll(AbsListView view, Point scrollPoint);
         void onScrollStateChanged(AbsListView view, int scrollState);
     }

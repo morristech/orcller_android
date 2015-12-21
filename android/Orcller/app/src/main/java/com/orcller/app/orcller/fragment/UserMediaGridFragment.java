@@ -34,8 +34,8 @@ public class UserMediaGridFragment extends UserDataGridFragment {
     // ================================================================================================
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void setUpViews(View view) {
+        super.setUpViews(view);
 
         EventBus.getDefault().register(this);
     }

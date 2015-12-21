@@ -1,8 +1,6 @@
 package com.orcller.app.orcller.fragment;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,12 +18,14 @@ import com.orcller.app.orcllermodules.model.User;
 import java.util.Arrays;
 import java.util.List;
 
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
+import pisces.psuikit.ext.PSFragment;
 
 /**
  * Created by pisces on 11/3/15.
  */
-public class ProfileFragment extends MainTabFragment
+public class ProfileFragment extends PSFragment
         implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
     private List<Class<? extends UserDataGridFragment>> fragments;
     private User model;
@@ -91,10 +91,7 @@ public class ProfileFragment extends MainTabFragment
 
     @Override
     protected void resumeFragment() {
-        if (isViewCreated())
-            modelChanged();
-        else
-            reload();
+        reload();
     }
 
     @Override
@@ -155,6 +152,7 @@ public class ProfileFragment extends MainTabFragment
     }
 
     private void modelChanged() {
+        Log.d("modelChanged", model != null);
         profileHearderView.setModel(model);
         profileHearderView.setVisibility(View.VISIBLE);
         profileContentView.setVisibility(View.VISIBLE);
@@ -162,6 +160,8 @@ public class ProfileFragment extends MainTabFragment
     }
 
     private void reload() {
+        Log.d("reload", model != null);
+        profileHearderView.setModel(model);
         profileHearderView.setVisibility(View.VISIBLE);
         profileContentView.setVisibility(View.VISIBLE);
         profileContentView.reload();

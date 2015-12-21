@@ -11,15 +11,17 @@ import pisces.psuikit.widget.ExceptionView;
  */
 public class ExceptionViewFactory {
     public enum Type {
-        NoTimeline(1),
-        NoActivity(2),
-        NoRecommendation(3),
-        NoCollaborations(4),
+        NoAlbumMine(1),
+        NoAlbum(2),
+        NoTimeline(2),
+        NoActivity(3),
+        NoRecommendation(4),
+        NoCollaboration(4),
         NoListData(5),
         NoPermissionForAlbum(6),
         DoseNotExistAlbum(7),
-        DoseNotExistStars(8),
-        DoseNotExistPhotos(9),
+        DoseNotExistStar(8),
+        DoseNotExistPhoto(9),
         NetworkError(10),
         UnknownError(11);
 
@@ -44,7 +46,14 @@ public class ExceptionViewFactory {
 
         ExceptionView view = new ExceptionView(parentView.getContext(), parentView);
 
-        if (Type.NoTimeline.equals(type)) {
+        if (Type.NoAlbum.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_album);
+            view.setDescriptionText(R.string.m_exception_desc_no_album);
+            view.setButtonText(R.string.w_title_new_album);
+        } else if (Type.NoAlbumMine.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_album);
+            view.setDescriptionText(R.string.m_exception_desc_no_album_mine);
+        } else if (Type.NoTimeline.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_timeline);
             view.setDescriptionText(R.string.m_exception_desc_no_timeline);
             view.setButtonText(R.string.w_title_new_album);
@@ -54,7 +63,7 @@ public class ExceptionViewFactory {
         } else if (Type.NoRecommendation.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_recommendation);
             view.setDescriptionText(R.string.m_exception_desc_no_recommendation);
-        } else if (Type.NoCollaborations.equals(type)) {
+        } else if (Type.NoCollaboration.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_collaborations);
             view.setDescriptionText(R.string.m_exception_desc_no_collaborations);
         } else if (Type.NoListData.equals(type)) {
@@ -65,10 +74,10 @@ public class ExceptionViewFactory {
         } else if (Type.DoseNotExistAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_dose_not_exist_album);
             view.setDescriptionText(R.string.m_exception_desc_dose_not_exist_album);
-        } else if (Type.DoseNotExistStars.equals(type)) {
+        } else if (Type.DoseNotExistStar.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_star);
             view.setDescriptionText(R.string.m_exception_desc_no_star);
-        } else if (Type.DoseNotExistPhotos.equals(type)) {
+        } else if (Type.DoseNotExistPhoto.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_photos);
             view.setDescriptionText(R.string.m_exception_desc_no_photos);
         } else if (Type.UnknownError.equals(type)) {
