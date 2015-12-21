@@ -12,16 +12,14 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
-    <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <android:uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
         android:name="pisces.psfoundation.ext.Application"
@@ -58,6 +56,14 @@
             android:name=".activity.MemberJoinInputActivity"
             android:launchMode="singleTask"
             android:theme="@style/PurpleTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="member" android:path="/1" android:scheme="@string/app_scheme" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -97,6 +103,14 @@
             android:name=".activity.AlbumCreateActivity"
             android:launchMode="singleTask"
             android:theme="@style/WhiteTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="album" android:path="/2" android:scheme="@string/app_scheme" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.AlbumEditActivity"
@@ -107,6 +121,14 @@
             android:name=".activity.AlbumViewActivity"
             android:launchMode="singleTask"
             android:theme="@style/PurpleTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="album" android:path="/1" android:scheme="@string/app_scheme" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.AlbumPageOrderActivity"

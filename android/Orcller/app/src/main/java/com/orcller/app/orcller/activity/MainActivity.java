@@ -104,7 +104,7 @@ public class MainActivity extends PSActionBarActivity
             SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
 
             if (casted.getType().equals(SoftKeyboardEvent.SHOW)) {
-                tabHost.getTabWidget().setVisibility(View.INVISIBLE);
+                tabHost.getTabWidget().setVisibility(View.GONE);
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 tabHost.getTabWidget().setVisibility(View.VISIBLE);
             }
@@ -162,6 +162,20 @@ public class MainActivity extends PSActionBarActivity
         }
     }
 
+    private int getBadgeCount(int position) {
+        if (position == 0)
+            return SharedObject.get().getTimelineCount();
+        if (position == 1)
+            return SharedObject.get().getRecommendCount();
+        if (position == 2)
+            return SharedObject.get().getCoeditCount();
+        if (position == 3)
+            return SharedObject.get().getActivityCount();
+        if (position == 4)
+            return SharedObject.get().getOptionsCount();
+        return 0;
+    }
+
     private Rect getTabIconBound(int position) {
         if (position == 4)
             return new Rect(0, 0, GraphicUtils.convertDpToPixel(17), GraphicUtils.convertDpToPixel(22));
@@ -179,20 +193,6 @@ public class MainActivity extends PSActionBarActivity
             return R.drawable.icon_tabbar_activity;
         if (position == 4)
             return R.drawable.icon_tabbar_profile;
-        return 0;
-    }
-
-    private int getBadgeCount(int position) {
-        if (position == 0)
-            return SharedObject.get().getTimelineCount();
-        if (position == 1)
-            return SharedObject.get().getRecommendCount();
-        if (position == 2)
-            return SharedObject.get().getCoeditCount();
-        if (position == 3)
-            return SharedObject.get().getActivityCount();
-        if (position == 4)
-            return SharedObject.get().getOptionsCount();
         return 0;
     }
 

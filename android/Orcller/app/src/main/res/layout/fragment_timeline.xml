@@ -5,17 +5,22 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true">
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <pisces.psuikit.ext.PSListView
-            android:id="@+id/listView"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="12dp"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent">
+            <pisces.psuikit.ext.PSListView
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:choiceMode="singleChoice"
+                android:dividerHeight="12dp"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/createButton"

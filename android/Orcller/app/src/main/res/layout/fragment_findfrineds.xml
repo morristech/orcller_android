@@ -1,14 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_album_view"
+    android:background="@android:color/white"
     android:focusable="true"
     android:focusableInTouchMode="true">
-    <com.orcller.app.orcller.widget.UserListView
-        android:id="@+id/userListView"
+    <LinearLayout
+        android:id="@+id/firstViewContainer"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
+        android:layout_height="match_parent">
+        <FrameLayout
+            android:id="@+id/userListViewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.orcller.app.orcller.widget.UserListView
+                    android:id="@+id/userListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </FrameLayout>
+
+        <pisces.psuikit.widget.PSButton
+            android:id="@+id/facebookButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:padding="8dp"
+            android:background="@drawable/background_ripple_lightgray"
+            android:drawableLeft="@drawable/icon_facebook_normal"
+            android:drawablePadding="8dp"
+            android:text="@string/w_invite_facebook"
+            android:textColor="@android:color/black"
+            android:textSize="13dp"
+            app:drawableWidth="32dp"
+            app:drawableHeight="32dp"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/secondViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <com.orcller.app.orcller.widget.UserListView
+            android:id="@+id/searchListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+</FrameLayout>

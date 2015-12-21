@@ -1,5 +1,6 @@
 package com.orcller.app.orcllermodules.proxy;
 
+import android.accounts.NetworkErrorException;
 import android.content.SharedPreferences;
 
 import com.orcller.app.orcllermodules.BuildConfig;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.proxy.AbstractRetrofitProxy;
 import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;

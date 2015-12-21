@@ -9,6 +9,8 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">470721986412373</string>
+    <string name="facebook_invite_preview_image_path">resources/site/images/preview_fbinvite.png</string>
+    <string name="facebook_invite_url">https://fb.me/548899468594624</string>
     <string name="instagram_client_id">44f7da449746424a87add98948d85bba</string>
     <string name="instagram_client_secret">786fe9d225c248bc970aa251c6fd4771</string>
     <string name="instagram_redirect_url">ig786fe9d225c248bc970aa251c6fd4771://authorize</string>
@@ -57,6 +59,7 @@
     <string name="w_hearts">Hearts</string>
     <string name="w_instagram_photos">Instagram Photos</string>
     <string name="w_invites">Invites</string>
+    <string name="w_invite_facebook">Invite Facebook Friends</string>
     <string name="w_login">Login...</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
@@ -162,4 +165,26 @@
     <string name="m_noty_heart">has sent heart to your album.</string>
     <string name="m_noty_page_comment">commented on the album page.</string>
     <string name="m_noty_page_heart">has sent heart to your album.</string>
+
+    <string name="m_exception_desc_dose_not_exist_album">This album may be deleted.</string>
+    <string name="m_exception_desc_error_network">Please try again after checking the connection status.</string>
+    <string name="m_exception_desc_error_unknown">Please try again.</string>
+    <string name="m_exception_desc_no_activity">Activities of acquaintances will be display.</string>
+    <string name="m_exception_desc_no_collaborations">Please join to album collaboration with friends.</string>
+    <string name="m_exception_desc_no_permissions">This album can be private or you do not follow the author.</string>
+    <string name="m_exception_desc_no_photos">Photos used in the album, you can see apart here.</string>
+    <string name="m_exception_desc_no_recommendation">Please find a friend via search.</string>
+    <string name="m_exception_desc_no_star">You can see the album specified with an star are easy in here.</string>
+    <string name="m_exception_desc_no_timeline">Try create a new album and share to friends.</string>
+    <string name="m_exception_title_dose_not_exist_album">Oops! The album does not exists.</string>
+    <string name="m_exception_title_error_network">Network status is not smooth.</string>
+    <string name="m_exception_title_error_unknown">Oops! An error occurred.</string>
+    <string name="m_exception_title_no_activity">There is no activity.</string>
+    <string name="m_exception_title_no_collaborations">There is no album collaborations.</string>
+    <string name="m_exception_title_no_list">There is no results.</string>
+    <string name="m_exception_title_no_permissions">You don\'t have any permission for the album.</string>
+    <string name="m_exception_title_no_photos">There are no photos used in the album.</string>
+    <string name="m_exception_title_no_recommendation">There is no recommendation of a friend.</string>
+    <string name="m_exception_title_no_star">There is no album specified by an star.</string>
+    <string name="m_exception_title_no_timeline">There is no album on the timeline.</string>
 </resources>

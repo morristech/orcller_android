@@ -71,9 +71,7 @@ public class WebViewActivity extends PSActionBarActivity {
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            if (!ProgressBarManager.isShowing()) {
-                ProgressBarManager.show((Activity) context);
-            }
+            ProgressBarManager.show((Activity) context);
         }
 
         public void onPageFinished(WebView view, String url) {

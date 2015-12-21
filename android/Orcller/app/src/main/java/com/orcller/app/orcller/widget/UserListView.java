@@ -11,6 +11,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.UserItemView;
 import com.orcller.app.orcller.model.ListEntity;
+import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
@@ -37,6 +38,7 @@ public class UserListView extends PSListView {
     private Delegate delegate;
     private ListEntity lastEntity;
     private ListAdapter listAdapter;
+    private Call call;
 
     public UserListView(Context context) {
         super(context);
@@ -90,8 +92,26 @@ public class UserListView extends PSListView {
         this.delegate = delegate;
     }
 
+    public List<BaseUser> getItems() {
+        return items;
+    }
+
     public void setListCountAtOnce(int listCountAtOnce) {
         this.listCountAtOnce = listCountAtOnce;
+    }
+
+    public void clear() {
+        if (call != null)
+            call.cancel();
+
+        items.clear();
+        listAdapter.notifyDataSetChanged();
+
+        lastEntity = null;
+    }
+
+    public void reload() {
+        load(null);
     }
 
     // ================================================================================================
@@ -107,8 +127,13 @@ public class UserListView extends PSListView {
         if (delegate != null)
             delegate.onLoad(this);
 
+        if (call != null)
+            call.cancel();
+
+        call = dataSource.createDataLoadCall(listCountAtOnce, after);
+
         dataSource.createDataProxy().enqueueCall(
-                dataSource.createDataLoadCall(listCountAtOnce, after),
+                call,
                 new Callback<ApiResult>() {
                     @Override
                     public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {
@@ -141,6 +166,9 @@ public class UserListView extends PSListView {
                                 Log.e("Api Error", response.body());
 
                             endDataLoading();
+
+                            if (delegate != null)
+                                delegate.onFailure(self, new APIError(response.body()));
                         }
                     }
 
@@ -150,6 +178,9 @@ public class UserListView extends PSListView {
                             Log.e("onFailure", t);
 
                         endDataLoading();
+
+                        if (delegate != null)
+                            delegate.onFailure(self, new Error(t.getMessage()));
                     }
                 });
     }
@@ -170,7 +201,7 @@ public class UserListView extends PSListView {
     //  Interface: DataSource
     // ================================================================================================
 
-    public static interface DataSource<T> {
+    public interface DataSource<T> {
         boolean followButtonHidden();
         Call<T> createDataLoadCall(int limit, String after);
         AbstractDataProxy createDataProxy();
@@ -180,7 +211,8 @@ public class UserListView extends PSListView {
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
+        void onFailure(UserListView listView, Error error);
         void onLoad(UserListView listView);
         void onLoadComplete(UserListView listView, ListEntity listEntity);
     }

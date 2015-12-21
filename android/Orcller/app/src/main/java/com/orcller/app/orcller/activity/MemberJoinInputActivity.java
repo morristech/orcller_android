@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -35,12 +36,15 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.widget.ClearableEditText;
 
 /**
  * Created by pisces on 11/12/15.
  */
 public class MemberJoinInputActivity extends PSActionBarActivity implements Validator.ValidationListener {
+    private static final String EMAIL_KEY = "email";
+
     @Length(min = 6, max = 16, messageResId = R.string.m_validate_user_name_length)
     private ClearableEditText idEditText;
 
@@ -65,6 +69,8 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_memeber_joininput);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle(getResources().getString(R.string.w_sign_up));
 
         container = (LinearLayout) findViewById(R.id.container);
         joinButton = (Button) findViewById(R.id.joinButton);
@@ -87,11 +93,15 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
             }
         };
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getResources().getString(R.string.w_sign_up));
         descTextView.setMovementMethod(LinkMovementMethod.getInstance());
         setUser(getIntent().getSerializableExtra("user"));
-        setEmail(getIntent().getStringExtra("email"));
+
+        if (getIntent().getStringExtra(EMAIL_KEY) != null) {
+            setEmail(getIntent().getStringExtra(EMAIL_KEY));
+        } else if (getIntent().getData().getQueryParameter(EMAIL_KEY) != null) {
+            setEmail(getIntent().getData().getQueryParameter(EMAIL_KEY));
+        }
+
         setListeners();
     }
 
@@ -111,7 +121,7 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(this);
+        ProgressDialogManager.hide();
     }
 
     @Override
@@ -119,7 +129,7 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
         boolean result = super.invalidDataLoading();
 
         if (!result)
-            ProgressBarManager.show(this, true);
+            ProgressDialogManager.show(R.string.w_processing);
 
         return result;
     }

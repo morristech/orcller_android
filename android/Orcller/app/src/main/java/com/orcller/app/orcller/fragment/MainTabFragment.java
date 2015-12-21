@@ -9,8 +9,10 @@ import pisces.psuikit.ext.PSFragment;
 /**
  * Created by pisces on 12/18/15.
  */
-public class MainTabFragment extends PSFragment {
+abstract public class MainTabFragment extends PSFragment {
+    private boolean initialized;
     private boolean isFirstLoading = true;
+    private boolean shouldStartFragment;
     private boolean viewCreated;
 
     // ================================================================================================
@@ -21,37 +23,38 @@ public class MainTabFragment extends PSFragment {
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setHasOptionsMenu(true);
-
+        initialized = true;
         viewCreated = true;
+
+        setHasOptionsMenu(true);
+        setUpViews(view);
+        validateFragment();
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
 
-    public void invalidateFragment() {
-        if (isFirstLoading) {
-            startFragment();
-            isFirstLoading = false;
-        } else {
-            resumeFragment();
-        }
+    public String getToolbarTitle() {
+        return null;
+    }
 
-        viewCreated = false;
+    public void invalidateFragment() {
+        shouldStartFragment = true;
+
+        if (initialized)
+            validateFragment();
     }
 
     public boolean isUseSoftKeyboard() {
         return false;
     }
 
-    public String getToolbarTitle() {
-        return null;
-    }
-
     // ================================================================================================
     //  Protected
     // ================================================================================================
+
+    abstract protected void setUpViews(View view);
 
     protected boolean isViewCreated() {
         return viewCreated;
@@ -61,5 +64,19 @@ public class MainTabFragment extends PSFragment {
     }
 
     protected void startFragment() {
+    }
+
+    private void validateFragment() {
+        if (!shouldStartFragment)
+            return;
+
+        if (isFirstLoading) {
+            startFragment();
+            isFirstLoading = false;
+        } else {
+            resumeFragment();
+        }
+
+        shouldStartFragment = false;
     }
 }

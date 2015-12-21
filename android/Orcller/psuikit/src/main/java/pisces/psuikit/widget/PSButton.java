@@ -3,6 +3,7 @@ package pisces.psuikit.widget;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -48,22 +49,24 @@ public class PSButton extends PSFrameLayout {
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         textView = new TextView(context);
 
+        textView.setGravity(Gravity.CENTER_VERTICAL);
         addView(textView, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PSButton, defStyleAttr, defStyleRes);
         try {
-            drawableWidth = GraphicUtils.convertDpToPixel(ta.getDimension(R.styleable.PSButton_drawableWidth, 0));
-            drawableHeight = GraphicUtils.convertDpToPixel(ta.getDimension(R.styleable.PSButton_drawableHeight, 0));
 
+            drawableWidth = ta.getDimensionPixelSize(R.styleable.PSButton_drawableWidth, 0);
+            drawableHeight = ta.getDimensionPixelSize(R.styleable.PSButton_drawableHeight, 0);
+
+            setText(ta.getString(R.styleable.PSButton_android_text));
+            setTextColor(ta.getColorStateList(R.styleable.PSButton_android_textColor));
+            setTextLayoutGravity(ta.getInt(R.styleable.PSButton_textLayoutGravity, Gravity.CENTER));
+            setTextSize((float) ta.getDimensionPixelSize(R.styleable.PSButton_android_textSize, (int) getTextSize()));
             setDrawableBottom(ta.getResourceId(R.styleable.PSButton_android_drawableBottom, 0));
             setDrawableLeft(ta.getResourceId(R.styleable.PSButton_android_drawableLeft, 0));
             setDrawableRight(ta.getResourceId(R.styleable.PSButton_android_drawableRight, 0));
             setDrawableTop(ta.getResourceId(R.styleable.PSButton_android_drawableTop, 0));
             setDrawablePadding(ta.getDimensionPixelSize(R.styleable.PSButton_android_drawablePadding, 0));
-            setText(ta.getString(R.styleable.PSButton_android_text));
-            setTextColor(ta.getColorStateList(R.styleable.PSButton_android_textColor));
-            setTextLayoutGravity(ta.getInt(R.styleable.PSButton_textLayoutGravity, Gravity.CENTER));
-            setTextSize((float) ta.getDimensionPixelSize(R.styleable.PSButton_android_textSize, (int) getTextSize()));
         } finally {
             ta.recycle();
         }

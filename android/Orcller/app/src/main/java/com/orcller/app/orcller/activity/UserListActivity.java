@@ -44,6 +44,10 @@ abstract public class UserListActivity extends PSActionBarActivity implements Us
     /**
      * UserListView.Delgate
      */
+    public void onFailure(UserListView listView, Error error) {
+        ProgressBarManager.hide();
+    }
+
     public void onLoad(UserListView listView) {
         if (listView.isFirstLoading())
             ProgressBarManager.show();

@@ -46,9 +46,7 @@ public class ProfileFragment extends MainTabFragment
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void setUpViews(View view) {
         fragments = createFragments();
         profileHearderView = (ProfileHearderView) view.findViewById(R.id.profileHearderView);
         profileContentView = (ProfileContentView) view.findViewById(R.id.profileContentView);

@@ -2,30 +2,34 @@ package com.orcller.app.orcller.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
 import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
-import com.orcller.app.orcller.proxy.TimelineDataProxy;
 import com.orcller.app.orcller.proxy.UserDataProxy;
+import com.orcller.app.orcllermodules.error.APIError;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -38,7 +42,9 @@ public class CoeditListFragment extends MainTabFragment
         implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
     private List<Coedit> items = new ArrayList<>();
+    private Error loadError;
     private ApiUsers.CoeditList lastEntity;
+    private FrameLayout container;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
     private ListAdapter listAdapter;
@@ -53,13 +59,16 @@ public class CoeditListFragment extends MainTabFragment
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void setUpViews(View view) {
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        container = (FrameLayout) view.findViewById(R.id.container);
         listView = (ListView) view.findViewById(R.id.listView);
         listAdapter = new ListAdapter(getContext());
 
+        exceptionViewManager.add(
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoCollaborations, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_lightgray_toolbar_control);
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
@@ -79,10 +88,12 @@ public class CoeditListFragment extends MainTabFragment
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide();
+        ProgressBarManager.hide(container);
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
+
+        exceptionViewManager.validate();
     }
 
     @Override
@@ -92,11 +103,32 @@ public class CoeditListFragment extends MainTabFragment
 
     @Override
     public void startFragment() {
-        reload();
+        onRefresh();
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        int index = exceptionViewManager.getViewIndex(view);
+        if (index > 0) {
+            view.removeFromParent();
+            onRefresh();
+        }
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        int index = exceptionViewManager.getViewIndex(view);
+        if (index == 0)
+            return loadError == null && items.size() < 1;
+        if (index == 1)
+            return !Application.isNetworkConnected();
+        if (index == 2)
+            return loadError != null;
+        return false;
     }
 
     // ================================================================================================
-    //  Interface Implemetaion
+    //  Interface Implementation
     // ================================================================================================
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -104,7 +136,7 @@ public class CoeditListFragment extends MainTabFragment
     }
 
     public void onRefresh() {
-        reload();
+        load(null);
     }
 
     // ================================================================================================
@@ -116,7 +148,9 @@ public class CoeditListFragment extends MainTabFragment
             return;
 
         if (isFirstLoading())
-            ProgressBarManager.show();
+            ProgressBarManager.show(container);
+
+        loadError = null;
 
         UserDataProxy.getDefault().coediting(LOAD_LIMIT, after, new Callback<ApiUsers.CoeditListRes>() {
             @Override
@@ -136,6 +170,8 @@ public class CoeditListFragment extends MainTabFragment
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
 
+                    loadError = items.size() < 1 ? new APIError(response.body()) : null;
+
                     endDataLoading();
                 }
             }
@@ -144,6 +180,8 @@ public class CoeditListFragment extends MainTabFragment
             public void onFailure(Throwable t) {
                 if (BuildConfig.DEBUG)
                     Log.e("onFailure", t);
+
+                loadError = items.size() < 1 ? new Error(t.getMessage()) : null;
 
                 endDataLoading();
             }
@@ -160,10 +198,6 @@ public class CoeditListFragment extends MainTabFragment
                 items.size() < lastEntity.total_count &&
                 position >= items.size() - 3)
             loadAfter();
-    }
-
-    private void reload() {
-        load(null);
     }
 
     // ================================================================================================

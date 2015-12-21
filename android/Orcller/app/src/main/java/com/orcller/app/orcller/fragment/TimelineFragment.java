@@ -16,6 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -24,6 +25,7 @@ import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
@@ -36,6 +38,7 @@ import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcllermodules.error.APIError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +52,7 @@ import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -65,9 +69,11 @@ public class TimelineFragment extends MainTabFragment
     private Point startPoint;
     private List<Object> items = new ArrayList<>();
     private Queue<Event> eventQueue = new ConcurrentLinkedQueue<>();
+    private Error loadError;
     private ApiUsers.AlbumList lastEntity;
     private AlbumItemViewDelegate albumItemViewDelegate;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FrameLayout container;
     private ListAdapter listAdapter;
     private PSListView listView;
     private FloatingActionButton createButton;
@@ -87,15 +93,18 @@ public class TimelineFragment extends MainTabFragment
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void setUpViews(View view) {
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        container = (FrameLayout) view.findViewById(R.id.container);
         listView = (PSListView) view.findViewById(R.id.listView);
         createButton = (FloatingActionButton) view.findViewById(R.id.createButton);
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
 
+        exceptionViewManager.add(
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoTimeline, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setItemsCanFocus(true);
@@ -122,10 +131,33 @@ public class TimelineFragment extends MainTabFragment
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide();
+        ProgressBarManager.hide(container);
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
+
+        exceptionViewManager.validate();
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        int index = exceptionViewManager.getViewIndex(view);
+        if (index == 0)
+            AlbumCreateActivity.show();
+        else
+            reload();
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        int index = exceptionViewManager.getViewIndex(view);
+        if (index == 0)
+            return loadError == null && items.size() < 1;
+        if (index == 1)
+            return !Application.isNetworkConnected();
+        if (index == 2)
+            return loadError != null;
+        return false;
     }
 
     @Override
@@ -151,7 +183,7 @@ public class TimelineFragment extends MainTabFragment
     }
 
     // ================================================================================================
-    //  Interface Implemetaion
+    //  Interface Implementation
     // ================================================================================================
 
     /**
@@ -349,7 +381,9 @@ public class TimelineFragment extends MainTabFragment
             return;
 
         if (isFirstLoading())
-            ProgressBarManager.show();
+            ProgressBarManager.show(container);
+
+        loadError = null;
 
         TimelineDataProxy.getDefault().list(LIST_COUNT, after, new Callback<ApiUsers.AlbumListRes>() {
             @Override
@@ -368,6 +402,8 @@ public class TimelineFragment extends MainTabFragment
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
+
+                    loadError = items.size() < 1 ? new APIError(response.body()) : null;
                 }
 
                 endDataLoading();
@@ -377,6 +413,8 @@ public class TimelineFragment extends MainTabFragment
             public void onFailure(Throwable t) {
                 if (BuildConfig.DEBUG)
                     Log.e("onFailure", t);
+
+                loadError = items.size() < 1 ? new Error(t.getMessage()) : null;
 
                 endDataLoading();
             }

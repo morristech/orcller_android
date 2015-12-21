@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.ApiResult;
@@ -85,6 +86,10 @@ public class UserDataProxy extends AbstractDataProxy {
         enqueueCall(service().saveProfile(user.user_uid, user.user_name, user.user_profile_message), callback);
     }
 
+    public void search(String keyword, int limit, String after, Callback<ApiRelationships.UserListRes> callback) {
+        enqueueCall(service().serach(keyword, limit, after), callback);
+    }
+
     public Service service() {
         return (Service) getCurrentService();
     }
@@ -122,5 +127,11 @@ public class UserDataProxy extends AbstractDataProxy {
                 @Path("userId") long userId,
                 @Field("user_name") String userName,
                 @Field("user_profile_message") String profile);
+
+        @GET("search")
+        Call<ApiRelationships.UserListRes> serach(
+                @Query(value = "keyword", encoded = true) String keyword,
+                @Query("limit") int limit,
+                @Query("after") String after);
     }
 }

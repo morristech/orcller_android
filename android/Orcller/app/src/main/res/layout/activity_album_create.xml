@@ -58,7 +58,7 @@
                     android:nextFocusDown="@+id/descriptionEditText"
                     android:textColor="@android:color/black"
                     android:textColorHint="@color/textcolor_textview_hint"
-                    android:textCursorDrawable="@drawable/member_cursor"
+                    android:textCursorDrawable="@drawable/cursor_member"
                     android:textSize="14dp"/>
 
                 <com.orcller.app.orcller.widget.DescriptionInputView

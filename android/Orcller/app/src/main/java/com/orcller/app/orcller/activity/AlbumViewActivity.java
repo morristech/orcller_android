@@ -50,7 +50,7 @@ public class AlbumViewActivity extends PSActionBarActivity
         implements AlbumItemViewDelegate.Invoker, CommentInputView.Delegate,
         CommentListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
-    private static final String ALBUM_ID_KEY = "albumId";
+    private static final String ALBUM_ID_KEY = "album_id";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
     private Album model;
     private AlbumOptionsManager albumOptionsManager;
@@ -108,6 +108,8 @@ public class AlbumViewActivity extends PSActionBarActivity
             setAllowsCommentInputFocus(getIntent().getBooleanExtra(ALLOWS_COMMENT_INPUT_FOCUS, false));
         } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
             load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
+        } else if (getIntent().getData().getQueryParameter(ALBUM_ID_KEY) != null) {
+            load(Long.valueOf(getIntent().getData().getQueryParameter(ALBUM_ID_KEY)));
         }
     }
 

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 
@@ -63,6 +65,10 @@ public class Application extends android.app.Application {
         return result;
     }
 
+    public static ConnectivityManager getConnectivityManager() {
+        return  (ConnectivityManager) getTopActivity().getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
     public static int getPackageVersionCode() {
         return getPackageInfo().versionCode;
     }
@@ -89,6 +95,13 @@ public class Application extends android.app.Application {
 
     public static boolean equalsAppVersion(String version) {
         return compareVersions(getPackageVersionName(), version) == 0;
+    }
+
+    public static boolean isNetworkConnected() {
+        ConnectivityManager manager = getConnectivityManager();
+        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return mobile.isConnected() || wifi.isConnected();
     }
 
     public static boolean isHigherAppVersion(String version) {

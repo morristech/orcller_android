@@ -48,6 +48,10 @@ abstract public class AlbumAdditionalInfoListActivity extends PSActionBarActivit
     /**
      * UserListView.Delgate
      */
+    public void onFailure(UserListView listView, Error error) {
+        ProgressBarManager.hide();
+    }
+
     public void onLoad(UserListView listView) {
         if (listView.isFirstLoading())
             ProgressBarManager.show();

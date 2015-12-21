@@ -31,6 +31,7 @@ import pisces.psfoundation.ext.Application;
 public class ApplicationFacade {
     private static final String TAG = "ApplicationFacade";
     private static ApplicationFacade uniqueInstance;
+    private boolean initialized;
     private Context context;
 
     public ApplicationFacade() {
@@ -70,6 +71,11 @@ public class ApplicationFacade {
     }
 
     public void run() {
+        if (initialized)
+            return;
+
+        initialized = true;
+
         FacebookSdk.sdkInitialize(Application.applicationContext());
         EventBus.getDefault().register(this);
 
