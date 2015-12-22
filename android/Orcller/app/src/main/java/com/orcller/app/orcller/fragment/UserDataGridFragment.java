@@ -16,7 +16,6 @@ import com.orcller.app.orcller.widget.UserDataGridView;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -77,7 +76,6 @@ abstract public class UserDataGridFragment extends PSFragment
         super.onDestroyView();
 
         ProgressBarManager.hide(container);
-        gridView.cancel();
 
         userIdChanged = true;
         container = null;
@@ -86,17 +84,15 @@ abstract public class UserDataGridFragment extends PSFragment
 
     @Override
     public void onClick(ExceptionView view) {
-        gridView.reload();
+        if (gridView.getItems().size() > 1)
+            gridView.reload();
     }
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        if (gridView.getItems().size() > 1)
-            return false;
-        int index = exceptionViewManager.getViewIndex(view);
-        if (index == 0)
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag()))
             return !Application.isNetworkConnected();
-        if (index == 1)
+        if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
             return loadError != null;
         return false;
     }
@@ -140,6 +136,13 @@ abstract public class UserDataGridFragment extends PSFragment
      * @abstract
      */
     abstract protected Class getItemViewClass();
+
+    protected void reset() {
+        userIdChanged = true;
+
+        gridView.cancel();
+        invalidateProperties();
+    }
 
     protected void userIdChanged() {
         gridView.reload();

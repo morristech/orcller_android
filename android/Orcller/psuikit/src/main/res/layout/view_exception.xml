@@ -23,7 +23,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:textColor="@color/exception_description"
-        android:textSize="12dp"
+        android:textSize="13dp"
         android:visibility="gone"/>
 
     <Button

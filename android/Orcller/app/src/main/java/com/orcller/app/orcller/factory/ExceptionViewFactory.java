@@ -90,6 +90,8 @@ public class ExceptionViewFactory {
             view.setButtonText(R.string.w_retry);
         }
 
+        view.setTag(type);
+
         return view;
     }
 }

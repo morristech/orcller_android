@@ -145,7 +145,6 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PSViewPager, defStyleAttr, defStyleRes);
         try {
-
             setPagingEnabled(ta.getBoolean(R.styleable.PSViewPager_pagingEnabled, true));
         } finally {
             ta.recycle();

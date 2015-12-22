@@ -1,6 +1,10 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -12,6 +16,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
+import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.event.AlbumFlipViewEvent;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
@@ -21,6 +27,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -48,7 +55,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private PointF startPoint;
     private Delegate delegate;
     private Album model;
-    private View background;
+    private Background background;
     private PSFrameLayout container;
     private List<FlipView> visibleViews;
     private FlipView targetFlipView;
@@ -89,14 +96,13 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         pageIndex = -1;
         imageLoadType = MediaView.ImageLoadType.LowResolution.value();
         visibleViews = new ArrayList<>();
-        background = new View(context);
+        background = new Background(context);
         container = new PSFrameLayout(context);
         pageCountView = new AlbumPageCountView(context);
 
         LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
 
-//        background.setBackgroundColor(Color.BLACK);
         setClipChildren(false);
         addView(background);
         addView(container, new ViewGroup.LayoutParams(
@@ -130,6 +136,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                             public void run() {
                                 if (delegate != null)
                                     delegate.onCancelPanning(self);
+
+                                EventBus.getDefault().post(new AlbumFlipViewEvent(AlbumFlipViewEvent.CANCEL_PANNING, self));
                             }
                         };
 
@@ -160,6 +168,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 if (targetFlipView == null && Math.abs(dy) < Math.abs(dx)) {
                     if (delegate != null)
                         delegate.onStartPanning(this);
+
+                    EventBus.getDefault().post(new AlbumFlipViewEvent(AlbumFlipViewEvent.START_PANNING, this));
 
                     targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     originRotation = targetFlipView.getRotationY();
@@ -466,6 +476,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         if (delegate != null)
             delegate.onChangePageIndex(this, pageIndex);
+
+        EventBus.getDefault().post(new AlbumFlipViewEvent(AlbumFlipViewEvent.PAGE_INDEX_CHANGE, this));
     }
 
     public void onEventMainThread(Object event) {
@@ -675,6 +687,50 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             }
         });
     }
+
+    // ================================================================================================
+    //  Class: Background
+    // ================================================================================================
+
+    private class Background extends View {
+        private Path path;
+        private Paint backgroundPaint;
+        private Paint paint;
+
+        public Background(Context context) {
+            super(context);
+
+            path = new Path();
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            backgroundPaint.setColor(getContext().getResources().getColor(R.color.theme_white_accent));
+            backgroundPaint.setStyle(Paint.Style.FILL);
+
+            paint.setColor(getContext().getResources().getColor(R.color.border_hairline_lightgray));
+            paint.setStrokeWidth(GraphicUtils.convertDpToPixel(1));
+            paint.setStyle(Paint.Style.STROKE);
+        }
+
+        @Override
+        public void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+
+            int w = getWidth();
+            int h = getHeight();
+
+            canvas.drawRect(0, 0, w, h, backgroundPaint);
+            path.reset();
+            path.moveTo(0, h);
+            path.lineTo(w, h);
+            path.close();
+            canvas.drawPath(path, paint);
+        }
+    }
+
+    // ================================================================================================
+    //  Class: Delegate
+    // ================================================================================================
 
     public interface Delegate {
         void onCancelPanning(AlbumFlipView view);

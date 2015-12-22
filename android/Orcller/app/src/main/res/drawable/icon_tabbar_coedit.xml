@@ -6,6 +6,6 @@
     </item>
     <item>
         <bitmap android:src="@drawable/icon_tabbar_coedit_normal"
-            android:tint="@color/textcolor_album_icon"/>
+            android:tint="@color/icon_tabbar_main_normal"/>
     </item>
 </selector>

@@ -15,6 +15,7 @@ import android.widget.TabHost;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.AlbumFlipViewEvent;
 import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.CoeditListFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
@@ -32,6 +33,7 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.ext.PSViewPager;
 
 public class MainActivity extends PSActionBarActivity
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
@@ -39,7 +41,7 @@ public class MainActivity extends PSActionBarActivity
     private Map<String, MainTabFragment> fragmentMap = new HashMap<>();
     private PagerAdapter pagerAdapter;
     private TabHost tabHost;
-    private ViewPager viewPager;
+    private PSViewPager viewPager;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -55,7 +57,7 @@ public class MainActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(null);
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = (PSViewPager) findViewById(R.id.viewPager);
         pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         tabHost.setup();
@@ -103,6 +105,14 @@ public class MainActivity extends PSActionBarActivity
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 tabHost.getTabWidget().setVisibility(View.VISIBLE);
             }
+        } else if (event instanceof AlbumFlipViewEvent) {
+            AlbumFlipViewEvent casted = (AlbumFlipViewEvent) event;
+
+            if (AlbumFlipViewEvent.CANCEL_PANNING.equals(casted.getType()) ||
+                    AlbumFlipViewEvent.PAGE_INDEX_CHANGE.equals(casted.getType()))
+                viewPager.setPagingEnabled(true);
+            else if (AlbumFlipViewEvent.START_PANNING.equals(casted.getType()))
+                viewPager.setPagingEnabled(false);
         }
     }
 

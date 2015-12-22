@@ -2,7 +2,11 @@ package com.orcller.app.orcller.fragment;
 
 import android.view.View;
 
+import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.MediaListActivity;
+import com.orcller.app.orcller.event.AlbumEvent;
+import com.orcller.app.orcller.event.CoeditEvent;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.MediaGridItemView;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
@@ -11,6 +15,7 @@ import com.orcller.app.orcller.widget.UserDataGridView;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
 import pisces.psuikit.event.IndexChangeEvent;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
 /**
@@ -29,6 +34,7 @@ public class UserMediaGridFragment extends UserDataGridFragment {
     protected void setUpSubviews(View view) {
         super.setUpSubviews(view);
 
+        exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.DoseNotExistPhoto, container));
         EventBus.getDefault().register(this);
     }
 
@@ -62,8 +68,24 @@ public class UserMediaGridFragment extends UserDataGridFragment {
         MediaListActivity.show(gridView.getItems(), position);
     }
 
+    @Override
+    public void onClick(ExceptionView view) {
+        if (ExceptionViewFactory.Type.DoseNotExistPhoto.equals(view.getTag())) {
+            AlbumCreateActivity.show();
+        } else {
+            super.onClick(view);
+        }
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.DoseNotExistPhoto.equals(view.getTag()))
+            return loadError == null && gridView.getItems().size() < 1;
+        return super.shouldShowExceptionView(view);
+    }
+
     // ================================================================================================
-    //  Listener
+    //  Interface Implementation
     // ================================================================================================
 
     /**
@@ -75,6 +97,19 @@ public class UserMediaGridFragment extends UserDataGridFragment {
 
             if (casted.getTarget() instanceof MediaListActivity)
                 gridView.setSelection(casted.getSelectedIndex());
+        } else if (event instanceof CoeditEvent) {
+            CoeditEvent casted = (CoeditEvent) event;
+
+            if (CoeditEvent.CHANGE.equals(casted.getType()) &&
+                    CoeditEvent.SYNC.equals(casted.getType()))
+                reset();
+        } else if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+
+            if (AlbumEvent.CREATE.equals(casted.getType()) &&
+                    AlbumEvent.CREATE.equals(casted.getType()) &&
+                    AlbumEvent.MODIFY.equals(casted.getType()))
+                reset();
         }
     }
 }

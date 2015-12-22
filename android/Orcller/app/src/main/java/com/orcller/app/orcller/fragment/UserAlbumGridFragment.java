@@ -1,11 +1,10 @@
 package com.orcller.app.orcller.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
+import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumCoverGridItemView;
 import com.orcller.app.orcller.model.Album;
@@ -14,10 +13,8 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserDataGridView;
 import com.orcller.app.orcllermodules.model.User;
 
-import pisces.psfoundation.ext.Application;
+import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSView;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
@@ -32,6 +29,20 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
     // ================================================================================================
     //  Overridden: UserDataGridFragment
     // ================================================================================================
+
+    @Override
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        EventBus.getDefault().unregister(this);
+    }
 
     @Override
     protected UserDataGridView.DataSource createDataSource() {
@@ -57,33 +68,50 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
     }
 
     @Override
-    protected void userIdChanged() {
-//        if (exceptionViewManager.getViewCount() == 3)
-//            exceptionViewManager.remove(0);
-//
-//        if (User.isMe(getUserId()))
-//            exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumMine, container));
-//        else
-//            exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbum, container));
-
-        super.userIdChanged();
-    }
-
-    @Override
     public void onClick(ExceptionView view) {
-        int index = exceptionViewManager.getViewIndex(view);
-
-        if (index > 0)
-            super.onClick(view);
-        else if (User.isMe(getUserId()))
+        if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
             AlbumCreateActivity.show();
+        } else {
+            super.onClick(view);
+        }
     }
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        int index = exceptionViewManager.getViewIndex(view);
-        if (index == 0)
+        if (ExceptionViewFactory.Type.NoAlbum.equals(view.getTag()) ||
+                ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag()))
             return loadError == null && gridView.getItems().size() < 1;
         return super.shouldShowExceptionView(view);
+    }
+
+    @Override
+    protected void userIdChanged() {
+        if (exceptionViewManager.getViewCount() == 3)
+            exceptionViewManager.remove(0);
+
+        if (User.isMe(getUserId()))
+            exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumMine, container));
+        else
+            exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbum, container));
+
+        super.userIdChanged();
+    }
+
+    // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(Object event) {
+        if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+
+            if (AlbumEvent.CREATE.equals(casted.getType()) &&
+                    AlbumEvent.CREATE.equals(casted.getType()) &&
+                    AlbumEvent.MODIFY.equals(casted.getType()))
+                reset();
+        }
     }
 }

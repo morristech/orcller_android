@@ -5,7 +5,7 @@
     <color name="theme_imagepicker_primary">@android:color/white</color>
     <color name="exception_button_normal">#0096FF</color>
     <color name="exception_button_selected">#00A0FF</color>
-    <color name="exception_description">#8C919E</color>
+    <color name="exception_description">#777777</color>
     <color name="imagepicker_toolbar_color">#32FFFFFF</color>
     <color name="imagepicker_toolbar_button_title_color">#146FDF</color>
     <color name="imagepicker_toolbar_button_title_selected_color">#8ABEFE</color>
