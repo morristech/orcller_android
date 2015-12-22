@@ -71,13 +71,11 @@ public class ApplicationFacade {
     }
 
     public void run() {
-        if (initialized)
-            return;
-
-        initialized = true;
-
-        FacebookSdk.sdkInitialize(Application.applicationContext());
-        EventBus.getDefault().register(this);
+        if (!initialized) {
+            FacebookSdk.sdkInitialize(Application.applicationContext());
+            EventBus.getDefault().register(this);
+            initialized = true;
+        }
 
         if (ApplicationLauncher.getDefault().initialized()) {
             startMainActivity();

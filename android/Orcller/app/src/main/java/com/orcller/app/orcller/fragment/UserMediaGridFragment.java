@@ -1,12 +1,8 @@
 package com.orcller.app.orcller.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
-import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MediaListActivity;
-import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.MediaGridItemView;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
@@ -25,17 +21,13 @@ public class UserMediaGridFragment extends UserDataGridFragment {
         super();
     }
 
-    public UserMediaGridFragment(long userId) {
-        super(userId);
-    }
-
     // ================================================================================================
     //  Overridden: UserDataGridFragment
     // ================================================================================================
 
     @Override
-    protected void setUpViews(View view) {
-        super.setUpViews(view);
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
 
         EventBus.getDefault().register(this);
     }

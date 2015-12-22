@@ -30,7 +30,7 @@
     <color name="background_tabbar_main_normal">#333333</color>
     <color name="background_tabbar_main_selected">#000000</color>
 
-    <color name="border_hairline_lightgray">#E8E7EE</color>
+    <color name="border_hairline_lightgray">#DDDDDD</color>
     <color name="border_profile_imageview">@color/border_hairline_lightgray</color>
 
     <color name="button_follow">#246AC1</color>

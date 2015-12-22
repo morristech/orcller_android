@@ -18,15 +18,14 @@ import com.orcller.app.orcllermodules.model.User;
 import java.util.Arrays;
 import java.util.List;
 
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSFragment;
 
 /**
  * Created by pisces on 11/3/15.
  */
-public class ProfileFragment extends PSFragment
+public class ProfileFragment extends MainTabFragment
         implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
+    private boolean modelChanged;
     private List<Class<? extends UserDataGridFragment>> fragments;
     private User model;
     private ProfileHearderView profileHearderView;
@@ -46,7 +45,9 @@ public class ProfileFragment extends PSFragment
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
         fragments = createFragments();
         profileHearderView = (ProfileHearderView) view.findViewById(R.id.profileHearderView);
         profileContentView = (ProfileContentView) view.findViewById(R.id.profileContentView);
@@ -90,8 +91,13 @@ public class ProfileFragment extends PSFragment
     }
 
     @Override
-    protected void resumeFragment() {
-        reload();
+    protected void commitProperties() {
+        super.commitProperties();
+
+        if (modelChanged) {
+            modelChanged = false;
+            modelChanged();
+        }
     }
 
     @Override
@@ -143,8 +149,9 @@ public class ProfileFragment extends PSFragment
             return;
 
         this.model = model;
+        modelChanged = true;
 
-        modelChanged();
+        invalidateProperties();
     }
 
     private List<Class<? extends UserDataGridFragment>> createFragments() {
@@ -152,18 +159,9 @@ public class ProfileFragment extends PSFragment
     }
 
     private void modelChanged() {
-        Log.d("modelChanged", model != null);
         profileHearderView.setModel(model);
         profileHearderView.setVisibility(View.VISIBLE);
         profileContentView.setVisibility(View.VISIBLE);
         profileContentView.setUserId(model.user_uid);
-    }
-
-    private void reload() {
-        Log.d("reload", model != null);
-        profileHearderView.setModel(model);
-        profileHearderView.setVisibility(View.VISIBLE);
-        profileContentView.setVisibility(View.VISIBLE);
-        profileContentView.reload();
     }
 }

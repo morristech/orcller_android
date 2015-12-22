@@ -119,6 +119,13 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
         this.listCountAtOnce = listCountAtOnce;
     }
 
+    public void cancel() {
+        if (call != null) {
+            call.cancel();
+            call = null;
+        }
+    }
+
     public void reload() {
         load(null);
     }
@@ -159,15 +166,20 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
         if (invalidDataLoading())
             return;
 
-        final UserDataGridView self = this;
+        cancel();
+        load(dataSource.createDataLoadCall(listCountAtOnce, after), after);
+    }
 
-        if (call != null)
-            call.cancel();
+    private void load(Call call, final String after) {
+        if (call == null)
+            return;
 
-        call = dataSource.createDataLoadCall(listCountAtOnce, after);
+        this.call = call;
 
         if (delegate != null)
             delegate.onLoad(this);
+
+        final UserDataGridView self = this;
 
         UserDataProxy.getDefault().enqueueCall(
                 call,

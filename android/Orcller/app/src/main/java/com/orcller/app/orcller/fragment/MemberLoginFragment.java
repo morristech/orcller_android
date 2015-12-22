@@ -74,7 +74,7 @@ public class MemberLoginFragment extends PSFragment {
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
         idEditText = (ClearableEditText) getView().findViewById(R.id.idEditText);
         pwEditText = (ClearableEditText) getView().findViewById(R.id.pwEditText);
         facebookButton = (Button) getView().findViewById(R.id.facebookButton);
@@ -111,14 +111,6 @@ public class MemberLoginFragment extends PSFragment {
         pwEditText.setOnKeyListener(null);
         goButton.setOnClickListener(null);
         getView().setOnTouchListener(null);
-
-        idEditText = null;
-        pwEditText = null;
-        facebookButton = null;
-        goButton = null;
-        textWatcher = null;
-        bottomContainer = null;
-        validator = null;
     }
 
     @Override

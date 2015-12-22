@@ -3,22 +3,25 @@ package pisces.psuikit.ext;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.zip.Inflater;
 
 import pisces.psfoundation.utils.DataLoadValidator;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ExceptionViewManager;
 import pisces.psuikit.widget.ExceptionView;
 
 /**
  * Created by pisces on 11/13/15.
  */
-abstract public class PSFragment extends Fragment implements DataLoadValidator.Client, ExceptionView.Delegate {
-    private boolean initialized;
-    private boolean isFirstLoading = true;
-    private boolean shouldStartFragment;
-    private boolean viewCreated;
-    protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
-    protected ExceptionViewManager exceptionViewManager = new ExceptionViewManager(this);
+public class PSFragment extends Fragment implements DataLoadValidator.Client, ExceptionView.Delegate {
+    private boolean immediatelyUpdating;
+    private boolean initializedSubviews;
+    protected DataLoadValidator dataLoadValidator;
+    protected ExceptionViewManager exceptionViewManager;
 
     // ================================================================================================
     //  Overridden: Fragment
@@ -28,12 +31,25 @@ abstract public class PSFragment extends Fragment implements DataLoadValidator.C
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initialized = true;
-        viewCreated = true;
+        dataLoadValidator = new DataLoadValidator();
+        exceptionViewManager = new ExceptionViewManager(this);
 
-        setHasOptionsMenu(true);
-        setUpViews(view);
-        validateFragment();
+        if (!initializedSubviews) {
+            initializedSubviews = true;
+
+            setUpSubviews(view);
+        }
+
+        invalidateProperties();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        initializedSubviews = false;
+        dataLoadValidator = null;
+        exceptionViewManager = null;
     }
 
     // ================================================================================================
@@ -55,13 +71,6 @@ abstract public class PSFragment extends Fragment implements DataLoadValidator.C
         return null;
     }
 
-    public void invalidateFragment() {
-        shouldStartFragment = true;
-
-        if (initialized)
-            validateFragment();
-    }
-
     public boolean isUseSoftKeyboard() {
         return false;
     }
@@ -78,33 +87,30 @@ abstract public class PSFragment extends Fragment implements DataLoadValidator.C
         return dataLoadValidator.invalidDataLoading();
     }
 
+    public boolean isImmediatelyUpdating() {
+        return immediatelyUpdating;
+    }
+
+    public void setImmediatelyUpdating(boolean immediatelyUpdating) {
+        this.immediatelyUpdating = immediatelyUpdating;
+    }
+
+    public void invalidateProperties() {
+        if (initializedSubviews || immediatelyUpdating)
+            commitProperties();
+    }
+
+    public void validateProperties() {
+        commitProperties();
+    }
+
     // ================================================================================================
     //  Protected
     // ================================================================================================
 
-    abstract protected void setUpViews(View view);
-
-    protected boolean isViewCreated() {
-        return viewCreated;
+    protected void commitProperties() {
     }
 
-    protected void resumeFragment() {
-    }
-
-    protected void startFragment() {
-    }
-
-    private void validateFragment() {
-        if (!shouldStartFragment)
-            return;
-
-        if (isFirstLoading) {
-            startFragment();
-            isFirstLoading = false;
-        } else {
-            resumeFragment();
-        }
-
-        shouldStartFragment = false;
+    protected void setUpSubviews(View view) {
     }
 }

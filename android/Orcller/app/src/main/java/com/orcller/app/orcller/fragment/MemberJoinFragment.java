@@ -70,7 +70,7 @@ public class MemberJoinFragment extends PSFragment {
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
         editText = (ClearableEditText) getView().findViewById(R.id.editText);
         facebookButton = (Button) getView().findViewById(R.id.facebookButton);
         nextButton = (Button) getView().findViewById(R.id.nextButton);
@@ -105,13 +105,6 @@ public class MemberJoinFragment extends PSFragment {
         editText.setOnFocusChangeListener(null);
         editText.setOnKeyListener(null);
         getView().setOnTouchListener(null);
-
-        editText = null;
-        facebookButton = null;
-        nextButton = null;
-        orTextView = null;
-        textWatcher = null;
-        validator = null;
     }
 
     @Override

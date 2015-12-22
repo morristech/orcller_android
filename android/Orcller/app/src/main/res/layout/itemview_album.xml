@@ -26,8 +26,10 @@
         android:layout_marginBottom="20dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:textColor="@color/textcolor_pageprofile_date"
-        android:textSize="12dp"
+        android:autoLink="web"
+        android:textColor="@android:color/black"
+        android:textColorLink="@color/textcolor_dark_blue"
+        android:textSize="13dp"
         android:visibility="gone" />
 
     <LinearLayout
@@ -35,9 +37,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="34dp"
+        android:layout_marginBottom="10dp"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:layout_marginBottom="10dp">
+        android:paddingRight="8dp">
         <TextView
             android:id="@+id/heartTextView"
             android:layout_width="wrap_content"
@@ -49,7 +51,7 @@
             android:background="@drawable/background_ripple_lightgray"
             android:clickable="true"
             android:textColor="@drawable/color_album_info"
-            android:textSize="11dp"/>
+            android:textSize="12dp"/>
 
         <TextView
             android:id="@+id/commentTextView"
@@ -60,7 +62,7 @@
             android:padding="5dp"
             android:clickable="true"
             android:textColor="@drawable/color_album_info"
-            android:textSize="11dp"/>
+            android:textSize="12dp"/>
 
         <TextView
             android:id="@+id/starTextView"
@@ -71,7 +73,7 @@
             android:padding="5dp"
             android:clickable="true"
             android:textColor="@drawable/color_album_info"
-            android:textSize="11dp"/>
+            android:textSize="12dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -89,7 +91,8 @@
             android:drawablePadding="5dp"
             android:text="@string/w_coation"
             android:textColor="@drawable/color_album_coedit"
-            android:textSize="12dp"/>
+            android:textSize="12dp"
+            android:textStyle="bold"/>
 
         <pisces.psuikit.widget.PSButton
             android:id="@+id/heartButton"
@@ -100,7 +103,8 @@
             android:drawableLeft="@drawable/icon_album_heart"
             android:drawablePadding="5dp"
             android:textColor="@drawable/color_album_heart"
-            android:textSize="12dp"/>
+            android:textSize="12dp"
+            android:textStyle="bold"/>
 
         <pisces.psuikit.widget.PSButton
             android:id="@+id/commentButton"
@@ -112,7 +116,8 @@
             android:drawablePadding="5dp"
             android:text="@string/w_comment"
             android:textColor="@drawable/color_album_comment"
-            android:textSize="12dp"/>
+            android:textSize="12dp"
+            android:textStyle="bold"/>
 
         <pisces.psuikit.widget.PSButton
             android:id="@+id/starButton"
@@ -123,6 +128,7 @@
             android:drawableLeft="@drawable/icon_album_star"
             android:drawablePadding="5dp"
             android:textColor="@drawable/color_album_star"
-            android:textSize="12dp"/>
+            android:textSize="12dp"
+            android:textStyle="bold"/>
     </LinearLayout>
 </pisces.psuikit.ext.PSLinearLayout>

@@ -64,7 +64,9 @@ public class ActivityFragment extends MainTabFragment
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         container = (FrameLayout) view.findViewById(R.id.container);
         listView = (PSListView) view.findViewById(R.id.listView);
@@ -108,10 +110,6 @@ public class ActivityFragment extends MainTabFragment
     @Override
     public String getToolbarTitle() {
         return getString(R.string.w_title_activity);
-    }
-
-    @Override
-    protected void resumeFragment() {
     }
 
     @Override

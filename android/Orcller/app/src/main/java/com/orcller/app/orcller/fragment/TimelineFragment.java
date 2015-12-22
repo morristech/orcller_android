@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -61,7 +62,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/15/15.
  */
-public class TimelineFragment extends PSFragment
+public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final int LIST_COUNT = 20;
@@ -94,7 +95,9 @@ public class TimelineFragment extends PSFragment
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         container = (FrameLayout) view.findViewById(R.id.container);
         listView = (PSListView) view.findViewById(R.id.listView);
@@ -122,6 +125,10 @@ public class TimelineFragment extends PSFragment
 
         EventBus.getDefault().unregister(this);
         ProgressBarManager.hide();
+        swipeRefreshLayout.setOnRefreshListener(null);
+        listView.setOnItemClickListener(null);
+        listView.setOnScrollListener(null);
+        createButton.setOnClickListener(null);
     }
 
     @Override
@@ -165,23 +172,6 @@ public class TimelineFragment extends PSFragment
         if (index == 2)
             return loadError != null;
         return false;
-    }
-
-    @Override
-    protected void resumeFragment() {
-        if (isViewCreated()) {
-            listView.setAlpha(0);
-            listView.setVisibility(View.VISIBLE);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    listView.setAlpha(1);
-                }
-            }, 200);
-        } else {
-            listView.setAlpha(1);
-            listView.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -403,7 +393,6 @@ public class TimelineFragment extends PSFragment
 
                     items.addAll(lastEntity.data);
                     listAdapter.notifyDataSetChanged();
-                    resumeFragment();
                     TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
                     SharedObject.get().setTimelineCount(0);
                 } else {

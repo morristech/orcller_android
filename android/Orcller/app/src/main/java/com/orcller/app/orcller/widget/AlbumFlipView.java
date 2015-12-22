@@ -1,7 +1,6 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Page;
@@ -25,6 +23,7 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
+import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/19/15.
@@ -51,7 +50,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private Album model;
     private View background;
     private PSFrameLayout container;
-    private ProgressBar progressBar;
     private List<FlipView> visibleViews;
     private FlipView targetFlipView;
     private AlbumPageCountView pageCountView;
@@ -94,19 +92,16 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         background = new View(context);
         container = new PSFrameLayout(context);
         pageCountView = new AlbumPageCountView(context);
-        progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
 
         LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
 
-        background.setBackgroundColor(Color.BLACK);
-        progressBar.setVisibility(GONE);
+//        background.setBackgroundColor(Color.BLACK);
         setClipChildren(false);
         addView(background);
         addView(container, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        addView(progressBar, params);
     }
 
     @Override
@@ -294,7 +289,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         final AlbumFlipView self = this;
 
-        progressBar.setVisibility(VISIBLE);
+        ProgressBarManager.show(this);
 
         if (delegate != null)
             delegate.onStartLoadRemainPages(this);
@@ -303,7 +298,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             @Override
             public void onComplete(boolean isSuccess) {
                 endDataLoading();
-                progressBar.setVisibility(GONE);
+                ProgressBarManager.hide(self);
 
                 if (delegate != null)
                     delegate.onLoadRemainPages(self);

@@ -34,6 +34,7 @@ import static pisces.psfoundation.utils.Log.e;
  */
 public class ProfileContentView extends PSTabHost
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+    private boolean userIdChanged;
     private long userId;
     private DataSource dataSource;
     private PagerAdapter pagerAdapter;
@@ -65,9 +66,21 @@ public class ProfileContentView extends PSTabHost
 
         tabHost.setup();
         tabHost.setOnTabChangedListener(this);
+        viewPager.setOffscreenPageLimit(1);
         viewPager.setPageMargin(GraphicUtils.convertDpToPixel(15));
         viewPager.setPageMarginDrawable(android.R.color.white);
         viewPager.addOnPageChangeListener(this);
+    }
+
+    @Override
+    protected void commitProperties() {
+        if (userIdChanged) {
+            userIdChanged = false;
+
+            addTabs();
+            loadCount();
+            viewPager.setAdapter(pagerAdapter);
+        }
     }
 
     // ================================================================================================
@@ -81,13 +94,8 @@ public class ProfileContentView extends PSTabHost
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
 
-        if (pagerAdapter == null) {
-            pagerAdapter = new PagerAdapter(
-                    dataSource.getGridFragmentManager(), dataSource.getUserDataGridFragmentDelegate());
-            viewPager.setAdapter(pagerAdapter);
-        }
-
-        addTabs();
+        pagerAdapter = new PagerAdapter(
+                dataSource.getGridFragmentManager(), dataSource.getUserDataGridFragmentDelegate());
     }
 
     public long getUserId() {
@@ -99,9 +107,9 @@ public class ProfileContentView extends PSTabHost
             return;
 
         this.userId = userId;
+        userIdChanged = true;
 
-        addTabs();
-        loadCount();
+        invalidateProperties();
     }
 
     public void reload() {
@@ -263,10 +271,7 @@ public class ProfileContentView extends PSTabHost
                 UserDataGridFragment fragment = (UserDataGridFragment) clazz.newInstance();
 
                 fragment.setDelegate(delegate);
-
-                if (fragment != null) {
-                    fragment.setUserId(userId);
-                }
+                fragment.setUserId(userId);
 
                 return fragment;
             } catch (Exception e) {
@@ -279,7 +284,7 @@ public class ProfileContentView extends PSTabHost
     //  Interface: DataSource
     // ================================================================================================
 
-    public static interface DataSource {
+    public interface DataSource {
         List<Class<? extends UserDataGridFragment>> getFragments();
         FragmentManager getGridFragmentManager();
         UserDataGridFragment.Delegate getUserDataGridFragmentDelegate();

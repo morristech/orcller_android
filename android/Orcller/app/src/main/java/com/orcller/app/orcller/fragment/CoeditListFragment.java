@@ -38,7 +38,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/16/15.
  */
-public class CoeditListFragment extends PSFragment
+public class CoeditListFragment extends MainTabFragment
         implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
     private List<Coedit> items = new ArrayList<>();
@@ -59,7 +59,9 @@ public class CoeditListFragment extends PSFragment
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         container = (FrameLayout) view.findViewById(R.id.container);
         listView = (ListView) view.findViewById(R.id.listView);
@@ -102,7 +104,7 @@ public class CoeditListFragment extends PSFragment
     }
 
     @Override
-    public void startFragment() {
+    protected void startFragment() {
         onRefresh();
     }
 

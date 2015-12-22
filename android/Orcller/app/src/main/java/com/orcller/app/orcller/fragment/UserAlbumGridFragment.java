@@ -16,6 +16,7 @@ import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSView;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
@@ -26,10 +27,6 @@ import retrofit.Call;
 public class UserAlbumGridFragment extends UserDataGridFragment {
     public UserAlbumGridFragment() {
         super();
-    }
-
-    public UserAlbumGridFragment(long userId) {
-        super(userId);
     }
 
     // ================================================================================================

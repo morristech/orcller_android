@@ -4,8 +4,13 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.orcller.app.orcller.widget.UserDataGridView
-        android:id="@+id/gridView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+        <com.orcller.app.orcller.widget.UserDataGridView
+            android:id="@+id/gridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

@@ -3,8 +3,8 @@ package pisces.psuikit.widget;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
@@ -13,8 +13,6 @@ import android.view.Gravity;
 import android.widget.TextView;
 
 import pisces.android.R;
-import pisces.psfoundation.utils.GraphicUtils;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFrameLayout;
 
 /**
@@ -62,6 +60,7 @@ public class PSButton extends PSFrameLayout {
             setTextColor(ta.getColorStateList(R.styleable.PSButton_android_textColor));
             setTextLayoutGravity(ta.getInt(R.styleable.PSButton_textLayoutGravity, Gravity.CENTER));
             setTextSize((float) ta.getDimensionPixelSize(R.styleable.PSButton_android_textSize, (int) getTextSize()));
+            setTypeFace(Typeface.defaultFromStyle(ta.getInt(R.styleable.PSButton_android_textStyle, Typeface.NORMAL)));
             setDrawableBottom(ta.getResourceId(R.styleable.PSButton_android_drawableBottom, 0));
             setDrawableLeft(ta.getResourceId(R.styleable.PSButton_android_drawableLeft, 0));
             setDrawableRight(ta.getResourceId(R.styleable.PSButton_android_drawableRight, 0));
@@ -167,6 +166,14 @@ public class PSButton extends PSFrameLayout {
     public void setTextColor(ColorStateList textColor) {
         if (textColor != null)
             textView.setTextColor(textColor);
+    }
+
+    public Typeface getTypeface() {
+        return textView.getTypeface();
+    }
+
+    public void setTypeFace(Typeface tf) {
+        textView.setTypeface(tf);
     }
 
     public float getTextSize() {

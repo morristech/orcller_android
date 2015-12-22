@@ -14,10 +14,6 @@ public class UserAlbumStarGridFragment extends UserAlbumGridFragment {
         super();
     }
 
-    public UserAlbumStarGridFragment(long userId) {
-        super(userId);
-    }
-
     // ================================================================================================
     //  Overridden: UserDataGridFragment
     // ================================================================================================

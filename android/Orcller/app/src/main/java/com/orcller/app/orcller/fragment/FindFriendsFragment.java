@@ -36,7 +36,6 @@ import java.lang.reflect.Field;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
-import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.ext.PSView;
 import pisces.psuikit.manager.ExceptionViewManager;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -47,7 +46,7 @@ import retrofit.Call;
 /**
  * Created by pisces on 11/3/15.
  */
-public class FindFriendsFragment extends PSFragment
+public class FindFriendsFragment extends MainTabFragment
         implements SearchView.OnCloseListener, SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, UserListView.Delegate {
     private Error loadError;
@@ -75,7 +74,9 @@ public class FindFriendsFragment extends PSFragment
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
         firstViewContainer = (LinearLayout) view.findViewById(R.id.firstViewContainer);
         secondViewContainer = (FrameLayout) view.findViewById(R.id.secondViewContainer);
         userListViewContainer = (FrameLayout) view.findViewById(R.id.userListViewContainer);
@@ -143,12 +144,6 @@ public class FindFriendsFragment extends PSFragment
     @Override
     public boolean isUseSoftKeyboard() {
         return true;
-    }
-
-    @Override
-    protected void resumeFragment() {
-        if (isViewCreated())
-            load();
     }
 
     @Override

@@ -2,13 +2,12 @@ package com.orcller.app.orcller.fragment;
 
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
@@ -26,19 +25,16 @@ import pisces.psuikit.widget.ExceptionView;
  * Created by pisces on 12/11/15.
  */
 abstract public class UserDataGridFragment extends PSFragment
-        implements UserDataGridView.Delegate {
+        implements SwipeRefreshLayout.OnRefreshListener, UserDataGridView.Delegate {
     private boolean userIdChanged;
     private long userId;
     private Delegate delegate;
+    private SwipeRefreshLayout swipeRefreshLayout;
     protected Error loadError;
     protected FrameLayout container;
     protected UserDataGridView gridView;
 
     public UserDataGridFragment() {
-    }
-
-    public UserDataGridFragment(long userId) {
-        this.userId = userId;
     }
 
     // ================================================================================================
@@ -51,22 +47,41 @@ abstract public class UserDataGridFragment extends PSFragment
     }
 
     @Override
-    protected void setUpViews(View view) {
+    protected void commitProperties() {
+        if (userIdChanged) {
+            userIdChanged = false;
+            userIdChanged();
+        }
+    }
+
+    @Override
+    protected void setUpSubviews(View view) {
+        super.setUpSubviews(view);
+
         container = (FrameLayout) view.findViewById(R.id.container);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         gridView = (UserDataGridView) view.findViewById(R.id.gridView);
 
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
+        swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
+        swipeRefreshLayout.setOnRefreshListener(this);
         gridView.setItemViewClass(getItemViewClass());
         gridView.setDataSource(createDataSource());
         gridView.setDelegate(this);
-        userIdChanged();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        ProgressBarManager.hide(container);
+        gridView.cancel();
+
+        userIdChanged = true;
+        container = null;
+        gridView = null;
     }
 
     @Override
@@ -78,7 +93,6 @@ abstract public class UserDataGridFragment extends PSFragment
     public boolean shouldShowExceptionView(ExceptionView view) {
         if (gridView.getItems().size() > 1)
             return false;
-
         int index = exceptionViewManager.getViewIndex(view);
         if (index == 0)
             return !Application.isNetworkConnected();
@@ -110,7 +124,7 @@ abstract public class UserDataGridFragment extends PSFragment
         this.userId = userId;
         userIdChanged = true;
 
-        userIdChanged();
+        invalidateProperties();
     }
 
     // ================================================================================================
@@ -127,21 +141,20 @@ abstract public class UserDataGridFragment extends PSFragment
      */
     abstract protected Class getItemViewClass();
 
-    protected void reload() {
-        if (gridView != null)
-            gridView.reload();
-    }
-
     protected void userIdChanged() {
-        if (userIdChanged && gridView != null) {
-            userIdChanged = false;
-            reload();
-        }
+        gridView.reload();
     }
 
     // ================================================================================================
     //  Listener
     // ================================================================================================
+
+    /**
+     * SwipeRefreshLayout.OnRefreshListener
+     */
+    public void onRefresh() {
+        userIdChanged();
+    }
 
     /**
      * UserDataGridView.Delegate

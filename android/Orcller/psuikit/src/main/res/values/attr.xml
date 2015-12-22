@@ -33,6 +33,7 @@
             <flag name="end" value="0x00800005" />
         </attr>
         <attr name="android:textSize"/>
+        <attr name="android:textStyle"/>
     </declare-styleable>
 
     <declare-styleable name="PSViewPager">
