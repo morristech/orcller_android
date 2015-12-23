@@ -37,8 +37,6 @@ public class Badge extends PSFrameLayout {
 
     public Badge(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        initProperties(context, attrs, 0, 0);
     }
 
     public Badge(Context context, AttributeSet attrs, int defStyle) {

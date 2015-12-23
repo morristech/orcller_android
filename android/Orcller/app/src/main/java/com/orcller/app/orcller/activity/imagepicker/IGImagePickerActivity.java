@@ -26,7 +26,7 @@ import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.itemview.HeaderItemView;
+import pisces.psuikit.itemview.ListBaseHeaderView;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Call;
 
@@ -222,16 +222,16 @@ public class IGImagePickerActivity extends PSActionBarActivity
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (getItemViewType(position) == HEADER) {
-                HeaderItemView headerItemView;
+                ListBaseHeaderView listBaseHeaderView;
 
                 if (convertView == null) {
-                    headerItemView = new HeaderItemView(context);
-                    convertView = headerItemView;
+                    listBaseHeaderView = new ListBaseHeaderView(context);
+                    convertView = listBaseHeaderView;
                 } else {
-                    headerItemView = (HeaderItemView) convertView;
+                    listBaseHeaderView = (ListBaseHeaderView) convertView;
                 }
 
-                headerItemView.setText(getHeaderText(position));
+                listBaseHeaderView.setText(getHeaderText(position));
             } else {
                 IGImagePickerItemView itemView;
 

@@ -25,16 +25,26 @@
     <string name="host_options">options</string>
     <string name="host_relationships">relationships</string>
     <string name="host_users">users</string>
+    <string name="host_web">web</string>
+
+    <!-- site path -->
+    <string name="path_private_polcy">/site/policy/private_policy</string>
+    <string name="path_terms">/site/policy/terms</string>
 
     <string name="facebook_share_content_title">UStory - Live and Put Together</string>
 
     <!-- words -->
+    <string name="w_about">About</string>
+    <string name="w_account">Account</string>
     <string name="w_add">Add</string>
     <string name="w_add_collaborators">Add Collaborators</string>
+    <string name="w_albums_public_settings">Albums Public Settings</string>
     <string name="w_ask_collaboration">Ask Collaboration</string>
+    <string name="w_auto_slide">Auto Slide</string>
     <string name="w_cancel">Cancel</string>
     <string name="w_cancel_asking">Cancel Asking</string>
     <string name="w_change">Change</string>
+    <string name="w_change_password">Change Password</string>
     <string name="w_coation">Coation</string>
     <string name="w_collaboration">Collaboration</string>
     <string name="w_collaborators">Collaborators</string>
@@ -42,6 +52,7 @@
     <string name="w_comments">Comments</string>
     <string name="w_confirm">Confirm</string>
     <string name="w_confirm_collaboration">Confirm Collaboration</string>
+    <string name="w_connected_accounts">Connected Accounts</string>
     <string name="w_default">Default</string>
     <string name="w_delete">Delete</string>
     <string name="w_dismiss">Dismiss</string>
@@ -64,6 +75,7 @@
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
     <string name="w_logout">Logout...</string>
+    <string name="w_log_out">Log out</string>
     <string name="w_me">Me</string>
     <string name="w_no">No</string>
     <string name="w_ok">Ok</string>
@@ -74,6 +86,7 @@
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
     <string name="w_posting">Posting</string>
+    <string name="w_private_policy">Private Policy</string>
     <string name="w_requests">Requests</string>
     <string name="w_preparing">Preparing...</string>
     <string name="w_previous_comments">Previous Comments</string>
@@ -81,16 +94,20 @@
     <string name="w_processing">Processing...</string>
     <string name="w_public">Public</string>
     <string name="w_public_settings">Public Settings</string>
+    <string name="w_push_notification_settings">Push Notification Settings</string>
     <string name="w_report_inappropriate">Report Inappropriate</string>
     <string name="w_retry">Retry</string>
     <string name="w_save">Save</string>
     <string name="w_saving">Saving...</string>
+    <string name="w_settings">Settings</string>
     <string name="w_share_to_facebook">Share to Facebook</string>
     <string name="w_sign_up">Sign up</string>
     <string name="w_sign_up_with_email">Sign up with email</string>
     <string name="w_slide_show">Slide Show</string>
     <string name="w_star">Star</string>
     <string name="w_stars">Stars</string>
+    <string name="w_terms">Terms</string>
+    <string name="w_term_of_service">Term of Service</string>
     <string name="w_title_activity">Activity</string>
     <string name="w_title_add_dialog">Import photos and videos</string>
     <string name="w_title_album_page_order">Edit Page Orders</string>
@@ -101,6 +118,7 @@
     <string name="w_title_edit_page">Edit Page</string>
     <string name="w_title_find_friends">Find Friends</string>
     <string name="w_title_new_album">New Album</string>
+    <string name="w_title_options">Options</string>
     <string name="w_title_profile">Edit Profile</string>
     <string name="w_title_timeline">Timeline</string>
     <string name="w_yes">Yes</string>
@@ -114,6 +132,7 @@
     <string name="w_update">Update</string>
     <string name="w_user_name">User Name</string>
     <string name="w_user_honorific"></string>
+    <string name="w_version_information">Version Information</string>
 
     <!-- messages -->
     <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>

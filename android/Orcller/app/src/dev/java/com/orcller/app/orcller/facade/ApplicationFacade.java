@@ -12,6 +12,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
+import com.orcller.app.orcller.activity.OptionsActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -121,7 +122,7 @@ public class ApplicationFacade {
 
     private void startMainActivity() {
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
-                MainActivity.class : MemberActivity.class;
+                OptionsActivity.class : MemberActivity.class;
         Intent intent = new Intent(Application.applicationContext(), activityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);

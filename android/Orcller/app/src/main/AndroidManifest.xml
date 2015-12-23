@@ -209,6 +209,11 @@
             android:theme="@style/PurpleTheme">
         </activity>
 
+        <activity
+            android:name=".activity.OptionsActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
         <!-- orcllermodules -->
         <activity
             android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"

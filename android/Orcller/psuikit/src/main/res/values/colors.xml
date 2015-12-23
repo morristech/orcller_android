@@ -6,6 +6,8 @@
     <color name="exception_button_normal">#0096FF</color>
     <color name="exception_button_selected">#00A0FF</color>
     <color name="exception_description">#777777</color>
+    <color name="itemview_list_base_background_line">#CCCCCC</color>
+    <color name="itemview_list_base_detail_text">#999999</color>
     <color name="imagepicker_toolbar_color">#32FFFFFF</color>
     <color name="imagepicker_toolbar_button_title_color">#146FDF</color>
     <color name="imagepicker_toolbar_button_title_selected_color">#8ABEFE</color>

@@ -1,14 +1,16 @@
 package com.orcller.app.orcller.common;
 
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.manager.MediaManager;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.ApplicationOptions;
 import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.Favorites;
 import com.orcller.app.orcller.model.Likes;
@@ -16,7 +18,6 @@ import com.orcller.app.orcller.model.NewsCount;
 import com.orcller.app.orcller.model.api.ApiCount;
 import com.orcller.app.orcller.proxy.CountDataProxy;
 import com.orcller.app.orcller.widget.FollowButton;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 
@@ -32,6 +33,8 @@ import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
+import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
 import retrofit.Callback;
@@ -42,14 +45,16 @@ import retrofit.Retrofit;
  * Created by pisces on 11/4/15.
  */
 public class SharedObject {
-    private static final int NEWS_COUNT_RETRY_DURATION_MINUTES = 1;
     public static final File CACHE_DIR = Application.applicationContext().getCacheDir();
     public static final File FILES_DIR = Application.applicationContext().getFilesDir();
     public static final File DATA_DIR = new File(CACHE_DIR.getAbsolutePath() + File.separator + "data");
     public static final File TEMP_IMAGE_DIR = new File(CACHE_DIR.getAbsolutePath() + File.separator + "images");
+    private static final int NEWS_COUNT_RETRY_DURATION_MINUTES = 1;
+    private static final String CACHED_APPLICATION_OPTIONS_KEY = "cachedApplicationOptionsKey";
     private static SharedObject uniqueInstance;
     private long lastNewsCountViewDate;
     private NewsCount newsCount = new NewsCount();
+    private ApplicationOptions applicationOptions;
 
     public enum SizeType {
         Small,
@@ -58,6 +63,7 @@ public class SharedObject {
     }
 
     public SharedObject() {
+        loadCachedOptions();
         EventBus.getDefault().register(this);
     }
 
@@ -147,6 +153,20 @@ public class SharedObject {
         return -1;
     }
 
+    public static String getPermissionText(int permission) {
+        return Resources.getString(getPermissionTextResId(permission));
+    }
+
+    public static int getPermissionTextResId(int permission) {
+        if (permission == Album.Permission.Public.value())
+            return R.string.w_public;
+        if (permission == Album.Permission.Followers.value())
+            return R.string.w_open_to_followers;
+        if (permission == Album.Permission.Private.value())
+            return R.string.w_private;
+        return 0;
+    }
+
     public static String getShareContentUrl(String encryptedAlbumId) {
         try {
             return Application.applicationContext().getString(R.string.domain) +
@@ -187,6 +207,21 @@ public class SharedObject {
     /**
      * Instance methods
      */
+    public boolean isAllowsAutoSlide() {
+        return applicationOptions.allowsAutoSlide;
+    }
+
+    public void setAllowsAutoSlide(boolean allowsAutoSlide) {
+        if (allowsAutoSlide == applicationOptions.allowsAutoSlide)
+            return;
+
+        applicationOptions.allowsAutoSlide = allowsAutoSlide;
+
+        SharedPreferences.Editor editor = ApplicationLauncher.getDefault().getSharedPreference().edit();
+        editor.putString(CACHED_APPLICATION_OPTIONS_KEY, GsonUtil.toGsonString(applicationOptions));
+        editor.commit();
+    }
+
     public int getActivityCount() {
         return newsCount.notification;
     }
@@ -323,6 +358,11 @@ public class SharedObject {
     /**
      * Instance methods
      */
+    private void loadCachedOptions() {
+        String string = ApplicationLauncher.getDefault().getSharedPreference().getString(CACHED_APPLICATION_OPTIONS_KEY, null);
+        applicationOptions = string != null ? GsonUtil.fromJson(string, ApplicationOptions.class) : new ApplicationOptions();
+    }
+
     private void postChangeNewsCountEvent() {
         EventBus.getDefault().post(new Event(Event.CHANGE_NEWS_COUNT, this));
     }

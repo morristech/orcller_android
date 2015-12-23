@@ -356,7 +356,7 @@ public class CommentListView extends PSListView
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onChange(Comments comments);
     }
 }

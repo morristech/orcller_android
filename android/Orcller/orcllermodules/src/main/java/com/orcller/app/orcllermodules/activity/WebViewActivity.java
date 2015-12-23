@@ -2,6 +2,7 @@ package com.orcller.app.orcllermodules.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,9 @@ import android.webkit.WebViewClient;
 
 import com.orcller.app.orcllermodules.R;
 
+import java.util.Map;
+
+import pisces.psfoundation.ext.Application;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 
@@ -44,6 +48,16 @@ public class WebViewActivity extends PSActionBarActivity {
 
         if (url != null)
             webView.loadUrl(url);
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static void show(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.getTopActivity().startActivity(intent);
     }
 
     // ================================================================================================

@@ -31,7 +31,8 @@ public class CustomSchemeGenerator {
         Notification(Application.applicationContext().getString(R.string.host_notification)),
         Options(Application.applicationContext().getString(R.string.host_options)),
         Relationships(Application.applicationContext().getString(R.string.host_relationships)),
-        Users(Application.applicationContext().getString(R.string.host_users));
+        Users(Application.applicationContext().getString(R.string.host_users)),
+        Web(Application.applicationContext().getString(R.string.host_web));
 
         private String value;
 
@@ -228,5 +229,9 @@ public class CustomSchemeGenerator {
 
     public static String createUserProfile(BaseUser user) {
         return createUserProfile(user.user_uid);
+    }
+
+    public static String createWebLink(Map<String, String> param) {
+        return SCHEMA + "://" + Category.Web.toString() + "?" + MapUtils.toQueryString(param);
     }
 }
