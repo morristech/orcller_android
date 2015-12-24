@@ -10,6 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:textSize="14dp"
-        android:textColor="@drawable/member_tab_textcolor" />
+        android:textColor="@drawable/member_tab_textcolor"
+        android:textSize="14dp"/>
 </LinearLayout>

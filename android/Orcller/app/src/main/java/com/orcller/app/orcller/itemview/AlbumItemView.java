@@ -223,6 +223,29 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     // ================================================================================================
 
     /**
+     * EventBus listener
+     */
+    public void onEventMainThread(Object event) {
+        if (event instanceof Model.Event) {
+            Model.Event casted = (Model.Event) event;
+
+            if (Model.Event.SYNCHRONIZE.equals(casted.getType())) {
+                if (casted.getTarget() instanceof Album) {
+                    synchronizeAlbum((Album) casted.getTarget());
+                } else if (casted.getTarget() instanceof AlbumAdditionalListEntity) {
+                    synchronizeAlbumInfo((AlbumAdditionalListEntity) casted.getTarget());
+                }
+            } else if (Model.Event.CHANGE.equals(casted.getType()) &&
+                    casted.getTarget() instanceof Album) {
+                changeAlbum((Album) casted.getTarget());
+            }
+        } else if (event instanceof CoeditEvent &&
+                CoeditEvent.CHANGE.equals(((CoeditEvent) event).getType())) {
+            synchronizeAlbumInfo(((CoeditEvent) event).getContributors());
+        }
+    }
+
+    /**
      * View.OnClickListener
      */
     public void onClick(View v) {
@@ -249,29 +272,6 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
             type = ButtonType.Star;
 
         delegate.onClick(this, type, v);
-    }
-
-    /**
-     * EventBus listener
-     */
-    public void onEventMainThread(Object event) {
-        if (event instanceof Model.Event) {
-            Model.Event casted = (Model.Event) event;
-
-            if (Model.Event.SYNCHRONIZE.equals(casted.getType())) {
-                if (casted.getTarget() instanceof Album) {
-                    synchronizeAlbum((Album) casted.getTarget());
-                } else if (casted.getTarget() instanceof AlbumAdditionalListEntity) {
-                    synchronizeAlbumInfo((AlbumAdditionalListEntity) casted.getTarget());
-                }
-            } else if (Model.Event.CHANGE.equals(casted.getType()) &&
-                    casted.getTarget() instanceof Album) {
-                changeAlbum((Album) casted.getTarget());
-            }
-        } else if (event instanceof CoeditEvent &&
-                CoeditEvent.CHANGE.equals(((CoeditEvent) event).getType())) {
-            synchronizeAlbumInfo(((CoeditEvent) event).getContributors());
-        }
     }
 
     // ================================================================================================

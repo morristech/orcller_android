@@ -109,7 +109,7 @@ public class TimelineFragment extends MainTabFragment
 
         headerView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
         headerView.setLayoutParams(new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(8)));
+                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(5)));
         listView.addHeaderView(headerView);
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoTimeline, container),

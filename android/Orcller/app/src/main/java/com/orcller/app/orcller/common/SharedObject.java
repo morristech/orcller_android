@@ -277,7 +277,6 @@ public class SharedObject extends PSObject {
     }
 
     public void loadNewsCount() {
-        Log.d("lastNewsCountViewDate", lastNewsCountViewDate);
         if (lastNewsCountViewDate < 1) {
             loadNewsCountDireclty();
         } else {

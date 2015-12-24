@@ -157,7 +157,7 @@ public class MainActivity extends PSActionBarActivity
      */
     public void onTabChanged(String tag) {
         int position = Integer.valueOf(tag);
-        viewPager.setCurrentItem(position, false);
+        viewPager.setCurrentItem(position);
 
         MainTabFragment fragment = (MainTabFragment) pagerAdapter.getItem(position);
         String title = fragment.getToolbarTitle();

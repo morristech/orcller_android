@@ -127,7 +127,7 @@ public class Model implements Cloneable, Serializable {
     }
 
     public void synchronize(final Model other, final Runnable runnable) {
-        synchronize(other, null, false);
+        synchronize(other, runnable, false);
     }
 
     public void synchronize(final Model other, boolean postEnabled) {

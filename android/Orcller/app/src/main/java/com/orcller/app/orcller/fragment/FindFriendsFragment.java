@@ -23,6 +23,7 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
+import com.orcller.app.orcller.itemview.IdpListItemView;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
@@ -37,6 +38,7 @@ import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
 import pisces.psuikit.ext.PSView;
+import pisces.psuikit.itemview.ListBaseItemView;
 import pisces.psuikit.manager.ExceptionViewManager;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -58,7 +60,7 @@ public class FindFriendsFragment extends MainTabFragment
     private SearchView searchView;
     private UserListView searchListView;
     private UserListView userListView;
-    private PSButton facebookButton;
+    private IdpListItemView facebookItemView;
 
     public FindFriendsFragment() {
         super();
@@ -83,7 +85,7 @@ public class FindFriendsFragment extends MainTabFragment
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         searchListView = (UserListView) view.findViewById(R.id.searchListView);
         userListView = (UserListView) view.findViewById(R.id.userListView);
-        facebookButton = (PSButton) view.findViewById(R.id.facebookButton);
+        facebookItemView = (IdpListItemView) view.findViewById(R.id.facebookItemView);
         searchView = new SearchView(getContext());
         searchExceptionViewManager = new ExceptionViewManager(this);
 
@@ -100,6 +102,9 @@ public class FindFriendsFragment extends MainTabFragment
         textView.setHintTextColor(getContext().getResources().getColor(R.color.background_button_purple_disabled));
         textView.setTextColor(Color.WHITE);
         textView.setTextSize(13);
+        facebookItemView.setImageDrawable(getResources().getDrawable(R.drawable.icon_facebook_normal));
+        facebookItemView.setLineDirection(ListBaseItemView.LINE_BOTTOM);
+        facebookItemView.setTitleText(R.string.w_invite_facebook);
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoRecommendation, userListViewContainer),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, userListViewContainer),
@@ -116,7 +121,7 @@ public class FindFriendsFragment extends MainTabFragment
         searchView.setOnCloseListener(this);
         searchView.setQueryHint(getString(R.string.m_hint_search_friend));
         searchView.setOnQueryTextListener(this);
-        facebookButton.setOnClickListener(this);
+        facebookItemView.setOnClickListener(this);
         SearchViewCompat.setInputType(searchView, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
         setHasOptionsMenu(true);
         EventBus.getDefault().register(this);
@@ -204,7 +209,7 @@ public class FindFriendsFragment extends MainTabFragment
      * View.OnClickListener
      */
     public void onClick(View v) {
-        if (facebookButton.equals(v)) {
+        if (facebookItemView.equals(v)) {
             inviteFacebookFriends();
         } else {
             firstViewContainer.setVisibility(View.GONE);

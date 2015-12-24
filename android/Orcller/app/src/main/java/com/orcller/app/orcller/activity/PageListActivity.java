@@ -321,7 +321,7 @@ public class PageListActivity extends PSActionBarActivity
 
         this.model = model;
 
-        Application.runOnBackgroundThread(new Runnable() {
+        Application.run(new Runnable() {
             @Override
             public void run() {
                 mediaList.clear();
@@ -330,10 +330,13 @@ public class PageListActivity extends PSActionBarActivity
                     mediaList.add(page.media);
                 }
             }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                modelChanged();
+                loadRemainPages();
+            }
         });
-
-        modelChanged();
-        loadRemainPages();
     }
 
     private void setSelectedIndex(int selectedIndex) {
@@ -414,8 +417,24 @@ public class PageListActivity extends PSActionBarActivity
         AlbumDataProxy.getDefault().remainPages(model, new AlbumDataProxy.CompleteHandler() {
             @Override
             public void onComplete(boolean isSuccess) {
-                updateTitle();
-                adapter.setItems(model.pages.data);
+                if (isSuccess) {
+                    Application.run(new Runnable() {
+                        @Override
+                        public void run() {
+                            mediaList.clear();
+
+                            for (Page page : model.pages.data) {
+                                mediaList.add(page.media);
+                            }
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            updateTitle();
+                            adapter.setItems(model.pages.data);
+                        }
+                    });
+                }
             }
         });
     }
@@ -530,7 +549,7 @@ public class PageListActivity extends PSActionBarActivity
             toolbarTextView.setVisibility(View.GONE);
         } else {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            toolbarTextView.setText(String.valueOf(selectedIndex + 1) + " of " + String.valueOf(model.pages.data.size()));
+            toolbarTextView.setText(String.valueOf(selectedIndex + 1) + " of " + String.valueOf(model.pages.total_count));
             toolbarTextView.setVisibility(View.VISIBLE);
         }
     }

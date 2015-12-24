@@ -11,6 +11,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <com.orcller.app.orcller.itemview.IdpListItemView
+            android:id="@+id/facebookItemView"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/background_ripple_lightgray"
+            android:clickable="true"/>
+
         <FrameLayout
             android:id="@+id/userListViewContainer"
             android:layout_width="match_parent"
@@ -26,23 +33,6 @@
                     android:layout_height="match_parent"/>
             </android.support.v4.widget.SwipeRefreshLayout>
         </FrameLayout>
-
-        <pisces.psuikit.widget.PSButton
-            android:id="@+id/facebookButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:padding="8dp"
-            android:background="@drawable/background_ripple_lightgray"
-            android:drawableLeft="@drawable/icon_facebook_normal"
-            android:drawablePadding="8dp"
-            android:text="@string/w_invite_facebook"
-            android:textColor="@android:color/black"
-            android:textSize="13dp"
-            app:drawableWidth="32dp"
-            app:drawableHeight="32dp"/>
     </LinearLayout>
 
     <FrameLayout
