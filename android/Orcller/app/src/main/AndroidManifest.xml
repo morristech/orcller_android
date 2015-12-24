@@ -24,6 +24,7 @@
     <application
         android:name="pisces.psfoundation.ext.Application"
         android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:launchMode="singleTask"
