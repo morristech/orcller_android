@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TabHost;
 
@@ -31,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.event.Event;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -87,6 +88,19 @@ public class MainActivity extends PSActionBarActivity
 
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                if (viewPager.getCurrentItem() > 0) {
+                    viewPager.setCurrentItem(0);
+                    return true;
+                }
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     // ================================================================================================
@@ -218,6 +232,8 @@ public class MainActivity extends PSActionBarActivity
             TabIndicator indicator = (TabIndicator) tabHost.getTabWidget().getChildAt(i);
             indicator.getBadge().setText(badgeCount > 0 ? String.valueOf(badgeCount) : null);
         }
+
+        Application.setBadge(this, SharedObject.get().getTimelineCount() + SharedObject.get().getActivityCount());
     }
 
     // ================================================================================================
