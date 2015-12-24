@@ -22,6 +22,7 @@ import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.widget.TabIndicator;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -65,7 +67,7 @@ public class MainActivity extends PSActionBarActivity
         viewPager.setOffscreenPageLimit(5);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageMargin(GraphicUtils.convertDpToPixel(15));
-        viewPager.setPageMarginDrawable(android.R.color.white);
+        viewPager.setPageMarginDrawable(R.color.theme_lightgray_primary);
         viewPager.addOnPageChangeListener(this);
         addTabs();
         EventBus.getDefault().register(this);
@@ -75,6 +77,7 @@ public class MainActivity extends PSActionBarActivity
     protected void onResume() {
         super.onResume();
 
+        updateBadges();
         SharedObject.get().loadNewsCount();
     }
 
@@ -113,6 +116,12 @@ public class MainActivity extends PSActionBarActivity
                 viewPager.setPagingEnabled(true);
             else if (AlbumFlipViewEvent.START_PANNING.equals(casted.getType()))
                 viewPager.setPagingEnabled(false);
+        } else if (event instanceof MediaUploadUnit.Event) {
+            MediaUploadUnit.Event casted = (MediaUploadUnit.Event) event;
+
+            if (MediaUploadUnit.Event.START_UPLOADING.equals(casted.getType())) {
+                tabHost.setCurrentTab(0);
+            }
         }
     }
 

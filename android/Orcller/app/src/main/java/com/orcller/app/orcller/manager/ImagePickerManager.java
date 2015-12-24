@@ -77,7 +77,7 @@ public class ImagePickerManager {
                 R.id.textView,
                 context.getResources().getStringArray(R.array.add_dialog_items));
 
-        new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.WhiteThemeAlertDialog))
+        new AlertDialog.Builder(context)
                 .setCancelable(true)
                 .setTitle(R.string.w_title_add_dialog)
                 .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {

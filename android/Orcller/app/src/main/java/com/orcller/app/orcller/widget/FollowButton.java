@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.event.RelationshipsEvent;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -108,10 +109,10 @@ public class FollowButton extends PSButton implements View.OnClickListener {
             public void run() {
                 follow();
             }
-        }));
+        }, RelationshipsEvent.FOLLOW));
     }
 
-    private Callback<ApiRelationships.FollowRes> getCallback(final Runnable retry) {
+    private Callback<ApiRelationships.FollowRes> getCallback(final Runnable retry, final String eventType) {
         final Runnable error = new Runnable() {
             @Override
             public void run() {
@@ -136,7 +137,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
                         clonedUser.user_options.follow_count = response.body().entity.follow_count;
 
                         AuthenticationCenter.getDefault().synchorinzeUser(clonedUser);
-                        EventBus.getDefault().post(new OnChangeRelationships());
+                        EventBus.getDefault().post(new RelationshipsEvent(eventType, getModel()));
                     } catch (CloneNotSupportedException e) {
                         if (BuildConfig.DEBUG)
                             Log.e(e.getMessage(), e);
@@ -176,13 +177,6 @@ public class FollowButton extends PSButton implements View.OnClickListener {
             public void run() {
                 unfollow();
             }
-        }));
-    }
-
-    // ================================================================================================
-    //  Class: OnChangeRelationships
-    // ================================================================================================
-
-    public static class OnChangeRelationships {
+        }, RelationshipsEvent.UNFOLLOW));
     }
 }

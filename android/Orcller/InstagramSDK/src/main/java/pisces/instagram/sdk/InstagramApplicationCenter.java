@@ -142,16 +142,19 @@ public class InstagramApplicationCenter<T> {
     // ================================================================================================
 
     public void onEventMainThread(Object event) {
-        if (event instanceof InstagramLoginActivity.InstagramLoginComplete) {
+        if (event instanceof InstagramLoginActivity.LoginEvent) {
             EventBus.getDefault().unregister(this);
 
-            InstagramLoginActivity.InstagramLoginComplete casted = (InstagramLoginActivity.InstagramLoginComplete) event;
-            casted.getActivity().finish();
-            code = casted.getCode();
+            InstagramLoginActivity.LoginEvent casted = (InstagramLoginActivity.LoginEvent) event;
 
-            if (code != null) {
-                requestAccessToken(completeHandler);
-                completeHandler = null;
+            if (InstagramLoginActivity.LoginEvent.COMPLETE.equals(casted.getType())) {
+                casted.getActivity().finish();
+                code = casted.getCode();
+
+                if (code != null) {
+                    requestAccessToken(completeHandler);
+                    completeHandler = null;
+                }
             }
         }
     }

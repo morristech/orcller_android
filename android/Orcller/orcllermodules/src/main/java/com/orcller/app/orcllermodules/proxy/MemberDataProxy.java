@@ -7,6 +7,7 @@ import com.orcller.app.orcllermodules.model.api.ApiMember;
 import java.util.Map;
 
 import retrofit.Call;
+import retrofit.Callback;
 import retrofit.http.Field;
 import retrofit.http.FieldMap;
 import retrofit.http.FormUrlEncoded;
@@ -18,6 +19,10 @@ import retrofit.http.POST;
  */
 public class MemberDataProxy extends AbstractDataProxy {
     private volatile static MemberDataProxy uniqueInstance;
+
+    // ================================================================================================
+    //  Overridden: AbstractDataProxy
+    // ================================================================================================
 
     @Override
     protected Class<Service> createServiceClass() {
@@ -40,7 +45,50 @@ public class MemberDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public void changePassword(Map<String, String> parameters, Callback<ApiMember.LoginRes> callback) {
+        enqueueCall(service().changePassword(parameters), callback);
+    }
+
+    public void login(Map<String, String> parameters, Callback<ApiMember.LoginRes> callback) {
+        enqueueCall(service().login(parameters), callback);
+    }
+
+    public void logout(Callback<ApiResult> callback) {
+        enqueueCall(service().logout(), callback);
+    }
+
+    public void sendCertificationEmail(String email, Callback<ApiResult> callback) {
+        enqueueCall(service().sendCertificationEmail(email), callback);
+    }
+
+    public void syncByIdp(Map<String, String> parameters, Callback<ApiResult> callback) {
+        enqueueCall(service().syncByIdp(parameters), callback);
+    }
+
+    public void updateDevice(Map<String, String> parameters, Callback<ApiResult> callback) {
+        enqueueCall(service().updateDevice(parameters), callback);
+    }
+
+    public void updateUserOptions(Map<String, String> parameters, Callback<ApiResult> callback) {
+        enqueueCall(service().updateUserOptions(parameters), callback);
+    }
+
+    public Service service() {
+        return (Service) getCurrentService();
+    }
+
+    // ================================================================================================
+    //  Interface: Service
+    // ================================================================================================
+
     public interface Service {
+        @FormUrlEncoded @POST("change_password")
+        Call<ApiMember.LoginRes> changePassword(@FieldMap Map<String, String> parameters);
+
         @FormUrlEncoded @POST("login")
         Call<ApiMember.LoginRes> login(@FieldMap Map<String, String> parameters);
 
@@ -63,6 +111,9 @@ public class MemberDataProxy extends AbstractDataProxy {
         Call<ApiResult> syncByIdp(@FieldMap Map<String, String> parameters);
 
         @FormUrlEncoded @POST("device")
-        Call<ApiMember> updateDevice(@FieldMap Map<String, String> parameters);
+        Call<ApiResult> updateDevice(@FieldMap Map<String, String> parameters);
+
+        @FormUrlEncoded @POST("user_options/update")
+        Call<ApiResult> updateUserOptions(@FieldMap Map<String, String> parameters);
     }
 }

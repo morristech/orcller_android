@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,6 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.orcller.app.orcller.BuildConfig;
@@ -28,6 +27,7 @@ import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiUsers;
@@ -37,6 +37,7 @@ import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
+import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.error.APIError;
 
@@ -51,7 +52,6 @@ import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
-import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -76,6 +76,7 @@ public class TimelineFragment extends MainTabFragment
     private AlbumItemViewDelegate albumItemViewDelegate;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FrameLayout container;
+    private Button newPostButton;
     private ListAdapter listAdapter;
     private PSListView listView;
     private FloatingActionButton createButton;
@@ -102,6 +103,7 @@ public class TimelineFragment extends MainTabFragment
         container = (FrameLayout) view.findViewById(R.id.container);
         listView = (PSListView) view.findViewById(R.id.listView);
         createButton = (FloatingActionButton) view.findViewById(R.id.createButton);
+        newPostButton = (Button) view.findViewById(R.id.newPostButton);
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
 
@@ -116,6 +118,7 @@ public class TimelineFragment extends MainTabFragment
         listView.setOnItemClickListener(this);
         listView.setOnScrollListener(this);
         createButton.setOnClickListener(this);
+        newPostButton.setOnClickListener(this);
         EventBus.getDefault().register(this);
     }
 
@@ -193,9 +196,27 @@ public class TimelineFragment extends MainTabFragment
             if ((casted.getTarget() instanceof PageListActivity) && selectedAlbumFlipView != null)
                 selectedAlbumFlipView.setPageIndex(
                         SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
-        } else if (event instanceof AlbumEvent || event instanceof MediaUploadUnit.Event) {
+        } else if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+            Album album = (Album) casted.getObject();
+
+            if (!AlbumEvent.DELETE.equals(casted.getType()))
+                TimelineDataProxy.getDefault().setLastViewDate(album.updated_time);
+
             eventQueue.offer((Event) event);
             dequeueEvent();
+        } else if (event instanceof MediaUploadUnit.Event) {
+            MediaUploadUnit.Event casted = (MediaUploadUnit.Event) event;
+
+            if (MediaUploadUnit.Event.START_UPLOADING.equals(casted.getType())) {
+                eventQueue.offer((Event) event);
+                dequeueEvent();
+            }
+        } else if (event instanceof SharedObject.Event &&
+                SharedObject.Event.CHANGE_NEWS_COUNT.equals(((SharedObject.Event) event).getType())) {
+
+            if (getScrollPoint().y < 0 && SharedObject.get().getTimelineCount() > 0)
+                newPostButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -203,7 +224,12 @@ public class TimelineFragment extends MainTabFragment
      * View.OnClickListener
      */
     public void onClick(View v) {
-        AlbumCreateActivity.show();
+        if (createButton.equals(v)) {
+            AlbumCreateActivity.show();
+        } else if (newPostButton.equals(v)) {
+            listView.smoothScrollToPosition(0);
+            reload();
+        }
     }
 
     /**
@@ -395,6 +421,7 @@ public class TimelineFragment extends MainTabFragment
                     listAdapter.notifyDataSetChanged();
                     TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
                     SharedObject.get().setTimelineCount(0);
+                    MediaManager.getDefault().continueUploading();
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
@@ -430,6 +457,7 @@ public class TimelineFragment extends MainTabFragment
     }
 
     private void reload() {
+        newPostButton.setVisibility(View.GONE);
         load(null);
     }
 

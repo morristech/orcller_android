@@ -150,6 +150,12 @@ public class Application extends android.app.Application {
         new Handler(applicationContext().getMainLooper()).post(runnable);
     }
 
+    public static void startActivity(Class clazz) {
+        Intent intent = new Intent(topActivity, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        topActivity.startActivity(intent);
+    }
+
     public static void startActivity(Intent intent, int enterAnim, int exitAnim) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         topActivity.startActivity(intent);

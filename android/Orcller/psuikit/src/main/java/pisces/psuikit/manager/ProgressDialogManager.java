@@ -31,9 +31,9 @@ public class ProgressDialogManager {
 
     public static void show(String message) {
         if (showing)
-            return;
+            hide();
 
-        progressDialog = ProgressDialog.show(Application.applicationContext(), null, message);
+        progressDialog = ProgressDialog.show(Application.getTopActivity(), null, message);
         showing = true;
     }
 }

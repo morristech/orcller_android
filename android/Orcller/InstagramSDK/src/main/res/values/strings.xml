@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">InstagramSDK</string>
+    <string name="title_login">Login Instagram</string>
 </resources>

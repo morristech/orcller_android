@@ -80,7 +80,7 @@ public class ProfileActivity extends PSActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (User.isMe(userId)) {
-            int res = profileHearderView.isEditing() ? R.menu.menu_profile_save : R.menu.menu_profile;
+            int res = profileHearderView.isEditing() ? R.menu.menu_save : R.menu.menu_profile;
             Application.getTopActivity().getMenuInflater().inflate(res, menu);
             return true;
         }
@@ -95,7 +95,7 @@ public class ProfileActivity extends PSActionBarActivity
                 return true;
 
             case R.id.options:
-                //TODO: open options activity
+                Application.startActivity(OptionsActivity.class);
                 return true;
         }
         return super.onOptionsItemSelected(item);

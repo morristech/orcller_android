@@ -45,6 +45,7 @@
     <string name="w_cancel_asking">Cancel Asking</string>
     <string name="w_change">Change</string>
     <string name="w_change_password">Change Password</string>
+    <string name="w_change_password_ing">Change Password...</string>
     <string name="w_coation">Coation</string>
     <string name="w_collaboration">Collaboration</string>
     <string name="w_collaborators">Collaborators</string>
@@ -53,6 +54,7 @@
     <string name="w_confirm">Confirm</string>
     <string name="w_confirm_collaboration">Confirm Collaboration</string>
     <string name="w_connected_accounts">Connected Accounts</string>
+    <string name="w_current_version">Current Version</string>
     <string name="w_default">Default</string>
     <string name="w_delete">Delete</string>
     <string name="w_dismiss">Dismiss</string>
@@ -68,16 +70,22 @@
     <string name="w_hide_album">Hide Album</string>
     <string name="w_heart">Heart</string>
     <string name="w_hearts">Hearts</string>
+    <string name="w_instagram">Instagram</string>
     <string name="w_instagram_photos">Instagram Photos</string>
     <string name="w_invites">Invites</string>
     <string name="w_invite_facebook">Invite Facebook Friends</string>
+    <string name="w_lastest_version">Lastest Version</string>
     <string name="w_login">Login...</string>
     <string name="w_login_with_facebook">Login with Facebook</string>
     <string name="w_login_up">Log in</string>
     <string name="w_logout">Logout...</string>
     <string name="w_log_out">Log out</string>
     <string name="w_me">Me</string>
+    <string name="w_new_post">New Post</string>
     <string name="w_no">No</string>
+    <string name="w_notification_application">Application Notification</string>
+    <string name="w_notification_album">Album Notification</string>
+    <string name="w_notification_relationships">Relationships Notification</string>
     <string name="w_ok">Ok</string>
     <string name="w_open_to_followers">Open to Followers</string>
     <string name="w_order">Order</string>
@@ -140,6 +148,9 @@
     <string name="m_hint_album_description">Say something about this album...</string>
     <string name="m_hint_album_title">Enter the album title here.</string>
     <string name="m_hint_comment_input">Please enter your comment.</string>
+    <string name="m_hint_current_password">Current Password</string>
+    <string name="m_hint_new_password">New Password</string>
+    <string name="m_hint_new_password_again">Enter the new password again</string>
     <string name="m_hint_papge_description">Say something about this page...</string>
     <string name="m_hint_profile_message">No profile message</string>
     <string name="m_hint_profile_message_me">Enter profile message</string>
@@ -154,6 +165,7 @@
     <string name="m_complete_email_send">
         "It has completed the certification -mail transmission.\n\nOpen an e-mail within 24 hours , please proceed to certification."
     </string>
+    <string name="m_complete_change">Change has been completed.</string>
     <string name="m_complete_report_send">The report has been received.\nThank you for your feedback.</string>
     <string name="m_confirm_album_delete">Are you sure you want to delete an album?</string>
     <string name="m_fail_album_delete">It failed to delete an album.\nPlease try again.</string>
@@ -164,8 +176,10 @@
     <string name="m_fail_error_retry">"An error has occurred. Will retry your post."</string>
     <string name="m_fail_save_user_picture">It failed to save the picture.\nPlease try again.</string>
     <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
-    <string name="m_warn_album_permission">If you set to private,\nco-editing will be blocked.\n\nDo you want to change anyway?</string>
+    <string name="m_warn_album_permission">If you set to private,\nAlbum collaborating will be blocked.\n\nDo you want to change anyway?</string>
     <string name="m_validate_album_title_length">The album title must be a maximum of 40 characters!</string>
+    <string name="m_validate_change_password_new">It is the same as the current password.</string>
+    <string name="m_validate_change_password_again">Confirm password is incorrect.</string>
     <string name="m_validate_password_length">The password is required at least 6 characters and maximum 16 characters!</string>
     <string name="m_validate_profile_message_length">The profile message must be a maximum of 50 characters!</string>
     <string name="m_validate_user_name_length">The user name is required at least 6 characters and maximum 16 characters!</string>

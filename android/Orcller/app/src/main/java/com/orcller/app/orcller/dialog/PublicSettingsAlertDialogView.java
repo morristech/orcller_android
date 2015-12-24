@@ -1,4 +1,4 @@
-package com.orcller.app.orcller.itemview;
+package com.orcller.app.orcller.dialog;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -15,7 +15,6 @@ import pisces.psuikit.ext.PSLinearLayout;
  * Created by pisces on 12/8/15.
  */
 public class PublicSettingsAlertDialogView extends PSLinearLayout {
-    private Album model;
     private RadioGroup radioGroup;
 
     public PublicSettingsAlertDialogView(Context context) {
@@ -31,7 +30,7 @@ public class PublicSettingsAlertDialogView extends PSLinearLayout {
     }
 
     // ================================================================================================
-    //  Overridden: PSScrollView
+    //  Overridden: PSLinearLayout
     // ================================================================================================
 
     @Override
@@ -45,16 +44,12 @@ public class PublicSettingsAlertDialogView extends PSLinearLayout {
     //  Public
     // ================================================================================================
 
-    public Album getModel() {
-        return model;
+    public void setPermission(Album.Permission permission) {
+        setPermission(permission.value());
     }
 
-    public void setModel(Album model) {
-        if (ObjectUtils.equals(model, this.model))
-            return;
-
-        this.model = model;
-        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(model.permission - 1);
+    public void setPermission(int permission) {
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(permission - 1);
         radioButton.setChecked(true);
     }
 

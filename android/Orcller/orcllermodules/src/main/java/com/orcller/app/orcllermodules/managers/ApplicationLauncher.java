@@ -72,6 +72,10 @@ public class ApplicationLauncher {
                 .getSharedPreferences(APP_PREFERENCE_KEY, Context.MODE_PRIVATE);
     }
 
+    public boolean hasNewVersion() {
+        return Application.isLowerAppVersion(getCurrentVersion());
+    }
+
     public void launch() {
         if (resource == null || resource.getIdentifier() == null || initialized)
             return;

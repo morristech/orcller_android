@@ -193,7 +193,8 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
 
         @Override
         public boolean isEnabled(int position) {
-            return getItemViewType(position) != SECTION;
+            boolean isItem = getItemViewType(position) != SECTION;
+            return delegate != null ? isItem && delegate.isEnabled(listView, getIndexPath(position)) : isItem;
         }
 
         public IndexPath getIndexPath(int position) {
@@ -239,6 +240,7 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
     // ================================================================================================
 
     public interface Delegate {
+        boolean isEnabled(ListView listView, IndexPath indexPath);
         void onItemClick(ListView listView, View view, IndexPath indexPath);
     }
 

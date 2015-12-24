@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 import de.greenrobot.event.EventBus;
 import pisces.android.instagramsdk.R;
 import pisces.instagram.sdk.model.OAuth2;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.utils.MapUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -33,9 +34,8 @@ public class InstagramLoginActivity extends PSActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_instagram_login);
-
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle("Instagram");
+        getSupportActionBar().setTitle(getString(R.string.title_login));
 
         resource = (OAuth2) getIntent().getSerializableExtra("resource");
         webView = (WebView) findViewById(R.id.webView);
@@ -46,6 +46,13 @@ public class InstagramLoginActivity extends PSActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        EventBus.getDefault().post(new LoginEvent(LoginEvent.CANCEL, this));
+
+        super.onBackPressed();
     }
 
     // ================================================================================================
@@ -72,7 +79,7 @@ public class InstagramLoginActivity extends PSActionBarActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith(resource.getRedirectURI())) {
                 EventBus.getDefault().post(
-                        new InstagramLoginComplete((Activity) context, Uri.parse(url).getQueryParameter("code")));
+                        new LoginEvent(LoginEvent.COMPLETE, context, Uri.parse(url).getQueryParameter("code")));
                 return false;
             }
 
@@ -89,25 +96,31 @@ public class InstagramLoginActivity extends PSActionBarActivity {
 
         public void onPageFinished(WebView view, String url) {
             ProgressBarManager.hide((Activity) context);
-            getSupportActionBar().setTitle(view.getTitle());
         }
     }
 
-    public static class InstagramLoginComplete {
-        private Activity activity;
-        private String code;
+    // ================================================================================================
+    //  Class: LoginEvent
+    // ================================================================================================
 
-        public InstagramLoginComplete(Activity activity, String code) {
-            this.activity = activity;
-            this.code = code;
+    public static class LoginEvent extends Event {
+        public static final String CANCEL = "cancel";
+        public static final String COMPLETE = "complete";
+
+        public LoginEvent(String type, Object target) {
+            super(type, target);
+        }
+
+        public LoginEvent(String type, Object target, Object object) {
+            super(type, target, object);
         }
 
         public Activity getActivity() {
-            return activity;
+            return (Activity) getTarget();
         }
 
         public String getCode() {
-            return code;
+            return (String) getObject();
         }
     }
 }

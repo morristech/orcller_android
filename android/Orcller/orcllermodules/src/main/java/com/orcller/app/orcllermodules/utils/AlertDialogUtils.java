@@ -8,13 +8,18 @@ import android.support.annotation.StringRes;
 import com.orcller.app.orcllermodules.R;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 
 /**
  * Created by pisces on 11/11/15.
  */
 public class AlertDialogUtils {
     public static void show(@StringRes int message, int... buttons) {
-        show(Application.applicationContext().getString(message), null, buttons);
+        show(Resources.getString(message), null, buttons);
+    }
+
+    public static void show(@StringRes int message, DialogInterface.OnClickListener listener, int... buttons) {
+        show(Resources.getString(message), listener, buttons);
     }
 
     public static void show(String message, String... buttons) {
@@ -28,9 +33,9 @@ public class AlertDialogUtils {
         for (int i=0; i<buttons.length; i++) {
             int labelId = buttons[i];
             if (i == 0)
-                alertDialog.setNegativeButton(Application.applicationContext().getString(labelId), listener);
+                alertDialog.setNegativeButton(Resources.getString(labelId), listener);
             else
-                alertDialog.setPositiveButton(Application.applicationContext().getString(labelId), listener);
+                alertDialog.setPositiveButton(Resources.getString(labelId), listener);
         }
 
         alertDialog.show();
@@ -52,21 +57,21 @@ public class AlertDialogUtils {
     }
 
     public static void retry(int message, Runnable retry) {
-        retry(Application.applicationContext().getString(message), retry);
+        retry(Resources.getString(message), retry);
     }
 
     public static void retry(int message, DialogInterface.OnClickListener listener) {
-        Context context = Application.applicationContext();
+        Context context = Application.getTopActivity();
         show(context.getString(message), listener, context.getString(R.string.w_dismiss), context.getString(R.string.w_retry));
     }
 
     public static void retry(String message, DialogInterface.OnClickListener listener) {
-        Context context = Application.applicationContext();
+        Context context = Application.getTopActivity();
         show(message, listener,context.getString(R.string.w_dismiss), context.getString(R.string.w_retry));
     }
 
     public static void retry(String message, final Runnable retry) {
-        Context context = Application.applicationContext();
+        Context context = Application.getTopActivity();
         show(message, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

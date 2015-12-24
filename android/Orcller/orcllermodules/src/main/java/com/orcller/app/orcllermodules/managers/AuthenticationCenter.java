@@ -25,7 +25,9 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.utils.GsonUtil;
+import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -56,7 +58,7 @@ public class AuthenticationCenter {
      * @constructor
      **/
     public AuthenticationCenter() {
-        sessionCookies = new ArrayList<HttpCookie>();
+        sessionCookies = new ArrayList<>();
         cookieManager = new CookieManager();
         loadCaches();
     }
@@ -72,42 +74,48 @@ public class AuthenticationCenter {
         return uniqueInstance;
     }
 
+    public void changePassword(ApiMember.ChangePasswordReq req, Api.CompleteHandler completeHandler) {
+        final Api.CompleteHandler handler = newHandler(completeHandler);
+
+        MemberDataProxy.getDefault().changePassword(req.map(), new Callback<ApiMember.LoginRes>() {
+            @Override
+            public void onResponse(Response<ApiMember.LoginRes> response, Retrofit retrofit) {
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    synchronize(response.body().entity);
+                    handler.onComplete(response.body(), null);
+                } else {
+                    handler.onComplete(null, APIError.create(response.body()));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
+            }
+        });
+    }
+
     public void join(ApiMember.JoinWithEmailReq req, Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiMember.LoginRes> call = service.joinByEmail(req.map());
-        requestLogin(call, completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().joinByEmail(req.map()), completeHandler);
     }
 
     public void join(ApiMember.JoinWithIdpReq req, Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiMember.LoginRes> call = service.joinByIdp(req.map());
-        requestLogin(call, completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().joinByIdp(req.map()), completeHandler);
     }
 
     public void login(ApiMember.LoginReq req, final Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiMember.LoginRes> call = service.login(req.map());
-        requestLogin(call, completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().login(req.map()), completeHandler);
     }
 
     public void login(ApiMember.LoginWithIdpReq req, final Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiMember.LoginRes> call = service.loginByIdp(req.map());
-        requestLogin(call, completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().loginByIdp(req.map()), completeHandler);
     }
 
     public void loginWithFacebook(
             Object target,
             final FBSDKRequest.CompleteHandler fbCompleteHandler,
             final Api.CompleteHandler completeHandler) {
-        final Api.CompleteHandler handler = new Api.CompleteHandler() {
-            @Override
-            public void onComplete(Object result, APIError error) {
-                if (completeHandler != null)
-                    completeHandler.onComplete(result, error);
-            }
-        };
-
+        final Api.CompleteHandler handler = newHandler(completeHandler);
         Bundle parameters = new Bundle();
         parameters.putString("fields", FB_PROFILE_PARAM);
         FBSDKRequestQueue.currentQueue().request(
@@ -148,34 +156,22 @@ public class AuthenticationCenter {
     }
 
     public void logout(final Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiResult> call = service.logout();
+        final Api.CompleteHandler handler = newHandler(completeHandler);
+        final Object target = this;
 
-        final Api.CompleteHandler handler = new Api.CompleteHandler() {
-            @Override
-            public void onComplete(Object result, APIError error) {
-                if (completeHandler != null)
-                    completeHandler.onComplete(result, error);
-            }
-        };
-
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().logout(new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if (response.body().isSuccess()) {
-                        synchronized (this) {
-                            clear();
-                            LoginManager.getInstance().logOut();
-                            InstagramApplicationCenter.getDefault().logout();
-                            handler.onComplete(response.body(), null);
-                            EventBus.getDefault().post(new LogoutComplete());
-                        }
-                    } else {
-                        handler.onComplete(null, APIError.create(response.body()));
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    synchronized (this) {
+                        clear();
+                        LoginManager.getInstance().logOut();
+                        InstagramApplicationCenter.getDefault().logout();
+                        handler.onComplete(response.body(), null);
+                        EventBus.getDefault().post(new LoginEvent(LoginEvent.LOGOUT, target));
                     }
                 } else {
-                    handler.onComplete(null, APIError.create(response.code(), response.message()));
+                    handler.onComplete(null, APIError.create(response.body()));
                 }
             }
 
@@ -187,20 +183,13 @@ public class AuthenticationCenter {
     }
 
     public void sendCertificationEmail(String email, final Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiResult> call = service.sendCertificationEmail(email);
-
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().sendCertificationEmail(email, new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if (response.body().isSuccess()) {
-                        completeHandler.onComplete(response.body(), null);
-                    } else {
-                        completeHandler.onComplete(null, APIError.create(response.body()));
-                    }
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    completeHandler.onComplete(response.body(), null);
                 } else {
-                    completeHandler.onComplete(null, APIError.create(response.code(), response.message()));
+                    completeHandler.onComplete(null, APIError.create(response.body()));
                 }
             }
 
@@ -259,14 +248,7 @@ public class AuthenticationCenter {
     }
 
     public void syncWithFacebook(Object target, final Api.CompleteHandler completeHandler) {
-        final Api.CompleteHandler handler = new Api.CompleteHandler() {
-            @Override
-            public void onComplete(Object result, APIError error) {
-                if (completeHandler != null)
-                    completeHandler.onComplete(result, error);
-            }
-        };
-
+        final Api.CompleteHandler handler = newHandler(completeHandler);
         Bundle parameters = new Bundle();
         parameters.putString("fields", FB_PROFILE_PARAM);
         FBSDKRequestQueue.currentQueue().request(
@@ -286,7 +268,7 @@ public class AuthenticationCenter {
                                 @Override
                                 public void onComplete(Object rs, APIError err) {
                                     if (err == null) {
-                                        handler.onComplete(rs, err);
+                                        handler.onComplete(result, err);
                                     } else {
                                         LoginManager.getInstance().logOut();
                                         handler.onComplete(null, err);
@@ -302,27 +284,15 @@ public class AuthenticationCenter {
     }
 
     public void syncWithIdp(ApiMember.SyncWithIdpReq req, final Api.CompleteHandler completeHandler) {
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiResult> call = service.syncByIdp(req.map());
-        final Api.CompleteHandler handler = new Api.CompleteHandler() {
-            @Override
-            public void onComplete(Object result, APIError error) {
-                if (completeHandler != null)
-                    completeHandler.onComplete(result, error);
-            }
-        };
+        final Api.CompleteHandler handler = newHandler(completeHandler);
 
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().syncByIdp(req.map(), new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if (response.body().isSuccess()) {
-                        handler.onComplete(response.body(), null);
-                    } else {
-                        handler.onComplete(null, APIError.create(response.body()));
-                    }
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    handler.onComplete(response.body(), null);
                 } else {
-                    handler.onComplete(null, APIError.create(response.code(), response.message()));
+                    handler.onComplete(null, APIError.create(response.body()));
                 }
             }
 
@@ -337,16 +307,47 @@ public class AuthenticationCenter {
         if (!hasSession())
             return;
 
-        MemberDataProxy.Service service = (MemberDataProxy.Service) MemberDataProxy.getDefault().getCurrentService();
-        Call<ApiMember.LoginRes> call = service.joinByEmail(new ApiMember.BaseReq().map());
-
-        MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().updateDevice(new ApiMember.BaseReq().map(), new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
             }
 
             @Override
             public void onFailure(Throwable t) {
+            }
+        });
+    }
+
+    public void updateUserOptions(final ApiMember.UpdateUserOptionsReq req, final Api.CompleteHandler completeHandler) {
+        final Api.CompleteHandler handler = newHandler(completeHandler);
+
+        MemberDataProxy.getDefault().updateUserOptions(req.map(), new Callback<ApiResult>() {
+            @Override
+            public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    try {
+                        User clonedUser = (User) getUser().clone();
+                        clonedUser.user_options.album_permission = req.user_options_album_permission;
+                        clonedUser.user_options.pns_types = req.user_options_pns_types;
+
+                        synchorinzeUser(clonedUser, new Runnable() {
+                            @Override
+                            public void run() {
+                                handler.onComplete(response.body(), null);
+                            }
+                        });
+                    } catch (CloneNotSupportedException e) {
+                        handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, e.getMessage()));
+                    }
+                } else {
+                    Log.d("response.body()", response.body(), response);
+                    handler.onComplete(null, APIError.create(response.body()));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }
@@ -390,57 +391,45 @@ public class AuthenticationCenter {
     }
 
     private void loadUser() {
-        UserDataProxy proxy = new UserDataProxy();
-        UserDataProxy.Service service = (UserDataProxy.Service) proxy.getCurrentService();
-        Call<ApiUser.Profile> call = service.loadUser("me");
-
-        proxy.enqueueCall(call, new Callback<ApiUser.Profile>() {
+        new UserDataProxy().loadUser("me", new Callback<ApiUser.Profile>() {
             @Override
             public void onResponse(Response<ApiUser.Profile> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if (response.body().isSuccess()) {
                         synchorinzeUser(response.body().entity);
-                    } else {
-                        processErrorState(APIError.create(response.body()));
                     }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                processErrorState(APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
     }
 
-    private void processErrorState(APIError error) {
-        EventBus.getDefault().post(new OnFailure(error));
-    }
-
-    private void requestLogin(Call<ApiMember.LoginRes> call, final Api.CompleteHandler completeHandler) {
-        final Api.CompleteHandler handler = new Api.CompleteHandler() {
+    private Api.CompleteHandler newHandler(final Api.CompleteHandler completeHandler) {
+        return new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
                 if (completeHandler != null)
                     completeHandler.onComplete(result, error);
             }
         };
+    }
+
+    private void requestLogin(Call<ApiMember.LoginRes> call, final Api.CompleteHandler completeHandler) {
+        final Api.CompleteHandler handler = newHandler(completeHandler);
+        final Object target = this;
 
         MemberDataProxy.getDefault().enqueueCall(call, new Callback<ApiMember.LoginRes>() {
             @Override
             public void onResponse(Response<ApiMember.LoginRes> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if (response.body().isSuccess()) {
-                        setCachedSessionEntity(response.body().entity);
-                        loadCaches();
-                        synchorinze();
-                        handler.onComplete(response.body(), null);
-                        EventBus.getDefault().post(new LoginComplete());
-                    } else {
-                        handler.onComplete(null, APIError.create(response.body()));
-                    }
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    synchronize(response.body().entity);
+                    handler.onComplete(response.body(), null);
+                    EventBus.getDefault().post(new LoginEvent(LoginEvent.LOGIN, target));
                 } else {
-                    handler.onComplete(null, APIError.create(response.code(), response.message()));
+                    handler.onComplete(null, APIError.create(response.body()));
                 }
             }
 
@@ -449,6 +438,14 @@ public class AuthenticationCenter {
                 handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, t.getMessage()));
             }
         });
+    }
+
+    private void synchronize(ApiMember.LoginRes.Entity entity) {
+        if (entity != null) {
+            setCachedSessionEntity(entity);
+            loadCaches();
+            synchorinze();
+        }
     }
 
     private String getCachedSessionToken() {
@@ -497,25 +494,12 @@ public class AuthenticationCenter {
     //  Events
     // ================================================================================================
 
-    public static class LoginComplete {
-        public LoginComplete() {
-        }
-    }
+    public static class LoginEvent extends Event {
+        public static final String LOGIN = "login";
+        public static final String LOGOUT = "logout";
 
-    public static class LogoutComplete {
-        public LogoutComplete() {
-        }
-    }
-
-    public class OnFailure {
-        private APIError error;
-
-        public OnFailure(APIError error) {
-            this.error = error;
-        }
-
-        public APIError getError() {
-            return error;
+        public LoginEvent(String type, Object target) {
+            super(type, target);
         }
     }
 }

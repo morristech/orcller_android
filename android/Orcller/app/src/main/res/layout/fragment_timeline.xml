@@ -18,8 +18,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:choiceMode="singleChoice"
+                android:divider="@color/theme_white_accent"
                 android:dividerHeight="12dp"/>
         </android.support.v4.widget.SwipeRefreshLayout>
+
+        <Button
+            android:id="@+id/newPostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/background_newpost_button"
+            android:elevation="6dp"
+            android:text="@string/w_new_post"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="13dp"/>
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton

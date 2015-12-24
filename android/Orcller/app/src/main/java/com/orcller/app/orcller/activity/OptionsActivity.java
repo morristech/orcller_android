@@ -11,20 +11,12 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.ApplicationOptionsItemView;
 import com.orcller.app.orcller.itemview.OptionsSectionHeaderView;
-import com.orcller.app.orcller.utils.CustomSchemeGenerator;
-import com.orcller.app.orcllermodules.activity.WebViewActivity;
-import com.orcller.app.orcllermodules.error.APIError;
+import com.orcller.app.orcller.proxy.OptionsActivityProxy;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
-import com.orcller.app.orcllermodules.model.api.Api;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.itemview.ListBadgeItemView;
@@ -36,11 +28,11 @@ import pisces.psuikit.widget.SectionedListView;
 /**
  * Created by pisces on 12/23/15.
  */
-public class OptionsActivity extends PSActionBarActivity
-        implements SectionedListView.DataSource, SectionedListView.Delegate {
+public class OptionsActivity extends PSActionBarActivity implements SectionedListView.DataSource {
     private static final int APPLICATION_OPTIONS_ITEM_VIEW = 1;
     private static final int BASE_ITEM_VIEW = 2;
     private static final int BADGE_ITEM_VIEW = 3;
+    private OptionsActivityProxy optionsActivityProxy;
     private SectionedListView listView;
 
     // ================================================================================================
@@ -56,6 +48,7 @@ public class OptionsActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(getString(R.string.w_title_options));
 
         listView = (SectionedListView) findViewById(R.id.listView);
+        optionsActivityProxy = new OptionsActivityProxy(this);
         View footerView = new View(this);
 
         footerView.setBackgroundColor(getResources().getColor(R.color.background_album_view));
@@ -63,7 +56,6 @@ public class OptionsActivity extends PSActionBarActivity
                 AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(45)));
         listView.addFooterView(footerView);
         listView.setDataSource(this);
-        listView.setDelegate(this);
         listView.reload();
     }
 
@@ -77,6 +69,14 @@ public class OptionsActivity extends PSActionBarActivity
         super.onDestroy();
 
         ProgressDialogManager.hide();
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public SectionedListView getListView() {
+        return listView;
     }
 
     // ================================================================================================
@@ -104,7 +104,7 @@ public class OptionsActivity extends PSActionBarActivity
             else if (type == BADGE_ITEM_VIEW)
                 convertView = new ListBadgeItemView(this);
             else
-                convertView =new ListBaseItemView(this);
+                convertView = new ListBaseItemView(this);
         }
 
         if (convertView instanceof ListBaseItemView) {
@@ -153,42 +153,6 @@ public class OptionsActivity extends PSActionBarActivity
 
     public int getItemViewTypeCount(ListView listView) {
         return 3;
-    }
-
-    /**
-     * SectionedListView.Delegate
-     */
-    public void onItemClick(ListView listView, View view, SectionedListView.IndexPath indexPath) {
-        switch (indexPath.section()) {
-            case 0:
-                if (indexPath.row() == 0) {
-                    // TODO: Open ConnectedAccountsActivity
-                } else if (indexPath.row() == 1) {
-                    // TODO: Open ChangePasswordActivity
-                } else {
-                    // TODO: Open PermissionDialog
-                }
-                break;
-
-            case 1:
-                if (indexPath.row() == 1) {
-                    // TODO: Open PushNotificationSettingsDialog
-                } else if (indexPath.row() == 2) {
-                    // TODO: Open VersionInformationDialog
-                }
-                break;
-
-            case 2:
-                if (indexPath.row() == 0)
-                    openWebViewActivity(R.string.path_private_polcy, R.string.w_private_policy);
-                else
-                    openWebViewActivity(R.string.path_terms, R.string.w_term_of_service);
-                break;
-
-            case 3:
-                logout();
-                break;
-        }
     }
 
     // ================================================================================================
@@ -243,33 +207,5 @@ public class OptionsActivity extends PSActionBarActivity
             return Application.getPackageVersionName();
 
         return null;
-    }
-
-    private void logout() {
-        ProgressDialogManager.show(R.string.w_logout);
-
-        AuthenticationCenter.getDefault().logout(new Api.CompleteHandler() {
-            @Override
-            public void onComplete(Object result, APIError error) {
-                ProgressDialogManager.hide();
-
-                if (error != null) {
-                    AlertDialogUtils.retry(error.getMessage(), new Runnable() {
-                        @Override
-                        public void run() {
-                            logout();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private void openWebViewActivity(int pathResId, int titleResId) {
-        String url = Resources.getString(R.string.domain) + Resources.getString(pathResId);
-        Map<String, String> params = new HashMap<>();
-        params.put("url", url);
-        params.put("title", Resources.getString(titleResId));
-        WebViewActivity.show(CustomSchemeGenerator.createWebLink(params));
     }
 }

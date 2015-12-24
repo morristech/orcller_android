@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.CoeditEvent;
+import com.orcller.app.orcller.event.RelationshipsEvent;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
@@ -19,7 +20,7 @@ import com.orcller.app.orcller.model.api.ApiCount;
 import com.orcller.app.orcller.proxy.CountDataProxy;
 import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
-import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
+import com.orcller.app.orcllermodules.managers.AuthenticationCenter.LoginEvent;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.Log;
@@ -44,7 +46,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 11/4/15.
  */
-public class SharedObject {
+public class SharedObject extends PSObject {
     public static final File CACHE_DIR = Application.applicationContext().getCacheDir();
     public static final File FILES_DIR = Application.applicationContext().getFilesDir();
     public static final File DATA_DIR = new File(CACHE_DIR.getAbsolutePath() + File.separator + "data");
@@ -275,6 +277,7 @@ public class SharedObject {
     }
 
     public void loadNewsCount() {
+        Log.d("lastNewsCountViewDate", lastNewsCountViewDate);
         if (lastNewsCountViewDate < 1) {
             loadNewsCountDireclty();
         } else {
@@ -287,6 +290,9 @@ public class SharedObject {
     }
 
     public void loadNewsCountDireclty() {
+        if (invalidDataLoading())
+            return;
+
         CountDataProxy.getDefault().news(new Callback<ApiCount.NewsCountRes>() {
             @Override
             public void onResponse(Response<ApiCount.NewsCountRes> response, Retrofit retrofit) {
@@ -298,12 +304,16 @@ public class SharedObject {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
                 }
+
+                endDataLoading();
             }
 
             @Override
             public void onFailure(Throwable t) {
                 if (BuildConfig.DEBUG)
                     Log.e("onFailure", t);
+
+                endDataLoading();
             }
         });
     }
@@ -316,8 +326,8 @@ public class SharedObject {
      * EventBus listener
      */
     public void onEventMainThread(final Object event) {
-        if (event instanceof FollowButton.OnChangeRelationships ||
-                event instanceof AuthenticationCenter.LoginComplete ||
+        if (event instanceof RelationshipsEvent ||
+                (event instanceof LoginEvent && LoginEvent.LOGIN.equals(((LoginEvent) event).getType())) ||
                 event instanceof CoeditEvent) {
             loadNewsCountDireclty();
         }

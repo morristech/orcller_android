@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,8 +14,8 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumEditActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
+import com.orcller.app.orcller.dialog.PublicSettingsAlertDialogView;
 import com.orcller.app.orcller.event.AlbumEvent;
-import com.orcller.app.orcller.itemview.PublicSettingsAlertDialogView;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
@@ -120,14 +119,14 @@ public class AlbumOptionsManager extends PSObject {
     //  Private
     // ================================================================================================
 
-    private void chagePermission(final Album.Permission permission) {
+    private void changePermission(final Album.Permission permission) {
         if (invalidDataLoading())
             return;
 
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                chagePermission(permission);
+                changePermission(permission);
             }
         };
 
@@ -278,7 +277,7 @@ public class AlbumOptionsManager extends PSObject {
     private void publicSettings() {
         final PublicSettingsAlertDialogView view = new PublicSettingsAlertDialogView(context);
 
-        new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.WhiteThemeAlertDialog))
+        new AlertDialog.Builder(context)
                 .setTitle(R.string.w_public_settings)
                 .setView(view)
                 .setNegativeButton(R.string.w_cancel, new DialogInterface.OnClickListener() {
@@ -294,7 +293,7 @@ public class AlbumOptionsManager extends PSObject {
                 })
                 .create()
                 .show();
-        view.setModel(album);
+        view.setPermission(album.permission);
     }
 
     private void report() {
@@ -349,14 +348,14 @@ public class AlbumOptionsManager extends PSObject {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (which == AlertDialog.BUTTON_POSITIVE) {
-                                chagePermission(permission);
+                                changePermission(permission);
                             }
                         }
                     },
                     context.getString(R.string.w_cancel),
                     context.getString(R.string.w_change));
         } else {
-            chagePermission(permission);
+            changePermission(permission);
         }
     }
 

@@ -32,9 +32,9 @@ public class APIError extends Error {
     }
 
     public APIError(ApiResult result) {
-        super(result.error_message);
+        super(result != null ? result.error_message : null);
 
-        this.code = result.error_code;
+        this.code = result != null ? result.error_code : APIErrorCodeUnknown;
     }
 
     public static APIError create(ApiResult result) {

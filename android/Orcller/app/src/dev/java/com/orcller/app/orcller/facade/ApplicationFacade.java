@@ -57,12 +57,11 @@ public class ApplicationFacade {
     public void onTokenRefresh() {
         if (GooglePlayServiceManager.getDefault().checkPlayServices(context)) {
             InstanceID instanceID = InstanceID.getInstance(context);
-            String token = null;
             try {
                 synchronized (TAG) {
                     String default_senderId = context.getString(R.string.gcm_defaultSenderId);
                     String scope = GoogleCloudMessaging.INSTANCE_ID_SCOPE;
-                    token = instanceID.getToken(default_senderId, scope, null);
+                    String token = instanceID.getToken(default_senderId, scope, null);
                     DeviceManager.getDefault().registerDeviceToken(token);
                 }
             } catch (IOException e) {
@@ -93,8 +92,7 @@ public class ApplicationFacade {
 
     public void onEventMainThread(Object event) {
         if (event instanceof ApplicationLauncher.ApplicationInitialized ||
-                event instanceof AuthenticationCenter.LoginComplete ||
-                event instanceof AuthenticationCenter.LogoutComplete) {
+                event instanceof AuthenticationCenter.LoginEvent) {
             startMainActivity();
         } else if (event instanceof ApplicationLauncher.ApplicationHasNewVersion) {
             ApplicationLauncher.ApplicationHasNewVersion casted = (ApplicationLauncher.ApplicationHasNewVersion) event;
@@ -109,10 +107,6 @@ public class ApplicationFacade {
                     }
                 }
             }, context.getString(R.string.w_dismiss), context.getString(R.string.w_update));
-        } else if (event instanceof ApplicationLauncher.OnFailure) {
-            ((ApplicationLauncher.OnFailure) event).getError().printStackTrace();
-        } else if (event instanceof AuthenticationCenter.OnFailure) {
-            ((ApplicationLauncher.OnFailure) event).getError().printStackTrace();
         }
     }
 
@@ -122,7 +116,7 @@ public class ApplicationFacade {
 
     private void startMainActivity() {
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
-                OptionsActivity.class : MemberActivity.class;
+                MainActivity.class : MemberActivity.class;
         Intent intent = new Intent(Application.applicationContext(), activityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);

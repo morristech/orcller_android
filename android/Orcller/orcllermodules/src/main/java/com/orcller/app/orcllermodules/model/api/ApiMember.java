@@ -91,7 +91,7 @@ public class ApiMember {
         public String idp_user_id;
     }
 
-    public static class UpdateUserOptionsReq {
+    public static class UpdateUserOptionsReq extends Model {
         public int user_options_album_permission;
         public int user_options_pns_types;
     }

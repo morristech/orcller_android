@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.OptionsActivity;
 import com.orcller.app.orcller.widget.ProfileContentView;
 import com.orcller.app.orcller.widget.ProfileHearderView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -18,6 +19,7 @@ import com.orcller.app.orcllermodules.model.User;
 import java.util.Arrays;
 import java.util.List;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.ObjectUtils;
 
 /**
@@ -57,7 +59,7 @@ public class ProfileFragment extends MainTabFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        int res = profileHearderView.isEditing() ? R.menu.menu_profile_save : R.menu.menu_profile;
+        int res = profileHearderView.isEditing() ? R.menu.menu_save : R.menu.menu_profile;
         inflater.inflate(res, menu);
     }
 
@@ -69,7 +71,7 @@ public class ProfileFragment extends MainTabFragment
                 return true;
 
             case R.id.options:
-                //TODO: open options activity
+                Application.startActivity(OptionsActivity.class);
                 return true;
         }
         return getActivity().onOptionsItemSelected(item);

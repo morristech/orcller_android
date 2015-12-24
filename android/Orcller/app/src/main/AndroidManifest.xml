@@ -214,6 +214,11 @@
             android:theme="@style/PurpleTheme">
         </activity>
 
+        <activity
+            android:name=".activity.ChangePasswordActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
         <!-- orcllermodules -->
         <activity
             android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"
@@ -264,7 +269,7 @@
         <activity
             android:name="pisces.instagram.sdk.activity.InstagramLoginActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/WhiteTheme"
             android:launchMode="singleTask">
         </activity>
         <meta-data

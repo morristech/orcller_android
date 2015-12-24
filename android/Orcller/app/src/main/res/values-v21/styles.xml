@@ -5,4 +5,12 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="WhiteThemeAlertDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#555555</item>
+        <item name="android:textSize">13dp</item>
+        <item name="android:colorButtonNormal">#555555</item>
+    </style>
 </resources>

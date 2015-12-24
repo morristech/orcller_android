@@ -23,10 +23,10 @@ public class ListBaseItemView extends PSFrameLayout {
     public static final int LINE_TOP = 1 << 0;
     public static final int LINE_MIDDLE = 1 << 1;
     public static final int LINE_BOTTOM = 1 << 2;
-    private TextView titleTextView;
-    private TextView subtitleTextView;
+    protected TextView titleTextView;
+    protected TextView subtitleTextView;
     protected TextView detailTextView;
-    private Background background;
+    protected Background background;
 
     public ListBaseItemView(Context context) {
         super(context);
@@ -46,11 +46,8 @@ public class ListBaseItemView extends PSFrameLayout {
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        inflate(context, R.layout.itemview_list_base, this);
+        inflateLayout(context);
 
-        detailTextView = (TextView) findViewById(R.id.detailTextView);
-        titleTextView = (TextView) findViewById(R.id.titleTextView);
-        subtitleTextView = (TextView) findViewById(R.id.subtitleTextView);
         background = new Background(context);
 
         addView(background, 0);
@@ -71,6 +68,10 @@ public class ListBaseItemView extends PSFrameLayout {
 
     public void setDetailText(int textResId) {
         setDetailText(textResId > 0 ? Resources.getString(textResId) : null);
+    }
+
+    public void setDetailTextColor(int color) {
+        detailTextView.setTextColor(color);
     }
 
     public int getLineDirection() {
@@ -125,6 +126,18 @@ public class ListBaseItemView extends PSFrameLayout {
 
     public void setSubtitleText(int textResId) {
         setSubtitleText(textResId > 0 ? Resources.getString(textResId) : null);
+    }
+
+    // ================================================================================================
+    //  Protected
+    // ================================================================================================
+
+    protected void inflateLayout(Context context) {
+        inflate(context, R.layout.itemview_list_base, this);
+
+        detailTextView = (TextView) findViewById(R.id.detailTextView);
+        titleTextView = (TextView) findViewById(R.id.titleTextView);
+        subtitleTextView = (TextView) findViewById(R.id.subtitleTextView);
     }
 
     // ================================================================================================
