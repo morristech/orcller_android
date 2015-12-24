@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -37,12 +38,12 @@ import java.lang.reflect.Field;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psuikit.ext.PSView;
 import pisces.psuikit.itemview.ListBaseItemView;
 import pisces.psuikit.manager.ExceptionViewManager;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
-import pisces.psuikit.widget.PSButton;
 import retrofit.Call;
 
 /**
@@ -89,6 +90,7 @@ public class FindFriendsFragment extends MainTabFragment
         searchView = new SearchView(getContext());
         searchExceptionViewManager = new ExceptionViewManager(this);
 
+        View headerView = new View(getContext());
         int textViewId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
         EditText textView = (EditText) searchView.findViewById(textViewId);
 
@@ -99,6 +101,8 @@ public class FindFriendsFragment extends MainTabFragment
         } catch (Exception ignored) {
         }
 
+        headerView.setLayoutParams(new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(8)));
         textView.setHintTextColor(getContext().getResources().getColor(R.color.background_button_purple_disabled));
         textView.setTextColor(Color.WHITE);
         textView.setTextSize(13);
@@ -116,12 +120,14 @@ public class FindFriendsFragment extends MainTabFragment
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
         searchListView.setDelegate(this);
+        userListView.addHeaderView(headerView);
         userListView.setDelegate(this);
         searchView.setOnSearchClickListener(this);
         searchView.setOnCloseListener(this);
         searchView.setQueryHint(getString(R.string.m_hint_search_friend));
         searchView.setOnQueryTextListener(this);
         facebookItemView.setOnClickListener(this);
+
         SearchViewCompat.setInputType(searchView, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
         setHasOptionsMenu(true);
         EventBus.getDefault().register(this);

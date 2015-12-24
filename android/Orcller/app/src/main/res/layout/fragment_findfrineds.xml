@@ -15,7 +15,6 @@
             android:id="@+id/facebookItemView"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/background_ripple_lightgray"
             android:clickable="true"/>
 
