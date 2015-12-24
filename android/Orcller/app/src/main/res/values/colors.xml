@@ -27,8 +27,8 @@
     <color name="background_button_purple_disabled">#AD7EA3</color>
     <color name="background_gridview_album_create">#EFEFFF</color>
     <color name="background_pageprofile">#F8F8F8</color>
-    <color name="background_tabbar_main_normal">#444444</color>
-    <color name="background_tabbar_main_selected">#000000</color>
+    <color name="background_tabbar_main_normal">@android:color/transparent</color>
+    <color name="background_tabbar_main_selected">@android:color/transparent</color>
 
     <color name="border_hairline_gray">#DDDDDD</color>
     <color name="border_hairline_lightgray">#E8E7EE</color>
@@ -46,7 +46,8 @@
     <color name="icon_page_pressed">#999999</color>
     <color name="icon_star_selected">#FF8D27</color>
     <color name="icon_star_selected_pressed">#F2A725</color>
-    <color name="icon_tabbar_main_normal">#999999</color>
+    <color name="icon_tabbar_main_selected">@color/theme_purple_accent</color>
+    <color name="icon_tabbar_main_normal">#CCCCCC</color>
 
     <color name="tab_text_member_normal">#B4B4B4</color>
     <color name="tab_text_member_selected">#762866</color>

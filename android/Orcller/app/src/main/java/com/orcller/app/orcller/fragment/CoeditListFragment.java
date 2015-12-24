@@ -27,7 +27,6 @@ import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
@@ -90,8 +89,6 @@ public class CoeditListFragment extends MainTabFragment
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(container);
-
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
@@ -149,8 +146,14 @@ public class CoeditListFragment extends MainTabFragment
         if (invalidDataLoading())
             return;
 
-        if (isFirstLoading())
-            ProgressBarManager.show(container);
+        if (isFirstLoading()) {
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+        }
 
         loadError = null;
 

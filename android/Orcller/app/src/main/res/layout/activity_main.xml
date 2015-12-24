@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/PurpleTheme.Toolbar"/>
 
@@ -32,8 +31,7 @@
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="49dp"
-                    android:background="@drawable/background_bordered_white"
-                    android:elevation="2dp"
+                    android:background="@drawable/background_tabwidger_main"
                     android:divider="@null"/>
 
                 <FrameLayout

@@ -258,7 +258,12 @@ public class FindFriendsFragment extends MainTabFragment
         if (listView.equals(searchListView)) {
             ProgressBarManager.show(secondViewContainer);
         } else if (listView.equals(userListView) && listView.isFirstLoading()) {
-            ProgressBarManager.show(userListViewContainer);
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
         }
     }
 

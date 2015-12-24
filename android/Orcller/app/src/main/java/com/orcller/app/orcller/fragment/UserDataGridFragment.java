@@ -75,8 +75,6 @@ abstract public class UserDataGridFragment extends PSFragment
     public void onDestroyView() {
         super.onDestroyView();
 
-        ProgressBarManager.hide(container);
-
         userIdChanged = true;
         container = null;
         gridView = null;
@@ -164,19 +162,25 @@ abstract public class UserDataGridFragment extends PSFragment
      */
     public void onFailure(UserDataGridView gridView, Error error) {
         loadError = gridView.getItems().size() < 1 ? error : null;
-        ProgressBarManager.hide(container);
+        swipeRefreshLayout.setRefreshing(false);
         exceptionViewManager.validate();
     }
 
     public void onLoad(UserDataGridView gridView) {
         loadError = null;
 
-        if (gridView.isFirstLoading())
-            ProgressBarManager.show(container);
+        if (gridView.isFirstLoading()) {
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+        }
     }
 
     public void onLoadComplete(UserDataGridView gridView, ListEntity listEntity) {
-        ProgressBarManager.hide(container);
+        swipeRefreshLayout.setRefreshing(false);
         exceptionViewManager.validate();
     }
 

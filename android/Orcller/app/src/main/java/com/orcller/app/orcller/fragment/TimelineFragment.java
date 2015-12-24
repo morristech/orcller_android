@@ -37,7 +37,6 @@ import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
-import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.error.APIError;
 
@@ -50,10 +49,10 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSListView;
-import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
 import retrofit.Response;
@@ -106,7 +105,12 @@ public class TimelineFragment extends MainTabFragment
         newPostButton = (Button) view.findViewById(R.id.newPostButton);
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
+        View headerView = new View(getContext());
 
+        headerView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
+        headerView.setLayoutParams(new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(8)));
+        listView.addHeaderView(headerView);
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoTimeline, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
@@ -127,7 +131,7 @@ public class TimelineFragment extends MainTabFragment
         super.onDestroyView();
 
         EventBus.getDefault().unregister(this);
-        ProgressBarManager.hide();
+        swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setOnRefreshListener(null);
         listView.setOnItemClickListener(null);
         listView.setOnScrollListener(null);
@@ -142,8 +146,6 @@ public class TimelineFragment extends MainTabFragment
     @Override
     public void endDataLoading() {
         super.endDataLoading();
-
-        ProgressBarManager.hide(container);
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
@@ -215,7 +217,7 @@ public class TimelineFragment extends MainTabFragment
         } else if (event instanceof SharedObject.Event &&
                 SharedObject.Event.CHANGE_NEWS_COUNT.equals(((SharedObject.Event) event).getType())) {
 
-            if (getScrollPoint().y < 0 && SharedObject.get().getTimelineCount() > 0)
+            if (SharedObject.get().getTimelineCount() > 0)
                 newPostButton.setVisibility(View.VISIBLE);
         }
     }
@@ -403,8 +405,14 @@ public class TimelineFragment extends MainTabFragment
         if (invalidDataLoading())
             return;
 
-        if (isFirstLoading())
-            ProgressBarManager.show(container);
+        if (isFirstLoading()) {
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+        }
 
         loadError = null;
 

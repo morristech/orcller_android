@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">
         <bitmap android:src="@drawable/icon_tabbar_profile_normal"
-            android:tint="@android:color/white"/>
+            android:tint="@color/icon_tabbar_main_selected"/>
     </item>
     <item>
         <bitmap android:src="@drawable/icon_tabbar_profile_normal"

@@ -99,8 +99,6 @@ public class ActivityFragment extends MainTabFragment
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(container);
-
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
@@ -181,8 +179,14 @@ public class ActivityFragment extends MainTabFragment
         if (invalidDataLoading())
             return;
 
-        if (isFirstLoading())
-            ProgressBarManager.show(container);
+        if (isFirstLoading()) {
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+        }
 
         loadError = null;
 
