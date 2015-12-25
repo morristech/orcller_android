@@ -44,7 +44,9 @@ public class ApplicationFacade {
     // ================================================================================================
 
     public static void clear() {
-        EventBus.getDefault().unregister(uniqueInstance);
+        if (EventBus.getDefault().isRegistered(uniqueInstance))
+            EventBus.getDefault().unregister(uniqueInstance);
+
         ActivityManager.clear();
 
         uniqueInstance = null;
@@ -82,8 +84,10 @@ public class ApplicationFacade {
             }
         } else {
             FacebookSdk.sdkInitialize(Application.applicationContext());
-            EventBus.getDefault().register(this);
             DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
+
+            if (!EventBus.getDefault().isRegistered(uniqueInstance))
+                EventBus.getDefault().register(this);
 
             if (ApplicationLauncher.getDefault().initialized()) {
                 new Handler().postDelayed(new Runnable() {
