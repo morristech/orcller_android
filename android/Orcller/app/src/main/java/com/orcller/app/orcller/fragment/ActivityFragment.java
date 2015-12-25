@@ -28,6 +28,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -107,7 +108,7 @@ public class ActivityFragment extends MainTabFragment
 
     @Override
     public String getToolbarTitle() {
-        return getString(R.string.w_title_activity);
+        return Resources.getString(R.string.w_title_activity);
     }
 
     @Override

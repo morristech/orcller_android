@@ -21,6 +21,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.facade.ApplicationFacade;
 import com.orcller.app.orcller.fragment.MemberJoinFragment;
 import com.orcller.app.orcller.fragment.MemberLoginFragment;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
@@ -78,6 +79,7 @@ public class MemberActivity extends PSFragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        ApplicationFacade.clear();
         SoftKeyboardNotifier.getDefault().unregister(this);
         EventBus.getDefault().unregister(this);
         tabHost.setOnTabChangedListener(null);

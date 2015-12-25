@@ -75,8 +75,9 @@ public class ExceptionViewManager {
     public void removeAll() {
         for (ExceptionView view : views) {
             view.removeFromParent();
-            views.remove(view);
         }
+
+        views.clear();
     }
 
     public boolean validate() {

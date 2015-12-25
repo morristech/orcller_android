@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -97,7 +98,7 @@ public class CoeditListFragment extends MainTabFragment
 
     @Override
     public String getToolbarTitle() {
-        return getString(R.string.w_title_collaborations);
+        return Resources.getString(R.string.w_title_collaborations);
     }
 
     @Override

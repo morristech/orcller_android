@@ -38,6 +38,7 @@ import java.lang.reflect.Field;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psuikit.ext.PSView;
 import pisces.psuikit.itemview.ListBaseItemView;
@@ -102,7 +103,7 @@ public class FindFriendsFragment extends MainTabFragment
         }
 
         headerView.setLayoutParams(new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(8)));
+                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(5)));
         textView.setHintTextColor(getContext().getResources().getColor(R.color.background_button_purple_disabled));
         textView.setTextColor(Color.WHITE);
         textView.setTextSize(13);
@@ -149,7 +150,7 @@ public class FindFriendsFragment extends MainTabFragment
 
     @Override
     public String getToolbarTitle() {
-        return getString(R.string.w_title_find_friends);
+        return Resources.getString(R.string.w_title_find_friends);
     }
 
     @Override

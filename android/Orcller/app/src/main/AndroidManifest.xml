@@ -46,6 +46,14 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/PurpleTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="@string/host_main" android:scheme="@string/app_scheme" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -63,7 +71,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="member" android:path="/1" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_member" android:path="/1" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
 
@@ -110,7 +118,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="album" android:path="/2" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_album" android:path="/2" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
         <activity
@@ -128,7 +136,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="album" android:path="/1" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_album" android:path="/1" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
         <activity
@@ -177,7 +185,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="users" android:path="/1" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_users" android:path="/1" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
 
@@ -230,7 +238,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="@string/external_web" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_web" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
 
@@ -296,15 +304,15 @@
         </receiver>
 
         <service
-            android:name=".service.MyGcmListenerService"
-            android:exported="false" >
+            android:name=".service.GcmListenerService"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".service.MyInstanceIDListenerService"
-            android:exported="false" >
+            android:name=".service.InstanceIDListenerService"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>

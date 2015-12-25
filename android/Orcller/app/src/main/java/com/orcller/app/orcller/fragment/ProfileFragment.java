@@ -119,6 +119,9 @@ public class ProfileFragment extends MainTabFragment
         profileContentView.setVisibility(profileHearderView.isEditing() ? View.GONE : View.VISIBLE);
     }
 
+    public void onSyncModel() {
+    }
+
     /**
      * ProfileContentView.DataSource
      */

@@ -312,6 +312,9 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
                 @Override
                 public void run() {
                     modelChanged();
+
+                    if (delegate != null)
+                        delegate.onSyncModel();
                 }
             });
         }
@@ -321,7 +324,8 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
     //  Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onChangeState();
+        void onSyncModel();
     }
 }

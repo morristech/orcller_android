@@ -17,6 +17,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumFlipViewEvent;
+import com.orcller.app.orcller.facade.ApplicationFacade;
 import com.orcller.app.orcller.fragment.ActivityFragment;
 import com.orcller.app.orcller.fragment.CoeditListFragment;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
@@ -40,6 +41,7 @@ import pisces.psuikit.ext.PSViewPager;
 
 public class MainActivity extends PSActionBarActivity
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+    public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private static final int TAB_COUNT = 5;
     private Map<String, MainTabFragment> fragmentMap = new HashMap<>();
     private PagerAdapter pagerAdapter;
@@ -80,12 +82,19 @@ public class MainActivity extends PSActionBarActivity
 
         updateBadges();
         SharedObject.get().loadNewsCount();
+
+        int selectedIndex = getIntent().getIntExtra(SELECTED_INDEX_KEY, -1);
+        if (selectedIndex > -1 && selectedIndex != viewPager.getCurrentItem()) {
+            viewPager.setCurrentItem(selectedIndex);
+            getIntent().removeExtra(SELECTED_INDEX_KEY);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        ApplicationFacade.clear();
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
     }

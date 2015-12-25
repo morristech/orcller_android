@@ -14,6 +14,7 @@ import com.orcller.app.orcller.fragment.UserAlbumStarGridFragment;
 import com.orcller.app.orcller.fragment.UserDataGridFragment;
 import com.orcller.app.orcller.fragment.UserMediaGridFragment;
 import com.orcller.app.orcller.proxy.UserDataProxy;
+import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.ProfileContentView;
 import com.orcller.app.orcller.widget.ProfileHearderView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -79,23 +80,38 @@ public class ProfileActivity extends PSActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (User.isMe(userId)) {
+        if (model == null)
+            return false;
+
+        if (model.isMe()) {
             int res = profileHearderView.isEditing() ? R.menu.menu_save : R.menu.menu_profile;
             Application.getTopActivity().getMenuInflater().inflate(res, menu);
             return true;
         }
+
+        if (!model.isFollowing()) {
+            Application.getTopActivity().getMenuInflater().inflate(R.menu.menu_follow, menu);
+            return true;
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save:
-                profileHearderView.save();
+            case R.id.follow:
+                FollowButton button = new FollowButton(this);
+                button.setModel(model);
+                button.onClick(button);
                 return true;
 
             case R.id.options:
                 Application.startActivity(OptionsActivity.class);
+                return true;
+
+            case R.id.save:
+                profileHearderView.save();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,6 +143,11 @@ public class ProfileActivity extends PSActionBarActivity
         setToolbarTitle();
         invalidateOptionsMenu();
         profileContentView.setVisibility(profileHearderView.isEditing() ? View.GONE : View.VISIBLE);
+    }
+
+    public void onSyncModel() {
+        Log.d("onSyncModel");
+        invalidateOptionsMenu();
     }
 
     /**
@@ -166,6 +187,7 @@ public class ProfileActivity extends PSActionBarActivity
         profileHearderView.setModel(model);
         profileHearderView.setVisibility(View.VISIBLE);
         profileContentView.setVisibility(View.VISIBLE);
+        invalidateOptionsMenu();
     }
 
     protected List<Class<? extends UserDataGridFragment>> createFragments() {

@@ -3,14 +3,9 @@ package pisces.psuikit.ext;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.zip.Inflater;
 
 import pisces.psfoundation.utils.DataLoadValidator;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ExceptionViewManager;
 import pisces.psuikit.widget.ExceptionView;
 
@@ -48,8 +43,8 @@ public class PSFragment extends Fragment implements DataLoadValidator.Client, Ex
         super.onDestroyView();
 
         initializedSubviews = false;
-        dataLoadValidator = null;
-        exceptionViewManager = null;
+        dataLoadValidator.endDataLoading();
+        exceptionViewManager.clear();
     }
 
     // ================================================================================================

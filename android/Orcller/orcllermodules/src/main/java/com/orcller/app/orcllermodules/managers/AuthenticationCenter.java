@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.event.Event;
+import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.Log;
 import retrofit.Call;
@@ -36,7 +37,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 11/5/15.
  */
-public class AuthenticationCenter {
+public class AuthenticationCenter extends PSObject {
     private volatile static AuthenticationCenter uniqueInstance;
     private static final String FB_PROFILE_PARAM = "first_name,gender,id,link,locale,name,picture.width(800).height(800),timezone,updated_time,verified";
     private final String CACHED_SESSION_ENTITY_KEY = "kCachedSessionEntity";
@@ -200,7 +201,7 @@ public class AuthenticationCenter {
         });
     }
 
-    public void synchorinze() {
+    public void synchronize() {
         if (getCachedSessionToken() == null)
             return;
 
@@ -340,7 +341,6 @@ public class AuthenticationCenter {
                         handler.onComplete(null, APIError.create(APIError.APIErrorCodeUnknown, e.getMessage()));
                     }
                 } else {
-                    Log.d("response.body()", response.body(), response);
                     handler.onComplete(null, APIError.create(response.body()));
                 }
             }
@@ -444,7 +444,7 @@ public class AuthenticationCenter {
         if (entity != null) {
             setCachedSessionEntity(entity);
             loadCaches();
-            synchorinze();
+            synchronize();
         }
     }
 

@@ -108,7 +108,7 @@ public class PageListActivity extends PSActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (model.isMine() || selectedView != null && selectedView.getModel().isMine()) {
+        if (model != null && model.isMine() || selectedView != null && selectedView.getModel().isMine()) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.menu_pagelist, menu);
             return true;
@@ -128,6 +128,7 @@ public class PageListActivity extends PSActionBarActivity
                 break;
 
             case android.R.id.home:
+                Log.d("selectedView.isEditEnabled()", selectedView.isEditEnabled());
                 if (selectedView.isEditEnabled()) {
                     setEditEnabled();
                 } else {

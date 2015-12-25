@@ -1,47 +1,54 @@
 package com.orcller.app.orcller.facade;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
-import com.orcller.app.orcller.activity.OptionsActivity;
 import com.orcller.app.orcller.common.Const;
+import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.model.PushNotificationObject;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
-import com.orcller.app.orcllermodules.managers.GooglePlayServiceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
-import java.io.IOException;
-
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
+import pisces.psuikit.manager.ActivityManager;
 
 /**
  * Created by pisces on 11/28/15.
  */
 public class ApplicationFacade {
-    private static final String TAG = "ApplicationFacade";
     private static ApplicationFacade uniqueInstance;
     private boolean initialized;
     private Context context;
+    private PushNotificationObject pushNotificationObject;
 
     public ApplicationFacade() {
-        context = Application.applicationContext();
+        context = Application.getTopActivity();
     }
 
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public static void clear() {
+        EventBus.getDefault().unregister(uniqueInstance);
+        ActivityManager.clear();
+
+        uniqueInstance = null;
+    }
 
     public static ApplicationFacade getDefault() {
         if(uniqueInstance == null) {
@@ -54,35 +61,44 @@ public class ApplicationFacade {
         return uniqueInstance;
     }
 
-    public void onTokenRefresh() {
-        if (GooglePlayServiceManager.getDefault().checkPlayServices(context)) {
-            InstanceID instanceID = InstanceID.getInstance(context);
-            try {
-                synchronized (TAG) {
-                    String default_senderId = context.getString(R.string.gcm_defaultSenderId);
-                    String scope = GoogleCloudMessaging.INSTANCE_ID_SCOPE;
-                    String token = instanceID.getToken(default_senderId, scope, null);
-                    DeviceManager.getDefault().registerDeviceToken(token);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public boolean isInitialized() {
+        return initialized;
     }
 
-    public void run() {
-        if (!initialized) {
+    public void onTokenRefresh() {
+        DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId), true);
+    }
+
+    public void run(PushNotificationObject pushNotificationObject) {
+        this.pushNotificationObject = pushNotificationObject;
+
+        if (initialized) {
+            if (AuthenticationCenter.getDefault().hasSession() && ActivityManager.hasRunningActivity(MainActivity.class)) {
+                Activity activity = ActivityManager.getRunningActivity(MainActivity.class);
+                Intent intent = activity.getIntent();
+                putPushNotificationExtra(intent);
+                Application.moveToBack(activity);
+                SharedObject.get().loadNewsCountDireclty();
+            }
+        } else {
             FacebookSdk.sdkInitialize(Application.applicationContext());
             EventBus.getDefault().register(this);
-            initialized = true;
-        }
+            DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
 
-        if (ApplicationLauncher.getDefault().initialized()) {
-            startMainActivity();
-        } else {
-            ApplicationLauncher.getDefault()
-                    .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
-                    .launch();
+            if (ApplicationLauncher.getDefault().initialized()) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startMainActivity();
+                    }
+                }, 1000);
+            } else {
+                ApplicationLauncher.getDefault()
+                        .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
+                        .launch();
+            }
+
+            initialized = true;
         }
     }
 
@@ -114,10 +130,27 @@ public class ApplicationFacade {
     //  Private
     // ================================================================================================
 
+    private void putPushNotificationExtra(Intent intent) {
+        try {
+            Class aClass = Class.forName(intent.getComponent().getClassName());
+
+            if (pushNotificationObject != null && MainActivity.class.equals(aClass)) {
+                if (PushNotificationObject.Type.Album.equals(pushNotificationObject.type) ||
+                        PushNotificationObject.Type.Relationships.equals(pushNotificationObject.type))
+                    intent.putExtra(MainActivity.SELECTED_INDEX_KEY, 3);
+
+                pushNotificationObject = null;
+            }
+        } catch (ClassNotFoundException e) {
+        }
+    }
+
     private void startMainActivity() {
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
                 MainActivity.class : MemberActivity.class;
         Intent intent = new Intent(Application.applicationContext(), activityClass);
+
+        putPushNotificationExtra(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
     }

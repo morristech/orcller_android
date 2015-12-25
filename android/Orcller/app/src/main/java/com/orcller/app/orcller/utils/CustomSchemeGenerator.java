@@ -27,6 +27,7 @@ public class CustomSchemeGenerator {
         Album(Application.applicationContext().getString(R.string.host_album)),
         Coediting(Application.applicationContext().getString(R.string.host_coediting)),
         Feed(Application.applicationContext().getString(R.string.host_feed)),
+        Main(Application.applicationContext().getString(R.string.host_main)),
         Member(Application.applicationContext().getString(R.string.host_member)),
         Notification(Application.applicationContext().getString(R.string.host_notification)),
         Options(Application.applicationContext().getString(R.string.host_options)),
@@ -164,8 +165,18 @@ public class CustomSchemeGenerator {
         }
     }
 
+    public static String create(Category category) {
+        return create(category, null);
+    }
+
+    public static String create(Category category, Map<String, String> param) {
+        return create(category, -1, param);
+    }
+
     public static String create(Category category, int viewType, Map<String, String> param) {
-        return SCHEMA + "://" + category.getValue() + "/" + String.valueOf(viewType) + "?" + MapUtils.toQueryString(param);
+        return SCHEMA + "://" + category.getValue() +
+                (viewType > -1 ? "/" + String.valueOf(viewType) : "") +
+                (param != null ? "?" + MapUtils.toQueryString(param) : "");
     }
 
     public static CharSequence createContributorsHtml(User master, List users) {

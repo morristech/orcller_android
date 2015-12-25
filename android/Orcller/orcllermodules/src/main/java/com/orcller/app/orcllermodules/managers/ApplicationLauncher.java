@@ -15,7 +15,6 @@ import com.squareup.okhttp.Request;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Retrofit;
@@ -44,6 +43,10 @@ public class ApplicationLauncher {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public static void clear() {
+        uniqueInstance = null;
+    }
 
     public static ApplicationLauncher getDefault() {
         if(uniqueInstance == null) {
@@ -166,7 +169,7 @@ public class ApplicationLauncher {
     private void initComplete() {
         initialized = true;
 
-        AuthenticationCenter.getDefault().synchorinze();
+        AuthenticationCenter.getDefault().synchronize();
         EventBus.getDefault().post(new ApplicationInitialized());
     }
 

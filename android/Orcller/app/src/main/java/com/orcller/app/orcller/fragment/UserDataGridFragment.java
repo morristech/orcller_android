@@ -76,8 +76,6 @@ abstract public class UserDataGridFragment extends PSFragment
         super.onDestroyView();
 
         userIdChanged = true;
-        container = null;
-        gridView = null;
     }
 
     @Override
