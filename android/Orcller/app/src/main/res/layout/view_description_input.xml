@@ -26,5 +26,5 @@
         android:textColor="@android:color/black"
         android:textColorHint="@color/textcolor_textview_hint"
         android:textCursorDrawable="@drawable/cursor_member"
-        android:textSize="13dp"/>
+        android:textSize="14dp"/>
 </LinearLayout>
