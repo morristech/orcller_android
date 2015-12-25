@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -18,7 +19,9 @@ import com.orcller.app.orcller.proxy.CoeditDataProxy;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
@@ -99,6 +102,15 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     public void onClick(View v) {
         if (model == null)
             return;
+
+        if (!Application.isNetworkConnected()) {
+            Toast.makeText(
+                    Application.getTopActivity(),
+                    Resources.getString(R.string.m_exception_title_error_network_long),
+                    Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
 
         if (model instanceof Album) {
             if (album().contributors.contributor_status == Contributor.Status.Ask.value())

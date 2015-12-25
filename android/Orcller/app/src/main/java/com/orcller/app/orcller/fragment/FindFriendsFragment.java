@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.share.model.AppInviteContent;
@@ -165,10 +166,17 @@ public class FindFriendsFragment extends MainTabFragment
 
     @Override
     public void onClick(ExceptionView view) {
-        if (PSView.isShown(secondViewContainer))
+        if (PSView.isShown(secondViewContainer)) {
             searchListView.reload();
-        else
+        } else {
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
             userListView.reload();
+        }
     }
 
     @Override
@@ -177,8 +185,19 @@ public class FindFriendsFragment extends MainTabFragment
             int index = searchExceptionViewManager.getViewIndex(view);
             if (index == 0)
                 return loadError == null && searchListView.getItems().size() < 1;
-            if (index == 1)
-                return !Application.isNetworkConnected();
+            if (index == 1) {
+                if (Application.isNetworkConnected())
+                    return false;
+                if (searchListView.getItems().size() > 0) {
+                    Toast.makeText(
+                            Application.getTopActivity(),
+                            Resources.getString(R.string.m_exception_title_error_network_long),
+                            Toast.LENGTH_LONG)
+                            .show();
+                    return false;
+                }
+                return true;
+            }
             if (index == 2)
                 return loadError != null;
             return false;
@@ -187,8 +206,20 @@ public class FindFriendsFragment extends MainTabFragment
         int index = exceptionViewManager.getViewIndex(view);
         if (index == 0)
             return loadError == null && userListView.getItems().size() < 1;
-        if (index == 1)
-            return !Application.isNetworkConnected();
+
+        if (index == 1) {
+            if (Application.isNetworkConnected())
+                return false;
+            if (userListView.getItems().size() > 0) {
+                Toast.makeText(
+                        Application.getTopActivity(),
+                        Resources.getString(R.string.m_exception_title_error_network_long),
+                        Toast.LENGTH_LONG)
+                        .show();
+                return false;
+            }
+            return true;
+        }
         if (index == 2)
             return loadError != null;
         return false;

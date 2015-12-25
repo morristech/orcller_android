@@ -3,6 +3,7 @@ package com.orcller.app.orcller.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -15,7 +16,8 @@ import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.event.Event;
+import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
@@ -62,15 +64,47 @@ public class FollowButton extends PSButton implements View.OnClickListener {
         setDrawableLeft(R.drawable.icon_follow);
         setDrawablePadding(GraphicUtils.convertDpToPixel(5));
         setOnClickListener(this);
+        EventBus.getDefault().register(this);
     }
 
     // ================================================================================================
     //  Listener
     // ================================================================================================
 
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(final Object event) {
+        if (event instanceof RelationshipsEvent) {
+            RelationshipsEvent casted = (RelationshipsEvent) event;
+
+            if (RelationshipsEvent.FOLLOW.equals(casted.getType()) ||
+                    RelationshipsEvent.UNFOLLOW.equals(casted.getType())) {
+                BaseUser user = (BaseUser) casted.getObject();
+
+                if (!equals(casted.getTarget()) && user.user_uid == model.user_uid) {
+                    model.following = user.following;
+                    modelChanged();
+                }
+            }
+        }
+    }
+
+    /**
+     * View.OnClickListener
+     */
     public void onClick(View v) {
         if (model == null)
             return;
+
+        if (!Application.isNetworkConnected()) {
+            Toast.makeText(
+                    Application.getTopActivity(),
+                    Resources.getString(R.string.m_exception_title_error_network_long),
+                    Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
 
         if (model.isFollowing()) {
             unfollow();
@@ -113,6 +147,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
     }
 
     private Callback<ApiRelationships.FollowRes> getCallback(final Runnable retry, final String eventType) {
+        final Object target = this;
         final Runnable error = new Runnable() {
             @Override
             public void run() {
@@ -137,7 +172,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
                         clonedUser.user_options.follow_count = response.body().entity.follow_count;
 
                         AuthenticationCenter.getDefault().synchorinzeUser(clonedUser);
-                        EventBus.getDefault().post(new RelationshipsEvent(eventType, getModel()));
+                        EventBus.getDefault().post(new RelationshipsEvent(eventType, target, getModel()));
                     } catch (CloneNotSupportedException e) {
                         if (BuildConfig.DEBUG)
                             Log.e(e.getMessage(), e);

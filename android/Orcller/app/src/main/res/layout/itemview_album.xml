@@ -29,7 +29,7 @@
         android:autoLink="web"
         android:textColor="@android:color/black"
         android:textColorLink="@color/textcolor_dark_blue"
-        android:textSize="13dp"
+        android:textSize="14dp"
         android:visibility="gone" />
 
     <LinearLayout

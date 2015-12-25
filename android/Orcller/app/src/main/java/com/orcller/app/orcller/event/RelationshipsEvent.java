@@ -9,7 +9,7 @@ public class RelationshipsEvent extends Event {
     public static final String FOLLOW = "follow";
     public static final String UNFOLLOW = "unfollow";
 
-    public RelationshipsEvent(String type, Object target) {
-        super(type, target);
+    public RelationshipsEvent(String type, Object target, Object object) {
+        super(type, target, object);
     }
 }

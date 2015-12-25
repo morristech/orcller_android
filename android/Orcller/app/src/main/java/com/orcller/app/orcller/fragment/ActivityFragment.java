@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -117,20 +118,43 @@ public class ActivityFragment extends MainTabFragment
     }
 
     @Override
+    public void scrollToTop() {
+        if (listView != null)
+            listView.setSelection(0);
+    }
+
+    @Override
     public void onClick(ExceptionView view) {
-        int index = exceptionViewManager.getViewIndex(view);
-        if (index > 0)
-            onRefresh();
+        exceptionViewManager.clear();
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
+        onRefresh();
     }
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        int index = exceptionViewManager.getViewIndex(view);
-        if (index == 0)
+        if (ExceptionViewFactory.Type.NoActivity.equals(view.getTag()))
             return loadError == null && items.size() < 1;
-        if (index == 1)
-            return !Application.isNetworkConnected();
-        if (index == 2)
+
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag())) {
+            if (Application.isNetworkConnected())
+                return false;
+            if (items.size() > 0) {
+                Toast.makeText(
+                        Application.getTopActivity(),
+                        Resources.getString(R.string.m_exception_title_error_network_long),
+                        Toast.LENGTH_LONG)
+                        .show();
+                return false;
+            }
+            return true;
+        }
+
+        if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
             return loadError != null;
         return false;
     }

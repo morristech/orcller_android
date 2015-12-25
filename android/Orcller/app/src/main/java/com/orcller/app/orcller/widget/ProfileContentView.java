@@ -6,11 +6,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TabHost;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.UserDataGridFragment;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
@@ -120,6 +122,22 @@ public class ProfileContentView extends PSTabHost
     // ================================================================================================
     //  Listener
     // ================================================================================================
+
+    /**
+     * View.OnTouchListener
+     */
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            int position = Integer.valueOf((String) v.getTag());
+
+            if (position == viewPager.getCurrentItem()) {
+                MainTabFragment fragment = (MainTabFragment) pagerAdapter.getItem(position);
+                fragment.scrollToTop();
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * ViewPager.OnPageChangeListener

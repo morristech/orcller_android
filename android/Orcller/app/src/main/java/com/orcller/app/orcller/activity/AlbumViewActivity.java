@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -260,7 +261,7 @@ public class AlbumViewActivity extends PSActionBarActivity
 
     private void modelChanged() {
         albumOptionsManager = new AlbumOptionsManager(this, model);
-        getSupportActionBar().setTitle(model.name);
+        getSupportActionBar().setTitle("model.namemodel.namemodel.namemodel.namemodel.namemodel.namemodel.namemodel.name");
         albumItemView.setModel(model);
         commentListView.setModel(model);
         commentInputView.setModel(model.comments, model.id);

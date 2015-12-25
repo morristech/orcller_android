@@ -113,11 +113,14 @@ public class PageListActivity extends PSActionBarActivity
             inflater.inflate(R.menu.menu_pagelist, menu);
             return true;
         }
-        return false;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (model == null || selectedView == null)
+            return super.onOptionsItemSelected(item);
+
         switch (item.getItemId()) {
             case R.id.edit:
                 if (selectedView.isEditEnabled()) {
@@ -125,21 +128,20 @@ public class PageListActivity extends PSActionBarActivity
                 } else {
                     setEditEnabled();
                 }
-                break;
+                return true;
 
             case android.R.id.home:
-                Log.d("selectedView.isEditEnabled()", selectedView.isEditEnabled());
                 if (selectedView.isEditEnabled()) {
                     setEditEnabled();
                 } else {
                     onBackPressed();
                 }
-                break;
+                return true;
 
             default:
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -303,6 +305,7 @@ public class PageListActivity extends PSActionBarActivity
             if (viewHolder != null) {
                 selectedView = (PageScrollView) viewHolder.itemView;
                 commentInputView.setModel(selectedView.getModel().comments, selectedView.getModel().id);
+                updateTitle();
                 invalidateOptionsMenu();
             }
 
@@ -357,7 +360,6 @@ public class PageListActivity extends PSActionBarActivity
         }
 
         recyclerView.scrollToPosition(selectedIndex);
-        updateTitle();
     }
 
     private void load(final long pageId) {

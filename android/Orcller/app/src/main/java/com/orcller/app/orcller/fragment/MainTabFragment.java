@@ -36,6 +36,9 @@ abstract public class MainTabFragment extends PSFragment {
         invalidateProperties();
     }
 
+    public void scrollToTop() {
+    }
+
     // ================================================================================================
     //  Protected
     // ================================================================================================

@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TabHost;
 
@@ -40,7 +41,7 @@ import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSViewPager;
 
 public class MainActivity extends PSActionBarActivity
-        implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+        implements TabHost.OnTabChangeListener, View.OnTouchListener, ViewPager.OnPageChangeListener {
     public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private static final int TAB_COUNT = 5;
     private Map<String, MainTabFragment> fragmentMap = new HashMap<>();
@@ -149,6 +150,22 @@ public class MainActivity extends PSActionBarActivity
     }
 
     /**
+     * View.OnTouchListener
+     */
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            int position = Integer.valueOf((String) v.getTag());
+
+            if (position == viewPager.getCurrentItem()) {
+                MainTabFragment fragment = (MainTabFragment) pagerAdapter.getItem(position);
+                fragment.scrollToTop();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * ViewPager.OnPageChangeListener
      */
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -195,6 +212,8 @@ public class MainActivity extends PSActionBarActivity
             indicator.setBackgroundResource(R.drawable.background_ripple_tabbar_main);
             indicator.setDrawableLeft(getTabIconRes(i));
             indicator.setDrawableBound(getTabIconBound(i));
+            indicator.setOnTouchListener(this);
+            indicator.setTag(String.valueOf(i));
             tabHost.addTab(tabSpec);
         }
     }

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
@@ -16,6 +17,7 @@ import com.orcller.app.orcller.widget.UserDataGridView;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.model.Resources;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -80,16 +82,38 @@ abstract public class UserDataGridFragment extends PSFragment
 
     @Override
     public void onClick(ExceptionView view) {
-        if (gridView.getItems().size() > 1)
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag()) ||
+                (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))) {
+            exceptionViewManager.clear();
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
             gridView.reload();
+        }
     }
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag()))
-            return !Application.isNetworkConnected();
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag())) {
+            if (Application.isNetworkConnected())
+                return false;
+            if (gridView.getItems().size() > 0) {
+                Toast.makeText(
+                        Application.getTopActivity(),
+                        Resources.getString(R.string.m_exception_title_error_network_long),
+                        Toast.LENGTH_LONG)
+                        .show();
+                return false;
+            }
+            return true;
+        }
+
         if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
             return loadError != null;
+
         return false;
     }
 
@@ -117,6 +141,11 @@ abstract public class UserDataGridFragment extends PSFragment
         userIdChanged = true;
 
         invalidateProperties();
+    }
+
+    public void scrollToTop() {
+        if (gridView != null)
+            gridView.setSelection(0);
     }
 
     // ================================================================================================

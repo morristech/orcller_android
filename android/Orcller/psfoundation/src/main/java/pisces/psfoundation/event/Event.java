@@ -1,9 +1,11 @@
 package pisces.psfoundation.event;
 
+import java.io.Serializable;
+
 /**
  * Created by pisces on 11/25/15.
  */
-public class Event {
+public class Event implements Serializable {
     private String type;
     private Object target;
     private Object object;

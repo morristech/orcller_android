@@ -104,6 +104,7 @@ public class ProfileActivity extends PSActionBarActivity
                 FollowButton button = new FollowButton(this);
                 button.setModel(model);
                 button.onClick(button);
+                invalidateOptionsMenu();
                 return true;
 
             case R.id.options:
@@ -146,8 +147,6 @@ public class ProfileActivity extends PSActionBarActivity
     }
 
     public void onSyncModel() {
-        Log.d("onSyncModel");
-        invalidateOptionsMenu();
     }
 
     /**

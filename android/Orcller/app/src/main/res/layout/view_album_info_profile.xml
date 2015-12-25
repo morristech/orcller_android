@@ -37,7 +37,7 @@
                     android:singleLine="true"
                     android:textColorLink="@color/textcolor_dark_blue"
                     android:textStyle="bold"
-                    android:textSize="13dp"/>
+                    android:textSize="15dp"/>
             </FrameLayout>
 
             <TextView
@@ -47,7 +47,7 @@
                 android:layout_gravity="right|center_vertical"
                 android:layout_marginLeft="15dp"
                 android:textColor="@color/textcolor_pageprofile_date"
-                android:textSize="11dp"/>
+                android:textSize="12dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -62,7 +62,7 @@
                 android:layout_gravity="center_vertical"
                 android:singleLine="true"
                 android:textColor="@android:color/black"
-                android:textSize="13dp"/>
+                android:textSize="14dp"/>
 
             <ImageView
                 android:id="@+id/optionsIcon"

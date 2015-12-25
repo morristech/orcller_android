@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -40,6 +41,11 @@ import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.error.APIError;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -65,6 +71,7 @@ public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final int LIST_COUNT = 20;
+    private static final File CACHED_TIMELINE = new File(SharedObject.DATA_DIR, "timeline.list");
     private boolean isCreateButtonAnimating;
     private int scrollState;
     private Point startPoint;
@@ -117,6 +124,7 @@ public class TimelineFragment extends MainTabFragment
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
+        loadCachedTimeline();
         listView.setAdapter(listAdapter);
         listView.setItemsCanFocus(true);
         listView.setOnItemClickListener(this);
@@ -160,28 +168,55 @@ public class TimelineFragment extends MainTabFragment
 
     @Override
     public void onClick(ExceptionView view) {
-        int index = exceptionViewManager.getViewIndex(view);
-        if (index == 0)
+        if (ExceptionViewFactory.Type.NoTimeline.equals(view.getTag())) {
             AlbumCreateActivity.show();
-        else
+        } else {
+            exceptionViewManager.clear();
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
             reload();
+        }
     }
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        int index = exceptionViewManager.getViewIndex(view);
-        if (index == 0)
+        if (ExceptionViewFactory.Type.NoTimeline.equals(view.getTag()))
             return loadError == null && items.size() < 1;
-        if (index == 1)
-            return !Application.isNetworkConnected();
-        if (index == 2)
+
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag())) {
+            if (Application.isNetworkConnected())
+                return false;
+            if (items.size() > 0) {
+                Toast.makeText(
+                        Application.getTopActivity(),
+                        Resources.getString(R.string.m_exception_title_error_network_long),
+                        Toast.LENGTH_LONG)
+                        .show();
+                return false;
+            }
+            return true;
+        }
+
+        if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
             return loadError != null;
+
         return false;
     }
 
     @Override
     protected void startFragment() {
-        reload();
+        if (isFirstLoading() || items.size() < 1)
+            reload();
+    }
+
+    @Override
+    public void scrollToTop() {
+        if (listView != null)
+            listView.setSelection(0);
     }
 
     // ================================================================================================
@@ -229,7 +264,7 @@ public class TimelineFragment extends MainTabFragment
         if (createButton.equals(v)) {
             AlbumCreateActivity.show();
         } else if (newPostButton.equals(v)) {
-            listView.smoothScrollToPosition(0);
+            listView.setSelection(0);
             reload();
         }
     }
@@ -304,6 +339,28 @@ public class TimelineFragment extends MainTabFragment
             items.add(0, item);
             listAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void cacheTimeline() {
+        Application.runOnBackgroundThread(new Runnable() {
+            @Override
+            public void run() {
+                if (items.size() > 0) {
+                    try {
+                        FileOutputStream fos = new FileOutputStream(CACHED_TIMELINE);
+                        ObjectOutputStream os = new ObjectOutputStream(fos);
+                        os.writeObject(items);
+                        os.close();
+                        fos.close();
+                    } catch (Exception e) {
+                        if (BuildConfig.DEBUG)
+                            Log.e(e.getMessage());
+                    }
+                } else if (CACHED_TIMELINE.exists()) {
+                    CACHED_TIMELINE.delete();
+                }
+            }
+        });
     }
 
     private void deleteItem(Object item) {
@@ -430,6 +487,7 @@ public class TimelineFragment extends MainTabFragment
                     TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
                     SharedObject.get().setTimelineCount(0);
                     MediaManager.getDefault().continueUploading();
+                    cacheTimeline();
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
@@ -455,6 +513,22 @@ public class TimelineFragment extends MainTabFragment
     private void loadAfter() {
         if (lastEntity != null && lastEntity.after != null)
             load(lastEntity.after);
+    }
+
+    private void loadCachedTimeline() {
+        if (CACHED_TIMELINE.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(CACHED_TIMELINE);
+                ObjectInputStream is = new ObjectInputStream(fis);
+                ArrayList<Album> result = (ArrayList<Album>) is.readObject();
+                is.close();
+                fis.close();
+                items.addAll(result);
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    Log.e(e.getMessage());
+            }
+        }
     }
 
     private void loadMore(int position) {

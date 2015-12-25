@@ -214,6 +214,7 @@
     <string name="m_exception_desc_no_timeline">Try create a new album and share to friends.</string>
     <string name="m_exception_title_dose_not_exist_album">Oops! The album does not exists.</string>
     <string name="m_exception_title_error_network">Network status is not smooth.</string>
+    <string name="m_exception_title_error_network_long">Network status is not smooth.\nPlease try again after checking the connection status.</string>
     <string name="m_exception_title_error_unknown">Oops! An error occurred.</string>
     <string name="m_exception_title_no_activity">There is no activity.</string>
     <string name="m_exception_title_no_album">No album created yet.</string>
