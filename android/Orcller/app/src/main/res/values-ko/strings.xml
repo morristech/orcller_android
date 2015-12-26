@@ -188,7 +188,7 @@
     <string name="m_exception_title_no_list">결과가 없습니다.</string>
     <string name="m_exception_title_no_permissions">앨범에 대한 권한이 없습니다.</string>
     <string name="m_exception_title_no_photos">앨범에 사용된 사진이 없습니다.</string>
-    <string name="m_exception_title_no_recommendation">추천된 친구가 없습니다.</string>
+    <string name="m_exception_title_no_recommendation">추천 친구가 없습니다.</string>
     <string name="m_exception_title_no_star">별표로 지정된 앨범이 없습니다.</string>
     <string name="m_exception_title_no_timeline">타임라인에 표시할 앨범이 없습니다.</string>
 </resources>

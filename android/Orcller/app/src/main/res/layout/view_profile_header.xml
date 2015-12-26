@@ -75,8 +75,7 @@
             android:background="@drawable/background_ripple_button_profile_header"
             android:text="@string/w_following"
             android:textColor="@drawable/color_button_profile_header"
-            android:textSize="12dp"
-            android:textStyle="bold"
+            android:textSize="13dp"
             android:textAllCaps="false"/>
 
         <Button
@@ -87,8 +86,7 @@
             android:background="@drawable/background_ripple_button_profile_header"
             android:text="@string/w_followers"
             android:textColor="@drawable/color_button_profile_header"
-            android:textSize="12dp"
-            android:textStyle="bold"
+            android:textSize="13dp"
             android:textAllCaps="false"/>
     </LinearLayout>
 </pisces.psuikit.ext.PSLinearLayout>

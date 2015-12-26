@@ -274,9 +274,10 @@ public class TimelineFragment extends MainTabFragment
      * AdapterView.OnItemClickListener
      */
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Object item = items.get(position);
-        if (item instanceof Album)
+        Object item = items.get(position - 1);
+        if (item instanceof Album) {
             AlbumViewActivity.show(((Album) item).id, false);
+        }
     }
 
     /**

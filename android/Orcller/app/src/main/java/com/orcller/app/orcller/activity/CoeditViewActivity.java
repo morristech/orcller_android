@@ -225,7 +225,7 @@ public class CoeditViewActivity extends PSActionBarActivity
 
     private void modelChanged() {
         albumOptionsManager = new AlbumOptionsManager(this, model);
-        getSupportActionBar().setTitle(model.name + model.name + model.name + model.name);
+        getSupportActionBar().setTitle(model.name);
         albumItemView.setModel(model);
         contributorListView.setDataType(model.isMine() ? ContributorListView.STANDBY : ContributorListView.CONTRIBUTORS);
         contributorListView.setModel(model);

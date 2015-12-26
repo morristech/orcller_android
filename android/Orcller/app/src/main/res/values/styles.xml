@@ -71,7 +71,8 @@
     </style>
     <style name="PurpleTheme.Toolbar.TitleTextStyle"
         parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">17.5dp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="WhiteTheme" parent="Theme.AppCompat.Light.NoActionBar">

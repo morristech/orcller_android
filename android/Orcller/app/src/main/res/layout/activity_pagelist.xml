@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@android:color/black"
-            android:textSize="18dp"/>
+            android:textSize="19dp"/>
     </android.support.v7.widget.Toolbar>
 
     <RelativeLayout
