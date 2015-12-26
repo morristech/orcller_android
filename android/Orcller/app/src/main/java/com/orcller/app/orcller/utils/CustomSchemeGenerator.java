@@ -197,11 +197,10 @@ public class CustomSchemeGenerator {
 
     public static String createNotificationSenders(List<User> senders, int limit) {
         String[] links = new String[Math.min(limit, senders.size())];
-        String honorific = Resources.getString(R.string.w_user_honorific);
         int i = 0;
 
         for (User sender : senders) {
-            links[i++] = createLinkTag(sender) + honorific;
+            links[i++] = createLinkTag(sender);
 
             if (i >= limit)
                 break;

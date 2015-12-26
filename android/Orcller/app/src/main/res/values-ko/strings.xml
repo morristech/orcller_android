@@ -152,7 +152,7 @@
     <string name="m_validate_user_nickname_length">닉네임은 최대 16자 이하여야 합니다!</string>
 
     <string name="m_noty_album_create">이 앨범을 만들었습니다.</string>
-    <string name="m_noty_album_modify">이 앨범을 내용을 변경했습니다.</string>
+    <string name="m_noty_album_modify">이 앨범을 변경했습니다.</string>
     <string name="m_noty_collaboration_accept_invite">이 앨범 공동편집 초대를 수락했습니다.</string>
     <string name="m_noty_collaboration_accept_ask">이 앨범 공동편집 참여 요청을 수락했습니다.</string>
     <string name="m_noty_collaboration_ask">이 앨범 공동편집 참여를 요청했습니다.</string>
@@ -160,11 +160,11 @@
     <string name="m_noty_collaboration_cancel_invite">이 앨범 공동편집 초대를 취소했습니다.</string>
     <string name="m_noty_collaboration_invite">이 앨범 공동편집에 초대했습니다.</string>
     <string name="m_noty_comment">이 앨범에 댓글을 달았습니다.</string>
-    <string name="m_noty_star">이 앨범에 별표 표시 했습니다.</string>
+    <string name="m_noty_star">이 앨범을 별표로 지정했습니다.</string>
     <string name="m_noty_start_follow">이 당신을 팔로우하기 시작했습니다.</string>
-    <string name="m_noty_heart">이 앨범에 하트를 보냈습니다.</string>
+    <string name="m_noty_heart">이 앨범에 하트를 표시했습니다.</string>
     <string name="m_noty_page_comment">이 앨범 페이지에 댓글을 달았습니다.</string>
-    <string name="m_noty_page_heart">이 앨범에 페이지에 하트를 보냈습니다.</string>
+    <string name="m_noty_page_heart">이 앨범 페이지에 하트를 표시했습니다.</string>
 
     <string name="m_exception_desc_dose_not_exist_album">앨범이 삭제되었을 수 있습니다.</string>
     <string name="m_exception_desc_error_network">연결 상태를 확인한 후 다시 시도하세요.</string>

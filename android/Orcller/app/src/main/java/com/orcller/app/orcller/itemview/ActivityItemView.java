@@ -141,7 +141,7 @@ public class ActivityItemView extends PSLinearLayout {
         String senders = isDuplicatedType() ?
                 CustomSchemeGenerator.createNotificationSenders(model.senders.data, 3) :
                 CustomSchemeGenerator.createLinkTag(model.senders.getFirstUser());
-        String content = senders + " " + Resources.getString(getContentResId());
+        String content = senders + Resources.getString(R.string.w_user_honorific) + Resources.getString(getContentResId());
 
         Glide.clear(contentImageView);
         userPictureView.setModel(model.senders.getFirstUser());
