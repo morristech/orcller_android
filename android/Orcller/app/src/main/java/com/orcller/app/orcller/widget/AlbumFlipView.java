@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.AlbumFlipViewEvent;
@@ -298,8 +300,10 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         final AlbumFlipView self = this;
+        ProgressBar progressBar = ProgressBarManager.show(this);
 
-        ProgressBarManager.show(this);
+        if (progressBar != null)
+            progressBar.setProgressBackgroundTintList(getResources().getColorStateList(android.R.color.white));
 
         if (delegate != null)
             delegate.onStartLoadRemainPages(this);

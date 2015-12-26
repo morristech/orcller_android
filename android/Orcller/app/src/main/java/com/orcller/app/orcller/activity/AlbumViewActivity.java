@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -190,6 +191,19 @@ public class AlbumViewActivity extends PSActionBarActivity
         albumItemView.updateDisplayList();
     }
 
+    public void onFailure(CommentListView listView, Error error) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
+    }
+
+    public void onLoad(CommentListView listView) {
+        if (listView.isFirstLoading())
+            ProgressBarManager.show((ViewGroup) listView.getParent());
+    }
+
+    public void onLoadComplete(CommentListView listView) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
+    }
+
     /**
      * CommentInputView.Delegate
      */
@@ -261,7 +275,7 @@ public class AlbumViewActivity extends PSActionBarActivity
 
     private void modelChanged() {
         albumOptionsManager = new AlbumOptionsManager(this, model);
-        getSupportActionBar().setTitle("model.namemodel.namemodel.namemodel.namemodel.namemodel.namemodel.namemodel.name");
+        getSupportActionBar().setTitle(model.name);
         albumItemView.setModel(model);
         commentListView.setModel(model);
         commentInputView.setModel(model.comments, model.id);

@@ -26,6 +26,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <SurfaceView
+            android:layout_width="0px"
+            android:layout_height="0px"
+            android:visibility="gone" />
+
         <pisces.psuikit.ext.PSRecyclerViewPager
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"

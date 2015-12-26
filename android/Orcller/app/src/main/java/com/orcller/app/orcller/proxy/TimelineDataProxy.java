@@ -95,6 +95,6 @@ public class TimelineDataProxy extends AbstractDataProxy {
         Call<ApiResult> hideAlbum(@Path("albumId") long albumId);
 
         @GET("newsfeed")
-        Call<ApiUsers.AlbumListRes> list(@Query("limit") int limit, @Query("after") String after);
+        Call<ApiUsers.AlbumListRes> list(@Query("limit") int limit, @Query(value = "after", encoded = true) String after);
     }
 }

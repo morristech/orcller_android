@@ -18,6 +18,11 @@
         android:theme="@style/PurpleTheme.Toolbar"
         app:titleTextAppearance="@style/PurpleTheme.Toolbar.TitleTextStyle"/>
 
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -35,11 +40,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <com.orcller.app.orcller.widget.CommentListView
-                    android:id="@+id/commentListView"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"/>
+                    android:layout_height="wrap_content">
+                    <com.orcller.app.orcller.widget.CommentListView
+                        android:id="@+id/commentListView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"/>
+                </FrameLayout>
             </LinearLayout>
         </pisces.psuikit.ext.PSScrollView>
 

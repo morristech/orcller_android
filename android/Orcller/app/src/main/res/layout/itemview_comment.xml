@@ -30,7 +30,7 @@
                 android:singleLine="true"
                 android:textColorLink="@color/textcolor_dark_blue"
                 android:textStyle="bold"
-                android:textSize="13dp"/>
+                android:textSize="14dp"/>
 
             <TextView
                 android:id="@+id/commentTextView"
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:textColor="@color/textcolor_pageprofile_date"
-                android:textSize="12dp"/>
+                android:textSize="13dp"/>
 
             <TextView
                 android:id="@+id/dateTextView"

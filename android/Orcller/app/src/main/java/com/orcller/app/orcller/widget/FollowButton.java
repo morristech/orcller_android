@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
 
         textView.setTextColor(getResources().getColorStateList(R.drawable.color_button_follow));
         textView.setTextSize(12);
+        textView.setTypeface(Typeface.DEFAULT_BOLD);
         textView.setPadding(0, pd, 0, pd);
         setBackgroundResource(R.drawable.background_ripple_followbutton);
         setDrawableLeft(R.drawable.icon_follow);

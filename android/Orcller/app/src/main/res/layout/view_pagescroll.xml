@@ -65,11 +65,15 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/m_hint_papge_description"/>
 
-            <com.orcller.app.orcller.widget.PageCommentListView
-                android:id="@+id/commentListView"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"/>
+                android:layout_height="wrap_content">
+                <com.orcller.app.orcller.widget.PageCommentListView
+                    android:id="@+id/commentListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"/>
+            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

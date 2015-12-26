@@ -168,8 +168,6 @@ public class MediaUploadUnit implements Serializable {
 
         EventBus.getDefault().post(new Event(Event.COMPLETE_UPLOADING, this));
 
-        Log.d("completionState", completionState);
-
         if (completionState.equals(CompletionState.Creation)) {
             requestAlbumCreation();
         } else if (completionState.equals(CompletionState.Modification)) {

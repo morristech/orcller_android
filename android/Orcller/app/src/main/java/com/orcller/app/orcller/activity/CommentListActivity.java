@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -64,7 +66,7 @@ public class CommentListActivity extends PSActionBarActivity
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) commentListView.getLayoutParams();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) commentListView.getLayoutParams();
         params.bottomMargin = commentInputView.getVisibility() == View.VISIBLE ? commentInputView.getHeight() : 0;
     }
 
@@ -100,6 +102,19 @@ public class CommentListActivity extends PSActionBarActivity
         model.comments.total_count = comments.total_count;
 
         updateTitle();
+    }
+
+    public void onFailure(CommentListView listView, Error error) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
+    }
+
+    public void onLoad(CommentListView listView) {
+        if (listView.isFirstLoading())
+            ProgressBarManager.show((ViewGroup) listView.getParent());
+    }
+
+    public void onLoadComplete(CommentListView listView) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
     }
 
     /**

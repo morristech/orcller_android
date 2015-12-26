@@ -16,6 +16,7 @@ import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.Favorites;
 import com.orcller.app.orcller.model.Likes;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 
@@ -180,8 +181,12 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         if (ObjectUtils.equals(model, this.model))
             return;
 
+        if (this.model != null)
+            this.model.pages.deleteHeavyData();
+
         this.model = model;
 
+        AlbumDataProxy.getDefault().remainPages(model);
         modelChanged();
     }
 

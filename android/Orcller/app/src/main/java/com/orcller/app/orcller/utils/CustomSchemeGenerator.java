@@ -24,15 +24,15 @@ public class CustomSchemeGenerator {
     public static final String SCHEMA = Application.applicationContext().getString(R.string.app_scheme);
 
     public enum Category {
-        Album(Application.applicationContext().getString(R.string.host_album)),
-        Coediting(Application.applicationContext().getString(R.string.host_coediting)),
-        Feed(Application.applicationContext().getString(R.string.host_feed)),
-        Main(Application.applicationContext().getString(R.string.host_main)),
-        Member(Application.applicationContext().getString(R.string.host_member)),
-        Notification(Application.applicationContext().getString(R.string.host_notification)),
-        Options(Application.applicationContext().getString(R.string.host_options)),
-        Relationships(Application.applicationContext().getString(R.string.host_relationships)),
-        Users(Application.applicationContext().getString(R.string.host_users)),
+        Album(Resources.getString(R.string.host_album)),
+        Coediting(Resources.getString(R.string.host_coediting)),
+        Feed(Resources.getString(R.string.host_feed)),
+        Main(Resources.getString(R.string.host_main)),
+        Member(Resources.getString(R.string.host_member)),
+        Notification(Resources.getString(R.string.host_notification)),
+        Options(Resources.getString(R.string.host_options)),
+        Relationships(Resources.getString(R.string.host_relationships)),
+        Users(Resources.getString(R.string.host_users)),
         Web(Application.applicationContext().getString(R.string.host_web));
 
         private String value;
@@ -41,7 +41,7 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
-        public String getValue() {
+        public String value() {
             return value;
         }
     }
@@ -174,7 +174,7 @@ public class CustomSchemeGenerator {
     }
 
     public static String create(Category category, int viewType, Map<String, String> param) {
-        return SCHEMA + "://" + category.getValue() +
+        return SCHEMA + "://" + category.value() +
                 (viewType > -1 ? "/" + String.valueOf(viewType) : "") +
                 (param != null ? "?" + MapUtils.toQueryString(param) : "");
     }
@@ -243,6 +243,6 @@ public class CustomSchemeGenerator {
     }
 
     public static String createWebLink(Map<String, String> param) {
-        return SCHEMA + "://" + Category.Web.toString() + "?" + MapUtils.toQueryString(param);
+        return create(Category.Web, -1, param);
     }
 }

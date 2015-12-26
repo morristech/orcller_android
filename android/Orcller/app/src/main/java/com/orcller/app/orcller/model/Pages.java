@@ -5,7 +5,10 @@ package com.orcller.app.orcller.model;
  */
 public class Pages extends ListEntity<Page> {
     public void deleteHeavyData() {
-
+        if (data != null && data.size() > 3) {
+            data.subList(3, data.size() - 1).clear();
+            count = data.size();
+        }
     }
 
     public Page getPageAtIndex(int index) {

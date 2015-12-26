@@ -333,7 +333,7 @@ public class AlbumOptionsManager extends PSObject {
         } else {
             inflater.inflate(R.menu.menu_album_view, menu);
             MenuItem item = menu.findItem(R.id.hideAll);
-            item.setTitle(item.getTitle() + " " + album.user_id);
+            item.setTitle(item.getTitle());
         }
     }
 

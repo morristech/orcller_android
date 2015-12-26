@@ -62,8 +62,8 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         controlButton.setVisibility(GONE);
 
         videoView = new PSVideoView(getContext());
-        videoView.setBackgroundResource(android.R.color.transparent);
-        videoView.setVisibility(GONE);
+        videoView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        videoView.setVisibility(INVISIBLE);
         videoView.setPlayStateListener(this);
 
         addView(videoView);
@@ -79,14 +79,16 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     @Override
     protected void loadImages() {
         allowsShowProgressBar = true;
-        controlButton.setVisibility(getModel() != null ? VISIBLE : GONE);
-        videoView.setVideoPath(getVideo().videos.standard_resolution.url);
-
         final MediaView self = this;
+
+        controlButton.setVisibility(GONE);
+        videoView.setVideoPath(getVideo().videos.standard_resolution.url);
 
         loadImages(new CompleteHandler() {
             @Override
             public void onComplete() {
+                controlButton.setVisibility(VISIBLE);
+
                 if (delegate != null)
                     delegate.onCompleteImageLoad(self);
             }

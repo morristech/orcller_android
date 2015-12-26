@@ -20,11 +20,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.orcller.app.orcller.widget.CommentListView
-            android:id="@+id/commentListView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:listCountAtOnce="20"/>
+            android:layout_height="match_parent">
+            <com.orcller.app.orcller.widget.CommentListView
+                android:id="@+id/commentListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:listCountAtOnce="20"/>
+        </FrameLayout>
 
         <com.orcller.app.orcller.widget.CommentInputView
             android:id="@+id/commentInputView"

@@ -6,7 +6,7 @@
         app:showAsAction="never" />
 
     <item android:id="@+id/hideAll"
-        android:title="@string/w_hide_all_albums_of"
+        android:title="@string/w_hide_all_albums"
         app:showAsAction="never" />
 
     <item android:id="@+id/report"

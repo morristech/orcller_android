@@ -4,9 +4,6 @@
     <string name="app_name">Orcller</string>
     <string name="app_scheme">orcller</string>
     <string name="domain">https://www.orcller.com</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">470721986412373</string>
     <string name="facebook_invite_preview_image_path">resources/site/images/preview_fbinvite.png</string>
     <string name="facebook_invite_url">https://fb.me/548899468594624</string>
@@ -66,7 +63,7 @@
     <string name="w_follow">Follow</string>
     <string name="w_followers">Followers</string>
     <string name="w_following">Following</string>
-    <string name="w_hide_all_albums_of">Hide all Albums of</string>
+    <string name="w_hide_all_albums">Hide all Albums</string>
     <string name="w_hide_album">Hide Album</string>
     <string name="w_heart">Heart</string>
     <string name="w_hearts">Hearts</string>
@@ -91,6 +88,7 @@
     <string name="w_order">Order</string>
     <string name="w_password">Password</string>
     <string name="w_people">people</string>
+    <string name="w_photo_gallery">Photo Gallery</string>
     <string name="w_popular">Popular</string>
     <string name="w_post">Post</string>
     <string name="w_posting">Posting</string>
@@ -172,8 +170,6 @@
     <string name="m_fail_change">"It failed to save changes.\nPlease try again."</string>
     <string name="m_fail_common">It failed to request.\nPlease try again.</string>
     <string name="m_fail_comment">It failed to post a comment.\nPlease try again.</string>
-    <string name="m_fail_connection_retry">No connection available. Will retry your post.</string>
-    <string name="m_fail_error_retry">"An error has occurred. Will retry your post."</string>
     <string name="m_fail_save_user_picture">It failed to save the picture.\nPlease try again.</string>
     <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
     <string name="m_warn_album_permission">If you set to private,\nAlbum collaborating will be blocked.\n\nDo you want to change anyway?</string>

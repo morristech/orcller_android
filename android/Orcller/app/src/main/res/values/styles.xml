@@ -72,7 +72,6 @@
     <style name="PurpleTheme.Toolbar.TitleTextStyle"
         parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
         <item name="android:textSize">18dp</item>
-        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="WhiteTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -99,6 +98,7 @@
     <style name="CommonAlertDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:colorAccent">@color/theme_lightgray_toolbar_control</item>
         <item name="android:textColor">#555555</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:minWidth">200dp</item>
     </style>
 </resources>

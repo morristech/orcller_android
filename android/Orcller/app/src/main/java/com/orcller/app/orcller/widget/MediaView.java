@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -55,6 +56,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     private boolean clickEnabled;
     private boolean scaleAspectFill = true;
     private int imageLoadType;
+    private String originImageUrl;
     protected Point imageSize;
     private Drawable placeholder;
     private Media model;
@@ -144,11 +146,12 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         if (ObjectUtils.equals(this.model, model))
             return;
 
-        EventBus.getDefault().unregister(this);
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
 
         this.model = model;
 
-        if (this.model != null)
+        if (this.model != null && !EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
 
         modelChanged();
@@ -240,8 +243,6 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     }
 
     protected void onStartImageLoad() {
-        Glide.clear(imageView);
-
         if (delegate != null)
             delegate.onStartImageLoad(this);
     }
@@ -262,7 +263,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         return (imageLoadType & ImageLoadType.Thumbnail.value()) == ImageLoadType.Thumbnail.value();
     }
 
-    private void loadImage(Image image, final CompleteHandler completeHandler) {
+    private void loadImage(final Image image, final CompleteHandler completeHandler) {
         if (TextUtils.isEmpty(image.url)) {
             completeHandler.onError();
             return;
@@ -286,12 +287,18 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
             }
         };
 
+        if (image.url.equals(originImageUrl)) {
+            handler.onComplete();
+            return;
+        }
+
         try {
             Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
+
+            Glide.clear(imageView);
             Glide.with(getContext())
                     .load(source)
                     .placeholder(placeholder)
-                    .dontAnimate()
                     .override(imageSize.x, imageSize.y)
                     .listener(new RequestListener<Object, GlideDrawable>() {
                         @Override
@@ -308,16 +315,20 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
                         public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             onCompleteImageLoad(resource);
 
+                            originImageUrl = image.url;
+
                             if (resource != null) {
                                 handler.onComplete();
                             } else {
                                 onError();
                                 handler.onError();
                             }
+
                             return true;
                         }
                     })
                     .into(imageView);
+
         } catch (Exception e) {
             handler.onError();
         }

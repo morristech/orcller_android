@@ -15,6 +15,7 @@ import com.orcller.app.orcller.model.Comment;
 import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
+import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import java.util.ArrayList;
@@ -229,6 +230,11 @@ public class CommentListView extends PSListView
         if (invalidDataLoading())
             return;
 
+        if (delegate != null)
+            delegate.onLoad(this);
+
+        final CommentListView target = this;
+
         AlbumDataProxy.getDefault().enqueueCall(
                 createCommentsCall(listCountAtOnce, after),
                 new Callback<ApiAlbum.CommentsRes>() {
@@ -254,14 +260,23 @@ public class CommentListView extends PSListView
                                 @Override
                                 public void run() {
                                     endDataLoading();
+
+                                    if (delegate != null)
+                                        delegate.onLoadComplete(target);
+
                                     listAdapter.notifyDataSetChanged();
                                     performChange();
                                     setHeaderView();
                                 }
                             });
                         } else {
-                            if (DEBUG)
-                                e("Api Error", response.body());
+                            if (BuildConfig.DEBUG)
+                                Log.e("Api Error", response.body());
+
+                            endDataLoading();
+
+                            if (delegate != null)
+                                delegate.onFailure(target, new APIError(response.body()));
                         }
                     }
 
@@ -271,6 +286,9 @@ public class CommentListView extends PSListView
                             Log.e("onFailure", t);
 
                         endDataLoading();
+
+                        if (delegate != null)
+                            delegate.onFailure(target, new Error(t.getMessage()));
                     }
                 });
     }
@@ -358,5 +376,8 @@ public class CommentListView extends PSListView
 
     public interface Delegate {
         void onChange(Comments comments);
+        void onFailure(CommentListView listView, Error error);
+        void onLoad(CommentListView listView);
+        void onLoadComplete(CommentListView listView);
     }
 }

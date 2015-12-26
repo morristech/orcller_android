@@ -75,6 +75,6 @@ public class ActivityDataProxy extends AbstractDataProxy {
 
     public interface Service {
         @GET("notification")
-        Call<ApiNotification.NotificationListRes> list(@Query("limit") int limit, @Query("after") String after);
+        Call<ApiNotification.NotificationListRes> list(@Query("limit") int limit, @Query(value = "after", encoded = true) String after);
     }
 }

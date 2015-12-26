@@ -100,6 +100,8 @@ public class AlbumCreateActivity extends PSActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_album_create);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle(getString(R.string.w_title_new_album));
 
         rootLayout = (LinearLayout) findViewById(R.id.linearLayout);
         spinnerContainer = (FrameLayout) findViewById(R.id.spinnerContainer);
@@ -115,13 +117,10 @@ public class AlbumCreateActivity extends PSActionBarActivity
         defaultButton = (PSButton) findViewById(R.id.defaultButton);
         deleteButton = (PSButton) findViewById(R.id.deleteButton);
         validator = new Validator(this);
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.public_options, R.layout.spinner_permission);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getString(R.string.w_title_new_album));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         albumFlipView.setAllowsShowPageCount(false);
         setListeners();

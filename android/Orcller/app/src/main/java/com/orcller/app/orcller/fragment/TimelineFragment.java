@@ -30,8 +30,10 @@ import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
+import com.orcller.app.orcller.manager.ModelFileCacheManager;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiUsers;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.proxy.TimelineDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
@@ -71,7 +73,6 @@ public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final int LIST_COUNT = 20;
-    private static final File CACHED_TIMELINE = new File(SharedObject.DATA_DIR, "timeline.list");
     private boolean isCreateButtonAnimating;
     private int scrollState;
     private Point startPoint;
@@ -113,6 +114,7 @@ public class TimelineFragment extends MainTabFragment
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
         View headerView = new View(getContext());
+        items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
 
         headerView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
         headerView.setLayoutParams(new AbsListView.LayoutParams(
@@ -124,7 +126,6 @@ public class TimelineFragment extends MainTabFragment
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
-        loadCachedTimeline();
         listView.setAdapter(listAdapter);
         listView.setItemsCanFocus(true);
         listView.setOnItemClickListener(this);
@@ -341,28 +342,6 @@ public class TimelineFragment extends MainTabFragment
         }
     }
 
-    public void cacheTimeline() {
-        Application.runOnBackgroundThread(new Runnable() {
-            @Override
-            public void run() {
-                if (items.size() > 0) {
-                    try {
-                        FileOutputStream fos = new FileOutputStream(CACHED_TIMELINE);
-                        ObjectOutputStream os = new ObjectOutputStream(fos);
-                        os.writeObject(items);
-                        os.close();
-                        fos.close();
-                    } catch (Exception e) {
-                        if (BuildConfig.DEBUG)
-                            Log.e(e.getMessage());
-                    }
-                } else if (CACHED_TIMELINE.exists()) {
-                    CACHED_TIMELINE.delete();
-                }
-            }
-        });
-    }
-
     private void deleteItem(Object item) {
         if (items.contains(item)) {
             items.remove(item);
@@ -477,17 +456,26 @@ public class TimelineFragment extends MainTabFragment
             @Override
             public void onResponse(final Response<ApiUsers.AlbumListRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    if (after == null)
-                        items.clear();
+                    Application.run(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (after == null)
+                                items.clear();
 
-                    lastEntity = response.body().entity;
-
-                    items.addAll(lastEntity.data);
-                    listAdapter.notifyDataSetChanged();
-                    TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
-                    SharedObject.get().setTimelineCount(0);
-                    MediaManager.getDefault().continueUploading();
-                    cacheTimeline();
+                            lastEntity = response.body().entity;
+                            items.addAll(lastEntity.data);
+                            AlbumDataProxy.getDefault().clearCacheAfterCompare(lastEntity);
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            listAdapter.notifyDataSetChanged();
+                            TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
+                            SharedObject.get().setTimelineCount(0);
+                            MediaManager.getDefault().continueUploading();
+                            ModelFileCacheManager.save(ModelFileCacheManager.Type.Timeline, items);
+                        }
+                    });
                 } else {
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
@@ -513,22 +501,6 @@ public class TimelineFragment extends MainTabFragment
     private void loadAfter() {
         if (lastEntity != null && lastEntity.after != null)
             load(lastEntity.after);
-    }
-
-    private void loadCachedTimeline() {
-        if (CACHED_TIMELINE.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(CACHED_TIMELINE);
-                ObjectInputStream is = new ObjectInputStream(fis);
-                ArrayList<Album> result = (ArrayList<Album>) is.readObject();
-                is.close();
-                fis.close();
-                items.addAll(result);
-            } catch (Exception e) {
-                if (BuildConfig.DEBUG)
-                    Log.e(e.getMessage());
-            }
-        }
     }
 
     private void loadMore(int position) {

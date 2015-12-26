@@ -8,6 +8,7 @@ import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.Pages;
 import com.orcller.app.orcller.model.api.ApiAlbum;
+import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
@@ -35,8 +36,8 @@ import retrofit.http.Query;
  */
 public class AlbumDataProxy extends AbstractDataProxy {
     private static AlbumDataProxy uniqueInstance;
-    private Map<String, Pages> cachedPagesMap = new HashMap<String, Pages>();
-    private Map<String, Album> remainPageRequestMap = new HashMap<String, Album>();
+    private Map<String, CacheObject> cachedPagesMap = new HashMap<>();
+    private Map<String, String> remainPageRequestMap = new HashMap<>();
 
     // ================================================================================================
     //  Overridden: AbstractDataProxy
@@ -79,6 +80,23 @@ public class AlbumDataProxy extends AbstractDataProxy {
         cachedPagesMap.remove(String.valueOf(albumId));
     }
 
+    public void clearCacheAfterCompare(ApiUsers.AlbumList list) {
+        for (Album album : list.data) {
+            clearCacheAfterCompare(album);
+        }
+    }
+
+    public void clearCacheAfterCompare(Album album) {
+        String key = String.valueOf(album.id);
+
+        if (cachedPagesMap.containsKey(key)) {
+            CacheObject object = cachedPagesMap.get(key);
+
+            if (object.album_updated_time != album.updated_time)
+                clearCache(album.id);
+        }
+    }
+
     public void clearCaches() {
         cachedPagesMap.clear();
     }
@@ -87,16 +105,8 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().comments(albumId, limit, prev), callback);
     }
 
-    public void commentsOfPage(long pageId, int limit, String prev, Callback<ApiAlbum.CommentsRes> callback) {
-        enqueueCall(service().commentsOfPage(pageId, limit, prev), callback);
-    }
-
     public void comment(long albumId, String message, Callback<ApiAlbum.CommentsRes> callback) {
         enqueueCall(service().comment(albumId, message), callback);
-    }
-
-    public void commentOfPage(long pageId, String message, Callback<ApiAlbum.CommentsRes> callback) {
-        enqueueCall(service().commentOfPage(pageId, message), callback);
     }
 
     public void create(Album album, Callback<ApiAlbum.AlbumRes> callback) {
@@ -136,12 +146,12 @@ public class AlbumDataProxy extends AbstractDataProxy {
         enqueueCall(service().likes(albumId, limit, after), callback);
     }
 
-    public void likesOfPage(long pageId, int limit, String after, Callback<ApiAlbum.LikesRes> callback) {
-        enqueueCall(service().likesOfPage(pageId, limit, after), callback);
-    }
-
     public void pages(long albumId, int limit, String after, Callback<ApiAlbum.PagesRes> callback) {
         enqueueCall(service().pages(albumId, limit, after), callback);
+    }
+
+    public void remainPages(final Album album) {
+        remainPages(album, null);
     }
 
     public void remainPages(final Album album, final CompleteHandler completeHandler) {
@@ -154,8 +164,8 @@ public class AlbumDataProxy extends AbstractDataProxy {
             }
         };
 
-        if (cachedPagesMap.containsKey(key)) {
-            appendPages(album, cachedPagesMap.get(key), onComplete);
+        if (cachedPagesMap.containsKey(key) && completeHandler != null) {
+            appendPages(album, cachedPagesMap.get(key).pages, onComplete);
             return;
         }
 
@@ -165,7 +175,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
             return;
         }
 
-        remainPageRequestMap.put(key, album);
+        remainPageRequestMap.put(key, key);
 
         final Call<ApiAlbum.PagesRes> call = service().pages(album.id, 0, album.pages.after);
         enqueueCall(call, new Callback<ApiAlbum.PagesRes>() {
@@ -173,14 +183,14 @@ public class AlbumDataProxy extends AbstractDataProxy {
             public void onResponse(Response<ApiAlbum.PagesRes> response, Retrofit retrofit) {
                 remainPageRequestMap.remove(key);
 
-                if (response.isSuccess()) {
+                if (response.isSuccess() && response.body().isSuccess()) {
                     ApiAlbum.PagesRes result = response.body();
 
-                    if (response.isSuccess()) {
-                        cachedPagesMap.put(key, result.entity);
+                    cachedPagesMap.put(key, new CacheObject(album.updated_time, result.entity));
+
+                    if (completeHandler != null)
                         appendPages(album, result.entity, onComplete);
-                        return;
-                    }
+                    return;
                 }
 
                 if (completeHandler != null)
@@ -211,14 +221,6 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
     public void viewByPageId(long pageId, Callback<ApiAlbum.AlbumRes> callback) {
         enqueueCall(service().viewByPageId(pageId), callback);
-    }
-
-    public void uncomment(long albumId, long commentId, Callback<ApiResult> callback) {
-        enqueueCall(service().uncomment(albumId, commentId), callback);
-    }
-
-    public void uncommentOfPage(long pageId, long commentId, Callback<ApiResult> callback) {
-        enqueueCall(service().uncommentOfPage(pageId, commentId), callback);
     }
 
     public void update(Album album, Callback<ApiAlbum.AlbumRes> callback) {
@@ -352,6 +354,20 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
         @POST("page/{pageId}")
         Call<ApiResult> updatePage(@Path("pageId") long pageId, @Body Page page);
+    }
+
+    // ================================================================================================
+    //  Class: CacheObject
+    // ================================================================================================
+
+    private class CacheObject {
+        public long album_updated_time;
+        public Pages pages;
+
+        public CacheObject(long album_updated_time, Pages pages) {
+            this.album_updated_time = album_updated_time;
+            this.pages = pages;
+        }
     }
 
     // ================================================================================================

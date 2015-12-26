@@ -17,6 +17,11 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/LightGrayTheme.Toolbar"/>
 
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone" />
+
     <FrameLayout
         android:id="@+id/spinnerContainer"
         android:layout_width="match_parent"
@@ -100,7 +105,7 @@
                 android:text="@string/w_add"
                 android:textColor="@drawable/textcolor_imagepicker_select_button"
                 android:textStyle="bold"
-                android:textSize="14dp"/>
+                android:textSize="15dp"/>
 
             <pisces.psuikit.widget.PSButton
                 android:id="@+id/orderButton"

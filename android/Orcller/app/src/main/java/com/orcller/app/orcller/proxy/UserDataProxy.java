@@ -104,7 +104,7 @@ public class UserDataProxy extends AbstractDataProxy {
 
         @GET("{userId}/coediting")
         Call<ApiUsers.CoeditListRes> coediting(
-                @Path("userId") long userId, @Query("limit") int limit, @Query("after") String after);
+                @Path("userId") long userId, @Query("limit") int limit, @Query(value = "after", encoded = true) String after);
 
         @GET("{userId}/count")
         Call<ApiUsers.CountRes> count(@Path("userId") long userId);

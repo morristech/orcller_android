@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -16,6 +17,7 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
+import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.PSButton;
 
 /**
@@ -107,6 +109,19 @@ public class PageScrollView extends PSLinearLayout
         model.comments.total_count = comments.total_count;
 
         updateButtons();
+    }
+
+    public void onFailure(CommentListView listView, Error error) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
+    }
+
+    public void onLoad(CommentListView listView) {
+        if (listView.isFirstLoading())
+            ProgressBarManager.show((ViewGroup) listView.getParent());
+    }
+
+    public void onLoadComplete(CommentListView listView) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
     }
 
     /**

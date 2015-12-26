@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="public_options">
-        <item>Public</item>
-        <item>Open to Followers</item>
-        <item>Private</item>
+        <item>@string/w_public</item>
+        <item>@string/w_open_to_followers</item>
+        <item>@string/w_private</item>
     </string-array>
 
     <string-array name="add_dialog_items">
-        <item>Photo Gallery</item>
-        <item>Facebook</item>
-        <item>Instagram</item>
+        <item>@string/w_photo_gallery</item>
+        <item>@string/w_facebook</item>
+        <item>@string/w_instagram</item>
     </string-array>
 </resources>
