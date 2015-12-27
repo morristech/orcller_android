@@ -43,11 +43,6 @@ import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.error.APIError;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -85,9 +80,11 @@ public class TimelineFragment extends MainTabFragment
     private FrameLayout container;
     private Button newPostButton;
     private ListAdapter listAdapter;
+    private View listHeaderView;
     private PSListView listView;
     private FloatingActionButton createButton;
     private AlbumFlipView selectedAlbumFlipView;
+    private AlbumItemView slideShowTargetItemView;
 
     public TimelineFragment() {
         super();
@@ -113,13 +110,13 @@ public class TimelineFragment extends MainTabFragment
         newPostButton = (Button) view.findViewById(R.id.newPostButton);
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
-        View headerView = new View(getContext());
+        listHeaderView = new View(getContext());
         items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
 
-        headerView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
-        headerView.setLayoutParams(new AbsListView.LayoutParams(
+        listHeaderView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
+        listHeaderView.setLayoutParams(new AbsListView.LayoutParams(
                 AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(5)));
-        listView.addHeaderView(headerView);
+        listView.addHeaderView(listHeaderView);
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoTimeline, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
@@ -294,6 +291,8 @@ public class TimelineFragment extends MainTabFragment
     }
 
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        updateSlideShowItemView();
+
         if (scrollState == SCROLL_STATE_FLING && startPoint != null) {
             int dy = startPoint.y - getScrollPoint().y;
             if (dy > 0) {
@@ -470,6 +469,7 @@ public class TimelineFragment extends MainTabFragment
                     }, new Runnable() {
                         @Override
                         public void run() {
+                            pauseSlideShow();
                             listAdapter.notifyDataSetChanged();
                             TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
                             SharedObject.get().setTimelineCount(0);
@@ -511,6 +511,13 @@ public class TimelineFragment extends MainTabFragment
             loadAfter();
     }
 
+    private void pauseSlideShow() {
+        if (slideShowTargetItemView != null) {
+            slideShowTargetItemView.getAlbumFlipView().pause();
+            slideShowTargetItemView = null;
+        }
+    }
+
     private void reload() {
         newPostButton.setVisibility(View.GONE);
         load(null);
@@ -549,6 +556,38 @@ public class TimelineFragment extends MainTabFragment
                     }
                 })
                 .start();
+    }
+
+    private void updateSlideShowItemView() {
+        if (items.size() < 1 || !SharedObject.get().isAllowsAutoSlide())
+            return;
+
+        if (listHeaderView.equals(listView.getChildAt(0))) {
+            updateSlideShowItemView(listView.getChildAt(1));
+            return;
+        }
+
+        if (listView.getChildAt(0) instanceof AlbumItemView) {
+            AlbumItemView firstView = (AlbumItemView) listView.getChildAt(0);
+            int top = firstView.getAlbumInfoProfileView().getHeight() + firstView.getAlbumFlipView().getHeight()/2;
+            int first =0;
+            if (firstView.getTop() < -top)
+                first++;
+            int last = listView.getChildCount() - 1;
+            if (listView.getChildAt(last).getBottom() > listView.getHeight())
+                last--;
+
+            updateSlideShowItemView(listView.getChildAt(first));
+        }
+    }
+
+    private void updateSlideShowItemView(View view) {
+        if (view != null && view instanceof AlbumItemView && !view.equals(slideShowTargetItemView)) {
+            pauseSlideShow();
+
+            slideShowTargetItemView = (AlbumItemView) view;
+            slideShowTargetItemView.getAlbumFlipView().play();
+        }
     }
 
     // ================================================================================================

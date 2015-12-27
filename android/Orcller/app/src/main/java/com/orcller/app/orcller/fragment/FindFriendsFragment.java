@@ -131,7 +131,6 @@ public class FindFriendsFragment extends MainTabFragment
         facebookItemView.setOnClickListener(this);
 
         SearchViewCompat.setInputType(searchView, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
-        setHasOptionsMenu(true);
         EventBus.getDefault().register(this);
     }
 
@@ -239,6 +238,7 @@ public class FindFriendsFragment extends MainTabFragment
             if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 searchView.setQuery("", false);
                 searchView.setIconified(true);
+                getActionBar().setDisplayShowTitleEnabled(true);
             }
         }
     }
@@ -252,6 +252,7 @@ public class FindFriendsFragment extends MainTabFragment
         } else {
             firstViewContainer.setVisibility(View.GONE);
             secondViewContainer.setVisibility(View.VISIBLE);
+            getActionBar().setDisplayShowTitleEnabled(false);
         }
     }
 

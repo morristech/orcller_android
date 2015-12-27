@@ -17,6 +17,7 @@ import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.model.api.ApiCoedit;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.CoeditDataProxy;
+import com.orcller.app.orcllermodules.error.APIError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class ContributorListView extends PSListView implements CoeditButton.Dele
     private Album model;
     private Contributors lastEntity;
     private ListAdapter listAdapter;
+    private Delegate delegate;
 
     public ContributorListView(Context context) {
         super(context);
@@ -86,6 +88,14 @@ public class ContributorListView extends PSListView implements CoeditButton.Dele
 
     public Album getModel() {
         return model;
+    }
+
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
     }
 
     public void setModel(Album model) {
@@ -154,12 +164,20 @@ public class ContributorListView extends PSListView implements CoeditButton.Dele
     }
 
     private void call(Call<ApiCoedit.ContributorsRes> call) {
+        if (delegate != null)
+            delegate.onLoad(this);
+
+        final ContributorListView self = this;
+
         CoeditDataProxy.getDefault().enqueueCall(call, new Callback<ApiCoedit.ContributorsRes>() {
             @Override
             public void onResponse(final Response<ApiCoedit.ContributorsRes> response, Retrofit retrofit) {
                 endDataLoading();
 
                 if (response.isSuccess() && response.body().isSuccess()) {
+                    if (delegate != null)
+                        delegate.onLoadComplete(self);
+
                     lastEntity = response.body().entity;
 
                     if (dataType == STANDBY)
@@ -169,6 +187,9 @@ public class ContributorListView extends PSListView implements CoeditButton.Dele
                 } else {
                     if (DEBUG)
                         e("Api Error", response.body());
+
+                    if (delegate != null)
+                        delegate.onFailure(self, new APIError(response.body()));
                 }
             }
 
@@ -178,6 +199,9 @@ public class ContributorListView extends PSListView implements CoeditButton.Dele
                     Log.e("onFailure", t);
 
                 endDataLoading();
+
+                if (delegate != null)
+                    delegate.onFailure(self, new Error(t.getMessage()));
             }
         });
     }
@@ -305,5 +329,15 @@ public class ContributorListView extends PSListView implements CoeditButton.Dele
             else
                 itemView.setHeaderText(null);
         }
+    }
+
+    // ================================================================================================
+    //  Interface: Delegate
+    // ================================================================================================
+
+    public interface Delegate {
+        void onFailure(ContributorListView listView, Error error);
+        void onLoad(ContributorListView listView);
+        void onLoadComplete(ContributorListView listView);
     }
 }

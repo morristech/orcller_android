@@ -321,6 +321,7 @@ public class MainActivity extends PSActionBarActivity
                     fragment = fragmentMap.get(key);
                 } else {
                     fragment = (MainTabFragment) fragmentClass.newInstance();
+                    fragment.setActionBar(getSupportActionBar());
                     fragmentMap.put(key, fragment);
                 }
 

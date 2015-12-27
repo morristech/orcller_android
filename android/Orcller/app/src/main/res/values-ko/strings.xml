@@ -135,7 +135,7 @@
     </string>
     <string name="m_complete_change">변경이 완료되었습니다.</string>
     <string name="m_complete_report_send">신고 접수가 완료되었습니다.\n감사합니다.</string>
-    <string name="m_confirm_album_delete">변경된 내용이 있습니다.\n정말로 이 화면을 벗어나시겠습니까?</string>
+    <string name="m_confirm_album_delete">정말로 앨범을 삭제하시겠습니까?</string>
     <string name="m_fail_album_delete">앨범 삭제에 실패하였습니다.\n다시 시도해 주세요.</string>
     <string name="m_fail_change">"변경 내용 저장에 실패하였습니다.\n다시 시도해 주세요."</string>
     <string name="m_fail_common">요청에 실패하였습니다.\n다시 시도해 주세요.</string>

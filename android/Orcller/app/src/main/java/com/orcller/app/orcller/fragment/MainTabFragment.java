@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.fragment;
 
+import android.support.v7.app.ActionBar;
 import android.view.View;
 
 import pisces.psuikit.ext.PSFragment;
@@ -9,6 +10,7 @@ import pisces.psuikit.ext.PSFragment;
  */
 abstract public class MainTabFragment extends PSFragment {
     private boolean shouldStartFragment;
+    private ActionBar actionBar;
 
     // ================================================================================================
     //  Overridden: PSFragment
@@ -29,6 +31,14 @@ abstract public class MainTabFragment extends PSFragment {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public ActionBar getActionBar() {
+        return actionBar;
+    }
+
+    public void setActionBar(ActionBar actionBar) {
+        this.actionBar = actionBar;
+    }
 
     public void invalidateFragment() {
         shouldStartFragment = true;

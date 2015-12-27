@@ -44,7 +44,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
     private boolean allowsAutoSlide;
     private boolean allowsShowPageCount;
-    private boolean pageOpened;
     private boolean playing;
     private boolean slideFinished;
     private boolean shouldLoadPages;
@@ -296,6 +295,10 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     public void loadRemainPages() {
+        loadRemainPages(null);
+    }
+
+    public void loadRemainPages(final Runnable completion) {
         if (model == null || model.pages.data.size() >= model.pages.total_count || invalidDataLoading())
             return;
 
@@ -313,6 +316,9 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             public void onComplete(boolean isSuccess) {
                 endDataLoading();
                 ProgressBarManager.hide(self);
+
+                if (completion != null)
+                    completion.run();
 
                 if (delegate != null)
                     delegate.onLoadRemainPages(self);
@@ -362,14 +368,19 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         if (playing || model == null)
             return;
 
-        playing = true;
-
-        new Handler().postDelayed(new Runnable() {
+        loadRemainPages(new Runnable() {
             @Override
             public void run() {
-                flipRight();
+                playing = true;
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        flipRight();
+                    }
+                }, 1500);
             }
-        }, 1500);
+        });
     }
 
     public void reload() {
@@ -502,7 +513,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         if (pageWidth < 1 || model == null)
             return;
 
-        int x = 0;
+        int x;
         if (pageIndex == 0)
             x = (getWidth() - container.getWidth())/2 - (pageWidth/2);
         else if ((pageIndex * 2) + 1 > model.pages.count)

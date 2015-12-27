@@ -2,6 +2,7 @@ package com.orcller.app.orcller.widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -36,13 +37,13 @@ public class AlbumPageCountView extends TextView {
     private void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.TOP | Gravity.RIGHT;
-        params.setMargins(0, 0, 2, 0);
+        params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+        params.setMargins(0, 0, 12, 12);
 
-        setBackgroundResource(R.drawable.background_albumflipview_pagecounter);
         setLayoutParams(params);
+        setShadowLayer(8, 0, 0, Color.argb(90, 0, 0, 0));
         setTextColor(Color.WHITE);
-        setTextSize(22);
+        setTextSize(28);
     }
 
     public void hide() {

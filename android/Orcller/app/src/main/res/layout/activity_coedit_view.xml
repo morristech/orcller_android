@@ -35,12 +35,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <com.orcller.app.orcller.widget.ContributorListView
-                    android:id="@+id/contributorListView"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:background="@android:color/white"/>
+                    android:layout_height="wrap_content">
+                    <com.orcller.app.orcller.widget.ContributorListView
+                        android:id="@+id/contributorListView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:background="@android:color/white"/>
+                </FrameLayout>
             </LinearLayout>
         </pisces.psuikit.ext.PSScrollView>
 

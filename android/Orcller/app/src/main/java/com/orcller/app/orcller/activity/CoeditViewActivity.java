@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -47,7 +48,7 @@ import static pisces.psfoundation.utils.Log.e;
  * Created by pisces on 12/14/15.
  */
 public class CoeditViewActivity extends PSActionBarActivity
-        implements AlbumItemViewDelegate.Invoker, ViewTreeObserver.OnGlobalLayoutListener {
+        implements AlbumItemViewDelegate.Invoker, ContributorListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
     private Album model;
@@ -81,6 +82,7 @@ public class CoeditViewActivity extends PSActionBarActivity
         albumItemView.setDelegate(albumItemViewDelegate);
         albumItemView.setButtonVisiblity(AlbumItemView.HEART | AlbumItemView.COMMENT | AlbumItemView.STAR);
         albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_COMMENTS);
+        contributorListView.setDelegate(this);
         coeditButton.setSelected(true);
         coeditButton.setTextSize(GraphicUtils.convertDpToPixel(13));
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
@@ -167,6 +169,10 @@ public class CoeditViewActivity extends PSActionBarActivity
         }
     }
 
+    // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
     /**
      * AlbumItemViewDelete.Invoker
      */
@@ -179,6 +185,22 @@ public class CoeditViewActivity extends PSActionBarActivity
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    }
+
+    /**
+     * ContributorListView.Delegate
+     */
+    public void onFailure(ContributorListView listView, Error error) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
+    }
+
+    public void onLoad(ContributorListView listView) {
+        if (listView.isFirstLoading())
+            ProgressBarManager.show((ViewGroup) listView.getParent());
+    }
+
+    public void onLoadComplete(ContributorListView listView) {
+        ProgressBarManager.hide((ViewGroup) listView.getParent());
     }
 
     // ================================================================================================

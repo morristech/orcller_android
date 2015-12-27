@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -56,10 +57,10 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     private AlbumInfoProfileView albumInfoProfileView;
     private AlbumFlipView albumFlipView;
     private TextView descriptionTextView;
-    private LinearLayout infoContainer;
     private TextView heartTextView;
     private TextView commentTextView;
     private TextView starTextView;
+    private ImageView controlButton;
     private PSButton coeditButton;
     private PSButton heartButton;
     private PSButton commentButton;
@@ -88,10 +89,10 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
-        infoContainer = (LinearLayout) findViewById(R.id.infoContainer);
         heartTextView = (TextView) findViewById(R.id.heartTextView);
         commentTextView = (TextView) findViewById(R.id.commentTextView);
         starTextView = (TextView) findViewById(R.id.starTextView);
+        controlButton = (ImageView) findViewById(R.id.controlButton);
         coeditButton = (PSButton) findViewById(R.id.coeditButton);
         heartButton = (PSButton) findViewById(R.id.heartButton);
         commentButton = (PSButton) findViewById(R.id.commentButton);
@@ -122,6 +123,10 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public AlbumInfoProfileView getAlbumInfoProfileView() {
+        return albumInfoProfileView;
+    }
 
     public AlbumFlipView getAlbumFlipView() {
         return albumFlipView;
@@ -215,12 +220,8 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         commentButton.setSelected(model.comments.isParticipated());
         starButton.setText(getButtonText(starButton));
         starButton.setSelected(model.favorites.isParticipated());
-        infoContainer.setVisibility(PSView.isShown(heartTextView) ||
-                PSView.isShown(commentTextView) ||
-                PSView.isShown(starTextView) ? VISIBLE : GONE);
         setLeftMargin(commentTextView, heartTextView);
         setLeftMargin(starTextView, commentTextView);
-        setAlbumFlipViewMargin();
     }
 
     // ================================================================================================
@@ -346,12 +347,6 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         params.leftMargin = relativeView.getVisibility() == View.VISIBLE ? GraphicUtils.convertDpToPixel(8) : 0;
     }
 
-    private void setAlbumFlipViewMargin() {
-        LayoutParams params = (LayoutParams) albumFlipView.getLayoutParams();
-        params.bottomMargin = GraphicUtils.convertDpToPixel(
-                PSView.isShown(descriptionTextView) || PSView.isShown(infoContainer) ? 15 : 32);
-    }
-
     private void changeAlbum(Album album) {
         if (album.equals(model)) {
             postPageChangeEvent();
@@ -399,7 +394,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate extends AlbumFlipView.Delegate {
+    public interface Delegate extends AlbumFlipView.Delegate {
         void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
         void onAlbumSynchronize(AlbumItemView itemView);
         void onClick(AlbumItemView itemView, ButtonType type, View view);
