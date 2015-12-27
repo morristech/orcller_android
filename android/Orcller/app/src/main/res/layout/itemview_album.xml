@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pisces.psuikit.ext.PSLinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<pisces.psuikit.ext.PSLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -37,8 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:layout_marginBottom="10dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:paddingLeft="8dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,12 +76,17 @@
                 android:textSize="12dp"/>
         </LinearLayout>
 
-        <ImageView
+        <pisces.psuikit.widget.PSButton
             android:id="@+id/controlButton"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="34dp"
+            android:layout_height="28dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/video_play_button_normal"/>
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:drawableRight="@drawable/icon_control"
+            android:background="@drawable/background_ripple_lightgray"
+            app:drawableWidth="18dp"
+            app:drawableHeight="18dp"/>
     </LinearLayout>
 
     <LinearLayout

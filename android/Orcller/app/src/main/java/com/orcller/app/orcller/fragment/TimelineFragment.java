@@ -291,7 +291,10 @@ public class TimelineFragment extends MainTabFragment
     }
 
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        updateSlideShowItemView();
+//        updateSlideShowItemView();
+
+        if (scrollState != SCROLL_STATE_IDLE)
+            albumItemViewDelegate.pauseAlbumFlipView();
 
         if (scrollState == SCROLL_STATE_FLING && startPoint != null) {
             int dy = startPoint.y - getScrollPoint().y;

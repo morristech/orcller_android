@@ -131,7 +131,7 @@ public class OptionsActivity extends PSActionBarActivity implements SectionedLis
         if (section == 0)
             return 3;
         if (section == 1)
-            return 3;
+            return 2;
         if (section == 2)
             return 2;
         return 1;
@@ -143,16 +143,14 @@ public class OptionsActivity extends PSActionBarActivity implements SectionedLis
 
     public int getItemViewType(ListView listView, SectionedListView.IndexPath indexPath) {
         if (indexPath.section() == 1) {
-            if (indexPath.row() == 0)
-                return APPLICATION_OPTIONS_ITEM_VIEW;
-            if (indexPath.row() == 2)
+            if (indexPath.row() == 1)
                 return BADGE_ITEM_VIEW;
         }
         return BASE_ITEM_VIEW;
     }
 
     public int getItemViewTypeCount(ListView listView) {
-        return 3;
+        return 2;
     }
 
     // ================================================================================================
@@ -180,8 +178,6 @@ public class OptionsActivity extends PSActionBarActivity implements SectionedLis
 
         if (indexPath.section() == 1) {
             if (indexPath.row() == 0)
-                return R.string.w_auto_slide;
-            if (indexPath.row() == 1)
                 return R.string.w_push_notification_settings;
             return R.string.w_version_information;
         }
@@ -203,8 +199,11 @@ public class OptionsActivity extends PSActionBarActivity implements SectionedLis
             return user != null ? SharedObject.getPermissionText(user.user_options.album_permission) : null;
         }
 
-        if (indexPath.section() == 1 && indexPath.row() == 2)
+        if (indexPath.section() == 1) {
+            if (indexPath.row() == 0)
+                return Application.isNotificationEnabled() ? "On" : "Off";
             return Application.getPackageVersionName();
+        }
 
         return null;
     }

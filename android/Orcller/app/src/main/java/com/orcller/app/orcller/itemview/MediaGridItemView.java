@@ -53,6 +53,7 @@ public class MediaGridItemView extends AbstractDataGridItemView {
 
         Glide.with(getContext())
                 .load(SharedObject.toFullMediaUrl(media().images.low_resolution.url))
+                .error(R.drawable.img_fb_empty_album)
                 .into(imageView);
 
     }

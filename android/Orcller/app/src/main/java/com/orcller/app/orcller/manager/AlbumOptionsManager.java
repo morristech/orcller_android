@@ -95,9 +95,9 @@ public class AlbumOptionsManager extends PSObject {
                 share();
                 break;
 
-            case R.id.slideShow:
-                //TODO : Impl open slideshow activity
-                break;
+//            case R.id.slideShow:
+//                //TODO : Impl open slideshow activity
+//                break;
 
             case R.id.hide:
                 hide();

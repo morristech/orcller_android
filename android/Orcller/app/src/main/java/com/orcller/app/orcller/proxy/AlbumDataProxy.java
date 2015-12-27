@@ -236,23 +236,22 @@ public class AlbumDataProxy extends AbstractDataProxy {
     //  Private
     // ================================================================================================
 
-    private void appendPages(final Album album, final Pages pages, final Runnable runnable) {
+    private void appendPages(final Album album, final Pages pages, final Runnable completion) {
         if (pages == null)
             return;
 
-        Application.runOnBackgroundThread(new Runnable() {
+        Application.run(new Runnable() {
             @Override
             public void run() {
-                try {
-                    album.pages.count += pages.count;
-                    album.pages.total_count = album.pages.count;
-                    album.pages.data.addAll(pages.data);
-                    album.didChangeProperties();
-
-                    Application.runOnMainThread(runnable);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                album.pages.count += pages.count;
+                album.pages.total_count = album.pages.count;
+                album.pages.data.addAll(pages.data);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                album.didChangeProperties();
+                completion.run();
             }
         });
     }

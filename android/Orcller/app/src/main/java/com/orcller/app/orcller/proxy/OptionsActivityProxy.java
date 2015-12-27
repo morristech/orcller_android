@@ -81,9 +81,9 @@ public class OptionsActivityProxy extends PSObject implements SectionedListView.
                 break;
 
             case 1:
-                if (indexPath.row() == 1) {
+                if (indexPath.row() == 0) {
                     openPushSettingsAlertDialog();
-                } else if (indexPath.row() == 2) {
+                } else if (indexPath.row() == 1) {
                     openVersionInfoAlertDialog();
                 }
                 break;

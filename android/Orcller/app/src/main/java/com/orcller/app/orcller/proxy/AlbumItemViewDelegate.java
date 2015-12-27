@@ -33,6 +33,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     public static final int COMMENT_ACTION_COMMENTS = 1;
     private int commentActionType = COMMENT_ACTION_ALBUM;
     private Invoker invoker;
+    private AlbumFlipView playedAlbumFlipView;
 
     public AlbumItemViewDelegate(Invoker invoker) {
         this.invoker = invoker;
@@ -50,8 +51,15 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         this.commentActionType = commentActionType;
     }
 
+    public void pauseAlbumFlipView() {
+        if (playedAlbumFlipView != null) {
+            playedAlbumFlipView.pause();
+            playedAlbumFlipView = null;
+        }
+    }
+
     // ================================================================================================
-    //  Interface Implemetaion
+    //  Interface Implementation
     // ================================================================================================
 
     /**
@@ -82,37 +90,49 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
             star(itemView);
         } else if (AlbumItemView.ButtonType.StarList.equals(type)) {
             AlbumStarListActivity.show(itemView.getModel().id);
+        } else if (AlbumItemView.ButtonType.Control.equals(type)) {
+            if (itemView.getAlbumFlipView().isPlaying())
+                itemView.getAlbumFlipView().pause();
+            else
+                itemView.getAlbumFlipView().play();
         }
     }
 
     public void onPageChange(AlbumItemView itemView) {
     }
 
-    public void onCancelPanning(AlbumFlipView view) {
+    public void onCancelPanning(AlbumItemView itemView, AlbumFlipView view) {
         invoker.onChangePanningState(false);
     }
 
-    public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
+    public void onChangePageIndex(AlbumItemView itemView, AlbumFlipView view, int pageIndex) {
         invoker.onChangePanningState(false);
     }
 
-    public void onLoadRemainPages(AlbumFlipView view) {
+    public void onLoadRemainPages(AlbumItemView itemView, AlbumFlipView view) {
     }
 
-    public void onPause(AlbumFlipView view) {
+    public void onPause(AlbumItemView itemView, AlbumFlipView view) {
+        playedAlbumFlipView = null;
     }
 
-    public void onStartLoadRemainPages(AlbumFlipView view) {
+    public void onPlay(AlbumItemView itemView, AlbumFlipView view) {
+        pauseAlbumFlipView();
+
+        playedAlbumFlipView = view;
     }
 
-    public void onStartPanning(AlbumFlipView view) {
+    public void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view) {
+    }
+
+    public void onStartPanning(AlbumItemView itemView, AlbumFlipView view) {
         invoker.onChangePanningState(true);
     }
 
-    public void onStop(AlbumFlipView view) {
+    public void onStop(AlbumItemView itemView, AlbumFlipView view) {
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView) {
         invoker.onTap(view, flipView, pageView);
         PageListActivity.show(view.getModel(), view.getModel().pages.getPageIndex(pageView.getModel()));
     }
@@ -199,7 +219,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     //  Interface: Invoker
     // ================================================================================================
 
-    public static interface Invoker {
+    public interface Invoker {
         CommentInputView getCommentInputView();
         void invalidateOptionsMenu();
         void onChangePanningState(boolean isPanning);

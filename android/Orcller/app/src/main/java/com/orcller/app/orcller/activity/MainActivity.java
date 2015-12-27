@@ -68,7 +68,7 @@ public class MainActivity extends PSActionBarActivity
 
         tabHost.setup();
         tabHost.setOnTabChangedListener(this);
-        viewPager.setOffscreenPageLimit(5);
+        viewPager.setOffscreenPageLimit(TAB_COUNT);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageMargin(GraphicUtils.convertDpToPixel(15));
         viewPager.setPageMarginDrawable(R.color.theme_lightgray_primary);

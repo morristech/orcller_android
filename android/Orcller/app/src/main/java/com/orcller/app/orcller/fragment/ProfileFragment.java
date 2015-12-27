@@ -84,7 +84,8 @@ public class ProfileFragment extends MainTabFragment
 
     @Override
     public String getToolbarTitle() {
-        return AuthenticationCenter.getDefault().getUser().user_id;
+        return AuthenticationCenter.getDefault().hasSession() ?
+                AuthenticationCenter.getDefault().getUser().user_id : "";
     }
 
     @Override

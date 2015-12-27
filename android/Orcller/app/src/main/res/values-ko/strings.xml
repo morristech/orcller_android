@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Orcller</string>
+
     <!-- words -->
     <string name="w_about">About</string>
     <string name="w_account">계정</string>

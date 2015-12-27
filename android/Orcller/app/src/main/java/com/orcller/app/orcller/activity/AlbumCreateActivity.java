@@ -347,6 +347,9 @@ public class AlbumCreateActivity extends PSActionBarActivity
     public void onPause(AlbumFlipView view) {
     }
 
+    public void onPlay(AlbumFlipView view) {
+    }
+
     public void onStartLoadRemainPages(AlbumFlipView view) {
     }
 

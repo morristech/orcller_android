@@ -4,8 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
@@ -20,19 +18,20 @@ import com.orcller.app.orcller.model.Likes;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
+import com.orcller.app.orcller.widget.FlipView;
+import com.orcller.app.orcller.widget.PageView;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
-import pisces.psuikit.ext.PSView;
 import pisces.psuikit.widget.PSButton;
 
 /**
  * Created by pisces on 12/6/15.
  */
-public class AlbumItemView extends PSLinearLayout implements View.OnClickListener {
+public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Delegate, View.OnClickListener {
     public static final int COEDIT = 1<<0;
     public static final int HEART = 1<<1;
     public static final int COMMENT = 1<<2;
@@ -47,7 +46,8 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         HeartList,
         Options,
         Star,
-        StarList
+        StarList,
+        Control
     }
 
     private boolean allowsShowOptionIcon;
@@ -60,7 +60,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     private TextView heartTextView;
     private TextView commentTextView;
     private TextView starTextView;
-    private ImageView controlButton;
+    private PSButton controlButton;
     private PSButton coeditButton;
     private PSButton heartButton;
     private PSButton commentButton;
@@ -92,7 +92,7 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
         heartTextView = (TextView) findViewById(R.id.heartTextView);
         commentTextView = (TextView) findViewById(R.id.commentTextView);
         starTextView = (TextView) findViewById(R.id.starTextView);
-        controlButton = (ImageView) findViewById(R.id.controlButton);
+        controlButton = (PSButton) findViewById(R.id.controlButton);
         coeditButton = (PSButton) findViewById(R.id.coeditButton);
         heartButton = (PSButton) findViewById(R.id.heartButton);
         commentButton = (PSButton) findViewById(R.id.commentButton);
@@ -100,6 +100,8 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
 
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
         albumInfoProfileView.getOptionsIcon().setOnClickListener(this);
+        albumFlipView.setDelegate(this);
+        controlButton.setOnClickListener(this);
         heartTextView.setOnClickListener(this);
         commentTextView.setOnClickListener(this);
         starTextView.setOnClickListener(this);
@@ -138,8 +140,6 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
 
     public void setDelegate(Delegate delegate) {
         this.delegate = delegate;
-
-        albumFlipView.setDelegate(delegate);
     }
 
     public boolean isAllowsShowOptionIcon() {
@@ -276,8 +276,65 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
             type = ButtonType.Comment;
         else if (starButton.equals(v))
             type = ButtonType.Star;
+        else if (controlButton.equals(v))
+            type = ButtonType.Control;
 
         delegate.onClick(this, type, v);
+    }
+
+    /**
+     * AlbumFlipView.Delegate
+     */
+
+    public void onCancelPanning(AlbumFlipView view) {
+        if (delegate != null)
+            delegate.onCancelPanning(this, view);
+    }
+
+    public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
+        if (delegate != null)
+            delegate.onChangePageIndex(this, view, pageIndex);
+    }
+
+    public void onLoadRemainPages(AlbumFlipView view) {
+        if (delegate != null)
+            delegate.onLoadRemainPages(this, view);
+    }
+
+    public void onPlay(AlbumFlipView view) {
+        controlButton.setSelected(true);
+
+        if (delegate != null)
+            delegate.onPlay(this, view);
+    }
+
+    public void onPause(AlbumFlipView view) {
+        controlButton.setSelected(false);
+
+        if (delegate != null)
+            delegate.onPause(this, view);
+    }
+
+    public void onStartLoadRemainPages(AlbumFlipView view) {
+        if (delegate != null)
+            delegate.onStartLoadRemainPages(this, view);
+    }
+
+    public void onStartPanning(AlbumFlipView view) {
+        if (delegate != null)
+            delegate.onStartPanning(this, view);
+    }
+
+    public void onStop(AlbumFlipView view) {
+        controlButton.setSelected(false);
+
+        if (delegate != null)
+            delegate.onStop(this, view);
+    }
+
+    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+        if (delegate != null)
+            delegate.onTap(this, view, flipView, pageView);
     }
 
     // ================================================================================================
@@ -394,10 +451,19 @@ public class AlbumItemView extends PSLinearLayout implements View.OnClickListene
     //  Interface: Delegate
     // ================================================================================================
 
-    public interface Delegate extends AlbumFlipView.Delegate {
+    public interface Delegate {
         void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
         void onAlbumSynchronize(AlbumItemView itemView);
         void onClick(AlbumItemView itemView, ButtonType type, View view);
+        void onCancelPanning(AlbumItemView itemView, AlbumFlipView view);
+        void onChangePageIndex(AlbumItemView itemView, AlbumFlipView view, int pageIndex);
+        void onLoadRemainPages(AlbumItemView itemView, AlbumFlipView view);
         void onPageChange(AlbumItemView itemView);
+        void onPause(AlbumItemView itemView, AlbumFlipView view);
+        void onPlay(AlbumItemView itemView, AlbumFlipView view);
+        void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view);
+        void onStartPanning(AlbumItemView itemView, AlbumFlipView view);
+        void onStop(AlbumItemView itemView, AlbumFlipView view);
+        void onTap(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

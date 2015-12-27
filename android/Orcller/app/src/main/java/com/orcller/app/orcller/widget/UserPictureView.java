@@ -147,24 +147,14 @@ public class UserPictureView extends PSFrameLayout implements View.OnClickListen
     }
 
     private void modelChanged() {
+        if (model == null)
+            return;
+
         Glide.clear(imageView);
         Glide.with(getContext())
                 .load(SharedObject.toUserPictureUrl(model.user_picture, sizeType))
                 .placeholder(getPlaceholderImage())
-                .dontAnimate()
-                .listener(new RequestListener<Object, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        imageView.setImageResource(getPlaceholderImage());
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        imageView.setImageDrawable(resource);
-                        return true;
-                    }
-                })
+                .error(getPlaceholderImage())
                 .into(imageView);
     }
 }

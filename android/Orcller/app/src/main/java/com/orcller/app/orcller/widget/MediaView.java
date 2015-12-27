@@ -1,9 +1,15 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.NinePatch;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -12,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -24,6 +29,7 @@ import com.orcller.app.orcller.model.Image;
 import com.orcller.app.orcller.model.Media;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 
 import de.greenrobot.event.EventBus;
@@ -61,7 +67,6 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     private Drawable placeholder;
     private Media model;
     protected Delegate delegate;
-    private ImageView emptyImageView;
     protected ImageView imageView;
     protected ProgressBar progressBar;
 
@@ -86,7 +91,6 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         inflate(context, R.layout.view_media, this);
 
         imageView = (ImageView) findViewById(R.id.imageView);
-        emptyImageView = (ImageView) findViewById(R.id.emptyImageView);
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
         try {
@@ -272,16 +276,12 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         final CompleteHandler handler = new CompleteHandler() {
             @Override
             public void onError() {
-                emptyImageView.setVisibility(VISIBLE);
-
                 if (completeHandler != null)
                     completeHandler.onError();
             }
 
             @Override
             public void onComplete() {
-                emptyImageView.setVisibility(GONE);
-
                 if (completeHandler != null)
                     completeHandler.onComplete();
             }
@@ -295,6 +295,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         try {
             Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
 
+            imageView.setBackground(null);
             Glide.clear(imageView);
             Glide.with(getContext())
                     .load(source)
@@ -306,6 +307,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
                             if (BuildConfig.DEBUG)
                                 Log.e("onException", e, model);
 
+                            imageView.setBackgroundResource(R.drawable.img_fb_empty_album);
                             onError();
                             handler.onError();
                             return true;
@@ -415,7 +417,6 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         int h = Math.round(model.images.thumbnail.width * rate);
         imageSize = new Point(w, h);
 
-        emptyImageView.setVisibility(GONE);
         onStartImageLoad();
         loadImages();
     }
