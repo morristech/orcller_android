@@ -69,6 +69,7 @@ public class InviteCollaborationActivity extends PSActionBarActivity implements 
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumMine, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
+        listView.setOnItemClickListener(this);
         listView.setAdapter(listAdapter);
 
         String endfix = model != null ? " - " + model.user_name : "";
@@ -131,7 +132,7 @@ public class InviteCollaborationActivity extends PSActionBarActivity implements 
     // ================================================================================================
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CoeditViewActivity.show(items.get(position));
+        CoeditViewActivity.show(items.get(position).id);
     }
 
     // ================================================================================================

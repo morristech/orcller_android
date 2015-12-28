@@ -18,6 +18,11 @@
         android:theme="@style/PurpleTheme.Toolbar"
         app:titleTextAppearance="@style/PurpleTheme.Toolbar.TitleTextStyle"/>
 
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
