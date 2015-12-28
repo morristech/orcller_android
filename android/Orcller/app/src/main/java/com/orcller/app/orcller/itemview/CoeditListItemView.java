@@ -32,7 +32,7 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
     private ImageView lockIcon;
     private TextView titleTextView;
     private TextView dateTextView;
-    private PSTextView contributorsTextView;
+    private TextView contributorsTextView;
     private CoeditButton coeditButton;
 
     public CoeditListItemView(Context context) {
@@ -58,7 +58,7 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
         imageView = (ImageView) findViewById(R.id.imageView);
         lockIcon = (ImageView) findViewById(R.id.lockIcon);
         titleTextView = (TextView) findViewById(R.id.titleTextView);
-        contributorsTextView = (PSTextView) findViewById(R.id.contributorsTextView);
+        contributorsTextView = (TextView) findViewById(R.id.contributorsTextView);
         dateTextView = (TextView) findViewById(R.id.dateTextView);
         coeditButton = (CoeditButton) findViewById(R.id.coeditButton);
 

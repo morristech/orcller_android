@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -37,7 +38,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/28/15.
  */
-public class InviteCollaborationActivity extends PSActionBarActivity {
+public class InviteCollaborationActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
     private static final String USER_KEY = "user";
     private static final int LOAD_LIMIT = 20;
     private List<AlbumCoedit> items = new ArrayList<>();
@@ -123,6 +124,14 @@ public class InviteCollaborationActivity extends PSActionBarActivity {
         Intent intent = new Intent(Application.applicationContext(), InviteCollaborationActivity.class);
         intent.putExtra(USER_KEY, model);
         Application.getTopActivity().startActivity(intent);
+    }
+
+    // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        CoeditViewActivity.show(items.get(position));
     }
 
     // ================================================================================================

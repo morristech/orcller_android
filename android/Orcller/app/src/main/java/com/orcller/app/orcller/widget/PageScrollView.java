@@ -14,6 +14,7 @@ import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.Page;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
@@ -73,6 +74,7 @@ public class PageScrollView extends PSLinearLayout
         commentButton.setOnClickListener(this);
         heartButton.setOnClickListener(this);
         commentListView.setDelegate(this);
+        pageContainer.getLayoutParams().height = Application.getWindowWidth();
         EventBus.getDefault().register(this);
     }
 

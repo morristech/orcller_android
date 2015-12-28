@@ -41,7 +41,7 @@
                 android:src="@drawable/icon_locker_normal"/>
         </LinearLayout>
 
-        <pisces.psuikit.ext.PSTextView
+        <TextView
             android:id="@+id/contributorsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
