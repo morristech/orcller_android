@@ -168,6 +168,6 @@ public class ProfileFragment extends MainTabFragment
         profileHearderView.setModel(model);
         profileHearderView.setVisibility(View.VISIBLE);
         profileContentView.setVisibility(View.VISIBLE);
-        profileContentView.setUserId(model.user_uid);
+        profileContentView.setModel(model);
     }
 }

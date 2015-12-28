@@ -12,7 +12,6 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.Album;
-import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.CoeditButton;
@@ -27,7 +26,7 @@ import pisces.psuikit.ext.PSTextView;
  * Created by pisces on 12/13/15.
  */
 public class CoeditListItemView extends PSLinearLayout implements CoeditButton.Delegate {
-    private Coedit model;
+    private Album model;
     private ImageView imageView;
     private ImageView lockIcon;
     private TextView titleTextView;
@@ -71,11 +70,11 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
     //  Public
     // ================================================================================================
 
-    public Coedit getModel() {
+    public Album getModel() {
         return model;
     }
 
-    public void setModel(Coedit model) {
+    public void setModel(Album model) {
         if (ObjectUtils.equals(model, this.model))
             return;
 

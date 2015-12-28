@@ -10,14 +10,17 @@ import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.widget.UserDataGridView;
+import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.model.Resources;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
@@ -27,8 +30,8 @@ import pisces.psuikit.widget.ExceptionView;
  */
 abstract public class UserDataGridFragment extends PSFragment
         implements SwipeRefreshLayout.OnRefreshListener, UserDataGridView.Delegate {
-    private boolean userIdChanged;
-    private long userId;
+    private boolean modelChanged;
+    private User model;
     private Delegate delegate;
     private SwipeRefreshLayout swipeRefreshLayout;
     protected Error loadError;
@@ -49,9 +52,9 @@ abstract public class UserDataGridFragment extends PSFragment
 
     @Override
     protected void commitProperties() {
-        if (userIdChanged) {
-            userIdChanged = false;
-            userIdChanged();
+        if (modelChanged) {
+            modelChanged = false;
+            modelChanged();
         }
     }
 
@@ -71,13 +74,14 @@ abstract public class UserDataGridFragment extends PSFragment
         gridView.setItemViewClass(getItemViewClass());
         gridView.setDataSource(createDataSource());
         gridView.setDelegate(this);
+        AnalyticsTrackers.getInstance().trackScreen(AnalyticsTrackers.Target.APP, getClass().getName());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        userIdChanged = true;
+        modelChanged = true;
     }
 
     @Override
@@ -129,16 +133,16 @@ abstract public class UserDataGridFragment extends PSFragment
         this.delegate = delegate;
     }
 
-    public long getUserId() {
-        return userId;
+    public User getModel() {
+        return model;
     }
 
-    public void setUserId(long userId) {
-        if (userId == this.userId)
+    public void setModel(User model) {
+        if (ObjectUtils.equals(model, this.model))
             return;
 
-        this.userId = userId;
-        userIdChanged = true;
+        this.model = model;
+        modelChanged = true;
 
         invalidateProperties();
     }
@@ -163,13 +167,13 @@ abstract public class UserDataGridFragment extends PSFragment
     abstract protected Class getItemViewClass();
 
     protected void reset() {
-        userIdChanged = true;
+        modelChanged = true;
 
         gridView.cancel();
         invalidateProperties();
     }
 
-    protected void userIdChanged() {
+    protected void modelChanged() {
         gridView.reload();
     }
 
@@ -181,7 +185,7 @@ abstract public class UserDataGridFragment extends PSFragment
      * SwipeRefreshLayout.OnRefreshListener
      */
     public void onRefresh() {
-        userIdChanged();
+        modelChanged();
     }
 
     /**

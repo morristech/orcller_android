@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
+import com.orcller.app.orcller.activity.InviteCollaborationActivity;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumCoverGridItemView;
@@ -46,13 +47,13 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
 
     @Override
     protected UserDataGridView.DataSource createDataSource() {
-        if (getUserId() < 1)
+        if (getModel() == null)
             return null;
 
         return new UserDataGridView.DataSource<ApiUsers.AlbumListRes>() {
             @Override
             public Call createDataLoadCall(int limit, String after) {
-                return UserDataProxy.getDefault().service().albums(getUserId());
+                return UserDataProxy.getDefault().service().albums(getModel().user_uid, limit, after);
             }
         };
     }
@@ -69,7 +70,9 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
 
     @Override
     public void onClick(ExceptionView view) {
-        if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
+        if (ExceptionViewFactory.Type.NoAlbum.equals(view.getTag())) {
+            InviteCollaborationActivity.show(getModel());
+        } else if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
             AlbumCreateActivity.show();
         } else {
             super.onClick(view);
@@ -79,22 +82,26 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
         if (ExceptionViewFactory.Type.NoAlbum.equals(view.getTag()) ||
-                ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag()))
+                ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
+            if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag()) && !getModel().isFollower())
+                view.setButtonText(null);
+
             return loadError == null && gridView.getItems().size() < 1;
+        }
         return super.shouldShowExceptionView(view);
     }
 
     @Override
-    protected void userIdChanged() {
+    protected void modelChanged() {
         if (exceptionViewManager.getViewCount() == 3)
             exceptionViewManager.remove(0);
 
-        if (User.isMe(getUserId()))
+        if (getModel().isMe())
             exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumMine, container));
         else
             exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbum, container));
 
-        super.userIdChanged();
+        super.modelChanged();
     }
 
     // ================================================================================================

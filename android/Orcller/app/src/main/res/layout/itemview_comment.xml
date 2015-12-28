@@ -25,12 +25,12 @@
                 android:id="@+id/idTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:background="@drawable/background_tab_profile_content"
                 android:clickable="true"
                 android:singleLine="true"
                 android:textColorLink="@color/textcolor_dark_blue"
-                android:textStyle="bold"
-                android:textSize="14dp"/>
+                android:textSize="14dp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/commentTextView"

@@ -228,6 +228,11 @@
             android:theme="@style/PurpleTheme">
         </activity>
 
+        <activity
+            android:name=".activity.InviteCollaborationActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
         <!-- orcllermodules -->
         <activity
             android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"

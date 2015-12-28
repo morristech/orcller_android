@@ -20,13 +20,13 @@ public class UserAlbumStarGridFragment extends UserAlbumGridFragment {
 
     @Override
     protected UserDataGridView.DataSource createDataSource() {
-        if (getUserId() < 1)
+        if (getModel() == null)
             return null;
 
         return new UserDataGridView.DataSource<ApiUsers.AlbumListRes>() {
             @Override
             public Call createDataLoadCall(int limit, String after) {
-                return UserDataProxy.getDefault().service().favorites(getUserId());
+                return UserDataProxy.getDefault().service().favorites(getModel().user_uid, limit, after);
             }
         };
     }

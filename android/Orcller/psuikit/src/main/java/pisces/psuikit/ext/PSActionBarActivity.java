@@ -1,25 +1,22 @@
 package pisces.psuikit.ext;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.DataLoadValidator;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ActivityManager;
+import pisces.psuikit.manager.ExceptionViewManager;
+import pisces.psuikit.widget.ExceptionView;
 
 /**
  * Created by pisces on 11/12/15.
  */
-public class PSActionBarActivity extends AppCompatActivity implements DataLoadValidator.Client {
+public class PSActionBarActivity extends AppCompatActivity implements DataLoadValidator.Client, ExceptionView.Delegate {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
+    protected ExceptionViewManager exceptionViewManager;
     private Toolbar toolbar;
 
     // ================================================================================================
@@ -31,6 +28,7 @@ public class PSActionBarActivity extends AppCompatActivity implements DataLoadVa
         super.onCreate(savedInstanceState);
 
         ActivityManager.putRunningActivity(this);
+        exceptionViewManager = new ExceptionViewManager(this);
     }
 
     @Override
@@ -45,6 +43,7 @@ public class PSActionBarActivity extends AppCompatActivity implements DataLoadVa
         super.onDestroy();
 
         ActivityManager.removeRunningActivity(this);
+        exceptionViewManager.clear();
     }
 
     @Override
@@ -75,10 +74,22 @@ public class PSActionBarActivity extends AppCompatActivity implements DataLoadVa
 
     public void endDataLoading() {
         dataLoadValidator.endDataLoading();
+        exceptionViewManager.validate();
     }
 
     public boolean invalidDataLoading() {
         return dataLoadValidator.invalidDataLoading();
+    }
+
+    // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
+    public void onClick(ExceptionView view) {
+    }
+
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        return false;
     }
 
     // ================================================================================================

@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.model.api;
 
 import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumCoedit;
 import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.Media;
@@ -12,6 +13,9 @@ import pisces.psfoundation.model.Model;
  * Created by pisces on 12/11/15.
  */
 public class ApiUsers {
+    public static class AlbumCoeditListRes extends ApiResult<AlbumCoeditList> {
+    }
+
     public static class AlbumListRes extends ApiResult<AlbumList> {
     }
 
@@ -25,6 +29,9 @@ public class ApiUsers {
     }
 
     public static class NewUserPictureNameRes extends ApiResult<UserPictureName> {
+    }
+
+    public class AlbumCoeditList extends ListEntity<AlbumCoedit> {
     }
 
     public class AlbumList extends ListEntity<Album> {

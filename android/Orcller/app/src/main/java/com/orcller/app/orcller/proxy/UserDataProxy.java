@@ -66,6 +66,10 @@ public class UserDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
+    public void albumsForInvite(long userId, int limit, String after, Callback<ApiUsers.AlbumCoeditListRes> callback) {
+        enqueueCall(service().albumsForInvite(userId, limit, after), callback);
+    }
+
     public void coediting(int limit, String after, Callback<ApiUsers.CoeditListRes> callback) {
         enqueueCall(service().coediting(AuthenticationCenter.getDefault().getUser().user_uid, limit, after), callback);
     }
@@ -100,7 +104,12 @@ public class UserDataProxy extends AbstractDataProxy {
 
     public interface Service {
         @GET("{userId}/album")
-        Call<ApiUsers.AlbumListRes> albums(@Path("userId") long userId);
+        Call<ApiUsers.AlbumListRes> albums(
+                @Path("userId") long userId, @Query("limit") int limit, @Query(value = "after", encoded = true) String after);
+
+        @GET("{userId}/album_for_invite")
+        Call<ApiUsers.AlbumCoeditListRes> albumsForInvite(
+                @Path("userId") long userId, @Query("limit") int limit, @Query(value = "after", encoded = true) String after);
 
         @GET("{userId}/coediting")
         Call<ApiUsers.CoeditListRes> coediting(
@@ -110,10 +119,12 @@ public class UserDataProxy extends AbstractDataProxy {
         Call<ApiUsers.CountRes> count(@Path("userId") long userId);
 
         @GET("{userId}/favorites")
-        Call<ApiUsers.AlbumListRes> favorites(@Path("userId") long userId);
+        Call<ApiUsers.AlbumListRes> favorites(
+                @Path("userId") long userId, @Query("limit") int limit, @Query(value = "after", encoded = true) String after);
 
         @GET("{userId}/media")
-        Call<ApiUsers.MediaListRes> media(@Path("userId") long userId);
+        Call<ApiUsers.MediaListRes> media(
+                @Path("userId") long userId, @Query("limit") int limit, @Query(value = "after", encoded = true) String after);
 
         @POST("picture")
         Call<ApiUsers.NewUserPictureNameRes> newUserPictureName();

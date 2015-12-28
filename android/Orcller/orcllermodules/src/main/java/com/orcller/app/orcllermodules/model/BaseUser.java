@@ -8,6 +8,7 @@ import pisces.psfoundation.model.Model;
  * Created by pisces on 12/10/15.
  */
 public class BaseUser extends Model {
+    public int follower;
     public int following;
     public long user_uid;
     public String user_id;
@@ -17,6 +18,14 @@ public class BaseUser extends Model {
 
     public String getUserUID() {
         return isMe() ? "me" : String.valueOf(user_uid);
+    }
+
+    public boolean isFollower() {
+        return follower > 0;
+    }
+
+    public void setFollower(boolean follower) {
+        this.follower = follower ? 1 : 0;
     }
 
     public boolean isFollowing() {

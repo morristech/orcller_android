@@ -49,7 +49,7 @@ public class ExceptionViewFactory {
         if (Type.NoAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album);
-            view.setButtonText(R.string.w_title_new_album);
+            view.setButtonText(R.string.w_invite_collaboration);
         } else if (Type.NoAlbumMine.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_mine);

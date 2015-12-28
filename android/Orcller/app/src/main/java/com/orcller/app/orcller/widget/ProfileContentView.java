@@ -22,6 +22,7 @@ import java.util.List;
 
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
+import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSTabHost;
 import pisces.psuikit.widget.PSButton;
 import retrofit.Callback;
@@ -36,8 +37,8 @@ import static pisces.psfoundation.utils.Log.e;
  */
 public class ProfileContentView extends PSTabHost
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
-    private boolean userIdChanged;
-    private long userId;
+    private boolean modelChanged;
+    private User model;
     private DataSource dataSource;
     private PagerAdapter pagerAdapter;
     private TabHost tabHost;
@@ -76,8 +77,8 @@ public class ProfileContentView extends PSTabHost
 
     @Override
     protected void commitProperties() {
-        if (userIdChanged) {
-            userIdChanged = false;
+        if (modelChanged) {
+            modelChanged = false;
 
             addTabs();
             loadCount();
@@ -100,16 +101,16 @@ public class ProfileContentView extends PSTabHost
                 dataSource.getGridFragmentManager(), dataSource.getUserDataGridFragmentDelegate());
     }
 
-    public long getUserId() {
-        return userId;
+    public User getModel() {
+        return model;
     }
 
-    public void setUserId(long userId) {
-        if (userId == this.userId)
+    public void setModel(User model) {
+        if (ObjectUtils.equals(model, this.model))
             return;
 
-        this.userId = userId;
-        userIdChanged = true;
+        this.model = model;
+        modelChanged = true;
 
         invalidateProperties();
     }
@@ -164,7 +165,7 @@ public class ProfileContentView extends PSTabHost
     // ================================================================================================
 
     private void addTabs() {
-        if (dataSource == null || userId < 1 || tabHost.getTabWidget().getTabCount() > 0)
+        if (dataSource == null || model == null || tabHost.getTabWidget().getTabCount() > 0)
             return;
 
         for (int i=0; i<dataSource.getTabCount(); i++) {
@@ -182,7 +183,7 @@ public class ProfileContentView extends PSTabHost
     }
 
     private int getTabIconRes(int position) {
-        if (User.isMe(userId)) {
+        if (model.isMe()) {
             if (position == 0)
                 return R.drawable.icon_profile_tab_album;
             if (position == 1)
@@ -202,7 +203,7 @@ public class ProfileContentView extends PSTabHost
     private String getTabTitle(ApiUsers.Counts counts, int position) {
         int count = 0;
 
-        if (User.isMe(userId)) {
+        if (model.isMe()) {
             if (position == 0)
                 count = counts.album;
             else if (position == 1)
@@ -220,10 +221,10 @@ public class ProfileContentView extends PSTabHost
     }
 
     private void loadCount() {
-        if (userId < 1)
+        if (model == null)
             return;
 
-        UserDataProxy.getDefault().count(userId, new Callback<ApiUsers.CountRes>() {
+        UserDataProxy.getDefault().count(model.user_uid, new Callback<ApiUsers.CountRes>() {
             @Override
             public void onResponse(Response<ApiUsers.CountRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
@@ -289,7 +290,7 @@ public class ProfileContentView extends PSTabHost
                 UserDataGridFragment fragment = (UserDataGridFragment) clazz.newInstance();
 
                 fragment.setDelegate(delegate);
-                fragment.setUserId(userId);
+                fragment.setModel(model);
 
                 return fragment;
             } catch (Exception e) {

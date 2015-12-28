@@ -74,7 +74,6 @@ public class ProfileActivity extends PSActionBarActivity
 
         profileHearderView.setDelegate(this);
         profileContentView.setDataSource(this);
-        profileContentView.setUserId(userId);
         SoftKeyboardNotifier.getDefault().register(this);
     }
 
@@ -185,6 +184,7 @@ public class ProfileActivity extends PSActionBarActivity
         setToolbarTitle();
         profileHearderView.setModel(model);
         profileHearderView.setVisibility(View.VISIBLE);
+        profileContentView.setModel(model);
         profileContentView.setVisibility(View.VISIBLE);
         invalidateOptionsMenu();
     }

@@ -111,7 +111,6 @@ public class TimelineFragment extends MainTabFragment
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
         listHeaderView = new View(getContext());
-        items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
 
         listHeaderView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
         listHeaderView.setLayoutParams(new AbsListView.LayoutParams(
@@ -123,7 +122,6 @@ public class TimelineFragment extends MainTabFragment
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
-        listView.setAdapter(listAdapter);
         listView.setItemsCanFocus(true);
         listView.setOnItemClickListener(this);
         listView.setOnScrollListener(this);
@@ -207,6 +205,11 @@ public class TimelineFragment extends MainTabFragment
 
     @Override
     protected void startFragment() {
+        if (listView.getAdapter() == null) {
+            items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
+            listView.setAdapter(listAdapter);
+        }
+
         if (isFirstLoading() || items.size() < 1)
             reload();
     }

@@ -19,6 +19,7 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
@@ -93,6 +94,7 @@ public class MemberJoinFragment extends PSFragment {
         validator = new Validator(this);
 
         setListeners();
+        AnalyticsTrackers.getInstance().trackScreen(AnalyticsTrackers.Target.APP, getClass().getName());
     }
 
     @Override
