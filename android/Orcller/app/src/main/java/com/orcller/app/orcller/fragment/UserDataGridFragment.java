@@ -169,7 +169,6 @@ abstract public class UserDataGridFragment extends PSFragment
     protected void reset() {
         modelChanged = true;
 
-        gridView.cancel();
         invalidateProperties();
     }
 

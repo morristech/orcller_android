@@ -38,7 +38,6 @@ public class UserListView extends PSListView {
     private Delegate delegate;
     private ListEntity lastEntity;
     private ListAdapter listAdapter;
-    private Call call;
 
     public UserListView(Context context) {
         super(context);
@@ -101,9 +100,6 @@ public class UserListView extends PSListView {
     }
 
     public void clear() {
-        if (call != null)
-            call.cancel();
-
         items.clear();
         listAdapter.notifyDataSetChanged();
 
@@ -122,18 +118,13 @@ public class UserListView extends PSListView {
         if (invalidDataLoading())
             return;
 
-        if (call != null)
-            call.cancel();
-
         final UserListView self = this;
-
-        call = dataSource.createDataLoadCall(listCountAtOnce, after);
 
         if (delegate != null)
             delegate.onLoad(this);
 
         dataSource.createDataProxy().enqueueCall(
-                call,
+                dataSource.createDataLoadCall(listCountAtOnce, after),
                 new Callback<ApiResult>() {
                     @Override
                     public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {

@@ -268,6 +268,7 @@ public class FindFriendsFragment extends MainTabFragment
      */
     public boolean onClose() {
         searchListView.clear();
+        searchExceptionViewManager.clear();
         secondViewContainer.setVisibility(View.GONE);
         firstViewContainer.setVisibility(View.VISIBLE);
         return false;
@@ -283,6 +284,7 @@ public class FindFriendsFragment extends MainTabFragment
     public boolean onQueryTextChange(String newText) {
         if (newText.trim().length() > 0) {
             searchListView.clear();
+            searchExceptionViewManager.clear();
             search(newText.trim());
         }
         return false;

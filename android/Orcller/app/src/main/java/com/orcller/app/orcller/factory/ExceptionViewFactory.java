@@ -71,6 +71,7 @@ public class ExceptionViewFactory {
             view.setTitleText(R.string.m_exception_title_no_collaborations);
             view.setDescriptionText(R.string.m_exception_desc_no_collaborations);
         } else if (Type.NoListData.equals(type)) {
+            view.setBackgroundResource(R.color.background_gridview_album_create);
             view.setTitleText(R.string.m_exception_title_no_list);
         } else if (Type.NoPermissionForAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_permissions);
