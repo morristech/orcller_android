@@ -40,6 +40,7 @@ public class ExceptionView extends PSLinearLayout implements View.OnClickListene
         descTextView = (TextView) findViewById(R.id.descTextView);
         button = (Button) findViewById(R.id.button);
 
+        descTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
         button.setOnClickListener(this);
     }
 
@@ -53,6 +54,10 @@ public class ExceptionView extends PSLinearLayout implements View.OnClickListene
 
     public void setDelegate(Delegate delegate) {
         this.delegate = delegate;
+    }
+
+    public Button getButton() {
+        return null;
     }
 
     public void setButtonText(CharSequence text) {

@@ -12,6 +12,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumCoedit;
 import com.orcller.app.orcller.model.Contributor;
 import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiCoedit;
@@ -112,22 +113,22 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
             return;
         }
 
-        if (model instanceof Album) {
-            if (album().contributors.contributor_status == Contributor.Status.Ask.value())
-                unask();
-            else if (album().contributors.contributor_status == Contributor.Status.Invite.value())
-                accept();
-            else if (album().contributors.contributor_status == Contributor.Status.None.value())
-                ask();
-        } else if (model instanceof Contributor) {
+        if (model instanceof AlbumCoedit || model instanceof Contributor) {
             if (contributor().contributor_status == Contributor.Status.Invite.value())
                 uninvite();
             if (contributor().contributor_status == Contributor.Status.Ask.value())
                 accept();
             if (contributor().contributor_status == Contributor.Status.None.value() && !contributor().isMe())
                 invite();
+        } else if (model instanceof Album) {
+            if (album().contributors.contributor_status == Contributor.Status.Ask.value())
+                unask();
+            else if (album().contributors.contributor_status == Contributor.Status.Invite.value())
+                accept();
+            else if (album().contributors.contributor_status == Contributor.Status.None.value())
+                ask();
         }
-    }
+}
 
     // ================================================================================================
     //  Public
@@ -170,6 +171,8 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     }
 
     private Contributor contributor() {
+        if (model instanceof AlbumCoedit)
+            return ((AlbumCoedit) model).contributor;
         return  model instanceof Contributor ? (Contributor) model : null;
     }
 
@@ -182,28 +185,26 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     }
 
     private String getTitle() {
-        if (model instanceof Album) {
+        if (model instanceof AlbumCoedit || model instanceof Contributor) {
+            boolean isContributor = model instanceof Contributor;
+
+            if (contributor().contributor_status == Contributor.Status.Invite.value())
+                return getContext().getString(isContributor ? R.string.w_cancel : R.string.w_cancel_invite);
+            if (contributor().contributor_status == Contributor.Status.Ask.value())
+                return getContext().getString(isContributor ? R.string.w_confirm : R.string.w_confirm_ask);
+            if (contributor().contributor_status == Contributor.Status.None.value() && !contributor().isMe())
+                return getContext().getString(isContributor ? R.string.w_add : R.string.w_invite);
+        } else if (model instanceof Album) {
             Album album = album();
-            if (album.isMine()) {
+
+            if (!album.isMine()) {
                 if (album.contributors.contributor_status == Contributor.Status.Ask.value())
-                    return getContext().getString(R.string.w_cancel);
-                if (album.contributors.contributor_status == Contributor.Status.Invite.value())
-                    return getContext().getString(R.string.w_confirm);
-            } else {
-                if (album.contributors.contributor_status == Contributor.Status.Ask.value())
-                    return getContext().getString(R.string.w_cancel_asking);
+                    return getContext().getString(R.string.w_cancel_ask);
                 if (album.contributors.contributor_status == Contributor.Status.Invite.value())
                     return getContext().getString(R.string.w_confirm_collaboration);
                 if (album.contributors.contributor_status == Contributor.Status.None.value())
                     return getContext().getString(R.string.w_ask_collaboration);
             }
-        } else if (model instanceof Contributor){
-            if (contributor().contributor_status == Contributor.Status.Invite.value())
-                return getContext().getString(R.string.w_cancel);
-            if (contributor().contributor_status == Contributor.Status.Ask.value())
-                return getContext().getString(R.string.w_confirm);
-            if (contributor().contributor_status == Contributor.Status.None.value() && !contributor().isMe())
-                return getContext().getString(R.string.w_add);
         }
         return null;
     }
@@ -261,7 +262,16 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     final Contributors contributors = response.body().entity;
 
-                    if (album() != null) {
+                    if (contributor() != null) {
+                        contributor().contributor_status = toStatus.value();
+                        endDataLoading();
+                        modelChanged();
+
+                        if (delegate != null)
+                            delegate.onChange(target, contributors);
+
+                        EventBus.getDefault().post(new CoeditEvent(CoeditEvent.CHANGE, target, contributors));
+                    } else if (album() != null) {
                         album().contributors.synchronize(contributors, new Runnable() {
                             @Override
                             public void run() {
@@ -275,15 +285,6 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
                                 EventBus.getDefault().post(new CoeditEvent(CoeditEvent.SYNC, target, contributors));
                             }
                         }, true);
-                    } else {
-                        contributor().contributor_status = toStatus.value();
-                        endDataLoading();
-                        modelChanged();
-
-                        if (delegate != null)
-                            delegate.onChange(target, contributors);
-
-                        EventBus.getDefault().post(new CoeditEvent(CoeditEvent.CHANGE, target, contributors));
                     }
                 } else {
                     if (DEBUG)

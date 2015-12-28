@@ -119,20 +119,20 @@ public final class AnalyticsTrackers {
     }
 
     public void trackScreen(final Target target, String screenName) {
-        getScreenText(target, screenName,
-                new CompleteHandler() {
-                    @Override
-                    public void onComplete(final String text) {
-                        Application.runOnBackgroundThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Tracker tracker = AnalyticsTrackers.getInstance().get(target);
-                                tracker.setScreenName(text);
-                                tracker.send(new HitBuilders.AppViewBuilder().build());
-                            }
-                        });
-                    }
-                });
+//        getScreenText(target, screenName,
+//                new CompleteHandler() {
+//                    @Override
+//                    public void onComplete(final String text) {
+//                        Application.runOnBackgroundThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Tracker tracker = AnalyticsTrackers.getInstance().get(target);
+//                                tracker.setScreenName(text);
+//                                tracker.send(new HitBuilders.AppViewBuilder().build());
+//                            }
+//                        });
+//                    }
+//                });
     }
 
     public interface CompleteHandler {

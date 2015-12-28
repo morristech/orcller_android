@@ -16,6 +16,7 @@ import com.orcller.app.orcllermodules.model.User;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
@@ -70,7 +71,7 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
 
     @Override
     public void onClick(ExceptionView view) {
-        if (ExceptionViewFactory.Type.NoAlbum.equals(view.getTag())) {
+        if (ExceptionViewFactory.Type.NoAlbumCoedit.equals(view.getTag())) {
             InviteCollaborationActivity.show(getModel());
         } else if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
             AlbumCreateActivity.show();
@@ -82,12 +83,9 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
         if (ExceptionViewFactory.Type.NoAlbum.equals(view.getTag()) ||
-                ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
-            if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag()) && !getModel().isFollower())
-                view.setButtonText(null);
-
+                ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag()) ||
+                ExceptionViewFactory.Type.NoAlbumCoedit.equals(view.getTag()))
             return loadError == null && gridView.getItems().size() < 1;
-        }
         return super.shouldShowExceptionView(view);
     }
 
@@ -98,8 +96,11 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
 
         if (getModel().isMe())
             exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumMine, container));
+        else if (getModel().isFollower())
+            exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumCoedit, container));
         else
             exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbum, container));
+
 
         super.modelChanged();
     }

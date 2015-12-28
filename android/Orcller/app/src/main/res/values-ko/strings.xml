@@ -11,7 +11,8 @@
     <string name="w_ask_collaboration">공동편집 참여 요청</string>
     <string name="w_auto_slide">자동 슬라이드쇼</string>
     <string name="w_cancel">취소</string>
-    <string name="w_cancel_asking">요청 취소</string>
+    <string name="w_cancel_ask">요청 취소</string>
+    <string name="w_cancel_invite">초대 취소</string>
     <string name="w_change">변경</string>
     <string name="w_change_password">비밀번호 변경</string>
     <string name="w_change_password_ing">비밀번호 변경 중...</string>
@@ -20,7 +21,8 @@
     <string name="w_collaborators">공동편집자</string>
     <string name="w_comment">댓글</string>
     <string name="w_comments">댓글</string>
-    <string name="w_confirm">확인</string>
+    <string name="w_confirm">수락</string>
+    <string name="w_confirm_ask">요청 수락</string>
     <string name="w_confirm_collaboration">초대 수락</string>
     <string name="w_connected_accounts">연결된 계정</string>
     <string name="w_current_version">현재 버전</string>
@@ -41,8 +43,9 @@
     <string name="w_hearts">하트</string>
     <string name="w_instagram">인스타그램</string>
     <string name="w_instagram_photos">인스타그램 사진</string>
+    <string name="w_invite">초대</string>
     <string name="w_invites">초대한 친구</string>
-    <string name="w_invite_collaboration">공동편집 초대하기</string>
+    <string name="w_invite_collaboration">공동편집 초대</string>
     <string name="w_invite_facebook">페이스북 친구 초대</string>
     <string name="w_lastest_version">최신 버젼</string>
     <string name="w_login">로그인...</string>
@@ -173,7 +176,8 @@
     <string name="m_exception_desc_error_network">연결 상태를 확인한 후 다시 시도하세요.</string>
     <string name="m_exception_desc_error_unknown">다시 시도해 주세요.</string>
     <string name="m_exception_desc_no_activity">여기에 친구들의 활동 내역이 표시됩니다.</string>
-    <string name="m_exception_desc_no_album">내 앨범 공동편집에 초대해 보세요.</string>
+    <string name="m_exception_desc_no_album">내 앨범에 친구를 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
+    <string name="m_exception_desc_no_album_coedit">내 앨범에 친구를 초대해 함께 만들 수 있어요.</string>
     <string name="m_exception_desc_no_album_mine">지금 바로 쉽게 앨범을 만들 수 있어요.</string>
     <string name="m_exception_desc_no_collaborations">친구들의 앨범 공동편집에 참여해 보세요.</string>
     <string name="m_exception_desc_no_permissions">앨범이 비공개이거나 당신이 저작자를 팔로우하지 않는 상태일 수 있습니다.</string>

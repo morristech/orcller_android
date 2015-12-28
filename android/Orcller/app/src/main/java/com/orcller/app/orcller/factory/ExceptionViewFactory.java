@@ -13,17 +13,18 @@ public class ExceptionViewFactory {
     public enum Type {
         NoAlbumMine(1),
         NoAlbum(2),
-        NoTimeline(2),
-        NoActivity(3),
-        NoRecommendation(4),
-        NoCollaboration(4),
-        NoListData(5),
-        NoPermissionForAlbum(6),
-        DoseNotExistAlbum(7),
-        DoseNotExistStar(8),
-        DoseNotExistPhoto(9),
-        NetworkError(10),
-        UnknownError(11);
+        NoAlbumCoedit(3),
+        NoTimeline(4),
+        NoActivity(5),
+        NoRecommendation(6),
+        NoCollaboration(7),
+        NoListData(8),
+        NoPermissionForAlbum(9),
+        DoseNotExistAlbum(10),
+        DoseNotExistStar(11),
+        DoseNotExistPhoto(12),
+        NetworkError(13),
+        UnknownError(14);
 
         private int value;
 
@@ -49,10 +50,13 @@ public class ExceptionViewFactory {
         if (Type.NoAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album);
-            view.setButtonText(R.string.w_invite_collaboration);
         } else if (Type.NoAlbumMine.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_mine);
+        } else if (Type.NoAlbumCoedit.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_album);
+            view.setDescriptionText(R.string.m_exception_desc_no_album_mine);
+            view.setButtonText(R.string.w_invite_collaboration);
         } else if (Type.NoTimeline.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_timeline);
             view.setDescriptionText(R.string.m_exception_desc_no_timeline);

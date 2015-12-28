@@ -58,7 +58,6 @@ public class InviteCollaborationActivity extends PSActionBarActivity {
 
         setContentView(R.layout.activity_invite_collaboration);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration));
 
         container = (RelativeLayout) findViewById(R.id.container);
         listView = (ListView) findViewById(R.id.listView);
@@ -71,6 +70,8 @@ public class InviteCollaborationActivity extends PSActionBarActivity {
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         listView.setAdapter(listAdapter);
 
+        String endfix = model != null ? " - " + model.user_name : "";
+        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration) + endfix);
         load(null);
     }
 
