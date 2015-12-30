@@ -191,8 +191,8 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
 
         this.model = model;
 
-        AlbumDataProxy.getDefault().remainPages(model);
         modelChanged();
+        AlbumDataProxy.getDefault().remainPages(model);
     }
 
     public void loadRemainPages() {

@@ -388,7 +388,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     protected void setModel(Album model) {
-        if (ObjectUtils.equals(model, this.model))
+        if (ObjectUtils.equals(model, this.model) || model == null)
             return;
 
         this.model = model;
@@ -401,6 +401,18 @@ public class AlbumCreateActivity extends PSActionBarActivity
         }
 
         modelChanged();
+    }
+
+    protected void setPostItemEnabled() {
+        if (model == null || clonedModel == null)
+            return;
+
+        model.equalsModel(clonedModel, new Model.EqualsCompletion() {
+            @Override
+            public void onComplete(boolean equals) {
+                getPostItem().setEnabled(!equals && clonedModel.pages.count >= PAGE_COUNT_MIN);
+            }
+        });
     }
 
     // ================================================================================================
@@ -508,10 +520,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!titleEditText.hasFocus())
+                    return;
+
                 CharSequence charSequence = titleEditText.getText();
 
                 if (clonedModel != null && !TextUtils.isEmpty(clonedModel.name) && !TextUtils.isEmpty(charSequence)) {
-                    clonedModel.name = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
+                    clonedModel.name = charSequence.toString();
                     setPostItemEnabled();
                 }
             }
@@ -525,10 +540,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!descriptionInputView.hasFocus())
+                    return;
+
                 CharSequence charSequence = descriptionInputView.getText();
 
                 if (clonedModel != null) {
-                    clonedModel.desc = TextUtils.isEmpty(charSequence) ? null : charSequence.toString();
+                    clonedModel.desc = charSequence.toString();
                     setPostItemEnabled();
                 }
             }
@@ -543,24 +561,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
         }
     }
 
-    private void setPostItemEnabled() {
-        if (model == null || clonedModel == null)
-            return;
-
-        model.equalsModel(clonedModel, new Model.EqualsCompletion() {
-            @Override
-            public void onComplete(boolean equals) {
-                getPostItem().setEnabled(!equals && clonedModel.pages.count >= PAGE_COUNT_MIN);
-            }
-        });
-    }
-
     private void showCloseAlert() {
         AlertDialogUtils.show(getString(R.string.m_activity_close_message),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
+                            MediaManager.getDefault().clearUnnecessaryItems();
                             onBackPressed();
                         }
                     }

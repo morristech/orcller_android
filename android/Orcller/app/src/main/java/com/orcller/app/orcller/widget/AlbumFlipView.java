@@ -28,6 +28,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -145,7 +146,17 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                             targetFlipView.doFlip(FlipView.Direction.Right, new DecelerateInterpolator());
                     }
                 } else {
-                    FlipView flipView = startPoint.x > pageWidth ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    FlipView flipView;
+
+                    Log.d("first, end", pageIndex == 0, (pageIndex * 2) + 1 > model.pages.total_count);
+
+                    if (pageIndex == 0)
+                        flipView = getSelectedFlipView();
+                    else if ((pageIndex * 2) + 1 > model.pages.total_count)
+                        flipView = visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    else
+                        flipView = startPoint.x > pageWidth ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+
                     onTap(flipView, flipView.getCurrentPageView());
                 }
 

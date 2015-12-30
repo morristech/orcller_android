@@ -37,7 +37,7 @@ public class AlbumPageCountView extends TextView {
     private void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+        params.gravity = Gravity.RIGHT | Gravity.TOP;
         params.setMargins(0, 0, 12, 12);
 
         setLayoutParams(params);

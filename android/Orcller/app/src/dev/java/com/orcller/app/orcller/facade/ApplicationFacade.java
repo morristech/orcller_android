@@ -11,11 +11,13 @@ import android.text.TextUtils;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.HitBuilders;
 import com.orcller.app.orcller.AnalyticsTrackers;
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.PushNotificationObject;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -85,27 +87,33 @@ public class ApplicationFacade {
                 SharedObject.get().loadNewsCountDireclty();
             }
         } else {
-            AnalyticsTrackers.initialize(Application.applicationContext());
-            FacebookSdk.sdkInitialize(Application.applicationContext());
-            DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
+            try {
+                AnalyticsTrackers.initialize(Application.applicationContext());
+                FacebookSdk.sdkInitialize(Application.applicationContext());
+                DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
+                MediaManager.getDefault().clearUnnecessaryItems();
 
-            if (!EventBus.getDefault().isRegistered(uniqueInstance))
-                EventBus.getDefault().register(this);
+                if (!EventBus.getDefault().isRegistered(uniqueInstance))
+                    EventBus.getDefault().register(this);
 
-            if (ApplicationLauncher.getDefault().initialized()) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startMainActivity();
-                    }
-                }, 1000);
-            } else {
-                ApplicationLauncher.getDefault()
-                        .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
-                        .launch();
+                if (ApplicationLauncher.getDefault().initialized()) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startMainActivity();
+                        }
+                    }, 1000);
+                } else {
+                    ApplicationLauncher.getDefault()
+                            .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
+                            .launch();
+                }
+
+                initialized = true;
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    Log.d("ApplicationFacade Run", e);
             }
-
-            initialized = true;
         }
     }
 

@@ -25,8 +25,10 @@ import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
+import com.orcller.app.orcller.event.RelationshipsEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.itemview.LoadMoreFooterView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
@@ -67,8 +69,9 @@ import retrofit.Retrofit;
 public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
         SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
-    private static final int LIST_COUNT = 20;
+    private static final int LIST_COUNT = 10;
     private boolean isCreateButtonAnimating;
+    private boolean shouldReload = true;
     private int scrollState;
     private Point startPoint;
     private List<Object> items = new ArrayList<>();
@@ -81,6 +84,7 @@ public class TimelineFragment extends MainTabFragment
     private Button newPostButton;
     private ListAdapter listAdapter;
     private View listHeaderView;
+    private LoadMoreFooterView listFooterView;
     private PSListView listView;
     private FloatingActionButton createButton;
     private AlbumFlipView selectedAlbumFlipView;
@@ -93,6 +97,13 @@ public class TimelineFragment extends MainTabFragment
     // ================================================================================================
     //  Overridden: MainTabFragment
     // ================================================================================================
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        dequeueEvent();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -111,6 +122,7 @@ public class TimelineFragment extends MainTabFragment
         listAdapter = new ListAdapter(getContext());
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
         listHeaderView = new View(getContext());
+        listFooterView = new LoadMoreFooterView(getContext());
 
         listHeaderView.setBackgroundColor(getResources().getColor(R.color.theme_white_accent));
         listHeaderView.setLayoutParams(new AbsListView.LayoutParams(
@@ -143,17 +155,13 @@ public class TimelineFragment extends MainTabFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void endDataLoading() {
         super.endDataLoading();
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
+        listView.removeFooterView(listFooterView);
         exceptionViewManager.validate();
     }
 
@@ -167,13 +175,9 @@ public class TimelineFragment extends MainTabFragment
         if (ExceptionViewFactory.Type.NoTimeline.equals(view.getTag())) {
             AlbumCreateActivity.show();
         } else {
+            shouldReload = true;
+
             exceptionViewManager.clear();
-            swipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    swipeRefreshLayout.setRefreshing(true);
-                }
-            });
             reload();
         }
     }
@@ -210,8 +214,7 @@ public class TimelineFragment extends MainTabFragment
             listView.setAdapter(listAdapter);
         }
 
-        if (isFirstLoading() || items.size() < 1)
-            reload();
+        reload();
     }
 
     @Override
@@ -238,8 +241,10 @@ public class TimelineFragment extends MainTabFragment
             AlbumEvent casted = (AlbumEvent) event;
             Album album = (Album) casted.getObject();
 
-            if (!AlbumEvent.DELETE.equals(casted.getType()))
-                TimelineDataProxy.getDefault().setLastViewDate(album.updated_time);
+            if (!AlbumEvent.DELETE.equals(casted.getType())) {
+                lastEntity.time = album.updated_time;
+                TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
+            }
 
             eventQueue.offer((Event) event);
             dequeueEvent();
@@ -255,6 +260,16 @@ public class TimelineFragment extends MainTabFragment
 
             if (SharedObject.get().getTimelineCount() > 0)
                 newPostButton.setVisibility(View.VISIBLE);
+        } else if (event instanceof RelationshipsEvent) {
+            RelationshipsEvent casted = (RelationshipsEvent) event;
+
+            if (RelationshipsEvent.FOLLOW.equals(casted.getType()) ||
+                    RelationshipsEvent.UNFOLLOW.equals(casted.getType())) {
+                shouldReload = true;
+
+                if (isActive())
+                    reload();
+            }
         }
     }
 
@@ -265,6 +280,8 @@ public class TimelineFragment extends MainTabFragment
         if (createButton.equals(v)) {
             AlbumCreateActivity.show();
         } else if (newPostButton.equals(v)) {
+            shouldReload = true;
+
             listView.setSelection(0);
             reload();
         }
@@ -315,6 +332,8 @@ public class TimelineFragment extends MainTabFragment
      * SwipeRefreshLayout.OnRefreshListener
      */
     public void onRefresh() {
+        shouldReload = true;
+
         reload();
     }
 
@@ -348,6 +367,12 @@ public class TimelineFragment extends MainTabFragment
         }
     }
 
+    private void cacheItems() {
+        if (lastEntity != null)
+            TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
+        ModelFileCacheManager.save(ModelFileCacheManager.Type.Timeline, items);
+    }
+
     private void deleteItem(Object item) {
         if (items.contains(item)) {
             items.remove(item);
@@ -373,7 +398,7 @@ public class TimelineFragment extends MainTabFragment
     }
 
     private void dequeueEvent() {
-        if (eventQueue.size() < 1)
+        if (!isActive() || eventQueue.size() < 1)
             return;
 
         final Event event = eventQueue.poll();
@@ -383,25 +408,31 @@ public class TimelineFragment extends MainTabFragment
         if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
             final MediaUploadUnit unit = (MediaUploadUnit) target;
 
-            deleteItem(unit, new Runnable() {
-                @Override
-                public void run() {
-                    if (MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
-                        listAdapter.notifyDataSetChanged();
-                    } else {
-                        addItem(unit);
-                    }
+            if (unit.isCancelled()) {
+                dequeueEvent();
+            } else {
+                deleteItem(unit, new Runnable() {
+                    @Override
+                    public void run() {
+                        if (MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
+                            listAdapter.notifyDataSetChanged();
+                        } else {
+                            addItem(unit);
+                        }
 
-                    dequeueEvent();
-                }
-            });
+                        dequeueEvent();
+                    }
+                });
+            }
         } else if (target instanceof MediaUploadUnit &&
                 (AlbumEvent.CREATE.equals(type) || AlbumEvent.MODIFY.equals(type))) {
             deleteItem(target);
             addItem(event.getObject());
+            cacheItems();
             dequeueEvent();
         } else if (AlbumEvent.DELETE.equals(type)) {
             deleteItem(event.getObject());
+            cacheItems();
             dequeueEvent();
         }
     }
@@ -447,13 +478,15 @@ public class TimelineFragment extends MainTabFragment
         if (invalidDataLoading())
             return;
 
-        if (isFirstLoading()) {
+        if (after == null) {
             swipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
                     swipeRefreshLayout.setRefreshing(true);
                 }
             });
+        } else {
+            listView.addFooterView(listFooterView);
         }
 
         loadError = null;
@@ -475,12 +508,14 @@ public class TimelineFragment extends MainTabFragment
                     }, new Runnable() {
                         @Override
                         public void run() {
+                            endDataLoading();
                             pauseSlideShow();
                             listAdapter.notifyDataSetChanged();
-                            TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
                             SharedObject.get().setTimelineCount(0);
+                            cacheItems();
                             MediaManager.getDefault().continueUploading();
-                            ModelFileCacheManager.save(ModelFileCacheManager.Type.Timeline, items);
+
+                            shouldReload = false;
                         }
                     });
                 } else {
@@ -488,9 +523,9 @@ public class TimelineFragment extends MainTabFragment
                         Log.e("Api Error", response.body());
 
                     loadError = items.size() < 1 ? new APIError(response.body()) : null;
-                }
 
-                endDataLoading();
+                    endDataLoading();
+                }
             }
 
             @Override
@@ -525,8 +560,10 @@ public class TimelineFragment extends MainTabFragment
     }
 
     private void reload() {
-        newPostButton.setVisibility(View.GONE);
-        load(null);
+        if (shouldReload) {
+            newPostButton.setVisibility(View.GONE);
+            load(null);
+        }
     }
 
     private void showCreateButton() {

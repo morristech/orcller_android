@@ -9,8 +9,11 @@ import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.orcller.app.orcller.R;
 
 import java.lang.ref.WeakReference;
+
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/22/15.
@@ -41,7 +44,7 @@ public class ImageMediaScrollView extends MediaView {
 
         scaleImageView = new WeakReference<>(new SubsamplingScaleImageView(context));
         scaleImageView.get().setDoubleTapZoomScale(2f);
-        setImageLoadType(ImageLoadType.StandardResoultion.value());
+        setImageLoadType(ImageLoadType.LowResolution.value() | ImageLoadType.StandardResoultion.value());
         removeView(imageView);
         addView(scaleImageView.get(), 0);
     }
@@ -56,22 +59,13 @@ public class ImageMediaScrollView extends MediaView {
 
     @Override
     protected void loadImages() {
-        final MediaView self = this;
-
-        if (delegate != null)
-            delegate.onStartImageLoad(this);
-
         loadImages(new CompleteHandler() {
             @Override
             public void onComplete() {
-                if (delegate != null)
-                    delegate.onCompleteImageLoad(self);
             }
 
             @Override
             public void onError() {
-                if (delegate != null)
-                    delegate.onError(self);
             }
         });
     }
@@ -79,7 +73,7 @@ public class ImageMediaScrollView extends MediaView {
     @Override
     protected void onCompleteImageLoad(GlideDrawable drawable) {
         Bitmap bitmap = ((GlideBitmapDrawable) drawable).getBitmap();
-        float scale = bitmap.getWidth() / getWidth();
+        float scale = (float) getWidth() / bitmap.getWidth();
 
         scaleImageView.get().setImage(ImageSource.cachedBitmap(bitmap));
 
@@ -94,6 +88,8 @@ public class ImageMediaScrollView extends MediaView {
 
     @Override
     protected void onError() {
+        if (scaleImageView.get().getVisibility() == GONE)
+            scaleImageView.get().setImage(ImageSource.resource(R.drawable.img_fb_empty_album));
         progressBar.setVisibility(GONE);
     }
 
@@ -101,7 +97,6 @@ public class ImageMediaScrollView extends MediaView {
     protected void onStartImageLoad() {
         scaleImageView.get().recycle();
         scaleImageView.get().resetScaleAndCenter();
-        progressBar.setVisibility(VISIBLE);
 
         super.onStartImageLoad();
     }

@@ -1,10 +1,10 @@
 package com.orcller.app.orcller.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
@@ -13,6 +13,7 @@ import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
@@ -44,6 +45,23 @@ public class AlbumEditActivity extends AlbumCreateActivity {
     }
 
     @Override
+    public void endDataLoading() {
+        super.endDataLoading();
+
+        ProgressBarManager.hide();
+    }
+
+    @Override
+    public boolean invalidDataLoading() {
+        boolean invalid = super.invalidDataLoading();
+
+        if (!invalid)
+            ProgressBarManager.show();
+
+        return invalid;
+    }
+
+    @Override
     protected Album createModel() {
         return null;
     }
@@ -69,25 +87,30 @@ public class AlbumEditActivity extends AlbumCreateActivity {
     // ================================================================================================
 
     private void loadAlbum() {
+        if (invalidDataLoading())
+            return;
+
         long albumId = getIntent().getLongExtra(ALBUM_ID_KEY, 0);
-
         if (albumId > 0) {
-            final Activity activity = this;
-
-            ProgressBarManager.show(this);
             AlbumDataProxy.getDefault().view(albumId, new Callback<ApiAlbum.AlbumRes>() {
                 @Override
                 public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                    ProgressBarManager.hide(activity);
-
                     if (response.isSuccess() && response.body().isSuccess()) {
                         setModel(response.body().entity);
+                    } else {
+                        if (BuildConfig.DEBUG)
+                            Log.d("Api Error", response.body());
                     }
+
+                    endDataLoading();
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    ProgressBarManager.hide(activity);
+                    if (BuildConfig.DEBUG)
+                        Log.d("onFailure", t);
+
+                    endDataLoading();
                 }
             });
         }

@@ -17,7 +17,7 @@ import pisces.psfoundation.utils.Log;
  * Created by pisces on 12/26/15.
  */
 public class ModelFileCacheManager {
-    private static final File CACHED_TIMELINE = new File(SharedObject.DATA_DIR, "timeline.caches");
+    private static final File CACHED_TIMELINE = new File(SharedObject.CACHE_DIR, "timeline.caches");
 
     public enum Type {
         Timeline
@@ -51,22 +51,15 @@ public class ModelFileCacheManager {
     public static void save(Type type, final Object object) {
         final File file = getCacheFile(type);
 
-        if (file != null) {
-            Application.runOnBackgroundThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        FileOutputStream fos = new FileOutputStream(file);
-                        ObjectOutputStream os = new ObjectOutputStream(fos);
-                        os.writeObject(object);
-                        os.close();
-                        fos.close();
-                    } catch (Exception e) {
-                        if (BuildConfig.DEBUG)
-                            Log.e(e.getMessage());
-                    }
-                }
-            });
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(object);
+            os.close();
+            fos.close();
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                Log.e(e.getMessage());
         }
     }
 

@@ -63,7 +63,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
 
         videoView = new PSVideoView(getContext());
         videoView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        videoView.setVisibility(INVISIBLE);
+        videoView.setVisibility(GONE);
         videoView.setPlayStateListener(this);
 
         addView(videoView);
@@ -88,16 +88,10 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
             @Override
             public void onComplete() {
                 controlButton.setVisibility(VISIBLE);
-
-                if (delegate != null)
-                    delegate.onCompleteImageLoad(self);
             }
 
             @Override
             public void onError() {
-                if (delegate != null)
-                    delegate.onError(self);
-
                 if (controlEnabled)
                     controlButton.setVisibility(GONE);
             }
@@ -111,10 +105,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         Point point = getControlButtonPoint(controlButtonState.equals(ControlButtonState.Play));
         controlButton.setX(point.x);
         controlButton.setY(point.y);
-    }
-
-    @Override
-    protected void setUpSubviews(Context context) {
     }
 
     // ================================================================================================

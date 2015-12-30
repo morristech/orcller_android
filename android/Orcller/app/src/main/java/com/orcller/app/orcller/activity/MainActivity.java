@@ -3,6 +3,7 @@ package com.orcller.app.orcller.activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -48,6 +49,7 @@ public class MainActivity extends PSActionBarActivity
     private PagerAdapter pagerAdapter;
     private TabHost tabHost;
     private PSViewPager viewPager;
+    private MainTabFragment activedFragment;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -140,12 +142,6 @@ public class MainActivity extends PSActionBarActivity
                 viewPager.setPagingEnabled(true);
             else if (AlbumFlipViewEvent.START_PANNING.equals(casted.getType()))
                 viewPager.setPagingEnabled(false);
-        } else if (event instanceof MediaUploadUnit.Event) {
-            MediaUploadUnit.Event casted = (MediaUploadUnit.Event) event;
-
-            if (MediaUploadUnit.Event.START_UPLOADING.equals(casted.getType())) {
-                tabHost.setCurrentTab(0);
-            }
         }
     }
 
@@ -182,21 +178,27 @@ public class MainActivity extends PSActionBarActivity
      * TabHost.OnTabChangeListener
      */
     public void onTabChanged(String tag) {
+        if (activedFragment != null) {
+            activedFragment.setActive(false);
+            activedFragment = null;
+        }
+
         int position = Integer.valueOf(tag);
         viewPager.setCurrentItem(position);
 
-        MainTabFragment fragment = (MainTabFragment) pagerAdapter.getItem(position);
-        String title = fragment.getToolbarTitle();
+        activedFragment = (MainTabFragment) pagerAdapter.getItem(position);
+        String title = activedFragment.getToolbarTitle();
 
         getSupportActionBar().setTitle(title);
         getToolbar().setVisibility(TextUtils.isEmpty(title) ? View.GONE : View.VISIBLE);
 
-        if (fragment.isUseSoftKeyboard())
+        if (activedFragment.isUseSoftKeyboard())
             SoftKeyboardNotifier.getDefault().register(this);
         else
             SoftKeyboardNotifier.getDefault().unregister(this);
 
-        fragment.invalidateFragment();
+        activedFragment.invalidateFragment();
+        activedFragment.setActive(true);
     }
 
     // ================================================================================================

@@ -1,5 +1,7 @@
 package com.orcller.app.orcller.proxy;
 
+import android.os.AsyncTask;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
@@ -180,21 +182,33 @@ public class AlbumDataProxy extends AbstractDataProxy {
         final Call<ApiAlbum.PagesRes> call = service().pages(album.id, 0, album.pages.after);
         enqueueCall(call, new Callback<ApiAlbum.PagesRes>() {
             @Override
-            public void onResponse(Response<ApiAlbum.PagesRes> response, Retrofit retrofit) {
-                remainPageRequestMap.remove(key);
+            public void onResponse(final Response<ApiAlbum.PagesRes> response, Retrofit retrofit) {
+                new AsyncTask<Void, Void, Pages>() {
+                    @Override
+                    protected Pages doInBackground(Void... params) {
+                        remainPageRequestMap.remove(key);
 
-                if (response.isSuccess() && response.body().isSuccess()) {
-                    ApiAlbum.PagesRes result = response.body();
+                        if (response.isSuccess() && response.body().isSuccess()) {
+                            ApiAlbum.PagesRes result = response.body();
+                            cachedPagesMap.put(key, new CacheObject(album.updated_time, result.entity));
+                            return result.entity;
+                        }
 
-                    cachedPagesMap.put(key, new CacheObject(album.updated_time, result.entity));
+                        return null;
+                    }
 
-                    if (completeHandler != null)
-                        appendPages(album, result.entity, onComplete);
-                    return;
-                }
+                    @Override
+                    protected void onPostExecute(Pages result) {
+                        super.onPostExecute(result);
 
-                if (completeHandler != null)
-                    completeHandler.onComplete(false);
+                        if (completeHandler != null) {
+                            if (result != null)
+                                appendPages(album, result, onComplete);
+                            else
+                                completeHandler.onComplete(false);
+                        }
+                    }
+                }.execute();
             }
 
             @Override

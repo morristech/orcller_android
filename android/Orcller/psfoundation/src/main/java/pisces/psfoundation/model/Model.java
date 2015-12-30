@@ -7,12 +7,15 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GsonUtil;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 
 /**
@@ -84,17 +87,15 @@ public class Model implements Cloneable, Serializable {
                 field.setAccessible(true);
 
                 Object object = field.get(this);
+                Object otherObject = field.get(other);
 
-                if (Model.class.isInstance(object)) {
-                    if (!Model.equalsModel(object, field.get(other)))
-                        return false;
-                } else if (!equals(object, field.get(other))) {
+                if (!equals(object, otherObject))
                     return false;
-                }
             }
 
             return true;
         } catch (Exception e) {
+            Log.d("Exception", e);
             e.printStackTrace();
         }
 
@@ -175,12 +176,76 @@ public class Model implements Cloneable, Serializable {
     //  Private
     // ================================================================================================
 
-    private boolean equals(Object value, Object otherValue) {
-        if (value == null && otherValue == null)
+    private boolean equals(Object object, Object otherObject) {
+        if (object == null && otherObject == null)
             return true;
-        if (value == null || otherValue == null)
+        if ((object != null && otherObject == null) || (object == null && otherObject != null))
             return false;
-        return value.equals(otherValue);
+        if (!object.getClass().equals(otherObject.getClass()))
+            return false;
+        if (Model.class.isInstance(object) && !Model.equalsModel(object, otherObject))
+            return false;
+        if (List.class.isInstance(object) && !equalsList((List) object, (List) otherObject))
+            return false;
+        if (Map.class.isInstance(object) && !equalsMap((Map) object, (Map) otherObject))
+            return false;
+        if (!ObjectUtils.equals(object, otherObject))
+            return false;
+        return true;
+    }
+
+    private boolean equalsList(List list, List otherList) {
+        if (list == null && otherList == null)
+            return true;
+        if (list == null || otherList == null)
+            return false;
+
+        int count = list.size();
+        int otherCount = otherList.size();
+
+        if (count != otherCount)
+            return false;
+
+        int i = 0;
+        for (Object object : list) {
+            Object otherObject = otherList.get(i);
+
+            if (!equals(object, otherObject))
+                return false;
+
+            i++;
+        }
+
+        return true;
+    }
+
+    private boolean equalsMap(Map map, Map otherMap) {
+        if (map == null && otherMap == null)
+            return true;
+        if (map == null || otherMap == null)
+            return false;
+
+        int count = map.size();
+        int otherCount = otherMap.size();
+
+        if (count != otherCount)
+            return false;
+
+        int i = 0;
+        Iterator entries = map.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry entry = (Map.Entry) entries.next();
+            Object key = entry.getKey();
+            Object object = map.get(key);
+            Object otherObject = otherMap.get(key);
+
+            if (!equals(object, otherObject))
+                return false;
+
+            i++;
+        }
+
+        return true;
     }
 
     // ================================================================================================

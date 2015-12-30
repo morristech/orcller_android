@@ -130,6 +130,11 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
         modelChanged();
     }
 
+    public void reload() {
+        userPictureView.reload();
+        updateDisplayList();
+    }
+
     public void save() {
         validator.validate();
     }
@@ -281,13 +286,9 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
     private void modelChanged() {
         userPictureView.setModel(model);
         nickNameEditText.setHint(model.isMe() ? R.string.m_hint_user_name_me : R.string.m_hint_user_name);
-        nickNameEditText.setText(model.user_name);
         nickNameEditText.setEnabled(model.isMe());
         messageEditText.setHint(model.isMe() ? R.string.m_hint_profile_message_me : R.string.m_hint_profile_message);
-        messageEditText.setText(model.user_profile_message);
         messageEditText.setEnabled(model.isMe());
-        followersButton.setText(getContext().getString(R.string.w_followers) + getCountText(model.user_options.follower_count));
-        followingButton.setText(getContext().getString(R.string.w_following) + getCountText(model.user_options.follow_count));
 
         if (!model.isMe()) {
             nickNameEditText.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
@@ -302,11 +303,13 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
             messageEditText.setPadding(messageEditText.getPaddingLeft(), GraphicUtils.convertDpToPixel(8), 0, 0);
             separator.setVisibility(VISIBLE);
         }
+
+        updateDisplayList();
     }
 
     private void synchronizeModel(User user) {
         if (user.equals(model)) {
-            userPictureView.reload();
+            reload();
         } else if (user.user_uid == model.user_uid) {
             model.synchronize(user, new Runnable() {
                 @Override
@@ -318,6 +321,13 @@ public class ProfileHearderView extends PSLinearLayout implements Validator.Vali
                 }
             });
         }
+    }
+
+    private void updateDisplayList() {
+        nickNameEditText.setText(model.user_name);
+        messageEditText.setText(model.user_profile_message);
+        followersButton.setText(getContext().getString(R.string.w_followers) + getCountText(model.user_options.follower_count));
+        followingButton.setText(getContext().getString(R.string.w_following) + getCountText(model.user_options.follow_count));
     }
 
     // ================================================================================================

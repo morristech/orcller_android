@@ -32,12 +32,15 @@ import static pisces.psfoundation.utils.Log.e;
  * Created by pisces on 12/3/15.
  */
 public class MediaUploadUnit implements Serializable {
+    private static final long serialVersionUID = 7526472295622776147L;
+
     public enum CompletionState {
         None,
         Creation,
         Modification
     }
 
+    private boolean cancelled;
     private boolean processing;
     private float process;
     private int total;
@@ -55,6 +58,10 @@ public class MediaUploadUnit implements Serializable {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
 
     public boolean isProcessing() {
         return processing;
@@ -80,6 +87,7 @@ public class MediaUploadUnit implements Serializable {
     }
 
     public void cancelAll() {
+        cancelled = true;
         AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
         map.clear();
         queue.clear();

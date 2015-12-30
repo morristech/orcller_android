@@ -86,11 +86,9 @@ public class TimelineDataProxy extends AbstractDataProxy {
     // ================================================================================================
 
     public interface Service {
-        @FormUrlEncoded
         @POST("newsfeed/hidden/user/{userId}")
         Call<ApiResult> hideAllAlbums(@Path("userId") long userId);
 
-        @FormUrlEncoded
         @POST("newsfeed/hidden/album/{albumId}")
         Call<ApiResult> hideAlbum(@Path("albumId") long albumId);
 

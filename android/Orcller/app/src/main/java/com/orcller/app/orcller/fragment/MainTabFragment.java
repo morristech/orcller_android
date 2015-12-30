@@ -11,6 +11,7 @@ import pisces.psuikit.ext.PSFragment;
  * Created by pisces on 12/18/15.
  */
 abstract public class MainTabFragment extends PSFragment {
+    private boolean active;
     private boolean shouldStartFragment;
     private ActionBar actionBar;
 
@@ -18,9 +19,25 @@ abstract public class MainTabFragment extends PSFragment {
     //  Overridden: PSFragment
     // ================================================================================================
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        setActive(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        setActive(false);
+    }
+
+    @Override
     protected void commitProperties() {
         if (shouldStartFragment) {
             shouldStartFragment = false;
+
             startFragment();
             trackFragment();
         }
@@ -41,6 +58,14 @@ abstract public class MainTabFragment extends PSFragment {
 
     public void setActionBar(ActionBar actionBar) {
         this.actionBar = actionBar;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void invalidateFragment() {

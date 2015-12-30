@@ -263,15 +263,21 @@ public class PageListActivity extends PSActionBarActivity
         AlbumDataProxy.getDefault().likeOfPage(page, new Callback<ApiAlbum.LikesRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.LikesRes> response, Retrofit retrofit) {
-                endDataLoading();
-
                 if (response.isSuccess() && response.body().isSuccess()) {
                     page.likes.synchronize(response.body().entity, true);
+                } else {
+                    if (BuildConfig.DEBUG)
+                        Log.d("Api Error", response.body());
                 }
+
+                endDataLoading();
             }
 
             @Override
             public void onFailure(Throwable t) {
+                if (BuildConfig.DEBUG)
+                    Log.d("onFailure", t);
+
                 endDataLoading();
             }
         });
@@ -438,6 +444,8 @@ public class PageListActivity extends PSActionBarActivity
                         }
                     });
                 }
+
+                endDataLoading();
             }
         });
     }

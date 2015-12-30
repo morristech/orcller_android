@@ -95,7 +95,7 @@ public class ProgressBarManager {
     }
 
     public static ProgressBar show(ViewGroup viewGroup) {
-        return show(viewGroup, android.R.attr.progressBarStyleSmallInverse);
+        return show(viewGroup, android.R.attr.progressBarStyleSmall);
     }
 
     public static ProgressBar show(ViewGroup viewGroup, int progressStyle) {

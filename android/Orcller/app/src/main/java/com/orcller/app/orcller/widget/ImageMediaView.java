@@ -30,19 +30,13 @@ public class ImageMediaView extends MediaView {
 
     @Override
     protected void loadImages() {
-        final MediaView self = this;
-
         loadImages(new CompleteHandler() {
             @Override
             public void onComplete() {
-                if (delegate != null)
-                    delegate.onCompleteImageLoad(self);
             }
 
             @Override
             public void onError() {
-                if (delegate != null)
-                    delegate.onError(self);
             }
         });
     }
