@@ -67,10 +67,12 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
      */
     public void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model) {
         invoker.invalidateOptionsMenu();
+        invoker.onAlbumInfoSynchronize(itemView, model);
     }
 
     public void onAlbumSynchronize(AlbumItemView itemView) {
         invoker.invalidateOptionsMenu();
+        invoker.onAlbumSynchronize(itemView);
     }
 
     public void onClick(AlbumItemView itemView, AlbumItemView.ButtonType type, View view) {
@@ -222,6 +224,8 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     public interface Invoker {
         CommentInputView getCommentInputView();
         void invalidateOptionsMenu();
+        void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
+        void onAlbumSynchronize(AlbumItemView itemView);
         void onChangePanningState(boolean isPanning);
         void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
     }

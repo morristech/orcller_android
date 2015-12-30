@@ -13,6 +13,7 @@ import com.orcller.app.orcller.R;
 
 import java.lang.ref.WeakReference;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 
 /**
@@ -20,6 +21,7 @@ import pisces.psfoundation.utils.Log;
  */
 public class ImageMediaScrollView extends MediaView {
     private boolean scaleEnabled = true;
+    private float baseScale;
     private WeakReference<SubsamplingScaleImageView> scaleImageView;
 
     public ImageMediaScrollView(Context context) {
@@ -73,13 +75,12 @@ public class ImageMediaScrollView extends MediaView {
     @Override
     protected void onCompleteImageLoad(GlideDrawable drawable) {
         Bitmap bitmap = ((GlideBitmapDrawable) drawable).getBitmap();
-        float scale = (float) getWidth() / bitmap.getWidth();
+        baseScale = (float) Application.getWindowWidth() / bitmap.getWidth();
 
         scaleImageView.get().setImage(ImageSource.cachedBitmap(bitmap));
 
         if (isScaleAspectFill()) {
-            scaleImageView.get().setScaleAndCenter(scale, new PointF(bitmap.getWidth() / 2, bitmap.getHeight() / 2));
-            scaleImageView.get().setMinScale(scale);
+            scaleImageView.get().setScaleAndCenter(baseScale, new PointF(bitmap.getWidth() / 2, bitmap.getHeight() / 2));
         }
 
         progressBar.setVisibility(GONE);
@@ -96,7 +97,7 @@ public class ImageMediaScrollView extends MediaView {
     @Override
     protected void onStartImageLoad() {
         scaleImageView.get().recycle();
-        scaleImageView.get().resetScaleAndCenter();
+        reset();
 
         super.onStartImageLoad();
     }
@@ -106,7 +107,7 @@ public class ImageMediaScrollView extends MediaView {
     // ================================================================================================
 
     public void reset() {
-        scaleImageView.get().resetScaleAndCenter();
+        scaleImageView.get().setScaleAndCenter(baseScale, scaleImageView.get().getCenter());
     }
 
     public void setScaleEnabled(boolean scaleEnabled) {

@@ -34,6 +34,7 @@ import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.manager.ModelFileCacheManager;
 import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
@@ -161,6 +162,7 @@ public class TimelineFragment extends MainTabFragment
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
+        newPostButton.setVisibility(View.GONE);
         listView.removeFooterView(listFooterView);
         exceptionViewManager.validate();
     }
@@ -239,15 +241,17 @@ public class TimelineFragment extends MainTabFragment
                         SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
         } else if (event instanceof AlbumEvent) {
             AlbumEvent casted = (AlbumEvent) event;
-            Album album = (Album) casted.getObject();
 
             if (!AlbumEvent.DELETE.equals(casted.getType())) {
+                Album album = (Album) casted.getObject();
                 lastEntity.time = album.updated_time;
                 TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
             }
 
-            eventQueue.offer((Event) event);
-            dequeueEvent();
+            if (!AlbumEvent.PREPARE.equals(casted.getType())) {
+                eventQueue.offer((Event) event);
+                dequeueEvent();
+            }
         } else if (event instanceof MediaUploadUnit.Event) {
             MediaUploadUnit.Event casted = (MediaUploadUnit.Event) event;
 
@@ -347,6 +351,20 @@ public class TimelineFragment extends MainTabFragment
     public void invalidateOptionsMenu() {
     }
 
+    public void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model) {
+        if (items.get(0).equals(itemView.getModel())) {
+            lastEntity.time = itemView.getModel().updated_time;
+            cacheItems();
+        }
+    }
+
+    public void onAlbumSynchronize(AlbumItemView itemView) {
+        if (items.get(0).equals(itemView.getModel())) {
+            lastEntity.time = itemView.getModel().updated_time;
+            cacheItems();
+        }
+    }
+
     public void onChangePanningState(boolean isPanning) {
         listView.setScrollable(!isPanning);
         swipeRefreshLayout.setEnabled(!isPanning);
@@ -368,9 +386,10 @@ public class TimelineFragment extends MainTabFragment
     }
 
     private void cacheItems() {
-        if (lastEntity != null)
+        if (lastEntity != null) {
             TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
-        ModelFileCacheManager.save(ModelFileCacheManager.Type.Timeline, items);
+            ModelFileCacheManager.save(ModelFileCacheManager.Type.Timeline, items);
+        }
     }
 
     private void deleteItem(Object item) {

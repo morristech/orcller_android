@@ -17,6 +17,7 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
@@ -178,6 +179,12 @@ public class CoeditViewActivity extends PSActionBarActivity
      */
     public CommentInputView getCommentInputView() {
         return null;
+    }
+
+    public void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model) {
+    }
+
+    public void onAlbumSynchronize(AlbumItemView itemView) {
     }
 
     public void onChangePanningState(boolean isPanning) {

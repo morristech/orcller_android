@@ -1,7 +1,6 @@
 package com.orcller.app.orcller.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -18,6 +17,7 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.Album;
+import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
@@ -217,6 +217,12 @@ public class AlbumViewActivity extends PSActionBarActivity
      */
     public CommentInputView getCommentInputView() {
         return commentInputView;
+    }
+
+    public void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model) {
+    }
+
+    public void onAlbumSynchronize(AlbumItemView itemView) {
     }
 
     public void onChangePanningState(boolean isPanning) {

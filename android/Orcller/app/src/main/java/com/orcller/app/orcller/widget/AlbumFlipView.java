@@ -147,9 +147,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     }
                 } else {
                     FlipView flipView;
-
-                    Log.d("first, end", pageIndex == 0, (pageIndex * 2) + 1 > model.pages.total_count);
-
                     if (pageIndex == 0)
                         flipView = getSelectedFlipView();
                     else if ((pageIndex * 2) + 1 > model.pages.total_count)

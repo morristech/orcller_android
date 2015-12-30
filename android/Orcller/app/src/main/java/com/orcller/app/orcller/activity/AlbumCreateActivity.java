@@ -27,6 +27,7 @@ import com.mobsandgeeks.saripaar.annotation.Length;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.event.PageListEvent;
 import com.orcller.app.orcller.manager.ImagePickerManager;
 import com.orcller.app.orcller.manager.MediaManager;
@@ -313,6 +314,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         clonedModel.page_replace_enabled = !clonedModel.pages.data.equals(model.pages.data);
         getPostItem().setEnabled(false);
         SoftKeyboardUtils.hide(rootLayout);
+        EventBus.getDefault().post(new AlbumEvent(AlbumEvent.PREPARE, this, clonedModel));
         doRequest();
         finish();
     }

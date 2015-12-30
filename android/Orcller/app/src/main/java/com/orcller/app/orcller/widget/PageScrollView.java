@@ -262,7 +262,7 @@ public class PageScrollView extends PSLinearLayout
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onClickCommentButton(PageScrollView target);
         void onClickHeartButton(PageScrollView target);
         void onClickMediaView(PageScrollView target, MediaView mediaView);
