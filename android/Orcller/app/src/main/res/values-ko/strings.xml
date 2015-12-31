@@ -16,8 +16,7 @@
     <string name="w_change">변경</string>
     <string name="w_change_password">비밀번호 변경</string>
     <string name="w_change_password_ing">비밀번호 변경 중...</string>
-    <string name="w_coation">공동 편집</string>
-    <string name="w_collaboration">공동 편집</string>
+    <string name="w_coation">공동편집</string>
     <string name="w_collaborators">공동편집자</string>
     <string name="w_comment">댓글</string>
     <string name="w_comments">댓글</string>

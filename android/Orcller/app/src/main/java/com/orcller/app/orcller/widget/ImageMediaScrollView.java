@@ -14,7 +14,6 @@ import com.orcller.app.orcller.R;
 import java.lang.ref.WeakReference;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/22/15.

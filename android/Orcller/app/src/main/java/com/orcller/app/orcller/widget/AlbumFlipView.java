@@ -41,7 +41,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public static final int COUNT_OF_VISIBLE_VIEWS = 5;
     public static final int PAGE_COUNT = 2;
 
-    private boolean allowsAutoSlide;
     private boolean allowsShowPageCount;
     private boolean playing;
     private boolean shouldLoadPages;
@@ -197,14 +196,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     //  Public
     // ================================================================================================
 
-    public boolean isAllowsAutoSlide() {
-        return allowsAutoSlide;
-    }
-
-    public void setAllowsAutoSlide(boolean allowsAutoSlide) {
-        this.allowsAutoSlide = allowsAutoSlide;
-    }
-
     public boolean isAllowsShowPageCount() {
         return allowsShowPageCount;
     }
@@ -285,8 +276,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         this.model = model;
         shouldLoadPages = true;
-
-        container.setVisibility(INVISIBLE);
 
         stop();
         invalidateProperties();
@@ -374,9 +363,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         loadRemainPages(new Runnable() {
             @Override
             public void run() {
-                if (pageIndex >= SharedObject.convertPositionToPageIndex(model.pages.data.size() - 1)) {
+                if (pageIndex >= SharedObject.convertPositionToPageIndex(model.pages.data.size() - 1))
                     setPageIndex(model.default_page_index);
-                }
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -410,8 +398,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     public void onTap(FlipView view, PageView pageView) {
-        if (!allowsAutoSlide)
-            pause();
+        pause();
 
         if (delegate != null)
             delegate.onTap(this, view, pageView);
@@ -617,10 +604,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     public void run() {
                         alignContainer(pageIndex, false);
                         updatePageCountView();
-
-                        if (container.getVisibility() == INVISIBLE) {
-                            container.setVisibility(VISIBLE);
-                        }
                     }
                 });
             }
@@ -669,7 +652,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         }
 
         pause();
-        container.setVisibility(VISIBLE);
 
         if (resetPages)
             setPageIndex(model.default_page_index);

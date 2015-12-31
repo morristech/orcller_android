@@ -79,7 +79,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
     @Override
     protected void loadImages() {
         allowsShowProgressBar = true;
-        final MediaView self = this;
 
         controlButton.setVisibility(GONE);
         videoView.setVideoPath(getVideo().videos.standard_resolution.url);
