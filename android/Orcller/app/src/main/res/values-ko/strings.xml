@@ -7,6 +7,7 @@
     <string name="w_account">계정</string>
     <string name="w_accept">수락</string>
     <string name="w_accept_ask">요청 수락</string>
+    <string name="w_accept_invite">초대 수락</string>
     <string name="w_accept_collaboration_invite">공동편집 초대 수락</string>
     <string name="w_add">추가</string>
     <string name="w_add_collaborators">공동편집자 추가</string>
@@ -15,6 +16,7 @@
     <string name="w_auto_slide">자동 슬라이드쇼</string>
     <string name="w_cancel">취소</string>
     <string name="w_cancel_ask">요청 취소</string>
+    <string name="w_cancel_collaboration_ask">공동편집 요청 취소</string>
     <string name="w_cancel_invite">초대 취소</string>
     <string name="w_change">변경</string>
     <string name="w_change_password">비밀번호 변경</string>

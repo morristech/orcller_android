@@ -13,6 +13,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.CoeditEvent;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumCoedit;
+import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.Contributor;
 import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiCoedit;
@@ -198,12 +199,21 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
             Album album = album();
 
             if (!album.isMine()) {
-                if (album.contributors.contributor_status == Contributor.Status.Ask.value())
-                    return getContext().getString(R.string.w_cancel_ask);
-                if (album.contributors.contributor_status == Contributor.Status.Invite.value())
-                    return getContext().getString(R.string.w_accept_collaboration_invite);
-                if (album.contributors.contributor_status == Contributor.Status.None.value())
-                    return getContext().getString(R.string.w_ask_collaboration);
+                boolean isCoedit = model instanceof Coedit;
+
+                if (isCoedit) {
+                    if (album.contributors.contributor_status == Contributor.Status.Ask.value())
+                        return getContext().getString(R.string.w_cancel_ask);
+                    if (album.contributors.contributor_status == Contributor.Status.Invite.value())
+                        return getContext().getString(R.string.w_accept_invite);
+                } else {
+                    if (album.contributors.contributor_status == Contributor.Status.Ask.value())
+                        return getContext().getString(R.string.w_cancel_collaboration_ask);
+                    if (album.contributors.contributor_status == Contributor.Status.Invite.value())
+                        return getContext().getString(R.string.w_accept_collaboration_invite);
+                    if (album.contributors.contributor_status == Contributor.Status.None.value())
+                        return getContext().getString(R.string.w_ask_collaboration);
+                }
             }
         }
         return null;

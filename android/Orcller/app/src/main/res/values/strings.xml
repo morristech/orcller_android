@@ -35,6 +35,7 @@
     <string name="w_account">Account</string>
     <string name="w_accept">Accept</string>
     <string name="w_accept_ask">Accept Ask</string>
+    <string name="w_accept_invite">Accept Invite</string>
     <string name="w_accept_collaboration_invite">Accept Collaboration Invite</string>
     <string name="w_add">Add</string>
     <string name="w_add_collaborators">Add Collaborators</string>
@@ -43,6 +44,7 @@
     <string name="w_auto_slide">Auto Slide</string>
     <string name="w_cancel">Cancel</string>
     <string name="w_cancel_ask">Cancel Ask</string>
+    <string name="w_cancel_collaboration_ask">Cancel Collaboration Ask</string>
     <string name="w_cancel_invite">Cancel Invite</string>
     <string name="w_change">Change</string>
     <string name="w_change_password">Change Password</string>
