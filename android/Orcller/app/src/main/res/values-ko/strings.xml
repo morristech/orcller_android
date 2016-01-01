@@ -5,6 +5,9 @@
     <!-- words -->
     <string name="w_about">About</string>
     <string name="w_account">계정</string>
+    <string name="w_accept">수락</string>
+    <string name="w_accept_ask">요청 수락</string>
+    <string name="w_accept_collaboration_invite">공동편집 초대 수락</string>
     <string name="w_add">추가</string>
     <string name="w_add_collaborators">공동편집자 추가</string>
     <string name="w_albums_public_settings">앨범 공개 설정</string>
@@ -20,9 +23,6 @@
     <string name="w_collaborators">공동편집자</string>
     <string name="w_comment">댓글</string>
     <string name="w_comments">댓글</string>
-    <string name="w_confirm">수락</string>
-    <string name="w_confirm_ask">요청 수락</string>
-    <string name="w_confirm_collaboration">초대 수락</string>
     <string name="w_connected_accounts">연결된 계정</string>
     <string name="w_current_version">현재 버전</string>
     <string name="w_default">Default</string>

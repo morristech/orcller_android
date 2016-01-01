@@ -33,6 +33,9 @@
     <!-- words -->
     <string name="w_about">About</string>
     <string name="w_account">Account</string>
+    <string name="w_accept">Accept</string>
+    <string name="w_accept_ask">Accept Ask</string>
+    <string name="w_accept_collaboration_invite">Accept Collaboration Invite</string>
     <string name="w_add">Add</string>
     <string name="w_add_collaborators">Add Collaborators</string>
     <string name="w_albums_public_settings">Albums Public Settings</string>
@@ -48,9 +51,6 @@
     <string name="w_collaborators">Collaborators</string>
     <string name="w_comment">Comment</string>
     <string name="w_comments">Comments</string>
-    <string name="w_confirm">Confirm</string>
-    <string name="w_confirm_ask">Confirm Ask</string>
-    <string name="w_confirm_collaboration">Confirm Collaboration</string>
     <string name="w_connected_accounts">Connected Accounts</string>
     <string name="w_current_version">Current Version</string>
     <string name="w_default">Default</string>

@@ -191,7 +191,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
             if (contributor().contributor_status == Contributor.Status.Invite.value())
                 return getContext().getString(isContributor ? R.string.w_cancel : R.string.w_cancel_invite);
             if (contributor().contributor_status == Contributor.Status.Ask.value())
-                return getContext().getString(isContributor ? R.string.w_confirm : R.string.w_confirm_ask);
+                return getContext().getString(isContributor ? R.string.w_accept : R.string.w_accept_ask);
             if (contributor().contributor_status == Contributor.Status.None.value() && !contributor().isMe())
                 return getContext().getString(isContributor ? R.string.w_add : R.string.w_invite);
         } else if (model instanceof Album) {
@@ -201,7 +201,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
                 if (album.contributors.contributor_status == Contributor.Status.Ask.value())
                     return getContext().getString(R.string.w_cancel_ask);
                 if (album.contributors.contributor_status == Contributor.Status.Invite.value())
-                    return getContext().getString(R.string.w_confirm_collaboration);
+                    return getContext().getString(R.string.w_accept_collaboration_invite);
                 if (album.contributors.contributor_status == Contributor.Status.None.value())
                     return getContext().getString(R.string.w_ask_collaboration);
             }

@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -104,9 +107,13 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
     // ================================================================================================
 
     private void modelChanged() {
+        Glide.clear(imageView);
+
         Glide.with(getContext())
                 .load(SharedObject.toFullMediaUrl(model.getCover().media.images.low_resolution.url))
+                .error(R.drawable.img_fb_empty_album)
                 .into(imageView);
+
         titleTextView.setText(model.name);
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         lockIcon.setVisibility(model.isMine() || model.permission != Album.Permission.Private.value() ? GONE : VISIBLE);
