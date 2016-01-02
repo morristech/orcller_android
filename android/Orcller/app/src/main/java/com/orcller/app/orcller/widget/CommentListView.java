@@ -186,7 +186,11 @@ public class CommentListView extends PSListView
                     @Override
                     public void onResponse(Response<ApiAlbum.CommentsRes> response, Retrofit retrofit) {
                         if (response.isSuccess() && response.body().isSuccess()) {
-                            lastEntity = response.body().entity;
+                            Comments entity = response.body().entity;
+                            lastEntity.total_count = entity.total_count;
+                            lastEntity.participated = entity.participated;
+
+                            lastEntity.didChangeProperties();
                             items.remove(comment);
                             listAdapter.notifyDataSetChanged();
                             endDataLoading();

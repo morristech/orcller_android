@@ -29,9 +29,10 @@ import retrofit.Retrofit;
  * Created by pisces on 12/10/15.
  */
 public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Delegate {
-    public static final int COMMENT_ACTION_ALBUM = 1;
-    public static final int COMMENT_ACTION_COMMENTS = 1;
-    private int commentActionType = COMMENT_ACTION_ALBUM;
+    public static final int COMMENT_ACTION_OPEN_ALBUM_VIEW = 1;
+    public static final int COMMENT_ACTION_FOCUS_COMMENT = 2;
+    public static final int COMMENT_ACTION_OPEN_COMMENTS = 3;
+    private int commentActionType = COMMENT_ACTION_OPEN_ALBUM_VIEW;
     private Invoker invoker;
     private AlbumFlipView playedAlbumFlipView;
 
@@ -147,13 +148,13 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     // ================================================================================================
 
     private void doCommentAction(Album album) {
-        if (invoker.getCommentInputView() != null)
-            invoker.getCommentInputView().setFocus();
-
-        if (commentActionType == COMMENT_ACTION_ALBUM)
+        if (commentActionType == COMMENT_ACTION_OPEN_ALBUM_VIEW) {
             AlbumViewActivity.show(album, true);
-        else if (commentActionType == COMMENT_ACTION_COMMENTS)
+        } else if (commentActionType == COMMENT_ACTION_FOCUS_COMMENT && invoker.getCommentInputView() != null) {
+            invoker.getCommentInputView().setFocus();
+        } else if (commentActionType == COMMENT_ACTION_OPEN_COMMENTS) {
             CommentListActivity.show(album);
+        }
     }
 
     private void heart(AlbumItemView itemView) {

@@ -68,8 +68,8 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         int pd = GraphicUtils.convertDpToPixel(12);
 
         textView.setTextColor(getResources().getColorStateList(R.drawable.color_button_coedit));
-        textView.setTypeface(Typeface.DEFAULT_BOLD);
         textView.setTextSize(12);
+        textView.setTypeface(Typeface.DEFAULT_BOLD);
         setPadding(pd, 0, pd, 0);
         setBackgroundResource(R.drawable.background_ripple_coeditbutton);
         setMinimumWidth(GraphicUtils.convertDpToPixel(70));
@@ -318,7 +318,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onChange(CoeditButton target, Contributors contributors);
         void onSync(CoeditButton target, Contributors contributors);
     }

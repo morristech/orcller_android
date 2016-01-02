@@ -82,6 +82,7 @@ public class AlbumViewActivity extends PSActionBarActivity
         commentInputView = (CommentInputView) findViewById(R.id.commentInputView);
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
 
+        albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_FOCUS_COMMENT);
         albumItemView.setDelegate(albumItemViewDelegate);
         commentListView.setDelegate(this);
         commentInputView.setDelegate(this);
@@ -185,10 +186,6 @@ public class AlbumViewActivity extends PSActionBarActivity
      * CommentListView.Delegate
      */
     public void onChange(Comments comments) {
-        model.comments.participated = comments.participated;
-        model.comments.total_count = comments.total_count;
-
-        albumItemView.updateDisplayList();
     }
 
     public void onFailure(CommentListView listView, Error error) {

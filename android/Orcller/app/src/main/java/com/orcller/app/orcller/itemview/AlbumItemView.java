@@ -241,9 +241,12 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
                 } else if (casted.getTarget() instanceof AlbumAdditionalListEntity) {
                     synchronizeAlbumInfo((AlbumAdditionalListEntity) casted.getTarget());
                 }
-            } else if (Model.Event.CHANGE.equals(casted.getType()) &&
-                    casted.getTarget() instanceof Album) {
-                changeAlbum((Album) casted.getTarget());
+            } else if (Model.Event.CHANGE.equals(casted.getType())) {
+                if (casted.getTarget() instanceof Album) {
+                    changeAlbum((Album) casted.getTarget());
+                } else if (casted.getTarget() instanceof Comments) {
+                    synchronizeAlbumInfo((Comments) casted.getTarget());
+                }
             }
         } else if (event instanceof CoeditEvent &&
                 CoeditEvent.CHANGE.equals(((CoeditEvent) event).getType())) {

@@ -21,7 +21,7 @@ public class Contributor extends User {
         public int value() {
             return value;
         }
-    };
+    }
 
     public String contributor_id;
     public int contributor_status;

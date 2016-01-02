@@ -253,7 +253,7 @@ public class CommentInputView extends PSLinearLayout implements View.OnClickList
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onCompletePost(CommentInputView commentInputView, Comments comments);
     }
 }

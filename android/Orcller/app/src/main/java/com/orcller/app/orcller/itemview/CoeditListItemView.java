@@ -108,12 +108,10 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
 
     private void modelChanged() {
         Glide.clear(imageView);
-
         Glide.with(getContext())
                 .load(SharedObject.toFullMediaUrl(model.getCover().media.images.low_resolution.url))
                 .error(R.drawable.img_fb_empty_album)
                 .into(imageView);
-
         titleTextView.setText(model.name);
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         lockIcon.setVisibility(model.isMine() || model.permission != Album.Permission.Private.value() ? GONE : VISIBLE);

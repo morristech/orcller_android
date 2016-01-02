@@ -72,7 +72,7 @@
     <string name="w_private_policy">개인정보취급방침</string>
     <string name="w_requests">요청</string>
     <string name="w_preparing">준비중...</string>
-    <string name="w_previous_comments">이전 댓글 보기s</string>
+    <string name="w_previous_comments">이전 댓글 보기</string>
     <string name="w_private">비공개</string>
     <string name="w_processing">처리중...</string>
     <string name="w_public">전체 공개</string>
@@ -149,7 +149,7 @@
     <string name="m_fail_comment">댓글 게시에 실패하였습니다.\n다시 시도해 주세요.</string>
     <string name="m_fail_save_user_picture">프로필 이미지 저장에 실패하였습니다.\n다시 시도해 주세요.</string>
     <string name="m_fail_share">앨범 공유에 실패하였습니다.\n다시 시도해 주세요.</string>
-    <string name="m_warn_album_permission">앨범을 비공개 설정하면 공동편집이 차단됩니다.\n계속하시겠습니까?</string>
+    <string name="m_warn_album_permission">앨범을 비공개 설정하면 공동편집이 차단됩니다.\n그래도 변경하시겠어요?</string>
     <string name="m_validate_album_title_length">앨범 제목은 40자 이하여야 합니다!</string>
     <string name="m_validate_change_password_new">현재 비밀번호와 달라야 합니다!</string>
     <string name="m_validate_change_password_again">새로운 비밀번호 한번 더 입력해 주세요.</string>

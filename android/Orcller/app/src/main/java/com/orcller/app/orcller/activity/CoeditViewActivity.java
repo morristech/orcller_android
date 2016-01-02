@@ -82,7 +82,7 @@ public class CoeditViewActivity extends PSActionBarActivity
 
         albumItemView.setDelegate(albumItemViewDelegate);
         albumItemView.setButtonVisiblity(AlbumItemView.HEART | AlbumItemView.COMMENT | AlbumItemView.STAR);
-        albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_COMMENTS);
+        albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_OPEN_COMMENTS);
         contributorListView.setDelegate(this);
         coeditButton.setSelected(true);
         coeditButton.setTextSize(GraphicUtils.convertDpToPixel(13));
