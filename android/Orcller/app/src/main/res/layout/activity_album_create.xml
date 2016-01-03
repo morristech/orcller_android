@@ -128,7 +128,7 @@
                 android:background="@drawable/background_ripple_lightgray"
                 android:drawableLeft="@drawable/icon_page_default"
                 android:drawablePadding="2dp"
-                android:text="@string/w_default"
+                android:text="@string/w_setting"
                 android:textColor="@drawable/textcolor_imagepicker_select_button"
                 android:textStyle="bold"
                 android:textSize="14dp"/>

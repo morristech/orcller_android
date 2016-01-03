@@ -27,7 +27,6 @@
     <string name="w_comments">댓글</string>
     <string name="w_connected_accounts">연결된 계정</string>
     <string name="w_current_version">현재 버전</string>
-    <string name="w_default">Default</string>
     <string name="w_delete">삭제</string>
     <string name="w_dismiss">닫기</string>
     <string name="w_done">완료</string>
@@ -82,6 +81,7 @@
     <string name="w_retry">다시 시도</string>
     <string name="w_save">저장</string>
     <string name="w_saving">저장중...</string>
+    <string name="w_setting">설정</string>
     <string name="w_settings">설정</string>
     <string name="w_share_to_facebook">페이스북에 공유</string>
     <string name="w_sign_up">회원 가입</string>
@@ -169,9 +169,9 @@
     <string name="m_noty_comment">이 앨범에 댓글을 달았습니다.</string>
     <string name="m_noty_star">이 앨범을 별표로 지정했습니다.</string>
     <string name="m_noty_start_follow">이 당신을 팔로우하기 시작했습니다.</string>
-    <string name="m_noty_heart">이 앨범에 하트를 표시했습니다.</string>
+    <string name="m_noty_heart">이 앨범에 하트를 표현했습니다.</string>
     <string name="m_noty_page_comment">이 앨범 페이지에 댓글을 달았습니다.</string>
-    <string name="m_noty_page_heart">이 앨범 페이지에 하트를 표시했습니다.</string>
+    <string name="m_noty_page_heart">이 앨범 페이지에 하트를 표현했습니다.</string>
 
     <string name="m_exception_desc_dose_not_exist_album">앨범이 삭제되었을 수 있습니다.</string>
     <string name="m_exception_desc_error_network">연결 상태를 확인한 후 다시 시도하세요.</string>

@@ -42,6 +42,7 @@ public class ExceptionView extends PSLinearLayout implements View.OnClickListene
 
         descTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
         button.setOnClickListener(this);
+        setClickable(false);
     }
 
     // ================================================================================================

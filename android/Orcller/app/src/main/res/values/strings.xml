@@ -55,7 +55,6 @@
     <string name="w_comments">Comments</string>
     <string name="w_connected_accounts">Connected Accounts</string>
     <string name="w_current_version">Current Version</string>
-    <string name="w_default">Default</string>
     <string name="w_delete">Delete</string>
     <string name="w_dismiss">Dismiss</string>
     <string name="w_done">Done</string>
@@ -110,6 +109,7 @@
     <string name="w_retry">Retry</string>
     <string name="w_save">Save</string>
     <string name="w_saving">Saving...</string>
+    <string name="w_setting">Setting</string>
     <string name="w_settings">Settings</string>
     <string name="w_share_to_facebook">Share to Facebook</string>
     <string name="w_sign_up">Sign up</string>
@@ -197,9 +197,9 @@
     <string name="m_noty_comment">commented on the album.</string>
     <string name="m_noty_star">stared the album.</string>
     <string name="m_noty_start_follow">started to follow you.</string>
-    <string name="m_noty_heart">has sent heart to your album.</string>
-    <string name="m_noty_page_comment">commented on the album page.</string>
-    <string name="m_noty_page_heart">has sent heart to your album.</string>
+    <string name="m_noty_heart">has represented the heart to your album.</string>
+    <string name="m_noty_page_comment">commented on the page of album.</string>
+    <string name="m_noty_page_heart">has represented the heart to the page of your album.</string>
 
     <string name="m_exception_desc_dose_not_exist_album">This album may be deleted.</string>
     <string name="m_exception_desc_error_network">Please try again after checking the connection status.</string>

@@ -478,7 +478,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         descriptionInputView.setModel(clonedModel.getUser());
         albumFlipView.setModel(clonedModel);
         albumFlipView.setPageIndex(clonedModel.default_page_index);
-        albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
+        albumFlipView.setVisibility(View.VISIBLE);
         albumGridView.setModel(clonedModel);
         albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
         scrollView.setBackgroundResource(spinnerContainer.getVisibility() == View.VISIBLE ? 0 : R.drawable.background_bordered_lightgray);
