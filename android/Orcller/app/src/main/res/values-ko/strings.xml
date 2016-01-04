@@ -173,12 +173,14 @@
     <string name="m_noty_page_comment">이 앨범 페이지에 댓글을 달았습니다.</string>
     <string name="m_noty_page_heart">이 앨범 페이지에 하트를 표현했습니다.</string>
 
+    <string name="m_exception_button_no_album_coedit">초대하기</string>
+    <string name="m_exception_button_no_collaborations">참여하기</string>
     <string name="m_exception_desc_dose_not_exist_album">앨범이 삭제되었을 수 있습니다.</string>
     <string name="m_exception_desc_error_network">연결 상태를 확인한 후 다시 시도하세요.</string>
     <string name="m_exception_desc_error_unknown">다시 시도해 주세요.</string>
     <string name="m_exception_desc_no_activity">여기에 친구들의 활동 내역이 표시됩니다.</string>
-    <string name="m_exception_desc_no_album">내 앨범에 친구를 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
-    <string name="m_exception_desc_no_album_coedit">내 앨범에 친구를 초대해 함께 만들 수 있어요.</string>
+    <string name="m_exception_desc_no_album">내 앨범에 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
+    <string name="m_exception_desc_no_album_coedit">내 앨범에 초대해 함께 만들 수 있어요.</string>
     <string name="m_exception_desc_no_album_mine">지금 바로 쉽게 앨범을 만들 수 있어요.</string>
     <string name="m_exception_desc_no_collaborations">친구들의 앨범 공동편집에 참여해 보세요.</string>
     <string name="m_exception_desc_no_permissions">앨범이 비공개이거나 당신이 저작자를 팔로우하지 않는 상태일 수 있습니다.</string>

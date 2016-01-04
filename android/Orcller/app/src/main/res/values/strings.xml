@@ -201,12 +201,14 @@
     <string name="m_noty_page_comment">commented on the page of album.</string>
     <string name="m_noty_page_heart">has represented the heart to the page of your album.</string>
 
+    <string name="m_exception_button_no_album_coedit">Invite</string>
+    <string name="m_exception_button_no_collaborations">Join</string>
     <string name="m_exception_desc_dose_not_exist_album">This album may be deleted.</string>
     <string name="m_exception_desc_error_network">Please try again after checking the connection status.</string>
     <string name="m_exception_desc_error_unknown">Please try again.</string>
     <string name="m_exception_desc_no_activity">Activities of acquaintances will be display.</string>
-    <string name="m_exception_desc_no_album">Try send invite message to my album collaboration.\nUser need to be your follower if you will invite.</string>
-    <string name="m_exception_desc_no_album_coedit">Try send invite message to my album collaboration.</string>
+    <string name="m_exception_desc_no_album">Try invite for album collaboration.\nUser need to be your follower if you will invite.</string>
+    <string name="m_exception_desc_no_album_coedit">Try invite for album collaboration.</string>
     <string name="m_exception_desc_no_album_mine">Now you can create an album easily.</string>
     <string name="m_exception_desc_no_collaborations">Please join to album collaboration with friends.</string>
     <string name="m_exception_desc_no_permissions">This album can be private or you do not follow the author.</string>

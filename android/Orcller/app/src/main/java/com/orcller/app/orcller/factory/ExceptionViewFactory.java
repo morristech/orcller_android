@@ -53,10 +53,11 @@ public class ExceptionViewFactory {
         } else if (Type.NoAlbumMine.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_mine);
+            view.setButtonText(R.string.w_title_new_album);
         } else if (Type.NoAlbumCoedit.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_coedit);
-            view.setButtonText(R.string.w_invite_collaboration);
+            view.setButtonText(R.string.w_invite);
         } else if (Type.NoTimeline.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_timeline);
             view.setDescriptionText(R.string.m_exception_desc_no_timeline);
