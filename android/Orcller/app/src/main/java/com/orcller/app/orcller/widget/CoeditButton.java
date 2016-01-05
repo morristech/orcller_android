@@ -21,6 +21,7 @@ import com.orcller.app.orcller.proxy.CoeditDataProxy;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.model.Resources;
@@ -75,6 +76,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         setMinimumWidth(GraphicUtils.convertDpToPixel(70));
         setVisibility(INVISIBLE);
         setOnClickListener(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -97,10 +99,35 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         return invalid;
     }
 
+
     // ================================================================================================
     //  Listener
     // ================================================================================================
 
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(Object event) {
+        if (event instanceof CoeditEvent) {
+            CoeditEvent casted = (CoeditEvent) event;
+            CoeditButton target = (CoeditButton) casted.getTarget();
+            Contributors contributors = (Model) casted.getObject();
+
+            if (CoeditEvent.CHANGE.equals(casted.getType())) {
+                processCoeditChanged(target, contributors);
+            } else if (CoeditEvent.SYNC.equals(casted.getType())) {
+                processCoeditSynchronized(target, contributors);
+            }
+        }
+    }
+
+    // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
+    /**
+     * View.OnClickListener
+     */
     public void onClick(View v) {
         if (model == null)
             return;
@@ -222,6 +249,14 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     private void modelChanged() {
         setText(getTitle());
         setVisibility(TextUtils.isEmpty(getText()) ? GONE : VISIBLE);
+    }
+
+    private void processCoeditChanged(CoeditButton target, Contributors contributors) {
+        Contributor contributor = (Contributor) target.getModel();
+    }
+
+    private void processCoeditSynchronized(CoeditButton target, Contributors contributors) {
+        Album album = (Album) target.getModel();
     }
 
     /**

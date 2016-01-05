@@ -229,7 +229,7 @@
         </activity>
 
         <activity
-            android:name=".activity.InviteCollaborationActivity"
+            android:name=".activity.CoeditInviteActivity"
             android:theme="@style/PurpleTheme">
         </activity>
 

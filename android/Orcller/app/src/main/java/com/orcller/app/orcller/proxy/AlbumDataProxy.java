@@ -341,9 +341,6 @@ public class AlbumDataProxy extends AbstractDataProxy {
         @GET("{albumId}")
         Call<ApiAlbum.AlbumRes> view(@Path("albumId") long albumId);
 
-        @GET("{albumId}")
-        Call<ApiResult> view1(@Path("albumId") long albumId);
-
         @GET("view_by_page")
         Call<ApiAlbum.AlbumRes> viewByPageId(@Query("page_id") long pageId);
 

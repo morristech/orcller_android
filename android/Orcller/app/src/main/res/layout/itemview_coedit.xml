@@ -48,8 +48,7 @@
             android:layout_marginTop="2dp"
             android:background="@drawable/background_ripple_lightgray"
             android:clickable="true"
-            android:textColor="@android:color/black"
-            android:textColorLink="@color/textcolor_dark_blue"
+            android:textColor="@color/textcolor_dark_blue"
             android:textSize="14dp"/>
 
         <TextView

@@ -4,7 +4,7 @@ import android.view.View;
 
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
-import com.orcller.app.orcller.activity.InviteCollaborationActivity;
+import com.orcller.app.orcller.activity.CoeditInviteActivity;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumCoverGridItemView;
@@ -12,11 +12,9 @@ import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserDataGridView;
-import com.orcller.app.orcllermodules.model.User;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
@@ -72,7 +70,7 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
     @Override
     public void onClick(ExceptionView view) {
         if (ExceptionViewFactory.Type.NoAlbumCoedit.equals(view.getTag())) {
-            InviteCollaborationActivity.show(getModel());
+            CoeditInviteActivity.show(getModel());
         } else if (ExceptionViewFactory.Type.NoAlbumMine.equals(view.getTag())) {
             AlbumCreateActivity.show();
         } else {

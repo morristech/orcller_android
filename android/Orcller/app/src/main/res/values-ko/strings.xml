@@ -56,6 +56,7 @@
     <string name="w_me">나</string>
     <string name="w_new_post">새 소식</string>
     <string name="w_no">아니오</string>
+    <string name="w_no_contributors">참여자 없음</string>
     <string name="w_notification_application">앱 알림</string>
     <string name="w_notification_album">앨범 알림</string>
     <string name="w_notification_relationships">친구 알림</string>
@@ -64,6 +65,7 @@
     <string name="w_order">순서</string>
     <string name="w_password">비밀번호</string>
     <string name="w_people">명</string>
+    <string name="w_people_involved_in">명 참여중</string>
     <string name="w_photo_gallery">포토 갤러리</string>
     <string name="w_popular">인기</string>
     <string name="w_post">게시</string>

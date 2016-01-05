@@ -38,7 +38,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/28/15.
  */
-public class InviteCollaborationActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
+public class CoeditInviteActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
     private static final String USER_KEY = "user";
     private static final int LOAD_LIMIT = 20;
     private List<AlbumCoedit> items = new ArrayList<>();
@@ -57,8 +57,9 @@ public class InviteCollaborationActivity extends PSActionBarActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_invite_collaboration);
+        setContentView(R.layout.activity_coedit_invite);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration);
 
         container = (RelativeLayout) findViewById(R.id.container);
         listView = (ListView) findViewById(R.id.listView);
@@ -71,9 +72,6 @@ public class InviteCollaborationActivity extends PSActionBarActivity implements 
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         listView.setOnItemClickListener(this);
         listView.setAdapter(listAdapter);
-
-        String endfix = model != null ? " - " + model.user_name : "";
-        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration) + endfix);
         load(null);
     }
 
@@ -122,7 +120,7 @@ public class InviteCollaborationActivity extends PSActionBarActivity implements 
     // ================================================================================================
 
     public static void show(User model) {
-        Intent intent = new Intent(Application.applicationContext(), InviteCollaborationActivity.class);
+        Intent intent = new Intent(Application.applicationContext(), CoeditInviteActivity.class);
         intent.putExtra(USER_KEY, model);
         Application.getTopActivity().startActivity(intent);
     }
