@@ -11,7 +11,6 @@ import pisces.psuikit.ext.PSFragment;
  * Created by pisces on 12/18/15.
  */
 abstract public class MainTabFragment extends PSFragment {
-    private boolean active;
     private boolean shouldStartFragment;
     private ActionBar actionBar;
 
@@ -58,14 +57,6 @@ abstract public class MainTabFragment extends PSFragment {
 
     public void setActionBar(ActionBar actionBar) {
         this.actionBar = actionBar;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public void invalidateFragment() {

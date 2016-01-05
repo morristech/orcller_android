@@ -11,20 +11,22 @@ import pisces.psuikit.widget.ExceptionView;
  */
 public class ExceptionViewFactory {
     public enum Type {
-        NoAlbumMine(1),
+        NoActivity(1),
         NoAlbum(2),
         NoAlbumCoedit(3),
-        NoTimeline(4),
-        NoActivity(5),
-        NoRecommendation(6),
-        NoCollaboration(7),
-        NoListData(8),
-        NoPermissionForAlbum(9),
-        DoseNotExistAlbum(10),
-        DoseNotExistStar(11),
-        DoseNotExistPhoto(12),
-        NetworkError(13),
-        UnknownError(14);
+        NoAlbumInvite(4),
+        NoAlbumMine(5),
+        NoCollaboration(6),
+        NoListData(7),
+        NoMedia(8),
+        NoRecommendation(9),
+        NoPermissionForAlbum(10),
+        NoPhotos(11),
+        NoStar(12),
+        NoTimeline(13),
+        DoseNotExistAlbum(14),
+        NetworkError(15),
+        UnknownError(16);
 
         private int value;
 
@@ -58,10 +60,18 @@ public class ExceptionViewFactory {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_coedit);
             view.setButtonText(R.string.w_invite);
+        } else if (Type.NoAlbumInvite.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_album_invite);
+            view.setDescriptionText(R.string.m_exception_desc_no_album_invite);
+            view.setButtonText(R.string.w_title_new_album);
         } else if (Type.NoTimeline.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_timeline);
             view.setDescriptionText(R.string.m_exception_desc_no_timeline);
             view.setButtonText(R.string.w_title_new_album);
+        } else if (Type.NoMedia.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_media);
+            view.setDescriptionText(R.string.m_exception_desc_no_media);
+            view.setButtonText(R.string.w_add_photo);
         } else if (Type.NoActivity.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_activity);
             view.setDescriptionText(R.string.m_exception_desc_no_activity);
@@ -80,10 +90,10 @@ public class ExceptionViewFactory {
         } else if (Type.DoseNotExistAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_dose_not_exist_album);
             view.setDescriptionText(R.string.m_exception_desc_dose_not_exist_album);
-        } else if (Type.DoseNotExistStar.equals(type)) {
+        } else if (Type.NoStar.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_star);
             view.setDescriptionText(R.string.m_exception_desc_no_star);
-        } else if (Type.DoseNotExistPhoto.equals(type)) {
+        } else if (Type.NoPhotos.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_photos);
             view.setDescriptionText(R.string.m_exception_desc_no_photos);
         } else if (Type.UnknownError.equals(type)) {

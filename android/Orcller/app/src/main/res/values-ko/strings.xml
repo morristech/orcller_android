@@ -11,6 +11,7 @@
     <string name="w_accept_collaboration_invite">공동편집 초대 수락</string>
     <string name="w_add">추가</string>
     <string name="w_add_collaborators">공동편집자 추가</string>
+    <string name="w_add_photo">+ 추가</string>
     <string name="w_albums_public_settings">앨범 공개 설정</string>
     <string name="w_ask_collaboration">공동편집 참여 요청</string>
     <string name="w_auto_slide">자동 슬라이드쇼</string>
@@ -183,8 +184,10 @@
     <string name="m_exception_desc_no_activity">여기에 친구들의 활동 내역이 표시됩니다.</string>
     <string name="m_exception_desc_no_album">내 앨범에 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
     <string name="m_exception_desc_no_album_coedit">내 앨범에 초대해 함께 만들 수 있어요.</string>
+    <string name="m_exception_desc_no_album_invite">새 앨범을 만든 후 친구를 초대하세요.</string>
     <string name="m_exception_desc_no_album_mine">지금 바로 쉽게 앨범을 만들 수 있어요.</string>
     <string name="m_exception_desc_no_collaborations">친구들의 앨범 공동편집에 참여해 보세요.</string>
+    <string name="m_exception_desc_no_media">+추가 버튼을 터치해 사진을 추가해 주세요.</string>
     <string name="m_exception_desc_no_permissions">앨범이 비공개이거나 당신이 저작자를 팔로우하지 않는 상태일 수 있습니다.</string>
     <string name="m_exception_desc_no_photos">앨범에 사용된 사진을 여기서 확인할 수 있어요.</string>
     <string name="m_exception_desc_no_recommendation">검색을 통해 친구를 찾아주세요.</string>
@@ -196,7 +199,9 @@
     <string name="m_exception_title_error_unknown">으악! 오류가 발생했어요.</string>
     <string name="m_exception_title_no_activity">활동 내역이 없습니다.</string>
     <string name="m_exception_title_no_album">아직 만든 앨범이 없습니다.</string>
+    <string name="m_exception_title_no_album_invite">공동편집에 초대할 앨범이 없습니다.\n(비공개 상태의 앨범은 공동편집 할 수 없습니다.)</string>
     <string name="m_exception_title_no_collaborations">공동편집 중인 앨범이 없습니다.</string>
+    <string name="m_exception_title_no_media">아직 앨범에 사진이 없어요.</string>
     <string name="m_exception_title_no_list">결과가 없습니다.</string>
     <string name="m_exception_title_no_permissions">앨범에 대한 권한이 없습니다.</string>
     <string name="m_exception_title_no_photos">앨범에 사용된 사진이 없습니다.</string>

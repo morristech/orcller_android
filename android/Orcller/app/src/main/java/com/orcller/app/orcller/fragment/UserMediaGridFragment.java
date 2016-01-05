@@ -34,7 +34,7 @@ public class UserMediaGridFragment extends UserDataGridFragment {
     protected void setUpSubviews(View view) {
         super.setUpSubviews(view);
 
-        exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.DoseNotExistPhoto, container));
+        exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoPhotos, container));
         EventBus.getDefault().register(this);
     }
 
@@ -70,7 +70,7 @@ public class UserMediaGridFragment extends UserDataGridFragment {
 
     @Override
     public void onClick(ExceptionView view) {
-        if (ExceptionViewFactory.Type.DoseNotExistPhoto.equals(view.getTag())) {
+        if (ExceptionViewFactory.Type.NoPhotos.equals(view.getTag())) {
             AlbumCreateActivity.show();
         } else {
             super.onClick(view);
@@ -79,7 +79,7 @@ public class UserMediaGridFragment extends UserDataGridFragment {
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        if (ExceptionViewFactory.Type.DoseNotExistPhoto.equals(view.getTag()))
+        if (ExceptionViewFactory.Type.NoPhotos.equals(view.getTag()))
             return loadError == null && gridView.getItems().size() < 1;
         return super.shouldShowExceptionView(view);
     }

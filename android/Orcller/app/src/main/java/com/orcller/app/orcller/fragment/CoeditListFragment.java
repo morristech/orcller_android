@@ -16,6 +16,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
 import com.orcller.app.orcller.model.Coedit;
@@ -26,6 +27,7 @@ import com.orcller.app.orcllermodules.error.APIError;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.Log;
@@ -41,6 +43,7 @@ import retrofit.Retrofit;
 public class CoeditListFragment extends MainTabFragment
         implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int LOAD_LIMIT = 20;
+    private boolean shouldReloadData;
     private List<Coedit> items = new ArrayList<>();
     private Error loadError;
     private ApiUsers.CoeditList lastEntity;
@@ -75,11 +78,21 @@ public class CoeditListFragment extends MainTabFragment
         swipeRefreshLayout.setOnRefreshListener(this);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        invalidateLoading();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        EventBus.getDefault().unregister(this);
 
         swipeRefreshLayout = null;
         listView = null;
@@ -158,15 +171,37 @@ public class CoeditListFragment extends MainTabFragment
     }
 
     public void onRefresh() {
-        load(null);
+        shouldReloadData = true;
+        invalidateLoading();
+    }
+
+    // ================================================================================================
+    //  Listener
+    // ================================================================================================
+
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(Object event) {
+        if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+
+            if (!AlbumEvent.PREPARE.equals(casted.getType()))
+                onRefresh();
+        }
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
+    private void invalidateLoading() {
+        if (isActive() && shouldReloadData)
+            load(null);
+    }
+
     private void load(final String after) {
-        if (invalidDataLoading())
+        if (!invalidDataLoading())
             return;
 
         if (isFirstLoading()) {
@@ -178,6 +213,7 @@ public class CoeditListFragment extends MainTabFragment
             });
         }
 
+        shouldReloadData = false;
         loadError = null;
 
         UserDataProxy.getDefault().coediting(LOAD_LIMIT, after, new Callback<ApiUsers.CoeditListRes>() {

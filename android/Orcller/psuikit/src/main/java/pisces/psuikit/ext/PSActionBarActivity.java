@@ -15,6 +15,7 @@ import pisces.psuikit.widget.ExceptionView;
  * Created by pisces on 11/12/15.
  */
 public class PSActionBarActivity extends AppCompatActivity implements DataLoadValidator.Client, ExceptionView.Delegate {
+    private boolean active;
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     protected ExceptionViewManager exceptionViewManager;
     private Toolbar toolbar;
@@ -36,6 +37,14 @@ public class PSActionBarActivity extends AppCompatActivity implements DataLoadVa
         super.onResume();
 
         ActivityManager.putRunningActivity(this);
+        setActive(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        setActive(false);
     }
 
     @Override
@@ -67,6 +76,14 @@ public class PSActionBarActivity extends AppCompatActivity implements DataLoadVa
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public boolean isFirstLoading() {
         return dataLoadValidator.isFirstLoading();

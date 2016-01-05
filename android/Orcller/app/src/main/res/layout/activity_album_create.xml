@@ -72,17 +72,27 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/m_hint_album_description"/>
 
-                <com.orcller.app.orcller.widget.AlbumFlipView
-                    android:id="@+id/albumFlipView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="32dp"
-                    android:visibility="gone"/>
-
-                <com.orcller.app.orcller.widget.AlbumGridView
-                    android:id="@+id/albumGridView"
+                <FrameLayout
+                    android:id="@+id/albumContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.orcller.app.orcller.widget.AlbumFlipView
+                            android:id="@+id/albumFlipView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="32dp"
+                            android:visibility="gone"/>
+
+                        <com.orcller.app.orcller.widget.AlbumGridView
+                            android:id="@+id/albumGridView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </FrameLayout>
             </LinearLayout>
         </pisces.psuikit.ext.PSScrollView>
 

@@ -99,7 +99,6 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         return invalid;
     }
 
-
     // ================================================================================================
     //  Listener
     // ================================================================================================
@@ -111,7 +110,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         if (event instanceof CoeditEvent) {
             CoeditEvent casted = (CoeditEvent) event;
             CoeditButton target = (CoeditButton) casted.getTarget();
-            Contributors contributors = (Model) casted.getObject();
+            Contributors contributors = (Contributors) casted.getObject();
 
             if (CoeditEvent.CHANGE.equals(casted.getType())) {
                 processCoeditChanged(target, contributors);
@@ -253,10 +252,30 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
 
     private void processCoeditChanged(CoeditButton target, Contributors contributors) {
         Contributor contributor = (Contributor) target.getModel();
+
+        if (!ObjectUtils.equals(contributor, contributor()) && contributor.user_uid == contributor().user_uid) {
+            contributor().contributor_status = contributor.contributor_status;
+            modelChanged();
+
+            if (delegate != null)
+                delegate.onChange(this, contributors);
+        }
     }
 
-    private void processCoeditSynchronized(CoeditButton target, Contributors contributors) {
+    private void processCoeditSynchronized(final CoeditButton target, final Contributors contributors) {
         Album album = (Album) target.getModel();
+
+        if (!ObjectUtils.equals(album, album()) && album.contributors.contributor_id == album().contributors.contributor_id) {
+            album().contributors.synchronize(contributors, new Runnable() {
+                @Override
+                public void run() {
+                    modelChanged();
+
+                    if (delegate != null)
+                        delegate.onSync(target, contributors);
+                }
+            });
+        }
     }
 
     /**

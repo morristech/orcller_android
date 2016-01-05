@@ -99,7 +99,6 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
         else
             exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbum, container));
 
-
         super.modelChanged();
     }
 

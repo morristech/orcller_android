@@ -3,9 +3,11 @@ package com.orcller.app.orcller.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -14,8 +16,10 @@ import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
+import com.orcller.app.orcller.itemview.UserItemView;
 import com.orcller.app.orcller.model.AlbumCoedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
@@ -25,11 +29,12 @@ import com.orcller.app.orcllermodules.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
 import retrofit.Response;
@@ -38,16 +43,20 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/28/15.
  */
-public class CoeditInviteActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
+public class CoeditInviteActivity extends PSActionBarActivity
+        implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String USER_KEY = "user";
     private static final int LOAD_LIMIT = 20;
+    private boolean shouldReloadData;
     private List<AlbumCoedit> items = new ArrayList<>();
     private Error loadError;
     private User model;
     private ApiUsers.AlbumCoeditList lastEntity;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout container;
     private ListView listView;
     private ListAdapter listAdapter;
+    private UserItemView headerView;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -59,35 +68,63 @@ public class CoeditInviteActivity extends PSActionBarActivity implements Adapter
 
         setContentView(R.layout.activity_coedit_invite);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration);
+        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration));
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         container = (RelativeLayout) findViewById(R.id.container);
         listView = (ListView) findViewById(R.id.listView);
         listAdapter = new ListAdapter(this);
+        headerView = new UserItemView(this);
         model = (User) getIntent().getSerializableExtra(USER_KEY);
 
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumMine, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
-        listView.setOnItemClickListener(this);
+        headerView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(65)));
+        headerView.setModel(model);
+        listView.addHeaderView(headerView);
         listView.setAdapter(listAdapter);
-        load(null);
+        listView.setOnItemClickListener(this);
+        EventBus.getDefault().register(this);
+        onRefresh();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        invalidDataLoading();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        listView = null;
-        listAdapter = null;
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide();
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoAlbumInvite.equals(view.getTag())) {
+            AlbumCreateActivity.show();
+        } else {
+            exceptionViewManager.clear();
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+            onRefresh();
+        }
     }
 
     @Override
@@ -129,20 +166,58 @@ public class CoeditInviteActivity extends PSActionBarActivity implements Adapter
     //  Interface Implementation
     // ================================================================================================
 
+    /**
+     * AdapterView.OnItemClickListener
+     */
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         CoeditViewActivity.show(items.get(position).id);
+    }
+
+    /**
+     * SwipeRefreshLayout.OnRefreshListener
+     */
+    public void onRefresh() {
+        shouldReloadData = true;
+        invalidateLoading();
+    }
+
+    // ================================================================================================
+    //  Listener
+    // ================================================================================================
+
+    /**
+     * EventBus listener
+     */
+    public void onEventMainThread(Object event) {
+        if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+
+            if (!AlbumEvent.PREPARE.equals(casted.getType()))
+                onRefresh();
+        }
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
+    private void invalidateLoading() {
+        if (isActive() && shouldReloadData)
+            load(null);
+    }
+
     private void load(final String after) {
         if (model == null || invalidDataLoading())
             return;
 
-        if (isFirstLoading())
-            ProgressBarManager.show();
+        if (isFirstLoading()) {
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+        }
 
         loadError = null;
 

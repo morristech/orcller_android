@@ -39,6 +39,7 @@
     <string name="w_accept_collaboration_invite">Accept Collaboration Invite</string>
     <string name="w_add">Add</string>
     <string name="w_add_collaborators">Add Collaborators</string>
+    <string name="w_add_photo">+ Add</string>
     <string name="w_albums_public_settings">Albums Public Settings</string>
     <string name="w_ask_collaboration">Ask Collaboration</string>
     <string name="w_auto_slide">Auto Slide</string>
@@ -211,8 +212,10 @@
     <string name="m_exception_desc_no_activity">Activities of acquaintances will be display.</string>
     <string name="m_exception_desc_no_album">Try invite for album collaboration.\nUser need to be your follower if you will invite.</string>
     <string name="m_exception_desc_no_album_coedit">Try invite for album collaboration.</string>
+    <string name="m_exception_desc_no_album_invite">Try invite friends after create a new album.</string>
     <string name="m_exception_desc_no_album_mine">Now you can create an album easily.</string>
     <string name="m_exception_desc_no_collaborations">Please join to album collaboration with friends.</string>
+    <string name="m_exception_desc_no_media">Please touch the +Add button to add photos.</string>
     <string name="m_exception_desc_no_permissions">This album can be private or you do not follow the author.</string>
     <string name="m_exception_desc_no_photos">Photos used in the album, you can see apart here.</string>
     <string name="m_exception_desc_no_recommendation">Please find a friend via search.</string>
@@ -224,7 +227,9 @@
     <string name="m_exception_title_error_unknown">Oops! An error occurred.</string>
     <string name="m_exception_title_no_activity">There is no activity.</string>
     <string name="m_exception_title_no_album">No album created yet.</string>
+    <string name="m_exception_title_no_album_invite">There are no albums to invite to album collaboration.\n(Album of the Private state can not be edited jointly.)</string>
     <string name="m_exception_title_no_collaborations">There is no album collaborations.</string>
+    <string name="m_exception_title_no_media">There are no photos in the this album yet.</string>
     <string name="m_exception_title_no_list">There is no results.</string>
     <string name="m_exception_title_no_permissions">You don\'t have any permission for the album.</string>
     <string name="m_exception_title_no_photos">There are no photos used in the album.</string>

@@ -181,7 +181,7 @@ public class ImageGenerator {
         }
     }
 
-    public static interface CompleteHandler {
+    public interface CompleteHandler {
         void onComplete(Bitmap bitmap);
     }
 }

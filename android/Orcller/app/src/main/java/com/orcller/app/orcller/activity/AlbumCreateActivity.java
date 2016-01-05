@@ -29,6 +29,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.event.PageListEvent;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.manager.ImagePickerManager;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
@@ -54,12 +55,14 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
 import pisces.psuikit.widget.ClearableEditText;
+import pisces.psuikit.widget.ExceptionView;
 import pisces.psuikit.widget.PSButton;
 
 /**
@@ -76,6 +79,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private LinearLayout rootLayout;
     private PSScrollView scrollView;
     private FrameLayout spinnerContainer;
+    private FrameLayout albumContainer;
     private LinearLayout buttonContainer;
     private Spinner spinner;
 
@@ -110,6 +114,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         scrollView = (PSScrollView) findViewById(R.id.scrollView);
         titleEditText = (ClearableEditText) findViewById(R.id.titleEditText);
         descriptionInputView = (DescriptionInputView) findViewById(R.id.descriptionInputView);
+        albumContainer = (FrameLayout) findViewById(R.id.albumContainer);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         albumGridView = (AlbumGridView) findViewById(R.id.albumGridView);
         buttonContainer = (LinearLayout) findViewById(R.id.buttonContainer);
@@ -121,6 +126,8 @@ public class AlbumCreateActivity extends PSActionBarActivity
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.public_options, R.layout.spinner_permission);
 
+        exceptionViewManager.add(
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoMedia, albumContainer));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         albumFlipView.setAllowsShowPageCount(false);
@@ -205,6 +212,19 @@ public class AlbumCreateActivity extends PSActionBarActivity
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoMedia.equals(view.getTag()))
+            AlbumCreateActivity.show();
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoMedia.equals(view.getTag()))
+            return clonedModel.pages.count < 1;
+        return false;
     }
 
     // ================================================================================================
@@ -488,6 +508,8 @@ public class AlbumCreateActivity extends PSActionBarActivity
 
         if (!model.isMine())
             titleEditText.setBackground(null);
+
+        exceptionViewManager.validate();
 
         if (clonedModel.pages.data.size() < 1)
             onClick(addButton);

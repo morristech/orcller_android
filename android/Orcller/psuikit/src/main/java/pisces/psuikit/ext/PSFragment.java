@@ -13,6 +13,7 @@ import pisces.psuikit.widget.ExceptionView;
  * Created by pisces on 11/13/15.
  */
 public class PSFragment extends Fragment implements DataLoadValidator.Client, ExceptionView.Delegate {
+    private boolean active;
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
     protected DataLoadValidator dataLoadValidator;
@@ -39,6 +40,20 @@ public class PSFragment extends Fragment implements DataLoadValidator.Client, Ex
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        setActive(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        setActive(false);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
@@ -61,6 +76,14 @@ public class PSFragment extends Fragment implements DataLoadValidator.Client, Ex
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public String getToolbarTitle() {
         return null;
