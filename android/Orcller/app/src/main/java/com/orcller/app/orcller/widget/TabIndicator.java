@@ -37,15 +37,15 @@ public class TabIndicator extends PSButton {
         super.initProperties(context, attrs, defStyleAttr, defStyleRes);
 
         badge = new Badge(context);
-        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, GraphicUtils.convertDpToPixel(20));
+        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, GraphicUtils.convertDpToPixel(18));
         params.gravity = Gravity.RIGHT;
-        params.rightMargin = GraphicUtils.convertDpToPixel(8);
+        params.rightMargin = GraphicUtils.convertDpToPixel(14);
         params.topMargin = GraphicUtils.convertDpToPixel(8);
 
         badge.setBackgroundColor(context.getResources().getColor(android.R.color.holo_red_dark));
-        badge.setMinimumWidth(GraphicUtils.convertDpToPixel(20));
+        badge.setMinimumWidth(GraphicUtils.convertDpToPixel(18));
         badge.setTextColor(context.getResources().getColor(android.R.color.white));
-        badge.setTextSize(13);
+        badge.setTextSize(12);
         setBackground(context.getResources().getDrawable(R.drawable.background_ripple_tabbar_main));
         addView(badge, params);
     }

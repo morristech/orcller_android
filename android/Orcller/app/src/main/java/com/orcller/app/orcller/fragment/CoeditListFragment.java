@@ -3,6 +3,7 @@ package com.orcller.app.orcller.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,13 @@ import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.CoeditAskActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
+import com.orcller.app.orcller.itemview.LoadMoreFooterView;
 import com.orcller.app.orcller.model.Coedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
@@ -51,6 +54,7 @@ public class CoeditListFragment extends MainTabFragment
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
     private ListAdapter listAdapter;
+    private LoadMoreFooterView listFooterView;
 
     // ================================================================================================
     //  Overridden: PSFragment
@@ -69,6 +73,7 @@ public class CoeditListFragment extends MainTabFragment
         container = (FrameLayout) view.findViewById(R.id.container);
         listView = (ListView) view.findViewById(R.id.listView);
         listAdapter = new ListAdapter(getContext());
+        listFooterView = new LoadMoreFooterView(getContext());
 
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoCollaboration, container),
@@ -76,6 +81,7 @@ public class CoeditListFragment extends MainTabFragment
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
+        listFooterView.setProgressBarGravity(Gravity.CENTER);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
         EventBus.getDefault().register(this);
@@ -106,6 +112,7 @@ public class CoeditListFragment extends MainTabFragment
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
+        listView.removeFooterView(listFooterView);
         exceptionViewManager.validate();
     }
 
@@ -127,14 +134,18 @@ public class CoeditListFragment extends MainTabFragment
 
     @Override
     public void onClick(ExceptionView view) {
-        exceptionViewManager.clear();
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-            }
-        });
-        onRefresh();
+        if (ExceptionViewFactory.Type.NoCollaboration.equals(view.getTag())) {
+            CoeditAskActivity.show();
+        } else {
+            exceptionViewManager.clear();
+            swipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+            onRefresh();
+        }
     }
 
     @Override
@@ -201,7 +212,7 @@ public class CoeditListFragment extends MainTabFragment
     }
 
     private void load(final String after) {
-        if (!invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         if (isFirstLoading()) {
@@ -211,6 +222,8 @@ public class CoeditListFragment extends MainTabFragment
                     swipeRefreshLayout.setRefreshing(true);
                 }
             });
+        } else if (after != null) {
+            listView.addFooterView(listFooterView);
         }
 
         shouldReloadData = false;

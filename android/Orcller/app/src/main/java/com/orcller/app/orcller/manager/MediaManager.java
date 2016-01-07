@@ -28,11 +28,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.BitmapUtils;
+import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
 import retrofit.Callback;
@@ -313,6 +315,43 @@ public class MediaManager {
         MediaDataProxy.getDefault().uploadDirectly(bitmap, callback);
     }
 
+    public void uploadShareImage(Bitmap bitmap, final UploadCompleteHandler completeHandler) {
+        String filename = String.valueOf(DateUtil.toUnixtimestamp(new Date())) + ".jpg";
+
+        saveBitmap(bitmap, filename);
+
+        final String key = SharedObject.getImageUploadPath(filename);
+        final File file = new File(SharedObject.TEMP_IMAGE_DIR, filename);
+
+        TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    if (file.exists())
+                        file.delete();
+
+                    completeHandler.onComplete(SharedObject.toFullMediaUrl(key), null);
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                if (BuildConfig.DEBUG)
+                    Log.e(ex.getMessage(), ex);
+
+                if (file.exists())
+                    file.delete();
+
+                completeHandler.onComplete(null, new Error(ex.getMessage()));
+            }
+        });
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -501,7 +540,11 @@ public class MediaManager {
     //  Interface
     // ================================================================================================
 
-    public static interface CompleteHandler {
+    public interface CompleteHandler {
         void onComplete(Error error);
+    }
+
+    public interface UploadCompleteHandler {
+        void onComplete(String result, Error error);
     }
 }

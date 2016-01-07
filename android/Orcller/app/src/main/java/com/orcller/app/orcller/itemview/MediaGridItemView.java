@@ -2,19 +2,16 @@ package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.widget.MediaThumbView;
 
 /**
  * Created by pisces on 12/11/15.
  */
 public class MediaGridItemView extends AbstractDataGridItemView {
-    private ImageView imageView;
-    private ImageView videoIcon;
+    private MediaThumbView mediaThumbView;
 
     public MediaGridItemView(Context context) {
         super(context);
@@ -36,8 +33,7 @@ public class MediaGridItemView extends AbstractDataGridItemView {
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, getLayoutRes(), this);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
-        videoIcon = (ImageView) findViewById(R.id.videoIcon);
+        mediaThumbView = (MediaThumbView) findViewById(R.id.mediaThumbView);
     }
 
     @Override
@@ -47,15 +43,7 @@ public class MediaGridItemView extends AbstractDataGridItemView {
 
     @Override
     protected void modelChanged() {
-        Glide.clear(imageView);
-        imageView.setImageDrawable(null);
-        videoIcon.setVisibility(media().isVideo() ? VISIBLE : GONE);
-
-        Glide.with(getContext())
-                .load(SharedObject.toFullMediaUrl(media().images.low_resolution.url))
-                .error(R.drawable.img_fb_empty_album)
-                .into(imageView);
-
+        mediaThumbView.setModel(media());
     }
 
     // ================================================================================================

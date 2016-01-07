@@ -13,6 +13,7 @@
     <string name="w_add_collaborators">공동편집자 추가</string>
     <string name="w_add_photo">+ 추가</string>
     <string name="w_albums_public_settings">앨범 공개 설정</string>
+    <string name="w_ask">참여 요청</string>
     <string name="w_ask_collaboration">공동편집 참여 요청</string>
     <string name="w_auto_slide">자동 슬라이드쇼</string>
     <string name="w_cancel">취소</string>
@@ -99,6 +100,7 @@
     <string name="w_title_album_page_order">페이지 순서</string>
     <string name="w_title_album_page_default">기본 페이지 설정</string>
     <string name="w_title_album_page_delete">페이지 삭제</string>
+    <string name="w_title_ask_collaboration">공동편집 참여하기</string>
     <string name="w_title_collaborations">공동편집</string>
     <string name="w_title_edit_album">앨범 편집</string>
     <string name="w_title_edit_page">페이지 편집</string>
@@ -183,6 +185,7 @@
     <string name="m_exception_desc_error_unknown">다시 시도해 주세요.</string>
     <string name="m_exception_desc_no_activity">여기에 친구들의 활동 내역이 표시됩니다.</string>
     <string name="m_exception_desc_no_album">내 앨범에 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
+    <string name="m_exception_desc_no_album_ask">팔로우 중인 친구들의 앨범만 편집할 수 있습니다.</string>
     <string name="m_exception_desc_no_album_coedit">내 앨범에 초대해 함께 만들 수 있어요.</string>
     <string name="m_exception_desc_no_album_invite">새 앨범을 만든 후 친구를 초대하세요.</string>
     <string name="m_exception_desc_no_album_mine">지금 바로 쉽게 앨범을 만들 수 있어요.</string>
@@ -199,8 +202,9 @@
     <string name="m_exception_title_error_unknown">으악! 오류가 발생했어요.</string>
     <string name="m_exception_title_no_activity">활동 내역이 없습니다.</string>
     <string name="m_exception_title_no_album">아직 만든 앨범이 없습니다.</string>
+    <string name="m_exception_title_no_album_ask">공동편집에 참여할 수 있는 앨범이 없습니다.</string>
     <string name="m_exception_title_no_album_invite">공동편집에 초대할 앨범이 없습니다.\n(비공개 상태의 앨범은 공동편집 할 수 없습니다.)</string>
-    <string name="m_exception_title_no_collaborations">공동편집 중인 앨범이 없습니다.</string>
+    <string name="m_exception_title_no_collaborations">참여 중인 앨범이 없습니다.</string>
     <string name="m_exception_title_no_media">아직 앨범에 사진이 없어요.</string>
     <string name="m_exception_title_no_list">결과가 없습니다.</string>
     <string name="m_exception_title_no_permissions">앨범에 대한 권한이 없습니다.</string>

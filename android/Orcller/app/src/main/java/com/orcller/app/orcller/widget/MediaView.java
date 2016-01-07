@@ -31,6 +31,7 @@ import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psfoundation.utils.URLUtils;
 import pisces.psuikit.ext.PSFrameLayout;
+import pisces.psuikit.geom.Padding;
 
 /**
  * Created by pisces on 11/16/15.
@@ -53,10 +54,11 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     }
 
     private boolean clickEnabled;
+    private boolean modelChanged;
     private boolean scaleAspectFill = true;
     private int imageLoadType;
-    protected Point imageSize;
     private Drawable placeholder;
+    private Padding padding;
     private Media model;
     protected Delegate delegate;
     protected ImageView imageView;
@@ -79,10 +81,23 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     // ================================================================================================
 
     @Override
+    protected void commitProperties() {
+        if (modelChanged) {
+            modelChanged = false;
+            modelChanged();
+        }
+    }
+
+    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.view_media, this);
 
         imageView = (ImageView) findViewById(R.id.imageView);
+        padding = new Padding(
+                imageView.getPaddingLeft(),
+                imageView.getPaddingTop(),
+                imageView.getPaddingRight(),
+                imageView.getPaddingBottom());
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.MediaView, defStyleAttr, defStyleRes);
         try {
@@ -146,11 +161,12 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
             EventBus.getDefault().unregister(this);
 
         this.model = model;
+        modelChanged = true;
 
         if (this.model != null && !EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
 
-        modelChanged();
+        invalidateProperties();
     }
 
     public Drawable getPlaceholder() {
@@ -245,7 +261,6 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
 
     protected void onStartImageLoad() {
         progressBar.setVisibility(VISIBLE);
-
         imageView.setBackground(null);
         Glide.clear(imageView);
 
@@ -298,11 +313,13 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
 
         try {
             Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
+            float rate = (float) Math.min(getWidth(), getHeight()) / Math.min(image.width, image.height);
+            final Point size = new Point(Math.round(image.width * rate), Math.round(image.height * rate));
 
             Glide.with(getContext())
                     .load(source)
                     .placeholder(placeholder)
-                    .override(imageSize.x, imageSize.y)
+                    .override(size.x, size.y)
                     .listener(new RequestListener<Object, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -311,6 +328,9 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
 
                             onError();
                             handler.onError();
+                            imageView.getLayoutParams().width = size.x;
+                            imageView.getLayoutParams().height = size.y;
+                            imageView.setPadding(padding.left, padding.top, padding.right, padding.bottom);
                             return true;
                         }
 
@@ -411,11 +431,6 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
     }
 
     private void modelChanged() {
-        float rate = (float) Math.min(Application.getWindowWidth(), Application.getWindowHeight()) / Math.min(model.images.thumbnail.width, model.images.thumbnail.height);
-        int w = Math.round(model.images.thumbnail.width * rate);
-        int h = Math.round(model.images.thumbnail.height * rate);
-        imageSize = new Point(w, h);
-
         onStartImageLoad();
         loadImages();
     }

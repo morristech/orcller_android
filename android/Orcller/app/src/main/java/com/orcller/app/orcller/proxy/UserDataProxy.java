@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.model.api.ApiCoedit;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -66,6 +67,10 @@ public class UserDataProxy extends AbstractDataProxy {
         return uniqueInstance;
     }
 
+    public void albumsForAsk(int limit, String after, Callback<ApiUsers.AlbumListRes> callback) {
+        enqueueCall(service().albumsForAsk(limit, after), callback);
+    }
+
     public void albumsForInvite(long userId, int limit, String after, Callback<ApiUsers.AlbumCoeditListRes> callback) {
         enqueueCall(service().albumsForInvite(userId, limit, after), callback);
     }
@@ -106,6 +111,9 @@ public class UserDataProxy extends AbstractDataProxy {
         @GET("{userId}/album")
         Call<ApiUsers.AlbumListRes> albums(
                 @Path("userId") long userId, @Query("limit") int limit, @Query(value = "after", encoded = true) String after);
+
+        @GET("album_for_ask")
+        Call<ApiUsers.AlbumListRes> albumsForAsk(@Query("limit") int limit, @Query(value = "after", encoded = true) String after);
 
         @GET("{userId}/album_for_invite")
         Call<ApiUsers.AlbumCoeditListRes> albumsForInvite(

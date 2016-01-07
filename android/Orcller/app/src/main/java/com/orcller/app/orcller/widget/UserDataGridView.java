@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.AbstractDataGridItemView;
+import com.orcller.app.orcller.itemview.LoadMoreFooterView;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.error.APIError;
@@ -60,10 +61,6 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
     // ================================================================================================
     //  Overridden: PSGridView
     // ================================================================================================
-
-    @Override
-    protected void commitProperties() {
-    }
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {

@@ -13,20 +13,21 @@ public class ExceptionViewFactory {
     public enum Type {
         NoActivity(1),
         NoAlbum(2),
-        NoAlbumCoedit(3),
-        NoAlbumInvite(4),
-        NoAlbumMine(5),
-        NoCollaboration(6),
-        NoListData(7),
-        NoMedia(8),
-        NoRecommendation(9),
-        NoPermissionForAlbum(10),
-        NoPhotos(11),
-        NoStar(12),
-        NoTimeline(13),
-        DoseNotExistAlbum(14),
-        NetworkError(15),
-        UnknownError(16);
+        NoAlbumAsk(3),
+        NoAlbumCoedit(4),
+        NoAlbumInvite(5),
+        NoAlbumMine(6),
+        NoCollaboration(7),
+        NoListData(8),
+        NoMedia(9),
+        NoRecommendation(10),
+        NoPermissionForAlbum(11),
+        NoPhotos(12),
+        NoStar(13),
+        NoTimeline(14),
+        DoseNotExistAlbum(15),
+        NetworkError(16),
+        UnknownError(17);
 
         private int value;
 
@@ -56,6 +57,9 @@ public class ExceptionViewFactory {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_mine);
             view.setButtonText(R.string.w_title_new_album);
+        } else if (Type.NoAlbumAsk.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_album_ask);
+            view.setDescriptionText(R.string.m_exception_desc_no_album_ask);
         } else if (Type.NoAlbumCoedit.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album_coedit);
@@ -81,6 +85,7 @@ public class ExceptionViewFactory {
         } else if (Type.NoCollaboration.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_collaborations);
             view.setDescriptionText(R.string.m_exception_desc_no_collaborations);
+            view.setButtonText(R.string.w_title_ask_collaboration);
         } else if (Type.NoListData.equals(type)) {
             view.setBackgroundResource(R.color.background_gridview_album_create);
             view.setTitleText(R.string.m_exception_title_no_list);

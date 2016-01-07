@@ -21,6 +21,7 @@ import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.DataLoadValidator;
 import pisces.psfoundation.utils.Log;
 import retrofit.Callback;
@@ -33,9 +34,8 @@ import static pisces.psfoundation.utils.Log.e;
 /**
  * Created by pisces on 12/8/15.
  */
-public class FBShareProxy {
+public class FBShareProxy extends PSObject {
     private static FBShareProxy uniqueInstance;
-    private DataLoadValidator dataLoadValidator = new DataLoadValidator();
 
     // ================================================================================================
     //  Public
@@ -75,60 +75,41 @@ public class FBShareProxy {
     }
 
     private void upload(final Album album) {
-        if (dataLoadValidator.invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         final ProgressDialog progressDialog = ProgressDialog.show(
                 Application.getTopActivity(), null, Application.applicationContext().getString(R.string.w_preparing));
-        final Runnable error = new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.hide();
-                dataLoadValidator.endDataLoading();
-                AlertDialogUtils.retry(R.string.m_fail_share, new Runnable() {
-                    @Override
-                    public void run() {
-                        upload(album);
-                    }
-                });
-            }
-        };
 
         ImageGenerator.generateShareImage(album, new ImageGenerator.CompleteHandler() {
             @Override
             public void onComplete(final Bitmap bitmap) {
-                MediaManager.getDefault().uploadImageDirectly(bitmap, new Callback<ApiMedia.UploadInfoRes>() {
+                MediaManager.getDefault().uploadShareImage(bitmap, new MediaManager.UploadCompleteHandler() {
                     @Override
-                    public void onResponse(Response<ApiMedia.UploadInfoRes> response, Retrofit retrofit) {
+                    public void onComplete(String result, Error error) {
                         bitmap.recycle();
+                        progressDialog.hide();
+                        endDataLoading();
 
-                        if (response.isSuccess() && response.body().isSuccess()) {
-                            progressDialog.hide();
-                            dataLoadValidator.endDataLoading();
-
-                            String description = album.getViewName() + (TextUtils.isEmpty(album.desc) ? "" : "- " + album.desc);
+                        if (error == null) {
+                            String description = album.getViewName() + (TextUtils.isEmpty(album.desc) ? "" : " - " + album.desc);
                             ShareLinkContent content = new ShareLinkContent.Builder()
-                                    .setImageUrl(Uri.parse(SharedObject.toFullMediaUrl(response.body().entity.filename)))
+                                    .setImageUrl(Uri.parse(result))
                                     .setContentDescription(description)
                                     .setContentUrl(Uri.parse(SharedObject.getShareContentUrl(album.encrypted_id)))
                                     .build();
-
                             ShareDialog.show(Application.getTopActivity(), content);
                         } else {
                             if (DEBUG)
-                                e("Api Error", response.body());
+                                Log.e("uploadShareImage Error", error);
 
-                            error.run();
+                            AlertDialogUtils.retry(R.string.m_fail_share, new Runnable() {
+                                @Override
+                                public void run() {
+                                    upload(album);
+                                }
+                            });
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        if (BuildConfig.DEBUG)
-                            Log.e("onFailure", t);
-
-                        bitmap.recycle();
-                        error.run();
                     }
                 });
             }

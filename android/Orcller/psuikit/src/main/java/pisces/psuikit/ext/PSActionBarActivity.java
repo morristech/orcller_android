@@ -29,6 +29,8 @@ public class PSActionBarActivity extends AppCompatActivity implements DataLoadVa
         super.onCreate(savedInstanceState);
 
         ActivityManager.putRunningActivity(this);
+        setActive(true);
+
         exceptionViewManager = new ExceptionViewManager(this);
     }
 

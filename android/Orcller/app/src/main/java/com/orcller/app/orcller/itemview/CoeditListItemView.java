@@ -61,7 +61,6 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
 
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         coeditButton.setDelegate(this);
-        contributorsTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     // ================================================================================================
@@ -79,6 +78,10 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
         this.model = model;
 
         modelChanged();
+    }
+
+    public void setCoeditButtonTitle(CoeditButton.Title title) {
+        coeditButton.setTitle(title);
     }
 
     // ================================================================================================

@@ -19,6 +19,7 @@ import com.orcller.app.orcller.activity.PageListActivity;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.ActivityItemView;
+import com.orcller.app.orcller.itemview.LoadMoreFooterView;
 import com.orcller.app.orcller.model.Notification;
 import com.orcller.app.orcller.model.api.ApiNotification;
 import com.orcller.app.orcller.proxy.ActivityDataProxy;
@@ -51,6 +52,7 @@ public class ActivityFragment extends MainTabFragment
     private FrameLayout container;
     private ListAdapter listAdapter;
     private PSListView listView;
+    private LoadMoreFooterView listFooterView;
 
     public ActivityFragment() {
         super();
@@ -73,6 +75,7 @@ public class ActivityFragment extends MainTabFragment
         container = (FrameLayout) view.findViewById(R.id.container);
         listView = (PSListView) view.findViewById(R.id.listView);
         listAdapter = new ListAdapter(getContext());
+        listFooterView = new LoadMoreFooterView(getContext());
 
         exceptionViewManager.add(
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoActivity, container),
@@ -104,6 +107,7 @@ public class ActivityFragment extends MainTabFragment
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
+        listView.removeFooterView(listFooterView);
         exceptionViewManager.validate();
     }
 
@@ -200,9 +204,11 @@ public class ActivityFragment extends MainTabFragment
     //  Private
     // ================================================================================================
 
-    private void load(final String after) {
-        if (invalidDataLoading())
-            return;
+    private boolean invalidDataLoading(String after) {
+        boolean invalid = invalidDataLoading();
+
+        if (invalid)
+            return invalid;
 
         if (isFirstLoading()) {
             swipeRefreshLayout.post(new Runnable() {
@@ -211,7 +217,16 @@ public class ActivityFragment extends MainTabFragment
                     swipeRefreshLayout.setRefreshing(true);
                 }
             });
+        } else if (after != null) {
+            listView.addFooterView(listFooterView);
         }
+
+        return invalid;
+    }
+
+    private void load(final String after) {
+        if (invalidDataLoading(after))
+            return;
 
         loadError = null;
 

@@ -9,7 +9,7 @@ import pisces.psfoundation.event.Event;
  */
 public class CoeditEvent extends Event {
     public static final String CHANGE = "change";
-    public static final String SYNC = "change";
+    public static final String SYNC = "sync";
     private Contributors contributors;
 
     public CoeditEvent(String type, Object target, Contributors contributors) {

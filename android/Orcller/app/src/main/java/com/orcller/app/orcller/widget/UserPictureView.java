@@ -30,6 +30,7 @@ import pisces.psuikit.ext.PSImageView;
  */
 public class UserPictureView extends PSFrameLayout implements View.OnClickListener {
     private boolean allowsProfileOpen;
+    private boolean modelChanged;
     private BaseUser model;
     private SharedObject.SizeType sizeType = SharedObject.SizeType.Small;
     private PSImageView imageView;
@@ -50,6 +51,14 @@ public class UserPictureView extends PSFrameLayout implements View.OnClickListen
     // ================================================================================================
     //  Overridden: PSImageView
     // ================================================================================================
+
+    @Override
+    protected void commitProperties() {
+        if (modelChanged) {
+            modelChanged = false;
+            modelChanged();
+        }
+    }
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -103,8 +112,9 @@ public class UserPictureView extends PSFrameLayout implements View.OnClickListen
             return;
 
         this.model = model;
+        modelChanged = true;
 
-        modelChanged();
+        invalidateProperties();
     }
 
     public SharedObject.SizeType getSizeType() {

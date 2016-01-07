@@ -229,6 +229,11 @@
         </activity>
 
         <activity
+            android:name=".activity.CoeditAskActivity"
+            android:theme="@style/PurpleTheme">
+        </activity>
+
+        <activity
             android:name=".activity.CoeditInviteActivity"
             android:theme="@style/PurpleTheme">
         </activity>

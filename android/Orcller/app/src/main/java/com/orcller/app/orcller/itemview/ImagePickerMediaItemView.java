@@ -10,7 +10,10 @@ import com.bumptech.glide.Glide;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.Media;
+import com.orcller.app.orcller.widget.MediaThumbView;
 
+import pisces.psfoundation.model.Resources;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -21,9 +24,8 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
     private boolean allowsShowIndicator = true;
     private boolean checked;
-    private ImageView imageView;
-    private ImageView videoIcon;
     private Media model;
+    private MediaThumbView mediaThumbView;
     protected ImageView checkIcon;
     protected FrameLayout selectionIndicator;
 
@@ -47,10 +49,9 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, getLayoutRes(), this);
 
+        mediaThumbView = (MediaThumbView) findViewById(R.id.mediaThumbView);
         checkIcon = (ImageView) findViewById(R.id.checkIcon);
         selectionIndicator = (FrameLayout) findViewById(R.id.selectionIndicator);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        videoIcon = (ImageView) findViewById(R.id.videoIcon);
     }
 
     // ================================================================================================
@@ -124,12 +125,6 @@ public class ImagePickerMediaItemView extends PSFrameLayout implements Checkable
     // ================================================================================================
 
     private void modelChanged() {
-        Glide.clear(imageView);
-        imageView.setImageDrawable(null);
-        videoIcon.setVisibility(getModel().isVideo() ? VISIBLE : GONE);
-
-        Glide.with(getContext())
-                .load(SharedObject.toFullMediaUrl(model.images.low_resolution.url))
-                .into(imageView);
+        mediaThumbView.setModel(model);
     }
 }

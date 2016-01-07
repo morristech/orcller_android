@@ -3,28 +3,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <FrameLayout
+    <com.orcller.app.orcller.widget.MediaThumbView
+        android:id="@+id/mediaThumbView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/background_pageprofile"
-            android:scaleType="centerCrop"/>
-
-        <ImageView
-            android:id="@+id/videoIcon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="right|top"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
-            android:alpha="0.7"
-            android:src="@drawable/video_play_button_normal"
-            android:visibility="gone"/>
-    </FrameLayout>
+        android:layout_weight="1"/>
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -493,20 +493,29 @@ public class TimelineFragment extends MainTabFragment
                 .start();
     }
 
-    private void load(final String after) {
-        if (invalidDataLoading())
-            return;
+    private boolean invalidDataLoading(String after) {
+        boolean invalid = invalidDataLoading();
 
-        if (after == null) {
+        if (invalid)
+            return invalid;
+
+        if (isFirstLoading()) {
             swipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
                     swipeRefreshLayout.setRefreshing(true);
                 }
             });
-        } else {
+        } else if (after != null) {
             listView.addFooterView(listFooterView);
         }
+
+        return invalid;
+    }
+
+    private void load(final String after) {
+        if (invalidDataLoading(after))
+            return;
 
         loadError = null;
 

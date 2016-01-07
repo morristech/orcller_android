@@ -130,6 +130,10 @@ public class SharedObject extends PSObject {
         return null;
     }
 
+    public static String getImageUploadPath(String filename) {
+        return "images/" + filename;
+    }
+
     public static String getImageUploadPath(String filename, Point size) {
         return "images/p" + String.valueOf(size.x) + "x" + String.valueOf(size.y) + "/" + filename;
     }

@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -22,10 +21,11 @@ import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.CoeditListItemView;
 import com.orcller.app.orcller.itemview.LoadMoreFooterView;
-import com.orcller.app.orcller.itemview.UserItemView;
+import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumCoedit;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
+import com.orcller.app.orcller.widget.CoeditButton;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.User;
 
@@ -35,7 +35,6 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
-import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.widget.ExceptionView;
@@ -46,20 +45,17 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/28/15.
  */
-public class CoeditInviteActivity extends PSActionBarActivity
+public class CoeditAskActivity extends PSActionBarActivity
         implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
-    private static final String USER_KEY = "user";
     private static final int LOAD_LIMIT = 20;
     private boolean shouldReloadData;
-    private List<AlbumCoedit> items = new ArrayList<>();
+    private List<Album> items = new ArrayList<>();
     private Error loadError;
-    private User model;
-    private ApiUsers.AlbumCoeditList lastEntity;
+    private ApiUsers.AlbumList lastEntity;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FrameLayout container;
     private ListView listView;
     private ListAdapter listAdapter;
-    private UserItemView headerView;
     private LoadMoreFooterView listFooterView;
 
     // ================================================================================================
@@ -70,30 +66,25 @@ public class CoeditInviteActivity extends PSActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_coedit_invite);
+        setContentView(R.layout.activity_coedit_ask);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setTitle(getString(R.string.w_invite_collaboration));
+        getSupportActionBar().setTitle(getString(R.string.w_title_ask_collaboration));
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         container = (FrameLayout) findViewById(R.id.container);
         listView = (ListView) findViewById(R.id.listView);
         listAdapter = new ListAdapter(this);
-        headerView = new UserItemView(this);
         listFooterView = new LoadMoreFooterView(this);
-        model = (User) getIntent().getSerializableExtra(USER_KEY);
 
         exceptionViewManager.add(
-                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumInvite, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoAlbumAsk, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
         swipeRefreshLayout.setOnRefreshListener(this);
-        headerView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(65)));
-        headerView.setModel(model);
-        listFooterView.setProgressBarGravity(Gravity.CENTER);
-        listView.addHeaderView(headerView);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
+        listFooterView.setProgressBarGravity(Gravity.CENTER);
         EventBus.getDefault().register(this);
         onRefresh();
     }
@@ -125,23 +116,19 @@ public class CoeditInviteActivity extends PSActionBarActivity
 
     @Override
     public void onClick(ExceptionView view) {
-        if (ExceptionViewFactory.Type.NoAlbumInvite.equals(view.getTag())) {
-            AlbumCreateActivity.show();
-        } else {
-            exceptionViewManager.clear();
-            swipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    swipeRefreshLayout.setRefreshing(true);
-                }
-            });
-            onRefresh();
-        }
+        exceptionViewManager.clear();
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
+        onRefresh();
     }
 
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
-        if (ExceptionViewFactory.Type.NoAlbumInvite.equals(view.getTag()))
+        if (ExceptionViewFactory.Type.NoAlbumAsk.equals(view.getTag()))
             return loadError == null && items.size() < 1;
 
         if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag())) {
@@ -168,9 +155,8 @@ public class CoeditInviteActivity extends PSActionBarActivity
     //  Public
     // ================================================================================================
 
-    public static void show(User model) {
-        Intent intent = new Intent(Application.applicationContext(), CoeditInviteActivity.class);
-        intent.putExtra(USER_KEY, model);
+    public static void show() {
+        Intent intent = new Intent(Application.applicationContext(), CoeditAskActivity.class);
         Application.getTopActivity().startActivity(intent);
     }
 
@@ -219,7 +205,7 @@ public class CoeditInviteActivity extends PSActionBarActivity
     }
 
     private void load(final String after) {
-        if (model == null || invalidDataLoading())
+        if (invalidDataLoading())
             return;
 
         if (isFirstLoading()) {
@@ -236,9 +222,9 @@ public class CoeditInviteActivity extends PSActionBarActivity
         shouldReloadData = false;
         loadError = null;
 
-        UserDataProxy.getDefault().albumsForInvite(model.user_uid, LOAD_LIMIT, after, new Callback<ApiUsers.AlbumCoeditListRes>() {
+        UserDataProxy.getDefault().albumsForAsk(LOAD_LIMIT, after, new Callback<ApiUsers.AlbumListRes>() {
             @Override
-            public void onResponse(final Response<ApiUsers.AlbumCoeditListRes> response, Retrofit retrofit) {
+            public void onResponse(final Response<ApiUsers.AlbumListRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
                     if (after == null)
                         items.clear();
@@ -299,7 +285,7 @@ public class CoeditInviteActivity extends PSActionBarActivity
         }
 
         @Override
-        public AlbumCoedit getItem(int position) {
+        public Album getItem(int position) {
             return items.get(position);
         }
 
@@ -314,6 +300,7 @@ public class CoeditInviteActivity extends PSActionBarActivity
 
             if (convertView == null) {
                 itemView = new CoeditListItemView(context);
+                itemView.setCoeditButtonTitle(new CoeditButton.Title(0, R.string.w_cancel_ask, R.string.w_accept_invite, R.string.w_ask));
                 convertView = itemView;
             } else {
                 itemView = (CoeditListItemView) convertView;

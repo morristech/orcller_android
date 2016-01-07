@@ -18,10 +18,10 @@ import com.orcller.app.orcller.model.Contributor;
 import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiCoedit;
 import com.orcller.app.orcller.proxy.CoeditDataProxy;
+import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.model.Resources;
@@ -45,6 +45,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     private Model model;
     private Delegate delegate;
     private ProgressDialog progressDialog;
+    private Title title;
 
     public CoeditButton(Context context) {
         super(context);
@@ -110,12 +111,14 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         if (event instanceof CoeditEvent) {
             CoeditEvent casted = (CoeditEvent) event;
             CoeditButton target = (CoeditButton) casted.getTarget();
-            Contributors contributors = (Contributors) casted.getObject();
+            Contributors contributors = casted.getContributors();
 
-            if (CoeditEvent.CHANGE.equals(casted.getType())) {
-                processCoeditChanged(target, contributors);
-            } else if (CoeditEvent.SYNC.equals(casted.getType())) {
-                processCoeditSynchronized(target, contributors);
+            if (!target.equals(this)) {
+                if (CoeditEvent.CHANGE.equals(casted.getType())) {
+                    processCoeditChanged(target, contributors);
+                } else if (CoeditEvent.SYNC.equals(casted.getType())) {
+                    processCoeditSynchronized(target, contributors);
+                }
             }
         }
     }
@@ -185,6 +188,10 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
         modelChanged();
     }
 
+    public void setTitle(Title title) {
+        this.title = title;
+    }
+
     public void reload() {
         modelChanged();
     }
@@ -216,11 +223,11 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
             boolean isContributor = model instanceof Contributor;
 
             if (contributor().contributor_status == Contributor.Status.Invite.value())
-                return getContext().getString(isContributor ? R.string.w_cancel : R.string.w_cancel_invite);
+                return title != null ? getContext().getString(title.inviteResId) : getContext().getString(isContributor ? R.string.w_cancel : R.string.w_cancel_invite);
             if (contributor().contributor_status == Contributor.Status.Ask.value())
-                return getContext().getString(isContributor ? R.string.w_accept : R.string.w_accept_ask);
+                return title != null ? getContext().getString(title.askResId) : getContext().getString(isContributor ? R.string.w_accept : R.string.w_accept_ask);
             if (contributor().contributor_status == Contributor.Status.None.value() && !contributor().isMe())
-                return getContext().getString(isContributor ? R.string.w_add : R.string.w_invite);
+                return title != null ? getContext().getString(title.noneResId) : getContext().getString(isContributor ? R.string.w_add : R.string.w_invite);
         } else if (model instanceof Album) {
             Album album = album();
 
@@ -229,16 +236,16 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
 
                 if (isCoedit) {
                     if (album.contributors.contributor_status == Contributor.Status.Ask.value())
-                        return getContext().getString(R.string.w_cancel_ask);
+                        return title != null ? getContext().getString(title.askResId) : getContext().getString(R.string.w_cancel_ask);
                     if (album.contributors.contributor_status == Contributor.Status.Invite.value())
-                        return getContext().getString(R.string.w_accept_invite);
+                        return title != null ? getContext().getString(title.inviteResId) : getContext().getString(R.string.w_accept_invite);
                 } else {
                     if (album.contributors.contributor_status == Contributor.Status.Ask.value())
-                        return getContext().getString(R.string.w_cancel_collaboration_ask);
+                        return title != null ? getContext().getString(title.askResId) : getContext().getString(R.string.w_cancel_collaboration_ask);
                     if (album.contributors.contributor_status == Contributor.Status.Invite.value())
-                        return getContext().getString(R.string.w_accept_collaboration_invite);
+                        return title != null ? getContext().getString(title.inviteResId) : getContext().getString(R.string.w_accept_collaboration_invite);
                     if (album.contributors.contributor_status == Contributor.Status.None.value())
-                        return getContext().getString(R.string.w_ask_collaboration);
+                        return title != null ? getContext().getString(title.noneResId) : getContext().getString(R.string.w_ask_collaboration);
                 }
             }
         }
@@ -265,7 +272,7 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     private void processCoeditSynchronized(final CoeditButton target, final Contributors contributors) {
         Album album = (Album) target.getModel();
 
-        if (!ObjectUtils.equals(album, album()) && album.contributors.contributor_id == album().contributors.contributor_id) {
+        if (!ObjectUtils.equals(album, album()) && album.contributors.id == album().contributors.id) {
             album().contributors.synchronize(contributors, new Runnable() {
                 @Override
                 public void run() {
@@ -375,5 +382,23 @@ public class CoeditButton extends PSButton implements View.OnClickListener {
     public interface Delegate {
         void onChange(CoeditButton target, Contributors contributors);
         void onSync(CoeditButton target, Contributors contributors);
+    }
+
+    // ================================================================================================
+    //  Class: Title
+    // ================================================================================================
+
+    public static class Title {
+        public int acceptResId;
+        public int askResId;
+        public int inviteResId;
+        public int noneResId;
+
+        public Title(int acceptResId, int askResId, int inviteResId, int noneResId) {
+            this.acceptResId = acceptResId;
+            this.askResId = askResId;
+            this.inviteResId = inviteResId;
+            this.noneResId = noneResId;
+        }
     }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pisces.psuikit.ext.PSFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"/>
+
+    <View
+        android:id="@+id/errorView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/img_fb_empty_album"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/videoIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right|top"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:alpha="0.7"
+        android:src="@drawable/video_play_button_normal"
+        android:visibility="gone"/>
+</pisces.psuikit.ext.PSFrameLayout>

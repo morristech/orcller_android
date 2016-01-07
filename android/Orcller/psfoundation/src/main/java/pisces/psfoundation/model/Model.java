@@ -151,7 +151,6 @@ public class Model implements Cloneable, Serializable {
                         field.setAccessible(true);
                         field.set(self, field.get(other));
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -159,11 +158,11 @@ public class Model implements Cloneable, Serializable {
         }, new Runnable() {
             @Override
             public void run() {
-                if (postEnabled)
-                    EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, self));
-
                 if (runnable != null)
                     runnable.run();
+
+                if (postEnabled)
+                    EventBus.getDefault().post(new Event(Event.SYNCHRONIZE, self));
             }
         });
     }

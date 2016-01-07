@@ -2,22 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ImageView
-        android:id="@+id/imageView"
+    <com.orcller.app.orcller.widget.MediaThumbView
+        android:id="@+id/mediaThumbView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
-
-    <ImageView
-        android:id="@+id/videoIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="right|top"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:alpha="0.7"
-        android:src="@drawable/video_play_button_normal"
-        android:visibility="gone"/>
+        android:layout_height="match_parent"/>
 
     <FrameLayout
         android:id="@+id/selectionIndicator"

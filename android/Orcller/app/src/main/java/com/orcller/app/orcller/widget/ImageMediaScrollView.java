@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -14,6 +15,7 @@ import com.orcller.app.orcller.R;
 import java.lang.ref.WeakReference;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/22/15.
@@ -46,8 +48,8 @@ public class ImageMediaScrollView extends MediaView {
         scaleImageView = new WeakReference<>(new SubsamplingScaleImageView(context));
         scaleImageView.get().setDoubleTapZoomScale(2f);
         setImageLoadType(ImageLoadType.LowResolution.value() | ImageLoadType.StandardResoultion.value());
-        removeView(imageView);
-        addView(scaleImageView.get(), 0);
+        imageView.setVisibility(INVISIBLE);
+        addView(scaleImageView.get());
     }
 
     @Override
@@ -74,7 +76,7 @@ public class ImageMediaScrollView extends MediaView {
     @Override
     protected void onCompleteImageLoad(GlideDrawable drawable) {
         Bitmap bitmap = ((GlideBitmapDrawable) drawable).getBitmap();
-        baseScale = (float) Application.getWindowWidth() / bitmap.getWidth();
+        baseScale = (float) Math.min(getWidth(), getHeight()) / Math.min(bitmap.getWidth(), bitmap.getHeight());
 
         scaleImageView.get().setImage(ImageSource.cachedBitmap(bitmap));
 
@@ -88,13 +90,15 @@ public class ImageMediaScrollView extends MediaView {
 
     @Override
     protected void onError() {
-        if (scaleImageView.get().getVisibility() == GONE)
-            scaleImageView.get().setImage(ImageSource.resource(R.drawable.img_fb_empty_album));
-        progressBar.setVisibility(GONE);
+        super.onError();
+
+        if (!scaleImageView.get().isImageLoaded())
+            imageView.setVisibility(VISIBLE);
     }
 
     @Override
     protected void onStartImageLoad() {
+        imageView.setVisibility(INVISIBLE);
         scaleImageView.get().recycle();
         reset();
 

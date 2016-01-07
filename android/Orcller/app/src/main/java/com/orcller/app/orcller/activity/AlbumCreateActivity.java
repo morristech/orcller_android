@@ -217,7 +217,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     @Override
     public void onClick(ExceptionView view) {
         if (ExceptionViewFactory.Type.NoMedia.equals(view.getTag()))
-            AlbumCreateActivity.show();
+            onClick(addButton);
     }
 
     @Override

@@ -41,6 +41,7 @@
     <string name="w_add_collaborators">Add Collaborators</string>
     <string name="w_add_photo">+ Add</string>
     <string name="w_albums_public_settings">Albums Public Settings</string>
+    <string name="w_ask">Ask</string>
     <string name="w_ask_collaboration">Ask Collaboration</string>
     <string name="w_auto_slide">Auto Slide</string>
     <string name="w_cancel">Cancel</string>
@@ -127,6 +128,7 @@
     <string name="w_title_album_page_order">Edit Page Orders</string>
     <string name="w_title_album_page_default">Set as Default Page</string>
     <string name="w_title_album_page_delete">Delete Pages</string>
+    <string name="w_title_ask_collaboration">Ask Collaboration</string>
     <string name="w_title_collaborations">Collaborations</string>
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
@@ -211,6 +213,7 @@
     <string name="m_exception_desc_error_unknown">Please try again.</string>
     <string name="m_exception_desc_no_activity">Activities of acquaintances will be display.</string>
     <string name="m_exception_desc_no_album">Try invite for album collaboration.\nUser need to be your follower if you will invite.</string>
+    <string name="m_exception_desc_no_album_ask">You can edit the albums of friend if you follow.</string>
     <string name="m_exception_desc_no_album_coedit">Try invite for album collaboration.</string>
     <string name="m_exception_desc_no_album_invite">Try invite friends after create a new album.</string>
     <string name="m_exception_desc_no_album_mine">Now you can create an album easily.</string>
@@ -227,7 +230,8 @@
     <string name="m_exception_title_error_unknown">Oops! An error occurred.</string>
     <string name="m_exception_title_no_activity">There is no activity.</string>
     <string name="m_exception_title_no_album">No album created yet.</string>
-    <string name="m_exception_title_no_album_invite">There are no albums to invite to album collaboration.\n(Album of the Private state can not be edited jointly.)</string>
+    <string name="m_exception_title_no_album_ask">There are no albums to ask for album collaboration.</string>
+    <string name="m_exception_title_no_album_invite">There are no albums to invite for album collaboration.\n(Album of the Private state can not be edited jointly.)</string>
     <string name="m_exception_title_no_collaborations">There is no album collaborations.</string>
     <string name="m_exception_title_no_media">There are no photos in the this album yet.</string>
     <string name="m_exception_title_no_list">There is no results.</string>

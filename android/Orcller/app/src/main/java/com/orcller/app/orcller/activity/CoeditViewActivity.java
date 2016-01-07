@@ -259,11 +259,11 @@ public class CoeditViewActivity extends PSActionBarActivity
         contributorListView.setDataType(model.isMine() ? ContributorListView.STANDBY : ContributorListView.CONTRIBUTORS);
         contributorListView.setModel(model);
         scrollView.setVisibility(View.VISIBLE);
-        setScrollViewLayout();
         invalidateOptionsMenu();
 
         try {
             coeditButton.setModel(model, model.id);
+            setScrollViewLayout();
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
                 Log.e(e.getMessage());
@@ -272,6 +272,8 @@ public class CoeditViewActivity extends PSActionBarActivity
 
     private void setScrollViewLayout() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollView.getLayoutParams();
-        params.bottomMargin = coeditButton.getVisibility() == View.VISIBLE ? coeditButton.getHeight() : 0;
+        RelativeLayout.LayoutParams buttonParams = (RelativeLayout.LayoutParams) coeditButton.getLayoutParams();
+        params.bottomMargin = coeditButton.getVisibility() == View.VISIBLE ?
+                coeditButton.getHeight() + buttonParams.topMargin + buttonParams.bottomMargin : 0;
     }
 }

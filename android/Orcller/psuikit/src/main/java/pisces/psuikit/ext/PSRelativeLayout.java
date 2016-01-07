@@ -3,6 +3,7 @@ package pisces.psuikit.ext;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
 import pisces.psfoundation.utils.DataLoadValidator;
@@ -10,7 +11,8 @@ import pisces.psfoundation.utils.DataLoadValidator;
 /**
  * Created by pisces on 12/7/15.
  */
-public class PSRelativeLayout extends RelativeLayout implements PSComponent {
+public class PSRelativeLayout extends RelativeLayout
+        implements PSComponent, DataLoadValidator.Client, ViewTreeObserver.OnGlobalLayoutListener {
     protected DataLoadValidator dataLoadValidator = new DataLoadValidator();
     private boolean immediatelyUpdating;
     private boolean initializedSubviews;
@@ -19,18 +21,21 @@ public class PSRelativeLayout extends RelativeLayout implements PSComponent {
         super(context);
 
         initProperties(context, null, 0, 0);
+        getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     public PSRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         initProperties(context, attrs, 0, 0);
+        getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     public PSRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         initProperties(context, attrs, defStyleAttr, 0);
+        getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     // ================================================================================================
@@ -38,8 +43,12 @@ public class PSRelativeLayout extends RelativeLayout implements PSComponent {
     // ================================================================================================
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
+    public void onGlobalLayout() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
 
         if (!initializedSubviews) {
             initializedSubviews = true;
@@ -77,6 +86,18 @@ public class PSRelativeLayout extends RelativeLayout implements PSComponent {
 
     public void validateProperties() {
         commitProperties();
+    }
+
+    public boolean isFirstLoading() {
+        return dataLoadValidator.isFirstLoading();
+    }
+
+    public void endDataLoading() {
+        dataLoadValidator.endDataLoading();
+    }
+
+    public boolean invalidDataLoading() {
+        return dataLoadValidator.invalidDataLoading();
     }
 
     // ================================================================================================
