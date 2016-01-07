@@ -51,6 +51,7 @@ public class ApplicationFacade {
         if (EventBus.getDefault().isRegistered(uniqueInstance))
             EventBus.getDefault().unregister(uniqueInstance);
 
+        AnalyticsTrackers.clear();
         ActivityManager.clear();
 
         uniqueInstance = null;
