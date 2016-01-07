@@ -185,11 +185,11 @@
     <string name="m_exception_desc_error_unknown">다시 시도해 주세요.</string>
     <string name="m_exception_desc_no_activity">여기에 친구들의 활동 내역이 표시됩니다.</string>
     <string name="m_exception_desc_no_album">내 앨범에 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
-    <string name="m_exception_desc_no_album_ask">팔로우 중인 친구들의 앨범만 편집할 수 있습니다.</string>
+    <string name="m_exception_desc_no_album_ask">팔로우 중인 친구들의 앨범만 편집할 수 있어요.</string>
     <string name="m_exception_desc_no_album_coedit">내 앨범에 초대해 함께 만들 수 있어요.</string>
     <string name="m_exception_desc_no_album_invite">새 앨범을 만든 후 친구를 초대하세요.</string>
     <string name="m_exception_desc_no_album_mine">지금 바로 쉽게 앨범을 만들 수 있어요.</string>
-    <string name="m_exception_desc_no_collaborations">친구들의 앨범 공동편집에 참여해 보세요.</string>
+    <string name="m_exception_desc_no_collaborations">친구들의 앨범을 함께 편집해 보세요.</string>
     <string name="m_exception_desc_no_media">+추가 버튼을 터치해 사진을 추가해 주세요.</string>
     <string name="m_exception_desc_no_permissions">앨범이 비공개이거나 당신이 저작자를 팔로우하지 않는 상태일 수 있습니다.</string>
     <string name="m_exception_desc_no_photos">앨범에 사용된 사진을 여기서 확인할 수 있어요.</string>

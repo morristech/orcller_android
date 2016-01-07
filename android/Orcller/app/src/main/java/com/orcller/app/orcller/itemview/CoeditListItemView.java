@@ -12,6 +12,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Contributors;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.CoeditButton;
 
 import pisces.psfoundation.model.Resources;
@@ -28,6 +29,7 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
     private ImageView imageView;
     private ImageView lockIcon;
     private TextView titleTextView;
+    private TextView ownerNameTextView;
     private TextView dateTextView;
     private TextView contributorsTextView;
     private CoeditButton coeditButton;
@@ -55,11 +57,13 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
         imageView = (ImageView) findViewById(R.id.imageView);
         lockIcon = (ImageView) findViewById(R.id.lockIcon);
         titleTextView = (TextView) findViewById(R.id.titleTextView);
+        ownerNameTextView = (TextView) findViewById(R.id.ownerNameTextView);
         contributorsTextView = (TextView) findViewById(R.id.contributorsTextView);
         dateTextView = (TextView) findViewById(R.id.dateTextView);
         coeditButton = (CoeditButton) findViewById(R.id.coeditButton);
 
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ownerNameTextView.setMovementMethod(LinkMovementMethod.getInstance());
         coeditButton.setDelegate(this);
     }
 
@@ -129,6 +133,7 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
 
     private void updateDisplayList() {
         titleTextView.setText(model.name);
+        ownerNameTextView.setText(CustomSchemeGenerator.createUserProfileHtml(model.getUser()));
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.updated_time));
         lockIcon.setVisibility(model.isMine() || model.permission != Album.Permission.Private.value() ? GONE : VISIBLE);
         updateContributorsTextView();
