@@ -32,8 +32,6 @@ import static pisces.psfoundation.utils.Log.e;
  * Created by pisces on 12/3/15.
  */
 public class MediaUploadUnit implements Serializable {
-    private static final long serialVersionUID = 7526472295622776147L;
-
     public enum CompletionState {
         None,
         Creation,
@@ -48,7 +46,7 @@ public class MediaUploadUnit implements Serializable {
     private CompletionState completionState = CompletionState.None;
     private ConcurrentLinkedQueue<Image> queue = new ConcurrentLinkedQueue<>();
     private HashMap<String, Image> map = new HashMap<>();
-    private Delegate delegate;
+    private transient Delegate delegate;
     private Album model;
 
     public MediaUploadUnit(Album model) {
@@ -243,8 +241,8 @@ public class MediaUploadUnit implements Serializable {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    MediaManager.getDefault().clearUploading(model);
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.CREATE, target, response.body().entity));
+                    MediaManager.getDefault().completeUploading(model);
                 } else {
                     if (DEBUG)
                         e("Api Error", response.body());
@@ -269,7 +267,7 @@ public class MediaUploadUnit implements Serializable {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    MediaManager.getDefault().clearUploading(model);
+                    MediaManager.getDefault().completeUploading(model);
                     EventBus.getDefault().post(new AlbumEvent(AlbumEvent.MODIFY, target, response.body().entity));
                 } else {
                     errorState();
@@ -300,7 +298,7 @@ public class MediaUploadUnit implements Serializable {
     //  Interface: Delegate
     // ================================================================================================
 
-    public static interface Delegate {
+    public interface Delegate {
         void onCompleteUploading(MediaUploadUnit unit);
         void onFailUploading(MediaUploadUnit unit);
         void onProcessUploading(MediaUploadUnit unit);

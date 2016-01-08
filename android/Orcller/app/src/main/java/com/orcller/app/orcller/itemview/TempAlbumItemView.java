@@ -15,14 +15,14 @@ import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 
 /**
  * Created by pisces on 12/17/15.
  */
-public class TempAlbumItemView extends PSLinearLayout implements MediaUploadUnit.Delegate, View.OnClickListener {
+public class TempAlbumItemView extends PSLinearLayout
+        implements MediaUploadUnit.Delegate, View.OnClickListener {
     private MediaUploadUnit unit;
     private LinearLayout errorContainer;
     private TextView textView;
@@ -129,7 +129,6 @@ public class TempAlbumItemView extends PSLinearLayout implements MediaUploadUnit
     public void onStartUploading(MediaUploadUnit unit) {
         errorContainer.setVisibility(GONE);
         progressBar.setVisibility(VISIBLE);
-        Log.d("unit.getProcess()", unit.getProcess());
         progressBar.setProgress(Math.round(unit.getProcess() * 100));
     }
 }

@@ -89,7 +89,6 @@ public class ApplicationFacade {
             }
         } else {
             try {
-                AnalyticsTrackers.initialize(Application.applicationContext());
                 FacebookSdk.sdkInitialize(Application.applicationContext());
                 DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
                 MediaManager.getDefault().clearUnnecessaryItems();

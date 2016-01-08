@@ -248,7 +248,10 @@ public class AlbumCreateActivity extends PSActionBarActivity
             ImagePickerManager.getDefault().pick(this, new ImagePickerManager.CompleteHandler() {
                 @Override
                 public void onComplete(List result) {
-                    appendPages(result);
+                    if (result != null)
+                        appendPages(result);
+                    else
+                        exceptionViewManager.validate();
                 }
             });
         } else if (v.equals(orderButton)) {
@@ -509,8 +512,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
         if (!model.isMine())
             titleEditText.setBackground(null);
 
-        exceptionViewManager.validate();
-
         if (clonedModel.pages.data.size() < 1)
             onClick(addButton);
     }
@@ -521,6 +522,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         albumFlipView.setPageIndex(SharedObject.convertPositionToPageIndex(selectedIndexForAppending));
         albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
         albumGridView.setSelectedIndex(selectedIndexForAppending);
+        exceptionViewManager.validate();
     }
 
     private void setListeners() {

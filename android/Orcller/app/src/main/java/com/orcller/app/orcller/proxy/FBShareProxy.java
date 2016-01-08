@@ -84,6 +84,24 @@ public class FBShareProxy extends PSObject {
         ImageGenerator.generateShareImage(album, new ImageGenerator.CompleteHandler() {
             @Override
             public void onComplete(final Bitmap bitmap) {
+                final Runnable errorRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialogUtils.retry(R.string.m_fail_share, new Runnable() {
+                            @Override
+                            public void run() {
+                                upload(album);
+                            }
+                        });
+                    }
+                };
+
+                if (bitmap == null) {
+                    endDataLoading();
+                    errorRunnable.run();
+                    return;
+                }
+
                 MediaManager.getDefault().uploadShareImage(bitmap, new MediaManager.UploadCompleteHandler() {
                     @Override
                     public void onComplete(String result, Error error) {
@@ -94,21 +112,17 @@ public class FBShareProxy extends PSObject {
                         if (error == null) {
                             String description = album.getViewName() + (TextUtils.isEmpty(album.desc) ? "" : " - " + album.desc);
                             ShareLinkContent content = new ShareLinkContent.Builder()
-                                    .setImageUrl(Uri.parse(result))
+                                    .setContentTitle("Orcller - Live and Put Together")
                                     .setContentDescription(description)
                                     .setContentUrl(Uri.parse(SharedObject.getShareContentUrl(album.encrypted_id)))
+                                    .setImageUrl(Uri.parse(result))
                                     .build();
                             ShareDialog.show(Application.getTopActivity(), content);
                         } else {
                             if (DEBUG)
                                 Log.e("uploadShareImage Error", error);
 
-                            AlertDialogUtils.retry(R.string.m_fail_share, new Runnable() {
-                                @Override
-                                public void run() {
-                                    upload(album);
-                                }
-                            });
+                            errorRunnable.run();
                         }
                     }
                 });

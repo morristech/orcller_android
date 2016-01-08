@@ -22,7 +22,7 @@
     <string name="w_cancel_invite">초대 취소</string>
     <string name="w_change">변경</string>
     <string name="w_change_password">비밀번호 변경</string>
-    <string name="w_change_password_ing">비밀번호 변경 중...</string>
+    <string name="w_change_password_ing">비밀번호 변경중...</string>
     <string name="w_coation">공동편집</string>
     <string name="w_collaborators">공동편집자</string>
     <string name="w_comment">댓글</string>
@@ -108,7 +108,7 @@
     <string name="w_title_new_album">새 앨범</string>
     <string name="w_title_options">옵션</string>
     <string name="w_title_profile">프로필 편집</string>
-    <string name="w_title_timeline">타임라인</string>
+    <string name="w_title_timeline">오클러</string>
     <string name="w_yes">예</string>
     <string name="w_video">비디오</string>
     <string name="w_unask">요청 취소</string>
@@ -138,9 +138,8 @@
     <string name="m_hint_user_name">닉네임 없음</string>
     <string name="m_hint_user_name_me">닉네임을 입력하세요</string>
     <string name="m_member_joininput_desc">
-        By tapping to continue, you are indicating that you have read the
-        <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>Private Policy</b></a>
-         and agree to <a href="orcller://web?url=https://www.orcller.com/site/policy/terms&amp;title=Term of service"><b>Terms of Service</b></a>.
+        눌러서 계속 진행하면, <a href="orcller://web?url=https://www.orcller.com/site/policy/private_policy&amp;title=Private Policy"><b>개인정보취급방침</b></a>을 읽었으며
+        <a href="orcller://web?url=https://www.orcller.com/site/policy/terms&amp;title=Term of service"><b>서비스 약관</b></a>에 동의함을 나타냅니다.
     </string>
     <string name="m_complete_email_send">
         "인증 메일 전송이 완료되었습니다.\n\n24 시간 이내에 이메일을 열고, 인증을 진행 하시기 바랍니다."

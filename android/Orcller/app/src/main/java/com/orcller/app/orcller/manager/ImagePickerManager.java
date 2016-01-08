@@ -17,6 +17,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
 
@@ -63,7 +64,7 @@ public class ImagePickerManager {
         pick(context, cropEnabled ? AbsListView.CHOICE_MODE_SINGLE : AbsListView.CHOICE_MODE_MULTIPLE, cropEnabled, completeHandler);
     }
 
-    public void pick(Activity context, final int choiceMode, boolean cropEnabled, CompleteHandler completeHandler) {
+    public void pick(Activity context, final int choiceMode, boolean cropEnabled, final CompleteHandler completeHandler) {
         clear();
 
         this.context = context;
@@ -88,6 +89,7 @@ public class ImagePickerManager {
                 .setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
+                        completeHandler.onComplete(null);
                         clear();
                     }
                 })

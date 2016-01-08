@@ -18,6 +18,7 @@ import com.orcller.app.orcller.model.Images;
 import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcller.proxy.MediaDataProxy;
+import com.orcller.app.orcllermodules.error.APIError;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +39,8 @@ import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.URLUtils;
 import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by pisces on 11/16/15.
@@ -120,17 +123,19 @@ public class MediaManager {
         });
     }
 
-    public boolean clearUploading(Album model) {
-        String key = String.valueOf(model.id);
-        MediaUploadUnit unit = cachedUploadUnitMap.get(key);
-        if (unit != null) {
-            unit.cancelAll();
-            cachedUploadUnits.remove(unit);
-            cachedUploadUnitMap.remove(key);
-            saveCacheFile();
-            return true;
-        }
-        return false;
+    public void completeUploading(final Album model) {
+        Application.runOnBackgroundThread(new Runnable() {
+            @Override
+            public void run() {
+                String key = String.valueOf(model.id);
+                MediaUploadUnit unit = cachedUploadUnitMap.get(key);
+                if (unit != null) {
+                    cachedUploadUnits.remove(unit);
+                    cachedUploadUnitMap.remove(key);
+                    saveCacheFile();
+                }
+            }
+        });
     }
 
     public void continueUploading() {
@@ -175,7 +180,7 @@ public class MediaManager {
                         fos.close();
                     } catch (Exception e) {
                         if (BuildConfig.DEBUG)
-                            Log.e(e.getMessage());
+                            Log.e("saveCacheErrorFile Error", e.getMessage());
                     }
                 } else if (CACHED_ERROR_IMAGE_LIST.exists()) {
                     CACHED_ERROR_IMAGE_LIST.delete();
@@ -197,7 +202,7 @@ public class MediaManager {
                         fos.close();
                     } catch (Exception e) {
                         if (BuildConfig.DEBUG)
-                            Log.e(e.getMessage(), e);
+                            Log.e("saveCacheFile Error", e);
                     }
                 } else if (CACHED_UPLOAD_UNIT_MAP.exists()) {
                     CACHED_UPLOAD_UNIT_MAP.delete();
@@ -278,20 +283,18 @@ public class MediaManager {
             return;
         }
 
-        String url = image.url;
         final String key = SharedObject.getImageUploadPath(filename, new Point(image.width, image.height));
-        final File file = new File(url);
-
+        final File file = new File(image.url);
         TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
+
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state == TransferState.COMPLETED) {
                     image.url = key;
 
-                    if (file.exists() && !file.delete()) {
+                    if (file.exists() && !file.delete())
                         addErrorImage(image);
-                    }
 
                     completeHandler.onComplete(null);
                 }
@@ -304,7 +307,7 @@ public class MediaManager {
             @Override
             public void onError(int id, Exception ex) {
                 if (BuildConfig.DEBUG)
-                    Log.e(ex.getMessage(), ex);
+                    Log.e("uploadImage onError", key, ex);
 
                 completeHandler.onComplete(new Error(ex.getMessage()));
             }
@@ -316,38 +319,53 @@ public class MediaManager {
     }
 
     public void uploadShareImage(Bitmap bitmap, final UploadCompleteHandler completeHandler) {
-        String filename = String.valueOf(DateUtil.toUnixtimestamp(new Date())) + ".jpg";
+        final String localFilename = String.valueOf(DateUtil.toUnixtimestamp(new Date())) + ".jpg";
 
-        saveBitmap(bitmap, filename);
+        saveBitmap(bitmap, localFilename);
 
-        final String key = SharedObject.getImageUploadPath(filename);
-        final File file = new File(SharedObject.TEMP_IMAGE_DIR, filename);
-
-        TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
-        observer.setTransferListener(new TransferListener() {
+        MediaDataProxy.getDefault().getUploadInfo(new Callback<ApiMedia.UploadInfoRes>() {
             @Override
-            public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.COMPLETED) {
-                    if (file.exists())
-                        file.delete();
+            public void onResponse(Response<ApiMedia.UploadInfoRes> response, Retrofit retrofit) {
+                if (response.isSuccess() && response.body().isSuccess()) {
+                    ApiMedia.UploadInfoEntity entity = response.body().entity;
+                    final String key = SharedObject.getImageUploadPath(entity.filename);
+                    final File file = new File(SharedObject.TEMP_IMAGE_DIR, localFilename);
 
-                    completeHandler.onComplete(SharedObject.toFullMediaUrl(key), null);
+                    TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
+                    observer.setTransferListener(new TransferListener() {
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            if (state == TransferState.COMPLETED) {
+                                if (file.exists())
+                                    file.delete();
+
+                                completeHandler.onComplete(SharedObject.toFullMediaUrl(key), null);
+                            }
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            if (BuildConfig.DEBUG)
+                                Log.e("uploadShareImage Error", ex);
+
+                            if (file.exists())
+                                file.delete();
+
+                            completeHandler.onComplete(null, new Error(ex.getMessage()));
+                        }
+                    });
+                } else {
+                    completeHandler.onComplete(null, new APIError(response.body()));
                 }
             }
 
             @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                if (BuildConfig.DEBUG)
-                    Log.e(ex.getMessage(), ex);
-
-                if (file.exists())
-                    file.delete();
-
-                completeHandler.onComplete(null, new Error(ex.getMessage()));
+            public void onFailure(Throwable t) {
+                completeHandler.onComplete(null, new Error(t.getMessage()));
             }
         });
     }
@@ -357,15 +375,10 @@ public class MediaManager {
     // ================================================================================================
 
     private void addErrorImage(final Image image) {
-        Application.runOnBackgroundThread(new Runnable() {
-            @Override
-            public void run() {
-                if (image != null && !cachedErrorImageList.contains(image)) {
-                    cachedErrorImageList.add(image);
-                    saveCacheErrorFile();
-                }
-            }
-        });
+        if (image != null && !cachedErrorImageList.contains(image)) {
+            cachedErrorImageList.add(image);
+            saveCacheErrorFile();
+        }
     }
 
     private void deleteFile(Image image, boolean allowsEnqueueError) {
@@ -386,7 +399,7 @@ public class MediaManager {
                 removeErrorImage(image);
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.e(e.getMessage());
+                    Log.e("deleteFile Error", e.getMessage());
 
                 if (allowsEnqueueError)
                     addErrorImage(image);
@@ -413,7 +426,7 @@ public class MediaManager {
                 return result;
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.e(e.getMessage(), e);
+                    Log.e("loadCachedUploadUnitMap Error", e);
             }
         }
         return new HashMap<>();
@@ -430,22 +443,17 @@ public class MediaManager {
                 return result;
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.e(e.getMessage());
+                    Log.e("loadCachedErrorImageList Error", e.getMessage());
             }
         }
         return new ArrayList<>();
     }
 
     private void removeErrorImage(final Image image) {
-        Application.runOnBackgroundThread(new Runnable() {
-            @Override
-            public void run() {
-                if (cachedErrorImageList.contains(image)) {
-                    cachedErrorImageList.remove(image);
-                    saveCacheErrorFile();
-                }
-            }
-        });
+        if (cachedErrorImageList.contains(image)) {
+            cachedErrorImageList.remove(image);
+            saveCacheErrorFile();
+        }
     }
 
     private void saveBitmap(Bitmap bitmap, String filename) {
@@ -460,7 +468,7 @@ public class MediaManager {
             bitmap.recycle();
         } catch (FileNotFoundException e) {
             if (BuildConfig.DEBUG)
-                Log.e(e.getMessage());
+                Log.e("saveBitmap Error", e.getMessage());
         }
     }
 
@@ -525,7 +533,7 @@ public class MediaManager {
                             @Override
                             public void onError(int id, Exception ex) {
                                 if (BuildConfig.DEBUG)
-                                    Log.e(ex.getMessage(), ex);
+                                    Log.e("uploadUserPicture onError", ex);
 
                                 completeHandler.onComplete(new Error(ex.getMessage()));
                             }

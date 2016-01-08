@@ -1,12 +1,11 @@
 package com.orcller.app.orcller.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.widget.TextView;
+import android.os.AsyncTask;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
@@ -17,6 +16,7 @@ import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Image;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,18 +43,68 @@ public class ImageGenerator {
     // ================================================================================================
 
     public static void generateShareImage(final Album album, final CompleteHandler completeHandler) {
+        AlbumDataProxy.getDefault().remainPages(album, new AlbumDataProxy.CompleteHandler() {
+            @Override
+            public void onComplete(boolean isSuccess) {
+                if (isSuccess) {
+                    new AsyncTask<Void, Void, Rows>() {
+                        @Override
+                        protected Rows doInBackground(Void... params) {
+                            return createShareImageRows(album);
+                        }
+
+                        @Override
+                        protected void onPostExecute(Rows result) {
+                            generateShareImage(result, album, completeHandler);
+                        }
+                    }.execute();
+                } else {
+                    completeHandler.onComplete(null);
+                }
+            }
+        });
+    }
+
+    // ================================================================================================
+    //  Private
+    // ================================================================================================
+
+    private static Rows createShareImageRows(Album model) {
+        int i = Math.min(model.pages.data.size(), MAX_IMAGE_COUNT);
+        int height = 0;
+        double column = Math.min(MAX_COLUMN_COUNT, Math.ceil(Math.sqrt(i)));
+        List<Row> data = new ArrayList<>();
+
+        while (i > 0) {
+            int columnCount = i >= column ? (int) column : i;
+            int addend = HORIZONTAL_GAP * (columnCount - 1);
+            int columnWidth = Math.round((float) (IMAGE_WIDTH - addend) / columnCount);
+            i -= column;
+            column = i > column ? Math.min(MAX_COLUMN_COUNT, Math.ceil(Math.sqrt(i))) : column;
+            height += columnWidth;
+
+            data.add(new Row(data.size(), columnCount, columnWidth));
+        }
+
+        height = height + (VERTICAL_GAP * (data.size() - 1));
+
+        Collections.reverse(data);
+
+        return new Rows(data, height);
+    }
+
+    private static void generateShareImage(final Rows rows, final Album album, final CompleteHandler completeHandler) {
         Application.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 final Point processPoint = new Point(0, Math.min(album.pages.data.size(), MAX_IMAGE_COUNT));
-                final Rows rows = createShareImageRows(album);
                 final Bitmap canvasBitmap = Bitmap.createBitmap(IMAGE_WIDTH, rows.height, Bitmap.Config.ARGB_8888);
                 final Canvas canvas = new Canvas(canvasBitmap);
                 final Runnable check = new Runnable() {
                     @Override
                     public void run() {
                         if (++processPoint.x >= processPoint.y) {
-                            final Bitmap bitmap = Bitmap.createBitmap(canvasBitmap, 0, Math.max(0, rows.height - IMAGE_HEIGHT), IMAGE_WIDTH, IMAGE_HEIGHT);
+                            final Bitmap bitmap = Bitmap.createBitmap(canvasBitmap, 0, Math.max(0, (IMAGE_HEIGHT - rows.height)/2), IMAGE_WIDTH, IMAGE_HEIGHT);
                             canvasBitmap.recycle();
 
                             Application.runOnMainThread(new Runnable() {
@@ -96,12 +146,6 @@ public class ImageGenerator {
                                                 new Point(rect.right, rect.bottom), bitmap);
                                         canvas.drawBitmap(bitmap, rect.left, rect.top, null);
                                         bitmap.recycle();
-
-                                        if (processPoint.x+1 >= processPoint.y && processPoint.y < album.pages.total_count) {
-                                            String text = "+" + String.valueOf(album.pages.total_count - processPoint.y);
-                                            drawTextView(canvas, text, row.columnWidth, row.columnWidth);
-                                        }
-
                                         check.run();
                                         return true;
                                     }
@@ -113,51 +157,6 @@ public class ImageGenerator {
                 }
             }
         });
-    }
-
-    // ================================================================================================
-    //  Private
-    // ================================================================================================
-
-    private static Rows createShareImageRows(Album model) {
-        int i = Math.min(model.pages.data.size(), MAX_IMAGE_COUNT);
-        int height = 0;
-        double column = Math.min(MAX_COLUMN_COUNT, Math.ceil(Math.sqrt(i)));
-        List<Row> data = new ArrayList<>();
-
-        while (i > 0) {
-            int columnCount = i >= column ? (int) column : i;
-            int addend = HORIZONTAL_GAP * (columnCount - 1);
-            int columnWidth = Math.round((float) (IMAGE_WIDTH - addend) / columnCount);
-            i -= column;
-            column = i > column ? Math.min(MAX_COLUMN_COUNT, Math.ceil(Math.sqrt(i))) : column;
-            height += columnWidth;
-
-            data.add(new Row(data.size(), columnCount, columnWidth));
-        }
-
-        height = height + (VERTICAL_GAP * (data.size() - 1));
-
-        Collections.reverse(data);
-
-        return new Rows(data, height);
-    }
-
-    private static void drawTextView(Canvas canvas, String text, int width, int height) {
-        Context context = Application.applicationContext();
-        TextView textView = new TextView(context);
-        textView.setDrawingCacheEnabled(true);
-        textView.setText(text);
-        textView.setTextColor(Color.WHITE);
-        textView.setTextSize(25);
-        textView.setShadowLayer(15, 3, 3, Color.argb(55, 0, 0, 0));
-        textView.measure(0, 0);
-        textView.layout(0, 0, textView.getMeasuredWidth(), textView.getMeasuredHeight());
-
-        int left = canvas.getWidth() - width + (width - textView.getWidth())/2;
-        int top = canvas.getHeight() - height + (height - textView.getHeight())/2;
-
-        canvas.drawBitmap(textView.getDrawingCache(), left, top, null);
     }
 
     private static class Row {

@@ -99,7 +99,8 @@ public class ExceptionView extends PSLinearLayout implements View.OnClickListene
     }
 
     public void removeFromParent() {
-        viewGroup.removeView(this);
+        if (viewGroup != null)
+            viewGroup.removeView(this);
     }
 
     // ================================================================================================

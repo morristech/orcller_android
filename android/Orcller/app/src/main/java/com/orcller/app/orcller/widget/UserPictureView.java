@@ -157,16 +157,11 @@ public class UserPictureView extends PSFrameLayout implements View.OnClickListen
     }
 
     private void modelChanged() {
-        if (model == null)
-            return;
-
-        if (getContext() != null) {
-            Glide.clear(imageView);
-            Glide.with(getContext())
-                    .load(SharedObject.toUserPictureUrl(model.user_picture, sizeType))
-                    .placeholder(getPlaceholderImage())
-                    .error(getPlaceholderImage())
-                    .into(imageView);
-        }
+        Glide.clear(imageView);
+        Glide.with(getContext())
+                .load(SharedObject.toUserPictureUrl(model.user_picture, sizeType))
+                .placeholder(getPlaceholderImage())
+                .error(getPlaceholderImage())
+                .into(imageView);
     }
 }

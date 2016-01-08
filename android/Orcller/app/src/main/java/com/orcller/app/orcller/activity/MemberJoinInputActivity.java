@@ -20,6 +20,7 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Length;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -44,6 +45,7 @@ import pisces.psuikit.widget.ClearableEditText;
  */
 public class MemberJoinInputActivity extends PSActionBarActivity implements Validator.ValidationListener {
     private static final String EMAIL_KEY = "email";
+    private static final String USER_KEY = "user";
 
     @Length(min = 6, max = 16, messageResId = R.string.m_validate_user_name_length)
     private ClearableEditText idEditText;
@@ -94,14 +96,7 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
         };
 
         descTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        setUser(getIntent().getSerializableExtra("user"));
-
-        if (getIntent().getStringExtra(EMAIL_KEY) != null) {
-            setEmail(getIntent().getStringExtra(EMAIL_KEY));
-        } else if (getIntent().getData().getQueryParameter(EMAIL_KEY) != null) {
-            setEmail(getIntent().getData().getQueryParameter(EMAIL_KEY));
-        }
-
+        loadExtra();
         setListeners();
     }
 
@@ -174,6 +169,16 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private void loadExtra() {
+        setUser(getIntent().getSerializableExtra(USER_KEY));
+
+        if (getIntent().getStringExtra(EMAIL_KEY) != null) {
+            setEmail(getIntent().getStringExtra(EMAIL_KEY));
+        } else if (getIntent().getData() != null && getIntent().getData().getQueryParameter(EMAIL_KEY) != null) {
+            setEmail(getIntent().getData().getQueryParameter(EMAIL_KEY));
+        }
+    }
 
     private void join() {
         SoftKeyboardUtils.hide(container);

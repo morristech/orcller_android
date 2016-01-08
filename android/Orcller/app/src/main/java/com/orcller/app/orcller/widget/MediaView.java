@@ -312,7 +312,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
         };
 
         try {
-            Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
+            final Object source = URLUtils.isLocal(image.url) ? new File(image.url) : new URL(SharedObject.toFullMediaUrl(image.url));
             float rate = (float) Math.min(getWidth(), getHeight()) / Math.min(image.width, image.height);
             final Point size = new Point(Math.round(image.width * rate), Math.round(image.height * rate));
 
@@ -324,7 +324,7 @@ abstract public class MediaView extends PSFrameLayout implements View.OnClickLis
                         @Override
                         public boolean onException(Exception e, Object model, Target<GlideDrawable> target, boolean isFirstResource) {
                             if (BuildConfig.DEBUG)
-                                Log.e("onException", e);
+                                Log.e("loadImage", source, e);
 
                             onError();
                             handler.onError();

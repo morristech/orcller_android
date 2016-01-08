@@ -20,7 +20,6 @@ public class BitmapUtils {
         int y = (h - ch)/2;
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(source, w, h, true);
         Bitmap bitmap = Bitmap.createBitmap(scaledBitmap, x, y, cw, ch);
-        scaledBitmap.recycle();
         return bitmap;
     }
 
@@ -32,7 +31,6 @@ public class BitmapUtils {
         int y = Math.max(0, (size.y - h)/2);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(source, size.x, size.y, true);
         Bitmap bitmap = Bitmap.createBitmap(scaledBitmap, x, y, w, h);
-        scaledBitmap.recycle();
         return bitmap;
     }
 

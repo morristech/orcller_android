@@ -225,6 +225,12 @@ public class CustomSchemeGenerator {
         return HtmlUtils.removeUnderlines(spannable);
     }
 
+    public static CharSequence createSpannable(int resId) {
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(
+                Html.fromHtml(Resources.getString(resId)));
+        return HtmlUtils.removeUnderlines(spannable);
+    }
+
     public static CharSequence createUserProfileHtml(BaseUser user) {
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(
                 Html.fromHtml(createLinkTag(user)));

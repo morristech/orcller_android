@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Converter;
@@ -157,6 +158,11 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     public void remainPages(final Album album, final CompleteHandler completeHandler) {
+        if (album.pages.count >= album.pages.total_count && completeHandler != null) {
+            completeHandler.onComplete(true);
+            return;
+        }
+
         final String key = String.valueOf(album.id);
         final Runnable onComplete = new Runnable() {
             @Override
@@ -171,7 +177,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
             return;
         }
 
-        if (remainPageRequestMap.containsKey(key) || album.pages.count >= album.pages.total_count) {
+        if (remainPageRequestMap.containsKey(key)) {
             if (completeHandler != null)
                 completeHandler.onComplete(false);
             return;

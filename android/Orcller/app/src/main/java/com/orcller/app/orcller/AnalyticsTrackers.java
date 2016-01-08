@@ -2,6 +2,7 @@ package com.orcller.app.orcller;
 
 import android.content.Context;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -36,19 +37,12 @@ public final class AnalyticsTrackers {
         sInstance = null;
     }
 
-    public static synchronized void initialize(Context context) {
-        if (sInstance != null) {
-            throw new IllegalStateException("Extra call to initialize analytics trackers");
-        }
-
-        sInstance = new AnalyticsTrackers(context);
-    }
-
     public static synchronized AnalyticsTrackers getInstance() {
-        if (sInstance == null) {
-            throw new IllegalStateException("Call initialize() before getInstance()");
+        if(sInstance == null) {
+            synchronized(TransferUtility.class) {
+                sInstance = new AnalyticsTrackers(Application.applicationContext());
+            }
         }
-
         return sInstance;
     }
 

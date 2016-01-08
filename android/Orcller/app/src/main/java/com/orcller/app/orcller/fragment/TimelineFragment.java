@@ -382,6 +382,7 @@ public class TimelineFragment extends MainTabFragment
         if (!items.contains(item)) {
             items.add(0, item);
             listAdapter.notifyDataSetChanged();
+            scrollToTop();
         }
     }
 
