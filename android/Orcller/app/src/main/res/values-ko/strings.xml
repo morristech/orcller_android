@@ -108,7 +108,7 @@
     <string name="w_title_new_album">새 앨범</string>
     <string name="w_title_options">옵션</string>
     <string name="w_title_profile">프로필 편집</string>
-    <string name="w_title_timeline">오클러</string>
+    <string name="w_title_timeline">Orcller</string>
     <string name="w_yes">예</string>
     <string name="w_video">비디오</string>
     <string name="w_unask">요청 취소</string>
@@ -151,6 +151,8 @@
     <string name="m_fail_change">"변경 내용 저장에 실패하였습니다.\n다시 시도해 주세요."</string>
     <string name="m_fail_common">요청에 실패하였습니다.\n다시 시도해 주세요.</string>
     <string name="m_fail_comment">댓글 게시에 실패하였습니다.\n다시 시도해 주세요.</string>
+    <string name="m_fail_post_no_connection">네트워크에 연결할 수 없습니다. 다시 시도합니다.</string>
+    <string name="m_fail_post_an_error">에러가 발생했습니다. 다시 시도합니다.</string>
     <string name="m_fail_save_user_picture">프로필 이미지 저장에 실패하였습니다.\n다시 시도해 주세요.</string>
     <string name="m_fail_share">앨범 공유에 실패하였습니다.\n다시 시도해 주세요.</string>
     <string name="m_warn_album_permission">앨범을 비공개 설정하면 공동편집이 차단됩니다.\n그래도 변경하시겠어요?</string>
@@ -177,11 +179,13 @@
     <string name="m_noty_page_comment">이 앨범 페이지에 댓글을 달았습니다.</string>
     <string name="m_noty_page_heart">이 앨범 페이지에 하트를 표현했습니다.</string>
 
+    <string name="m_exception_button_instagram_login">인스타그램 로그인</string>
     <string name="m_exception_button_no_album_coedit">초대하기</string>
     <string name="m_exception_button_no_collaborations">참여하기</string>
     <string name="m_exception_desc_dose_not_exist_album">앨범이 삭제되었을 수 있습니다.</string>
     <string name="m_exception_desc_error_network">연결 상태를 확인한 후 다시 시도하세요.</string>
     <string name="m_exception_desc_error_unknown">다시 시도해 주세요.</string>
+    <string name="m_exception_desc_instagram_login">인스타그램 계정으로 로그인해 주세요.</string>
     <string name="m_exception_desc_no_activity">여기에 친구들의 활동 내역이 표시됩니다.</string>
     <string name="m_exception_desc_no_album">내 앨범에 초대해 함께 만들 수 있어요.\n나를 팔로우하고 있어야 초대가 가능해요.</string>
     <string name="m_exception_desc_no_album_ask">팔로우 중인 친구들의 앨범만 편집할 수 있어요.</string>
@@ -199,6 +203,7 @@
     <string name="m_exception_title_error_network">네트워크 상태가 원활하지 않습니다.</string>
     <string name="m_exception_title_error_network_long">네트워크 상태가 원활하지 않습니다.\n연결 상태를 확인한 후 다시 시도하세요.</string>
     <string name="m_exception_title_error_unknown">으악! 오류가 발생했어요.</string>
+    <string name="m_exception_title_instagram_login">인스타그램 계정 로그인이 필요합니다.</string>
     <string name="m_exception_title_no_activity">활동 내역이 없습니다.</string>
     <string name="m_exception_title_no_album">아직 만든 앨범이 없습니다.</string>
     <string name="m_exception_title_no_album_ask">공동편집에 참여할 수 있는 앨범이 없습니다.</string>

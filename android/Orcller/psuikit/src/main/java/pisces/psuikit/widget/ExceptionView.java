@@ -1,6 +1,7 @@
 package pisces.psuikit.widget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -42,6 +43,7 @@ public class ExceptionView extends PSLinearLayout implements View.OnClickListene
 
         descTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
         button.setOnClickListener(this);
+        setBackgroundColor(Color.WHITE);
         setClickable(true);
     }
 

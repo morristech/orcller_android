@@ -186,6 +186,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
         super.onResume();
 
         ImagePickerManager.getDefault().clear();
+        exceptionViewManager.validate();
     }
 
     @Override
@@ -223,7 +224,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     @Override
     public boolean shouldShowExceptionView(ExceptionView view) {
         if (ExceptionViewFactory.Type.NoMedia.equals(view.getTag()))
-            return clonedModel.pages.count < 1;
+            return clonedModel != null && clonedModel.pages.count < 1;
         return false;
     }
 

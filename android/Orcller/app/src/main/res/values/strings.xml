@@ -180,6 +180,8 @@
     <string name="m_fail_change">"It failed to save changes.\nPlease try again."</string>
     <string name="m_fail_common">It failed to request.\nPlease try again.</string>
     <string name="m_fail_comment">It failed to post a comment.\nPlease try again.</string>
+    <string name="m_fail_post_no_connection">No connection available. Will retry your post.</string>
+    <string name="m_fail_post_an_error">An error has occurred. Will retry your post.</string>
     <string name="m_fail_save_user_picture">It failed to save the picture.\nPlease try again.</string>
     <string name="m_fail_share">It failed to share the album.\nPlease try again.</string>
     <string name="m_warn_album_permission">If you set to private,\nAlbum collaborating will be blocked.\n\nDo you want to change anyway?</string>
@@ -206,11 +208,13 @@
     <string name="m_noty_page_comment">commented on the page of album.</string>
     <string name="m_noty_page_heart">has represented the heart to the page of your album.</string>
 
+    <string name="m_exception_button_instagram_login">Login with Instagram</string>
     <string name="m_exception_button_no_album_coedit">Invite</string>
     <string name="m_exception_button_no_collaborations">Join</string>
     <string name="m_exception_desc_dose_not_exist_album">This album may be deleted.</string>
     <string name="m_exception_desc_error_network">Please try again after checking the connection status.</string>
     <string name="m_exception_desc_error_unknown">Please try again.</string>
+    <string name="m_exception_desc_instagram_login">Please log in with Instagram account.</string>
     <string name="m_exception_desc_no_activity">Activities of acquaintances will be display.</string>
     <string name="m_exception_desc_no_album">Try invite for album collaboration.\nUser need to be your follower if you will invite.</string>
     <string name="m_exception_desc_no_album_ask">You can edit the albums of friend if you follow.</string>
@@ -228,6 +232,7 @@
     <string name="m_exception_title_error_network">Network status is not smooth.</string>
     <string name="m_exception_title_error_network_long">Network status is not smooth.\nPlease try again after checking the connection status.</string>
     <string name="m_exception_title_error_unknown">Oops! An error occurred.</string>
+    <string name="m_exception_title_instagram_login">Instagram account login is required.</string>
     <string name="m_exception_title_no_activity">There is no activity.</string>
     <string name="m_exception_title_no_album">No album created yet.</string>
     <string name="m_exception_title_no_album_ask">There are no albums to ask for album collaboration.</string>

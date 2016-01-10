@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PSFoundation</string>
-    <string name="w_just_now">Just Now</string>
+    <string name="w_just_now">방금</string>
 </resources>

@@ -4,43 +4,47 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white">
-    <FrameLayout
+    android:background="@android:color/white"
+    android:descendantFocusability="blocksDescendants">
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="31dp"
-        android:layout_margin="8dp">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_gravity="center_vertical"
-            style="@android:style/Widget.ProgressBar.Horizontal" />
+            android:layout_height="8dp"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal" />
 
         <LinearLayout
             android:id="@+id/errorContainer"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:visibility="gone">
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:textAllCaps="false"
+                android:textColor="@color/button_follow"
+                android:textSize="13dp"/>
 
             <Button
                 android:id="@+id/retryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:layout_marginLeft="15dp"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/background_ripple_followbutton"
                 android:text="@string/w_retry"
                 android:textAllCaps="false"
                 android:textColor="@color/button_follow"
-                android:textSize="12dp"/>
+                android:textSize="13dp"/>
         </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
     <com.orcller.app.orcller.widget.AlbumInfoProfileView
         android:id="@+id/albumInfoProfileView"

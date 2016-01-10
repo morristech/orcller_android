@@ -39,6 +39,7 @@ public class InstagramLoginActivity extends PSActionBarActivity {
 
         resource = (OAuth2) getIntent().getSerializableExtra("resource");
         webView = (WebView) findViewById(R.id.webView);
+
         webView.setWebViewClient(new InstagramLoginWebViewClient(this));
         webView.loadUrl(getAuthorizeUrl());
     }
@@ -91,11 +92,11 @@ public class InstagramLoginActivity extends PSActionBarActivity {
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            ProgressBarManager.show((Activity) context);
+            ProgressBarManager.show();
         }
 
         public void onPageFinished(WebView view, String url) {
-            ProgressBarManager.hide((Activity) context);
+            ProgressBarManager.hide();
         }
     }
 

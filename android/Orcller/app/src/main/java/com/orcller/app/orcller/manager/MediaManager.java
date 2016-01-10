@@ -46,6 +46,7 @@ import retrofit.Retrofit;
  * Created by pisces on 11/16/15.
  */
 public class MediaManager {
+    public static final float IMAGE_LIMIT_RATE = 2.0f;
     public static final int WIDTH_IMAGE_LOW_RESOLUTION = 320;
     public static final int WIDTH_IMAGE_STANDARD_RESOLUTION = 640;
     public static final int WIDTH_IMAGE_THUMBNAIL= 150;
@@ -106,10 +107,11 @@ public class MediaManager {
                 for (MediaUploadUnit unit : cachedUploadUnits) {
                     if (unit.getCompletionState().equals(MediaUploadUnit.CompletionState.None)) {
                         unit.clearAll();
-                        cachedUploadUnits.remove(unit);
-                        cachedUploadUnitMap.remove(String.valueOf(unit.getModel().id));
                     }
                 }
+
+                cachedUploadUnits.clear();
+                cachedUploadUnitMap.clear();
 
                 for (Image image : cachedErrorImageList) {
                     deleteFile(image, false);
@@ -408,10 +410,21 @@ public class MediaManager {
     }
 
     private Point getFitedSize(int fitValue, Point originSize) {
-        int minValue = Math.min(originSize.x, originSize.y);
-        float scale = (float) Math.min(minValue, fitValue) / Math.max(minValue, fitValue);
+        float scale = (float) fitValue / Math.min(originSize.x, originSize.y);
         int w = Math.round(originSize.x * scale);
         int h = Math.round(originSize.y * scale);
+
+        if (w != h) {
+            float rate = (float) Math.min(w, h) / Math.max(w, h);
+            if (rate > IMAGE_LIMIT_RATE) {
+                if (Math.max(w, h) == w) {
+                    w = Math.round(h * IMAGE_LIMIT_RATE);
+                } else {
+                    h = Math.round(w * IMAGE_LIMIT_RATE);
+                }
+            }
+        }
+
         return new Point(w, h);
     }
 
@@ -478,9 +491,9 @@ public class MediaManager {
         Point standardSize = getFitedSize(WIDTH_IMAGE_STANDARD_RESOLUTION, originSize);
         Point lowSize = getFitedSize(WIDTH_IMAGE_LOW_RESOLUTION, originSize);
         Point thumbnailSize = getFitedSize(WIDTH_IMAGE_THUMBNAIL, originSize);
-        Bitmap standardBitmap = BitmapUtils.createSquareBitmap(standardSize, bitmap);
-        Bitmap lowBitmap = BitmapUtils.createSquareBitmap(lowSize, bitmap);
-        Bitmap thumbnailBitmap = BitmapUtils.createSquareBitmap(thumbnailSize, bitmap);
+        Bitmap standardBitmap = BitmapUtils.createScaledBitmap(standardSize, bitmap);
+        Bitmap lowBitmap = BitmapUtils.createScaledBitmap(lowSize, bitmap);
+        Bitmap thumbnailBitmap = BitmapUtils.createScaledBitmap(thumbnailSize, bitmap);
         String standardImageName = String.valueOf(media.origin_id) + "_s.jpg";
         String lowImageName = String.valueOf(media.origin_id) + "_l.jpg";
         String thumbnailImageName = String.valueOf(media.origin_id) + "_t.jpg";

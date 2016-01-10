@@ -4,17 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.IGImagePickerItemView;
-import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import java.util.ArrayList;
@@ -28,17 +30,19 @@ import pisces.psfoundation.ext.Application;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.itemview.ListBaseHeaderView;
 import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
 /**
  * Created by pisces on 11/27/15.
  */
 public class IGImagePickerActivity extends PSActionBarActivity
-        implements AdapterView.OnItemClickListener, View.OnClickListener {
+        implements AdapterView.OnItemClickListener {
     private static final int FOLLOWING_LOAD_LIMIT = 50;
     private int choiceMode;
     private List<ApiInstagram.User> items = new ArrayList<>();
-    private Button popularButton;
+    private Error loadError;
+    private FrameLayout container;
     private ListView listView;
     private ListAdapter listAdapter;
     private ApiInstagram.UserListRes lastRes;
@@ -55,15 +59,20 @@ public class IGImagePickerActivity extends PSActionBarActivity
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(getString(R.string.w_instagram_photos));
 
-        choiceMode = getIntent().getIntExtra(MediaGridActivity.CHOICE_MODE_KEY, AbsListView.CHOICE_MODE_MULTIPLE);
+        container = (FrameLayout) findViewById(R.id.container);
         listView = (ListView) findViewById(R.id.listView);
-        popularButton = (Button) findViewById(R.id.popularButton);
         listAdapter = new ListAdapter(this);
+        choiceMode = getIntent().getIntExtra(MediaGridActivity.CHOICE_MODE_KEY, AbsListView.CHOICE_MODE_MULTIPLE);
 
+        ExceptionView exceptionView = new ExceptionView(this, container);
+        exceptionView.setTitleText(R.string.m_exception_title_instagram_login);
+        exceptionView.setDescriptionText(R.string.m_exception_desc_instagram_login);
+        exceptionView.setButtonText(R.string.m_exception_button_instagram_login);
+
+        exceptionViewManager.add(exceptionView,
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
-        popularButton.setOnClickListener(this);
-        popularButton.setEnabled(InstagramApplicationCenter.getDefault().hasSession());
         load();
     }
 
@@ -79,25 +88,35 @@ public class IGImagePickerActivity extends PSActionBarActivity
     protected void onResume() {
         super.onResume();
 
-        popularButton.setEnabled(InstagramApplicationCenter.getDefault().hasSession());
+        invalidateOptionsMenu();
+        exceptionViewManager.validate();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        ProgressBarManager.hide(this);
+        ProgressBarManager.hide(container);
         listView.setOnItemClickListener(null);
-        popularButton.setOnClickListener(null);
-        FBSDKRequestQueue.currentQueue().clear();
-        FBPhotoCaches.getDefault().clear();
+        InstagramApplicationCenter.getDefault().clear();
     }
 
     @Override
-    public void endDataLoading() {
-        super.endDataLoading();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Application.getTopActivity().getMenuInflater().inflate(R.menu.menu_instagram_imagepicker, menu);
+        menu.findItem(R.id.popular).setEnabled(InstagramApplicationCenter.getDefault().hasSession());
+        return true;
+    }
 
-        ProgressBarManager.hide(this);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.popular:
+                IGPopularMediaGridActivity.show(choiceMode);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // ================================================================================================
@@ -111,13 +130,8 @@ public class IGImagePickerActivity extends PSActionBarActivity
     }
 
     // ================================================================================================
-    //  Listener
+    //  Interface Implementation
     // ================================================================================================
-
-    @Override
-    public void onClick(View v) {
-        IGPopularMediaGridActivity.show(choiceMode);
-    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -125,13 +139,27 @@ public class IGImagePickerActivity extends PSActionBarActivity
             IGMediaGridActivity.show(((IGImagePickerItemView) view).getModel(), choiceMode);
     }
 
+    @Override
+    public void onClick(ExceptionView view) {
+        load();
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
+            return loadError != null;
+        return !InstagramApplicationCenter.getDefault().hasSession();
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
 
     private void load() {
-        ProgressBarManager.show(this);
+        if (InstagramApplicationCenter.getDefault().hasSession())
+            ProgressBarManager.show(container);
 
+        loadError = null;
         Call<ApiInstagram.UserRes> call = InstagramApiProxy.getDefault().service().user("self");
 
         InstagramApplicationCenter.getDefault().enqueueCall(
@@ -139,25 +167,30 @@ public class IGImagePickerActivity extends PSActionBarActivity
                 new InstagramApiProxy.CompleteHandler<ApiInstagram.UserRes>() {
                     @Override
                     public void onError(InstagramSDKError error) {
+                        loadError = error;
+                        ProgressBarManager.hide(container);
+                        exceptionViewManager.validate();
                     }
 
                     @Override
                     public void onComplete(ApiInstagram.UserRes result) {
                         items.add(result.data);
-                        loadFollwing(null);
+                        loadFollowing(null);
                     }
                 });
     }
 
-    private void loadFollwing(final String after) {
+    private void loadFollowing(final String after) {
         Call<ApiInstagram.UserListRes> call = InstagramApiProxy.getDefault().service().follows("self", FOLLOWING_LOAD_LIMIT, after);
-        final IGImagePickerActivity self = this;
 
         InstagramApplicationCenter.getDefault().enqueueCall(
                 call,
                 new InstagramApiProxy.CompleteHandler<ApiInstagram.UserListRes>() {
                     @Override
                     public void onError(InstagramSDKError error) {
+                        loadError = error;
+                        ProgressBarManager.hide(container);
+                        exceptionViewManager.validate();
                     }
 
                     @Override
@@ -171,8 +204,9 @@ public class IGImagePickerActivity extends PSActionBarActivity
                         }, new Runnable() {
                             @Override
                             public void run() {
-                                ProgressBarManager.hide(self);
+                                ProgressBarManager.hide(container);
                                 listAdapter.notifyDataSetChanged();
+                                exceptionViewManager.validate();
                             }
                         });
                     }
@@ -250,7 +284,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
                 if (lastRes != null &&
                         lastRes.getPagination().hasNext() &&
                         position >= items.size() - 5) {
-                    loadFollwing(lastRes.pagination.next_max_id);
+                    loadFollowing(lastRes.pagination.next_max_id);
                 }
             }
 

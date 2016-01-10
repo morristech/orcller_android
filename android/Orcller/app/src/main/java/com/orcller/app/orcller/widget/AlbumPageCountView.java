@@ -40,7 +40,7 @@ public class AlbumPageCountView extends TextView {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.RIGHT | Gravity.TOP;
-        params.setMargins(0, 0, GraphicUtils.convertDpToPixel(5), 0);
+        params.setMargins(0, -GraphicUtils.convertDpToPixel(5), GraphicUtils.convertDpToPixel(5), 0);
 
         setLayoutParams(params);
         setShadowLayer(8, 0, 0, Color.argb(90, 0, 0, 0));

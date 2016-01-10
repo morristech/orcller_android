@@ -15,6 +15,8 @@ import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 
+import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
 
@@ -75,6 +77,11 @@ public class TempAlbumItemView extends PSLinearLayout
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getX() >= retryButton.getX() &&
+                event.getX() <= retryButton.getX() + retryButton.getWidth() &&
+                event.getY() >= retryButton.getY() &&
+                event.getY() <= retryButton.getY() + retryButton.getHeight())
+            return super.dispatchTouchEvent(event);
         return false;
     }
 
@@ -107,7 +114,6 @@ public class TempAlbumItemView extends PSLinearLayout
      */
     public void onClick(View v) {
         progressBar.setProgress(0);
-        errorContainer.setVisibility(GONE);
         MediaManager.getDefault().startUploading(unit.getModel());
     }
 
@@ -118,6 +124,7 @@ public class TempAlbumItemView extends PSLinearLayout
     }
 
     public void onFailUploading(MediaUploadUnit unit) {
+        textView.setText(Application.isNetworkConnected() ? R.string.m_fail_post_an_error : R.string.m_fail_post_no_connection);
         progressBar.setVisibility(GONE);
         errorContainer.setVisibility(VISIBLE);
     }

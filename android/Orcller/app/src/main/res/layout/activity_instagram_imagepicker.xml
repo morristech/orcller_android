@@ -11,25 +11,17 @@
         android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ImagePickerTheme.Toolbar">
-        <Button
-            android:id="@+id/popularButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="right"
-            android:background="@null"
-            android:enabled="false"
-            android:text="@string/w_popular"
-            android:textAllCaps="false"
-            android:textColor="@drawable/textcolor_imagepicker_select_button"
-            android:textSize="17dp"/>
     </android.support.v7.widget.Toolbar>
 
-    <ListView
-        android:id="@+id/listView"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:divider="@null"/>
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:divider="@null"/>
+    </FrameLayout>
 </LinearLayout>

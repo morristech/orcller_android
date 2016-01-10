@@ -10,16 +10,12 @@ import android.graphics.drawable.Drawable;
  * Created by pisces on 11/17/15.
  */
 public class BitmapUtils {
-    public static Bitmap createRectBitmap(Point size, Bitmap source) {
-        float scale = (float) Math.max(size.x, size.y) / Math.min(source.getWidth(), source.getHeight());
+    public static Bitmap createScaledBitmap(Point size, Bitmap source) {
+        float scale = (float) Math.min(size.x, size.y) / Math.min(source.getWidth(), source.getHeight());
         int w = Math.round(source.getWidth() * scale);
         int h = Math.round(source.getHeight() * scale);
-        int cw =  w - (w - size.x);
-        int ch =  h - (h - size.y);
-        int x = (w - cw)/2;
-        int y = (h - ch)/2;
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(source, w, h, true);
-        Bitmap bitmap = Bitmap.createBitmap(scaledBitmap, x, y, cw, ch);
+        Bitmap bitmap = Bitmap.createBitmap(scaledBitmap, (w - size.x)/2, (h - size.y)/2, size.x, size.y);
         return bitmap;
     }
 
@@ -34,7 +30,7 @@ public class BitmapUtils {
         return bitmap;
     }
 
-    public static Bitmap drawableToBitmap (Drawable drawable) {
+    public static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable)drawable).getBitmap();
         }

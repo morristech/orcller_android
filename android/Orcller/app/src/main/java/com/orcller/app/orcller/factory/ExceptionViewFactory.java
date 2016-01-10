@@ -4,6 +4,7 @@ import android.view.ViewGroup;
 
 import com.orcller.app.orcller.R;
 
+import pisces.psfoundation.model.Resources;
 import pisces.psuikit.widget.ExceptionView;
 
 /**

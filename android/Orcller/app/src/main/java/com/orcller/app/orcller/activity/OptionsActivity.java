@@ -18,6 +18,7 @@ import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.itemview.ListBadgeItemView;
 import pisces.psuikit.itemview.ListBaseItemView;
@@ -56,7 +57,6 @@ public class OptionsActivity extends PSActionBarActivity implements SectionedLis
                 AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(45)));
         listView.addFooterView(footerView);
         listView.setDataSource(this);
-        listView.reload();
     }
 
     @Override

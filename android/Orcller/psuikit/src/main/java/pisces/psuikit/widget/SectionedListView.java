@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSListView;
 import pisces.psuikit.itemview.ListBaseItemView;
 
@@ -63,6 +62,7 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
 
+        listAdapter.updateItemCount();
         setAdapter(listAdapter);
     }
 
@@ -75,6 +75,7 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
     }
 
     public void reload() {
+        listAdapter.updateItemCount();
         listAdapter.notifyDataSetChanged();
     }
 
@@ -92,12 +93,11 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
     // ================================================================================================
 
     private class ListAdapter extends BaseAdapter {
-        private static final int NONE = -2;
-        private static final int SECTION = -1;
+        private static final int NONE = -1;
+        private static final int SECTION = -2;
         private int itemCount;
-        private boolean shouldReload;
-        private List<Integer> sections;
-        private Map<String, IndexPath> indexPathMap;
+        private List<Integer> sections = new ArrayList<>();
+        private Map<String, IndexPath> indexPathMap = new HashMap<>();
         private ListView listView;
 
         public ListAdapter(ListView listView) {
@@ -105,29 +105,8 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
         }
 
         @Override
-        public void notifyDataSetChanged() {
-            shouldReload = true;
-
-            super.notifyDataSetChanged();
-        }
-
-        @Override
         public int getCount() {
-            if (dataSource != null) {
-                if (shouldReload) {
-                    itemCount = 0;
-                    sections = new ArrayList<>();
-                    indexPathMap = new HashMap<>();
-
-                    for (int i=0; i<dataSource.getSectionCount(listView); i++) {
-                        sections.add(Integer.valueOf(itemCount));
-                        itemCount += dataSource.getRowCount(listView, i) + 1;
-                    }
-                    shouldReload = false;
-                }
-                return itemCount;
-            }
-            return 0;
+            return itemCount;
         }
 
         @Override
@@ -151,7 +130,7 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
 
         @Override
         public int getViewTypeCount() {
-            return dataSource.getItemViewTypeCount(listView) + 1;
+            return dataSource.getItemViewTypeCount(listView) + 2;
         }
 
         @Override
@@ -219,6 +198,20 @@ public class SectionedListView extends PSListView implements AdapterView.OnItemC
             indexPathMap.put(key, indexPath);
 
             return indexPath;
+        }
+
+        public void updateItemCount() {
+            itemCount = 0;
+
+            if (dataSource != null) {
+                sections.clear();
+                indexPathMap.clear();
+
+                for (int i = 0; i < dataSource.getSectionCount(listView); i++) {
+                    sections.add(Integer.valueOf(itemCount));
+                    itemCount += dataSource.getRowCount(listView, i) + 1;
+                }
+            }
         }
     }
 

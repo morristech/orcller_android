@@ -29,6 +29,7 @@ import java.util.Map;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.model.Resources;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.widget.SectionedListView;
 

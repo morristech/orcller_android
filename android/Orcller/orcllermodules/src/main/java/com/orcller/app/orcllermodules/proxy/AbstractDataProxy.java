@@ -64,6 +64,7 @@ abstract public class AbstractDataProxy<T> extends AbstractRetrofitProxy {
         if (lastViewDate == getLastViewDate())
             return;
 
+        this.lastViewDate = lastViewDate;
         SharedPreferences.Editor editor = ApplicationLauncher.getDefault().getSharedPreference().edit();
         String key = getLastViewDateKey();
 

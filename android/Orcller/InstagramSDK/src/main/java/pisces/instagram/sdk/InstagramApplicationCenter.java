@@ -101,6 +101,14 @@ public class InstagramApplicationCenter<T> {
         return accessToken != null;
     }
 
+    public void clear() {
+        for (CallCommand command : commandQueue) {
+            command.clear();
+        }
+
+        commandQueue.clear();
+    }
+
     public CallCommand enqueueCall(
             Call<ApiInstagramResult> call,
             InstagramApiProxy.CompleteHandler completeHandler) {

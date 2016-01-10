@@ -142,7 +142,7 @@ public class ImageGenerator {
                                     @Override
                                     public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                                         Bitmap bitmap = ((GlideBitmapDrawable) resource).getBitmap();
-                                        bitmap = BitmapUtils.createRectBitmap(
+                                        bitmap = BitmapUtils.createScaledBitmap(
                                                 new Point(rect.right, rect.bottom), bitmap);
                                         canvas.drawBitmap(bitmap, rect.left, rect.top, null);
                                         bitmap.recycle();

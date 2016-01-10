@@ -4,7 +4,7 @@
     <color name="theme_imagepicker_primary_dark">#222222</color>
     <color name="theme_imagepicker_primary">@android:color/white</color>
     <color name="exception_button_normal">#0096FF</color>
-    <color name="exception_button_selected">#00A0FF</color>
+    <color name="exception_button_selected">#8ABEFE</color>
     <color name="exception_description">#777777</color>
     <color name="itemview_list_base_background_line">#CCCCCC</color>
     <color name="itemview_list_base_detail_text">#999999</color>
