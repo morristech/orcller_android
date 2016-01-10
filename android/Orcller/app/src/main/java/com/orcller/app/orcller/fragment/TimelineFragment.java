@@ -2,6 +2,7 @@ package com.orcller.app.orcller.fragment;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -45,6 +46,7 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.error.APIError;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +106,13 @@ public class TimelineFragment extends MainTabFragment
         super.onResume();
 
         dequeueEvent();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

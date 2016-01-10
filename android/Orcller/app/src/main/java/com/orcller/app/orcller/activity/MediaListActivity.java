@@ -163,6 +163,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
             MediaScrollView mediaScrollView = (MediaScrollView) viewHolder.itemView;
             Media model = items.get(position);
+            mediaScrollView.setScaleAspectFill(false);
             mediaScrollView.setModel(model);
         }
 

@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +30,7 @@ import com.orcller.app.orcller.fragment.TimelineFragment;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.widget.TabIndicator;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import java.util.HashMap;
@@ -77,6 +79,13 @@ public class MainActivity extends PSActionBarActivity
         viewPager.addOnPageChangeListener(this);
         addTabs();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

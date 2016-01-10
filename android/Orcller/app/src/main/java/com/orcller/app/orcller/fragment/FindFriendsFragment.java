@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SearchViewCompat;
@@ -33,6 +34,7 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
 import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import java.lang.reflect.Field;
 
@@ -72,6 +74,13 @@ public class FindFriendsFragment extends MainTabFragment
     // ================================================================================================
     //  Overridden: MainTabFragment
     // ================================================================================================
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -347,7 +356,7 @@ public class FindFriendsFragment extends MainTabFragment
             @Override
             public Call<ApiRelationships.RecommendRes> createDataLoadCall(int limit, String after) {
                 return RelationshipsDataProxy.getDefault().service().recommends(
-                        AccessToken.getCurrentAccessToken().getToken(),
+                        AccessToken.getCurrentAccessToken() != null ? AccessToken.getCurrentAccessToken().getToken() : null,
                         InstagramApplicationCenter.getDefault().getAccessToken());
             }
 

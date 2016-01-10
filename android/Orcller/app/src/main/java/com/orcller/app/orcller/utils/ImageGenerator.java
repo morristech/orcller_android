@@ -104,7 +104,7 @@ public class ImageGenerator {
                     @Override
                     public void run() {
                         if (++processPoint.x >= processPoint.y) {
-                            final Bitmap bitmap = Bitmap.createBitmap(canvasBitmap, 0, Math.max(0, (IMAGE_HEIGHT - rows.height)/2), IMAGE_WIDTH, IMAGE_HEIGHT);
+                            final Bitmap bitmap = Bitmap.createBitmap(canvasBitmap, 0, Math.max(0, (rows.height - IMAGE_HEIGHT)/2), IMAGE_WIDTH, IMAGE_HEIGHT);
                             canvasBitmap.recycle();
 
                             Application.runOnMainThread(new Runnable() {

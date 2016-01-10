@@ -76,11 +76,11 @@ public class ImageMediaScrollView extends MediaView {
     @Override
     protected void onCompleteImageLoad(GlideDrawable drawable) {
         Bitmap bitmap = ((GlideBitmapDrawable) drawable).getBitmap();
-        baseScale = (float) Math.min(getWidth(), getHeight()) / Math.min(bitmap.getWidth(), bitmap.getHeight());
 
         scaleImageView.get().setImage(ImageSource.cachedBitmap(bitmap));
 
         if (isScaleAspectFill()) {
+            baseScale = (float) Math.min(getWidth(), getHeight()) / Math.min(bitmap.getWidth(), bitmap.getHeight());
             scaleImageView.get().setScaleAndCenter(baseScale, new PointF(bitmap.getWidth() / 2, bitmap.getHeight() / 2));
         }
 
@@ -110,7 +110,10 @@ public class ImageMediaScrollView extends MediaView {
     // ================================================================================================
 
     public void reset() {
-        scaleImageView.get().setScaleAndCenter(baseScale, scaleImageView.get().getCenter());
+        if (isScaleAspectFill())
+            scaleImageView.get().setScaleAndCenter(baseScale, scaleImageView.get().getCenter());
+        else
+            scaleImageView.get().resetScaleAndCenter();
     }
 
     public void setScaleEnabled(boolean scaleEnabled) {

@@ -27,6 +27,7 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.ContributorListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
@@ -111,6 +112,13 @@ public class CoeditViewActivity extends PSActionBarActivity
         if (albumOptionsManager != null)
             return albumOptionsManager.onCreateOptionsMenu(menu);
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

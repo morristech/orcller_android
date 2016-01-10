@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import com.orcller.app.orcller.proxy.OptionsActivityProxy;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
+import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
@@ -62,6 +64,13 @@ public class OptionsActivity extends PSActionBarActivity implements SectionedLis
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
