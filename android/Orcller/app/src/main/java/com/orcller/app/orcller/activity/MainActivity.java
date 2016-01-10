@@ -106,7 +106,6 @@ public class MainActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        ApplicationFacade.clear();
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
     }
@@ -122,6 +121,13 @@ public class MainActivity extends PSActionBarActivity
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        ApplicationFacade.clear();
     }
 
     // ================================================================================================

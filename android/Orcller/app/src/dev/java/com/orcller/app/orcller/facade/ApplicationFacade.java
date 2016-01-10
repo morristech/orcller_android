@@ -161,6 +161,7 @@ public class ApplicationFacade {
     }
 
     private void startMainActivity() {
+        Log.d("startMainActivity");
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
                 MainActivity.class : MemberActivity.class;
         Intent intent = new Intent(Application.applicationContext(), activityClass);

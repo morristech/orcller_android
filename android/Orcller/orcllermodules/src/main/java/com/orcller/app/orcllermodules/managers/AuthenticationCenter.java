@@ -164,13 +164,11 @@ public class AuthenticationCenter extends PSObject {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
-                    synchronized (this) {
-                        clear();
-                        LoginManager.getInstance().logOut();
-                        InstagramApplicationCenter.getDefault().logout();
-                        handler.onComplete(response.body(), null);
-                        EventBus.getDefault().post(new LoginEvent(LoginEvent.LOGOUT, target));
-                    }
+                    clear();
+                    LoginManager.getInstance().logOut();
+                    InstagramApplicationCenter.getDefault().logout();
+                    handler.onComplete(response.body(), null);
+                    EventBus.getDefault().post(new LoginEvent(LoginEvent.LOGOUT, target));
                 } else {
                     handler.onComplete(null, APIError.create(response.body()));
                 }

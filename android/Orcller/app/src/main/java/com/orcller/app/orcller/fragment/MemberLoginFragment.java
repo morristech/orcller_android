@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.widget.ClearableEditText;
@@ -149,21 +150,13 @@ public class MemberLoginFragment extends PSFragment {
             public void onComplete(Object result, final APIError error) {
                 endDataLoading();
 
-                if (error != null) {
-                    String message = error.getMessage();
-                    if (message != null) {
-                        AlertDialogUtils.show(message,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (which == AlertDialog.BUTTON_POSITIVE)
-                                            login();
-                                    }
-                                },
-                                getResources().getString(R.string.w_dismiss),
-                                getResources().getString(R.string.w_retry)
-                        );
-                    }
+                if (error != null && error.getMessage() != null) {
+                    AlertDialogUtils.retry(error.getMessage(), new Runnable() {
+                        @Override
+                        public void run() {
+                            login();
+                        }
+                    });
                 }
             }
         });
