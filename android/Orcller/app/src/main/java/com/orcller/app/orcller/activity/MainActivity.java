@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.orcller.app.orcller.BuildConfig;
@@ -51,6 +52,7 @@ public class MainActivity extends PSActionBarActivity
     private PagerAdapter pagerAdapter;
     private TabHost tabHost;
     private PSViewPager viewPager;
+    private ImageView emblemImageView;
     private MainTabFragment activedFragment;
 
     // ================================================================================================
@@ -63,11 +65,11 @@ public class MainActivity extends PSActionBarActivity
 
         setContentView(R.layout.activity_main);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setTitle(null);
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPager = (PSViewPager) findViewById(R.id.viewPager);
+        emblemImageView = (ImageView) findViewById(R.id.emblemImageView);
         pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         tabHost.setup();
@@ -205,7 +207,8 @@ public class MainActivity extends PSActionBarActivity
         String title = activedFragment.getToolbarTitle();
 
         getSupportActionBar().setTitle(title);
-        getToolbar().setVisibility(TextUtils.isEmpty(title) ? View.GONE : View.VISIBLE);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(!TextUtils.isEmpty(title));
+        emblemImageView.setVisibility(TextUtils.isEmpty(title) ? View.VISIBLE : View.GONE);
 
         if (activedFragment.isUseSoftKeyboard())
             SoftKeyboardNotifier.getDefault().register(this);

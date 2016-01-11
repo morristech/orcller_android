@@ -157,6 +157,10 @@ public class MediaManager {
         deleteFile(images.thumbnail, true);
     }
 
+    public List<MediaUploadUnit> getCachedUploadUnits() {
+        return cachedUploadUnits;
+    }
+
     public MediaUploadUnit getUnit(Album model) {
         String key = String.valueOf(model.id);
         MediaUploadUnit unit = cachedUploadUnitMap.get(key);

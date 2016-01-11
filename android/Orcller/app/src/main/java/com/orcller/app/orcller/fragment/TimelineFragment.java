@@ -91,7 +91,6 @@ public class TimelineFragment extends MainTabFragment
     private PSListView listView;
     private FloatingActionButton createButton;
     private AlbumFlipView selectedAlbumFlipView;
-    private AlbumItemView slideShowTargetItemView;
 
     public TimelineFragment() {
         super();
@@ -178,7 +177,7 @@ public class TimelineFragment extends MainTabFragment
 
     @Override
     public String getToolbarTitle() {
-        return Resources.getString(R.string.w_title_timeline);
+        return null;
     }
 
     @Override
@@ -186,8 +185,6 @@ public class TimelineFragment extends MainTabFragment
         if (ExceptionViewFactory.Type.NoTimeline.equals(view.getTag())) {
             AlbumCreateActivity.show();
         } else {
-            shouldReload = true;
-
             exceptionViewManager.clear();
             reload();
         }
@@ -278,10 +275,7 @@ public class TimelineFragment extends MainTabFragment
 
             if (RelationshipsEvent.FOLLOW.equals(casted.getType()) ||
                     RelationshipsEvent.UNFOLLOW.equals(casted.getType())) {
-                shouldReload = true;
-
-                if (isActive())
-                    reload();
+                reload();
             }
         }
     }
@@ -324,8 +318,6 @@ public class TimelineFragment extends MainTabFragment
     }
 
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//        updateSlideShowItemView();
-
         if (scrollState != SCROLL_STATE_IDLE)
             albumItemViewDelegate.pauseAlbumFlipView();
 
@@ -345,8 +337,6 @@ public class TimelineFragment extends MainTabFragment
      * SwipeRefreshLayout.OnRefreshListener
      */
     public void onRefresh() {
-        shouldReload = true;
-
         reload();
     }
 
@@ -523,6 +513,13 @@ public class TimelineFragment extends MainTabFragment
         return invalid;
     }
 
+    private void invalidateLoading() {
+        if (isActive() && shouldReload) {
+            newPostButton.setVisibility(View.GONE);
+            load(null);
+        }
+    }
+
     private void load(final String after) {
         if (invalidDataLoading(after))
             return;
@@ -536,22 +533,27 @@ public class TimelineFragment extends MainTabFragment
                     Application.run(new Runnable() {
                         @Override
                         public void run() {
-                            if (after == null)
-                                items.clear();
-
                             lastEntity = response.body().entity;
+
+                            if (after == null) {
+                                items.clear();
+                                items.addAll(MediaManager.getDefault().getCachedUploadUnits());
+                                AlbumDataProxy.getDefault().clearCacheAfterCompare(lastEntity);
+                                TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
+                                SharedObject.get().setTimelineCount(0);
+                            }
+
                             items.addAll(lastEntity.data);
-                            AlbumDataProxy.getDefault().clearCacheAfterCompare(lastEntity);
                         }
                     }, new Runnable() {
                         @Override
                         public void run() {
                             endDataLoading();
-                            pauseSlideShow();
                             listAdapter.notifyDataSetChanged();
-                            SharedObject.get().setTimelineCount(0);
                             cacheItems();
-                            MediaManager.getDefault().continueUploading();
+
+                            if (after == null)
+                                MediaManager.getDefault().continueUploading();
 
                             shouldReload = false;
                         }
@@ -590,18 +592,10 @@ public class TimelineFragment extends MainTabFragment
             loadAfter();
     }
 
-    private void pauseSlideShow() {
-        if (slideShowTargetItemView != null) {
-            slideShowTargetItemView.getAlbumFlipView().pause();
-            slideShowTargetItemView = null;
-        }
-    }
-
     private void reload() {
-        if (shouldReload) {
-            newPostButton.setVisibility(View.GONE);
-            load(null);
-        }
+        shouldReload = true;
+
+        invalidateLoading();
     }
 
     private void showCreateButton() {
@@ -637,38 +631,6 @@ public class TimelineFragment extends MainTabFragment
                     }
                 })
                 .start();
-    }
-
-    private void updateSlideShowItemView() {
-        if (items.size() < 1 || !SharedObject.get().isAllowsAutoSlide())
-            return;
-
-        if (listHeaderView.equals(listView.getChildAt(0))) {
-            updateSlideShowItemView(listView.getChildAt(1));
-            return;
-        }
-
-        if (listView.getChildAt(0) instanceof AlbumItemView) {
-            AlbumItemView firstView = (AlbumItemView) listView.getChildAt(0);
-            int top = firstView.getAlbumInfoProfileView().getHeight() + firstView.getAlbumFlipView().getHeight()/2;
-            int first =0;
-            if (firstView.getTop() < -top)
-                first++;
-            int last = listView.getChildCount() - 1;
-            if (listView.getChildAt(last).getBottom() > listView.getHeight())
-                last--;
-
-            updateSlideShowItemView(listView.getChildAt(first));
-        }
-    }
-
-    private void updateSlideShowItemView(View view) {
-        if (view != null && view instanceof AlbumItemView && !view.equals(slideShowTargetItemView)) {
-            pauseSlideShow();
-
-            slideShowTargetItemView = (AlbumItemView) view;
-            slideShowTargetItemView.getAlbumFlipView().play();
-        }
     }
 
     // ================================================================================================

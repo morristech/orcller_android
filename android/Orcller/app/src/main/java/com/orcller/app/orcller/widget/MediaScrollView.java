@@ -35,23 +35,6 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     }
 
     // ================================================================================================
-    //  Overridden: PSFrameLayout
-    // ================================================================================================
-
-    @Override
-    protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        if (mediaView instanceof VideoMediaView) {
-            mediaView.getLayoutParams().height = getMeasuredWidth();
-        }
-    }
-
-    // ================================================================================================
     //  Public
     // ================================================================================================
 
@@ -163,7 +146,7 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
 
             if (mediaView != null) {
                 LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                params.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
+                params.gravity = Gravity.CENTER;
                 mediaView.setClickEnabled(true);
                 mediaView.setDelegate(mediaViewDelegate);
                 addView(mediaView, 0, params);

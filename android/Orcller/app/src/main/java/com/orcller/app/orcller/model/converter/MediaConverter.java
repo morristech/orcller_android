@@ -74,23 +74,8 @@ public class MediaConverter {
     }
 
     public static Media convert(FBVideo video) {
-        List<FBVideoThumbnail> sorted = (List<FBVideoThumbnail>) video.thumbnails.data.clone();
-
-        Collections.sort(sorted, new Comparator<FBVideoThumbnail>() {
-            @Override
-            public int compare(FBVideoThumbnail lhs, FBVideoThumbnail rhs) {
-                if (lhs.width > rhs.width)
-                    return 1;
-                if (lhs.width < rhs.width)
-                    return -1;
-                return 0;
-            }
-        });
-
         Images images = new Images();
-        images.thumbnail = createImage(sorted.get(0));
-        images.low_resolution = createImage(sorted.size() > 2 ? sorted.get(2) : sorted.get(sorted.size() - 1));
-        images.standard_resolution = createImage(sorted.size() > 5 ? sorted.get(5) : sorted.get(sorted.size() - 1));
+        images.thumbnail = images.low_resolution = images.standard_resolution = createImage(video.thumbnails.data.get(0));
 
         Videos videos = new Videos();
         videos.low_resolution = videos.standard_resolution = createVideo(video);

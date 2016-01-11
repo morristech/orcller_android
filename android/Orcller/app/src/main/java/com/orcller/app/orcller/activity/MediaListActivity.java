@@ -19,6 +19,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.imagepicker.OnScrollListener;
@@ -45,18 +46,17 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_medialist);
-
-        items = (List<Media>) getIntent().getSerializableExtra(ITEMS_KEY);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         recyclerView = (RecyclerViewPager) findViewById(R.id.recyclerView);
         toolbarTextView = (TextView) findViewById(R.id.toolbarTextView);
+        items = (List<Media>) getIntent().getSerializableExtra(ITEMS_KEY);
         adapter = new Adapter(items);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnPageChangedListener(this);
@@ -153,6 +153,7 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            Log.d("viewGroup.getHeight()", viewGroup.getHeight());
             View view = new MediaScrollView(viewGroup.getContext());
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(viewGroup.getWidth(), viewGroup.getHeight());
             view.setLayoutParams(params);

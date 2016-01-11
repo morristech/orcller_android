@@ -2,6 +2,7 @@ package com.orcller.app.orcller.widget;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
@@ -66,6 +67,7 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         videoView.setVisibility(GONE);
         videoView.setPlayStateListener(this);
 
+        setBackgroundColor(Color.RED);
         addView(videoView);
         addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
         controlButton.setOnClickListener(new OnClickListener() {

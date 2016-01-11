@@ -12,7 +12,13 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/PurpleTheme.Toolbar"/>
+        android:theme="@style/PurpleTheme.Toolbar">
+        <ImageView
+            android:id="@+id/emblemImageView"
+            android:layout_width="96dp"
+            android:layout_height="30dp"
+            android:src="@drawable/emblem" />
+    </android.support.v7.widget.Toolbar>
 
     <TabHost
         android:id="@+id/tabHost"
