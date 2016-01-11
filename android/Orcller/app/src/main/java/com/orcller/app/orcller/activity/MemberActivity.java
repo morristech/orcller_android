@@ -83,12 +83,18 @@ public class MemberActivity extends PSFragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        ApplicationFacade.clear();
         SoftKeyboardNotifier.getDefault().unregister(this);
         EventBus.getDefault().unregister(this);
         tabHost.setOnTabChangedListener(null);
         viewPager.setOnPageChangeListener(null);
         container.setOnTouchListener(null);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        ApplicationFacade.clear();
     }
 
     // ================================================================================================
@@ -186,7 +192,7 @@ public class MemberActivity extends PSFragmentActivity {
                 animateTitleLiner(R.dimen.member_title_margin_bottom_selected);
                 titleLinear.setOrientation(LinearLayout.HORIZONTAL);
 
-                params.topMargin = GraphicUtils.convertDpToPixel(8);
+                params.topMargin = GraphicUtils.convertDpToPixel(5);
                 params.leftMargin = GraphicUtils.convertDpToPixel(10);
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 animateTitleContainer(R.dimen.member_title_height_normal);

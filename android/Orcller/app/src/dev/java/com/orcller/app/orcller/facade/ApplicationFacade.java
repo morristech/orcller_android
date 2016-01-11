@@ -93,7 +93,7 @@ public class ApplicationFacade {
                 DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
                 MediaManager.getDefault().clearUnnecessaryItems();
 
-                if (!EventBus.getDefault().isRegistered(uniqueInstance))
+                if (!EventBus.getDefault().isRegistered(this))
                     EventBus.getDefault().register(this);
 
                 if (ApplicationLauncher.getDefault().initialized()) {
@@ -102,7 +102,7 @@ public class ApplicationFacade {
                         public void run() {
                             startMainActivity();
                         }
-                    }, 500);
+                    }, 1000);
                 } else {
                     ApplicationLauncher.getDefault()
                             .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
@@ -124,6 +124,7 @@ public class ApplicationFacade {
     public void onEventMainThread(Object event) {
         if (event instanceof ApplicationLauncher.ApplicationInitialized ||
                 event instanceof AuthenticationCenter.LoginEvent) {
+            Log.d("AuthenticationCenter.LoginEvent");
             startMainActivity();
         } else if (event instanceof ApplicationLauncher.ApplicationHasNewVersion) {
             ApplicationLauncher.ApplicationHasNewVersion casted = (ApplicationLauncher.ApplicationHasNewVersion) event;

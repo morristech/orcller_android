@@ -168,6 +168,7 @@ public class AuthenticationCenter extends PSObject {
                     LoginManager.getInstance().logOut();
                     InstagramApplicationCenter.getDefault().logout();
                     handler.onComplete(response.body(), null);
+                    Log.d("post logout");
                     EventBus.getDefault().post(new LoginEvent(LoginEvent.LOGOUT, target));
                 } else {
                     handler.onComplete(null, APIError.create(response.body()));
