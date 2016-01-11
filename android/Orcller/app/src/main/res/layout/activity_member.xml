@@ -22,7 +22,7 @@
             android:layout_centerHorizontal="true"
             android:animateLayoutChanges="true">
             <ImageView
-                android:layout_width="97dp"
+                android:layout_width="103dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:src="@drawable/emblem"/>

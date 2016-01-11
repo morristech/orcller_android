@@ -7,9 +7,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.ListEntity;
-import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
-import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
