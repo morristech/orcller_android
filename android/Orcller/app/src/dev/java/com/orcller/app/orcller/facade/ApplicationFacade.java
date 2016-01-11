@@ -102,7 +102,7 @@ public class ApplicationFacade {
                         public void run() {
                             startMainActivity();
                         }
-                    }, 1000);
+                    }, 500);
                 } else {
                     ApplicationLauncher.getDefault()
                             .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
@@ -161,7 +161,6 @@ public class ApplicationFacade {
     }
 
     private void startMainActivity() {
-        Log.d("startMainActivity");
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
                 MainActivity.class : MemberActivity.class;
         Intent intent = new Intent(Application.applicationContext(), activityClass);

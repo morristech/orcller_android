@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -30,6 +31,7 @@ import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psuikit.ext.PSFragmentActivity;
 
 /**
@@ -41,6 +43,7 @@ public class MemberActivity extends PSFragmentActivity {
     private LinearLayout titleLinear;
     private FragmentTabHost tabHost;
     private ViewPager viewPager;
+    private ImageView subtitleImageView;
 
     // ================================================================================================
     //  Overridden: FragmentActivity
@@ -70,6 +73,7 @@ public class MemberActivity extends PSFragmentActivity {
         container = (LinearLayout) findViewById(R.id.container);
         titleContainer = (RelativeLayout) findViewById(R.id.titleContainer);
         titleLinear = (LinearLayout) findViewById(R.id.titleLinear);
+        subtitleImageView = (ImageView) findViewById(R.id.subtitleImageView);
 
         setStausBarColor();
         setListeners();
@@ -175,16 +179,25 @@ public class MemberActivity extends PSFragmentActivity {
     public void onEventMainThread(Object event) {
         if (event instanceof SoftKeyboardEvent) {
             SoftKeyboardEvent casted = (SoftKeyboardEvent) event;
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) subtitleImageView.getLayoutParams();
 
             if (casted.getType().equals(SoftKeyboardEvent.SHOW)) {
                 animateTitleContainer(R.dimen.member_title_height_selected);
                 animateTitleLiner(R.dimen.member_title_margin_bottom_selected);
                 titleLinear.setOrientation(LinearLayout.HORIZONTAL);
+
+                params.topMargin = GraphicUtils.convertDpToPixel(8);
+                params.leftMargin = GraphicUtils.convertDpToPixel(10);
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 animateTitleContainer(R.dimen.member_title_height_normal);
                 animateTitleLiner(R.dimen.member_title_margin_bottom_normal);
                 titleLinear.setOrientation(LinearLayout.VERTICAL);
+
+                params.topMargin = GraphicUtils.convertDpToPixel(15);
+                params.leftMargin = 0;
             }
+
+            subtitleImageView.setLayoutParams(params);
         }
     }
 
