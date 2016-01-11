@@ -13,6 +13,7 @@ import com.orcller.app.orcller.model.Notification;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.UserPictureView;
+import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 
 import pisces.psfoundation.model.Resources;
@@ -25,7 +26,7 @@ import pisces.psuikit.ext.PSView;
 /**
  * Created by pisces on 12/18/15.
  */
-public class ActivityItemView extends PSLinearLayout {
+public class ActivityItemView extends PSLinearLayout implements FollowButton.Delegate {
     private Notification model;
     private View separator;
     private TextView contentTextView;
@@ -61,6 +62,7 @@ public class ActivityItemView extends PSLinearLayout {
         followButton = (FollowButton) findViewById(R.id.followButton);
         separator = findViewById(R.id.separator);
 
+        followButton.setDelegate(this);
         contentTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -83,6 +85,18 @@ public class ActivityItemView extends PSLinearLayout {
 
     public void setSeparatorVisibility(boolean visible) {
         separator.setVisibility(visible ? VISIBLE : GONE);
+    }
+
+    // ================================================================================================
+    //  Protocol Implementation
+    // ================================================================================================
+
+    public void onCompleteFollow(FollowButton target, BaseUser user) {
+        followButton.setVisibility(GONE);
+    }
+
+    public void onCompleteUnfollow(FollowButton target, BaseUser user) {
+        followButton.setVisibility(VISIBLE);
     }
 
     // ================================================================================================

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,17 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/PurpleTheme.Toolbar"/>
 
-    <FrameLayout
-        android:id="@+id/container"
+    <fragment
+        android:id="@+id/fragment"
+        android:name="com.orcller.app.orcller.fragment.FindFriendsFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <com.orcller.app.orcller.widget.UserListView
-            android:id="@+id/userListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </FrameLayout>
+        android:layout_height="match_parent"/>
 </LinearLayout>

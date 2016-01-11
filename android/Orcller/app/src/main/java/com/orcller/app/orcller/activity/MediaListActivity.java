@@ -153,7 +153,6 @@ public class MediaListActivity extends PSActionBarActivity implements RecyclerVi
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            Log.d("viewGroup.getHeight()", viewGroup.getHeight());
             View view = new MediaScrollView(viewGroup.getContext());
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(viewGroup.getWidth(), viewGroup.getHeight());
             view.setLayoutParams(params);

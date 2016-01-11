@@ -2,8 +2,10 @@ package com.orcller.app.orcller.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
@@ -16,6 +18,8 @@ import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.model.Resources;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
 /**
@@ -31,6 +35,9 @@ public class FollowingActivity extends UserListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getSupportActionBar().setTitle(getString(R.string.w_following));
+        exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoFollowing, container));
+
         if (User.isMe(userId))
             EventBus.getDefault().register(this);
     }
@@ -40,6 +47,23 @@ public class FollowingActivity extends UserListActivity {
         super.onDestroy();
 
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoFollowing.equals(view.getTag())) {
+            Intent intent = new Intent(Application.applicationContext(), FindFriendsActivity.class);
+            Application.getTopActivity().startActivity(intent);
+        } else {
+            super.onClick(view);
+        }
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoFollowing.equals(view.getTag()))
+            return loadError == null && userListView.getItems().size() < 1;
+        return super.shouldShowExceptionView(view);
     }
 
     @Override

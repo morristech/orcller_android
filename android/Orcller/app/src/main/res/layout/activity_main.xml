@@ -15,8 +15,8 @@
         android:theme="@style/PurpleTheme.Toolbar">
         <ImageView
             android:id="@+id/emblemImageView"
-            android:layout_width="96dp"
-            android:layout_height="30dp"
+            android:layout_width="75dp"
+            android:layout_height="28dp"
             android:src="@drawable/emblem" />
     </android.support.v7.widget.Toolbar>
 

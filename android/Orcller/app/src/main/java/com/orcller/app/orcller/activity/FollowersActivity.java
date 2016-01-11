@@ -1,16 +1,18 @@
 package com.orcller.app.orcller.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.model.ListEntity;
 import com.orcller.app.orcller.model.api.ApiRelationships;
-import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
 import pisces.psfoundation.ext.Application;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
 /**
@@ -21,6 +23,21 @@ public class FollowersActivity extends UserListActivity {
     // ================================================================================================
     //  Overridden: UserListActivity
     // ================================================================================================
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setTitle(getString(R.string.w_followers));
+        exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoFollowers, container));
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoFollowers.equals(view.getTag()))
+            return loadError == null && userListView.getItems().size() < 1;
+        return super.shouldShowExceptionView(view);
+    }
 
     @Override
     protected UserListView.DataSource createDataSource() {

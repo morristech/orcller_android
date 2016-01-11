@@ -222,7 +222,7 @@ public class TimelineFragment extends MainTabFragment
             listView.setAdapter(listAdapter);
         }
 
-        reload();
+        invalidateLoading();
     }
 
     @Override

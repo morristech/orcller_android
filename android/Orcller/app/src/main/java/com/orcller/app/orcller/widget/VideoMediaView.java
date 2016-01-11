@@ -67,7 +67,6 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         videoView.setVisibility(GONE);
         videoView.setPlayStateListener(this);
 
-        setBackgroundColor(Color.RED);
         addView(videoView);
         addView(controlButton, new LayoutParams(controlButtonSize.x, controlButtonSize.y));
         controlButton.setOnClickListener(new OnClickListener() {

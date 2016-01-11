@@ -65,6 +65,7 @@ public class MainActivity extends PSActionBarActivity
 
         setContentView(R.layout.activity_main);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setTitle(null);
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -207,7 +208,6 @@ public class MainActivity extends PSActionBarActivity
         String title = activedFragment.getToolbarTitle();
 
         getSupportActionBar().setTitle(title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(!TextUtils.isEmpty(title));
         emblemImageView.setVisibility(TextUtils.isEmpty(title) ? View.VISIBLE : View.GONE);
 
         if (activedFragment.isUseSoftKeyboard())

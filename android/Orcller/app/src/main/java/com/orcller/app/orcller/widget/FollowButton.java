@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.RelationshipsEvent;
+import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -35,6 +36,7 @@ import static pisces.psfoundation.utils.Log.e;
  */
 public class FollowButton extends PSButton implements View.OnClickListener {
     private BaseUser model;
+    private Delegate delegate;
 
     public FollowButton(Context context) {
         super(context);
@@ -119,6 +121,14 @@ public class FollowButton extends PSButton implements View.OnClickListener {
     //  Public
     // ================================================================================================
 
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
+    }
+
     public BaseUser getModel() {
         return model;
     }
@@ -140,7 +150,15 @@ public class FollowButton extends PSButton implements View.OnClickListener {
         if (invalidDataLoading())
             return;
 
+        final FollowButton target = this;
+
         RelationshipsDataProxy.getDefault().follow(model.user_uid, getCallback(new Runnable() {
+            @Override
+            public void run() {
+                if (delegate != null)
+                    delegate.onCompleteFollow(target, model);
+            }
+        }, new Runnable() {
             @Override
             public void run() {
                 follow();
@@ -148,7 +166,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
         }, RelationshipsEvent.FOLLOW));
     }
 
-    private Callback<ApiRelationships.FollowRes> getCallback(final Runnable retry, final String eventType) {
+    private Callback<ApiRelationships.FollowRes> getCallback(final Runnable completion, final Runnable retry, final String eventType) {
         final Object target = this;
         final Runnable error = new Runnable() {
             @Override
@@ -174,6 +192,7 @@ public class FollowButton extends PSButton implements View.OnClickListener {
                         clonedUser.user_options.follow_count = response.body().entity.follow_count;
 
                         AuthenticationCenter.getDefault().synchorinzeUser(clonedUser);
+                        completion.run();
                         EventBus.getDefault().post(new RelationshipsEvent(eventType, target, getModel()));
                     } catch (CloneNotSupportedException e) {
                         if (BuildConfig.DEBUG)
@@ -209,11 +228,28 @@ public class FollowButton extends PSButton implements View.OnClickListener {
         if (invalidDataLoading())
             return;
 
+        final FollowButton target = this;
+
         RelationshipsDataProxy.getDefault().unfollow(model.user_uid, getCallback(new Runnable() {
+            @Override
+            public void run() {
+                if (delegate != null)
+                    delegate.onCompleteUnfollow(target, model);
+            }
+        }, new Runnable() {
             @Override
             public void run() {
                 unfollow();
             }
         }, RelationshipsEvent.UNFOLLOW));
+    }
+
+    // ================================================================================================
+    //  Interface: Delegate
+    // ================================================================================================
+
+    public interface Delegate {
+        void onCompleteFollow(FollowButton target, BaseUser user);
+        void onCompleteUnfollow(FollowButton target, BaseUser user);
     }
 }

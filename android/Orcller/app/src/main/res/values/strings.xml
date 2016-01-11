@@ -222,6 +222,7 @@
     <string name="m_exception_desc_no_album_invite">Try invite friends after create a new album.</string>
     <string name="m_exception_desc_no_album_mine">Now you can create an album easily.</string>
     <string name="m_exception_desc_no_collaborations">Please join to album collaboration with friends.</string>
+    <string name="m_exception_desc_no_following">Try find friends to follow.</string>
     <string name="m_exception_desc_no_media">Please touch the +Add button to add photos.</string>
     <string name="m_exception_desc_no_permissions">This album can be private or you do not follow the author.</string>
     <string name="m_exception_desc_no_photos">Photos used in the album, you can see apart here.</string>
@@ -238,6 +239,8 @@
     <string name="m_exception_title_no_album_ask">There are no albums to ask for album collaboration.</string>
     <string name="m_exception_title_no_album_invite">There are no albums to invite for album collaboration.\n(Album of the Private state can not be edited jointly.)</string>
     <string name="m_exception_title_no_collaborations">There is no album collaborations.</string>
+    <string name="m_exception_title_no_followers">There are no followers.</string>
+    <string name="m_exception_title_no_following">There is no following.</string>
     <string name="m_exception_title_no_media">There are no photos in the this album yet.</string>
     <string name="m_exception_title_no_list">There is no results.</string>
     <string name="m_exception_title_no_permissions">You don\'t have any permission for the album.</string>

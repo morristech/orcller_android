@@ -12,6 +12,8 @@ import pisces.psuikit.widget.ExceptionView;
  */
 public class ExceptionViewFactory {
     public enum Type {
+        NetworkError(-1),
+        UnknownError(0),
         NoActivity(1),
         NoAlbum(2),
         NoAlbumAsk(3),
@@ -19,16 +21,16 @@ public class ExceptionViewFactory {
         NoAlbumInvite(5),
         NoAlbumMine(6),
         NoCollaboration(7),
-        NoListData(8),
-        NoMedia(9),
-        NoRecommendation(10),
-        NoPermissionForAlbum(11),
-        NoPhotos(12),
-        NoStar(13),
-        NoTimeline(14),
-        DoseNotExistAlbum(15),
-        NetworkError(16),
-        UnknownError(17);
+        NoFollowers(8),
+        NoFollowing(9),
+        NoListData(10),
+        NoMedia(11),
+        NoRecommendation(12),
+        NoPermissionForAlbum(13),
+        NoPhotos(14),
+        NoStar(15),
+        NoTimeline(16),
+        DoseNotExistAlbum(17);
 
         private int value;
 
@@ -51,7 +53,15 @@ public class ExceptionViewFactory {
 
         ExceptionView view = new ExceptionView(parentView.getContext(), parentView);
 
-        if (Type.NoAlbum.equals(type)) {
+        if (Type.UnknownError.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_error_unknown);
+            view.setDescriptionText(R.string.m_exception_desc_error_unknown);
+            view.setButtonText(R.string.w_retry);
+        } else if (Type.NetworkError.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_error_network);
+            view.setDescriptionText(R.string.m_exception_desc_error_network);
+            view.setButtonText(R.string.w_retry);
+        } else if (Type.NoAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_album);
             view.setDescriptionText(R.string.m_exception_desc_no_album);
         } else if (Type.NoAlbumMine.equals(type)) {
@@ -69,6 +79,12 @@ public class ExceptionViewFactory {
             view.setTitleText(R.string.m_exception_title_no_album_invite);
             view.setDescriptionText(R.string.m_exception_desc_no_album_invite);
             view.setButtonText(R.string.w_title_new_album);
+        } else if (Type.NoFollowers.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_followers);
+        } else if (Type.NoFollowing.equals(type)) {
+            view.setTitleText(R.string.m_exception_title_no_following);
+            view.setDescriptionText(R.string.m_exception_desc_no_following);
+            view.setButtonText(R.string.w_title_find_friends);
         } else if (Type.NoTimeline.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_timeline);
             view.setDescriptionText(R.string.m_exception_desc_no_timeline);
@@ -102,14 +118,6 @@ public class ExceptionViewFactory {
         } else if (Type.NoPhotos.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_photos);
             view.setDescriptionText(R.string.m_exception_desc_no_photos);
-        } else if (Type.UnknownError.equals(type)) {
-            view.setTitleText(R.string.m_exception_title_error_unknown);
-            view.setDescriptionText(R.string.m_exception_desc_error_unknown);
-            view.setButtonText(R.string.w_retry);
-        } else if (Type.NetworkError.equals(type)) {
-            view.setTitleText(R.string.m_exception_title_error_network);
-            view.setDescriptionText(R.string.m_exception_desc_error_network);
-            view.setButtonText(R.string.w_retry);
         }
 
         view.setTag(type);
