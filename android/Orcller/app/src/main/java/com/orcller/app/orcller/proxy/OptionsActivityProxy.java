@@ -21,7 +21,7 @@ import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,6 @@ import java.util.Map;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.model.Resources;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.widget.SectionedListView;
 

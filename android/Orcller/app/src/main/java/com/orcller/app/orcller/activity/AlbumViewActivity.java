@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.Album;
@@ -27,8 +29,11 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+
+import pisces.psfoundation.model.Resources;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
@@ -38,6 +43,7 @@ import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
 import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -54,10 +60,12 @@ public class AlbumViewActivity extends PSActionBarActivity
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "album_id";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
+    private Error loadError;
     private Album model;
     private AlbumOptionsManager albumOptionsManager;
     private AlbumItemViewDelegate albumItemViewDelegate;
     private LinearLayout rootLayout;
+    private RelativeLayout container;
     private PSScrollView scrollView;
     private AlbumItemView albumItemView;
     private CommentListView commentListView;
@@ -76,12 +84,18 @@ public class AlbumViewActivity extends PSActionBarActivity
         getSupportActionBar().setTitle(null);
 
         rootLayout = (LinearLayout) findViewById(R.id.rootLayout);
+        container = (RelativeLayout) findViewById(R.id.container);
         scrollView = (PSScrollView) findViewById(R.id.scrollView);
         albumItemView = (AlbumItemView) findViewById(R.id.albumItemView);
         commentListView = (CommentListView) findViewById(R.id.commentListView);
         commentInputView = (CommentInputView) findViewById(R.id.commentInputView);
         albumItemViewDelegate = new AlbumItemViewDelegate(this);
 
+        exceptionViewManager.add(
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.DoseNotExistAlbum, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoPermissionForAlbum, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
         albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_FOCUS_COMMENT);
         albumItemView.setDelegate(albumItemViewDelegate);
         commentListView.setDelegate(this);
@@ -106,14 +120,7 @@ public class AlbumViewActivity extends PSActionBarActivity
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
-            setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
-            setAllowsCommentInputFocus(getIntent().getBooleanExtra(ALLOWS_COMMENT_INPUT_FOCUS, false));
-        } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
-            load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
-        } else if (getIntent().getData().getQueryParameter(ALBUM_ID_KEY) != null) {
-            load(Long.valueOf(getIntent().getData().getQueryParameter(ALBUM_ID_KEY)));
-        }
+        load();
     }
 
     @Override
@@ -139,14 +146,41 @@ public class AlbumViewActivity extends PSActionBarActivity
 
         EventBus.getDefault().unregister(this);
         SoftKeyboardNotifier.getDefault().unregister(this);
-        ProgressBarManager.hide(this);
+        ProgressBarManager.hide();
     }
 
     @Override
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(this);
+        ProgressBarManager.hide();
+        exceptionViewManager.validate();
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag()) &&
+                ExceptionViewFactory.Type.UnknownError.equals(view.getTag())) {
+            exceptionViewManager.clear();
+            load();
+        }
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.DoseNotExistAlbum.equals(view.getTag()))
+            return loadError instanceof APIError && ((APIError) loadError).getCode() == APIError.APIErrorCodeAlbumDoesNotExist;
+
+        if (ExceptionViewFactory.Type.NoPermissionForAlbum.equals(view.getTag()))
+            return loadError instanceof APIError && ((APIError) loadError).getCode() == APIError.APIErrorCodeNoPermissionForAlbum;
+
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag()))
+            return !Application.isNetworkConnected();
+
+        if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
+            return loadError != null;
+
+        return false;
     }
 
     // ================================================================================================
@@ -233,6 +267,17 @@ public class AlbumViewActivity extends PSActionBarActivity
     //  Private
     // ================================================================================================
 
+    private void load() {
+        if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
+            setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
+            setAllowsCommentInputFocus(getIntent().getBooleanExtra(ALLOWS_COMMENT_INPUT_FOCUS, false));
+        } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
+            load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
+        } else if (getIntent().getData().getQueryParameter(ALBUM_ID_KEY) != null) {
+            load(Long.valueOf(getIntent().getData().getQueryParameter(ALBUM_ID_KEY)));
+        }
+    }
+
     private void setAllowsCommentInputFocus(boolean focus) {
         if (focus)
             commentInputView.setFocus();
@@ -251,23 +296,29 @@ public class AlbumViewActivity extends PSActionBarActivity
         if (invalidDataLoading())
             return;
 
+        loadError = null;
+
         ProgressBarManager.show();
 
         AlbumDataProxy.getDefault().view(albumId, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                endDataLoading();
-
                 if (response.isSuccess() && response.body().isSuccess()) {
                     setModel(response.body().entity);
                 } else {
-                    if (DEBUG)
-                        e("Api Error", response.body());
+                    loadError = new APIError(response.body());
+
+                    if (BuildConfig.DEBUG)
+                        Log.e("Api Error", response.body());
                 }
+
+                endDataLoading();
             }
 
             @Override
             public void onFailure(Throwable t) {
+                loadError = new Error(t.getMessage());
+
                 endDataLoading();
 
                 if (BuildConfig.DEBUG)

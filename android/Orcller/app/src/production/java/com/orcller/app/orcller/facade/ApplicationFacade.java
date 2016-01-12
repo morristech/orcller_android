@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
-import com.google.android.gms.analytics.HitBuilders;
 import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -19,11 +18,13 @@ import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.PushNotificationObject;
+import com.orcller.app.orcller.service.GcmListenerService;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
@@ -37,6 +38,7 @@ public class ApplicationFacade {
     private static ApplicationFacade uniqueInstance;
     private boolean initialized;
     private Context context;
+    private Intent intent;
     private PushNotificationObject pushNotificationObject;
 
     public ApplicationFacade() {
@@ -76,14 +78,14 @@ public class ApplicationFacade {
         DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId), true);
     }
 
-    public void run(PushNotificationObject pushNotificationObject) {
-        this.pushNotificationObject = pushNotificationObject;
+    public void run(Intent intent) {
+        this.intent = intent;
+        this.pushNotificationObject = (PushNotificationObject) intent.getSerializableExtra(GcmListenerService.PUSH_NOTIFICATION_OBJECT_KEY);
 
         if (initialized) {
             if (AuthenticationCenter.getDefault().hasSession() && ActivityManager.hasRunningActivity(MainActivity.class)) {
                 Activity activity = ActivityManager.getRunningActivity(MainActivity.class);
-                Intent intent = activity.getIntent();
-                putPushNotificationExtra(intent);
+                putPushNotificationExtra(activity.getIntent());
                 Application.moveToBack(activity);
                 SharedObject.get().loadNewsCountDireclty();
             }
@@ -168,5 +170,17 @@ public class ApplicationFacade {
         putPushNotificationExtra(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
+
+        Log.d("startMainActivity");
+
+
+        String scheme = this.intent.getData().getScheme();
+        String host = this.intent.getData().getHost();
+        int path = this.intent.getData().getPath();
+        String query = this.intent.getData().getQuery();
+
+        scheme +
+
+        Log.d("intent", this.intent.getData().getScheme(), this.intent.getData().getHost(), this.intent.getData().getQueryParameterNames());
     }
 }

@@ -20,7 +20,7 @@ import com.orcller.app.orcller.widget.ProfileHearderView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import java.util.Arrays;
 import java.util.List;

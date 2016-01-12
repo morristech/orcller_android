@@ -24,21 +24,20 @@ import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.model.facebook.FBUser;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFragment;
 import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.widget.ClearableEditText;

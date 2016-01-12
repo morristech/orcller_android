@@ -1,9 +1,14 @@
 package com.orcller.app.orcller.fragment;
 
+import android.view.View;
+
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserDataGridView;
 
+import de.greenrobot.event.EventBus;
+import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
 /**
@@ -29,5 +34,22 @@ public class UserAlbumStarGridFragment extends UserAlbumGridFragment {
                 return UserDataProxy.getDefault().service().favorites(getModel().user_uid, limit, after);
             }
         };
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoStar.equals(view.getTag()))
+            return loadError == null && gridView.getItems().size() < 1;
+        return super.shouldShowExceptionView(view);
+    }
+
+    @Override
+    protected void modelChanged() {
+        super.modelChanged();
+
+        if (exceptionViewManager.getViewCount() == 3)
+            exceptionViewManager.remove(0);
+
+        exceptionViewManager.add(0, ExceptionViewFactory.create(ExceptionViewFactory.Type.NoStar, container));
     }
 }

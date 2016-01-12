@@ -23,14 +23,14 @@ import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MemberJoinInputActivity;
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.facebook.FBUser;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -245,6 +245,13 @@ public class MemberJoinFragment extends PSFragment {
                                     getResources().getString(R.string.w_ok)
                             );
                             editText.setText(null);
+                        } else {
+                            AlertDialogUtils.retry(R.string.m_fail_common, new Runnable() {
+                                @Override
+                                public void run() {
+                                    sendCertificationEmail();
+                                }
+                            });
                         }
                     }
                 });

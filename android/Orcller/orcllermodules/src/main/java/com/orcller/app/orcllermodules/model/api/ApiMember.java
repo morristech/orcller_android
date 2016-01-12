@@ -4,7 +4,7 @@ import android.os.Build;
 
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.ApiResult;
-import com.orcller.app.orcllermodules.utils.DeviceUtils;
+import pisces.psfoundation.utils.DeviceUtils;
 
 import java.util.Locale;
 

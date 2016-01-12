@@ -1,6 +1,5 @@
 package com.orcller.app.orcller.activity;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -20,23 +19,21 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Length;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 import com.orcller.app.orcllermodules.model.facebook.FBUser;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import java.io.Serializable;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.widget.ClearableEditText;
 

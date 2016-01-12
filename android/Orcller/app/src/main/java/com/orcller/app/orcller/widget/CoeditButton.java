@@ -18,8 +18,8 @@ import com.orcller.app.orcller.model.Contributor;
 import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiCoedit;
 import com.orcller.app.orcller.proxy.CoeditDataProxy;
-import com.orcller.app.orcller.proxy.UserDataProxy;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

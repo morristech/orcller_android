@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.utils;
 
+import android.content.Intent;
 import android.text.Html;
 import android.text.Spannable;
 
@@ -163,6 +164,15 @@ public class CustomSchemeGenerator {
         public int value() {
             return value;
         }
+    }
+
+    public static String run(Intent intent) {
+        String scheme = intent.getData().getScheme();
+        String host = intent.getData().getHost();
+        int path = Integer.valueOf(intent.getData().getPath().replace("/", ""));
+        String query = intent.getData().getQuery();
+
+        // TODO: Custom Scheme 실행 구현
     }
 
     public static String create(Category category) {

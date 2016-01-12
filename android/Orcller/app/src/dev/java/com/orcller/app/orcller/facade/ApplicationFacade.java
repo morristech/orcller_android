@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
-import com.google.android.gms.analytics.HitBuilders;
 import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
@@ -23,7 +22,7 @@ import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

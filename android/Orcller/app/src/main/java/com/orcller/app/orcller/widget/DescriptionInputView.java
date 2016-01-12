@@ -7,9 +7,9 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.model.User;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.GraphicUtils;

@@ -32,7 +32,7 @@ import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 

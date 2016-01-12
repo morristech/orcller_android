@@ -20,12 +20,12 @@ import com.orcller.app.orcller.activity.FollowersActivity;
 import com.orcller.app.orcller.activity.FollowingActivity;
 import com.orcller.app.orcller.activity.UserPictureActivity;
 import com.orcller.app.orcller.proxy.UserDataProxy;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import com.orcller.app.orcllermodules.model.User;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import java.util.List;
 

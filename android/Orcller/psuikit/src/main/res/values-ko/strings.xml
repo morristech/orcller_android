@@ -4,4 +4,6 @@
     <!-- words -->
     <string name="imagepicker_menu_select">선택</string>
     <string name="imagepicker_title">포토 갤러리</string>
+    <string name="w_dismiss">닫기</string>
+    <string name="w_retry">다시 시도</string>
 </resources>

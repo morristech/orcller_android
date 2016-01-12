@@ -1,16 +1,14 @@
-package com.orcller.app.orcllermodules.utils;
+package pisces.psuikit.keyboard;
 
 import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-
 import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
-import pisces.psfoundation.utils.Log;
+import pisces.psuikit.event.SoftKeyboardEvent;
 
 /**
  * Created by pisces on 11/8/15.
@@ -25,7 +23,7 @@ public final class SoftKeyboardNotifier {
     // ================================================================================================
 
     public SoftKeyboardNotifier() {
-        handlerMap = new HashMap<String, ViewTreeObserver.OnGlobalLayoutListener>();
+        handlerMap = new HashMap<>();
     }
 
     public static SoftKeyboardNotifier getDefault() {

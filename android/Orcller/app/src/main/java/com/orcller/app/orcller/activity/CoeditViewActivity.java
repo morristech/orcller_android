@@ -28,7 +28,7 @@ import com.orcller.app.orcller.widget.ContributorListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

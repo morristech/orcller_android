@@ -25,9 +25,9 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.facade.ApplicationFacade;
 import com.orcller.app.orcller.fragment.MemberJoinFragment;
 import com.orcller.app.orcller.fragment.MemberLoginFragment;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.event.SoftKeyboardEvent;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

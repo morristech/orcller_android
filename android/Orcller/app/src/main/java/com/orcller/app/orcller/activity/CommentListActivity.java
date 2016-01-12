@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -16,7 +15,7 @@ import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.ObjectUtils;

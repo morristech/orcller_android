@@ -9,13 +9,12 @@ import android.widget.Toast;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.event.RelationshipsEvent;
-import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

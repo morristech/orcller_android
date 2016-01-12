@@ -22,7 +22,7 @@ import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.FBShareProxy;
 import com.orcller.app.orcller.proxy.TimelineDataProxy;
 import com.orcller.app.orcllermodules.model.ApiResult;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

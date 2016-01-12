@@ -21,8 +21,7 @@ public class SplashActivity extends PSActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-        ApplicationFacade.getDefault().run(
-                (PushNotificationObject) getIntent().getSerializableExtra(GcmListenerService.PUSH_NOTIFICATION_OBJECT_KEY));
+        ApplicationFacade.getDefault().run(getIntent());
     }
 
     @Override

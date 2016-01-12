@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import pisces.psuikit.ext.PSActionBarActivity;
 

@@ -15,9 +15,9 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardUtils;
+import pisces.psuikit.event.SoftKeyboardEvent;
+import pisces.psuikit.utils.AlertDialogUtils;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.utils.Log;

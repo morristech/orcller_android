@@ -4,4 +4,6 @@
     <!-- words -->
     <string name="imagepicker_menu_select">Select</string>
     <string name="imagepicker_title">Photo Gallery</string>
+    <string name="w_dismiss">Dismiss</string>
+    <string name="w_retry">Retry</string>
 </resources>

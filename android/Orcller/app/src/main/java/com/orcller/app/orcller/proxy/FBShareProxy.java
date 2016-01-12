@@ -7,26 +7,20 @@ import android.text.TextUtils;
 
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
-import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.Album;
-import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcller.utils.ImageGenerator;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
-import pisces.psfoundation.utils.DataLoadValidator;
 import pisces.psfoundation.utils.Log;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 import static com.orcller.app.orcller.BuildConfig.DEBUG;
 import static pisces.psfoundation.utils.Log.e;

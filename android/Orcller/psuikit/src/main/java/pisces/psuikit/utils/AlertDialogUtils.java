@@ -1,12 +1,11 @@
-package com.orcller.app.orcllermodules.utils;
+package pisces.psuikit.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.StringRes;
 
-import com.orcller.app.orcllermodules.R;
-
+import pisces.android.R;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
 

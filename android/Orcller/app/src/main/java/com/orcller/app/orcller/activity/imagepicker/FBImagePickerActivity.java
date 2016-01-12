@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -25,14 +24,12 @@ import com.orcller.app.orcllermodules.model.facebook.FBAlbums;
 import com.orcller.app.orcllermodules.model.facebook.FBVideoAlbum;
 import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
 

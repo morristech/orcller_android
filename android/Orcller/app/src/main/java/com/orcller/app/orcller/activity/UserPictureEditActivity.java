@@ -30,7 +30,7 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserPictureCropGuideView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;

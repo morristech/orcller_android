@@ -15,7 +15,7 @@ import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.PageListEvent;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.widget.AlbumGridView;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;

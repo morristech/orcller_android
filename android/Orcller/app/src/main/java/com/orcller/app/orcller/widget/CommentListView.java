@@ -16,7 +16,7 @@ import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcllermodules.error.APIError;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;

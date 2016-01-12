@@ -36,8 +36,13 @@
             android:theme="@style/SplashTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="@string/host_main" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_album" android:path="/1" android:scheme="@string/app_scheme" />
+                <data android:host="@string/host_member" android:path="/1" android:scheme="@string/app_scheme" />
             </intent-filter>
         </activity>
 
@@ -65,14 +70,6 @@
             android:name=".activity.MemberJoinInputActivity"
             android:launchMode="singleTask"
             android:theme="@style/PurpleTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="@string/host_member" android:path="/1" android:scheme="@string/app_scheme" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -128,16 +125,7 @@
         </activity>
         <activity
             android:name=".activity.AlbumViewActivity"
-            android:launchMode="singleTask"
             android:theme="@style/PurpleTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="@string/host_album" android:path="/1" android:scheme="@string/app_scheme" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.AlbumPageOrderActivity"

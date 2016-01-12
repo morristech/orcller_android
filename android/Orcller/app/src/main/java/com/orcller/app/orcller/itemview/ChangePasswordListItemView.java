@@ -10,16 +10,11 @@ import android.widget.Toast;
 
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
-import com.mobsandgeeks.saripaar.annotation.Email;
 import com.mobsandgeeks.saripaar.annotation.Length;
-import com.mobsandgeeks.saripaar.annotation.NotEmpty;
-import com.mobsandgeeks.saripaar.annotation.ValidateUsing;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
 
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psuikit.itemview.ListBaseItemView;

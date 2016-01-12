@@ -33,10 +33,10 @@ import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageScrollView;
-import com.orcller.app.orcllermodules.event.SoftKeyboardEvent;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.model.ApiResult;
-import com.orcller.app.orcllermodules.utils.AlertDialogUtils;
-import com.orcller.app.orcllermodules.utils.SoftKeyboardNotifier;
+import pisces.psuikit.utils.AlertDialogUtils;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import java.util.ArrayList;
 import java.util.List;
