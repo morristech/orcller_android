@@ -124,7 +124,6 @@ public class ApplicationFacade {
     public void onEventMainThread(Object event) {
         if (event instanceof ApplicationLauncher.ApplicationInitialized ||
                 event instanceof AuthenticationCenter.LoginEvent) {
-            Log.d("AuthenticationCenter.LoginEvent");
             startMainActivity();
         } else if (event instanceof ApplicationLauncher.ApplicationHasNewVersion) {
             ApplicationLauncher.ApplicationHasNewVersion casted = (ApplicationLauncher.ApplicationHasNewVersion) event;

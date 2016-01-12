@@ -75,7 +75,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 //    testCompile 'junit:junit:4.12'
-    productionCompile project(path: ':orcllermodules', configuration: 'productionRelease')
+    productionCompile project(path: ':orcllermodules', configuration: 'productionDebug')
     devCompile project(path: ':orcllermodules', configuration: 'devDebug')
     uitestCompile project(path: ':orcllermodules', configuration: 'devDebug')
     qaCompile project(':orcllermodules')

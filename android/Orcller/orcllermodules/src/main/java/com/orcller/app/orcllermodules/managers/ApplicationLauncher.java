@@ -13,8 +13,11 @@ import com.orcller.app.orcllermodules.proxy.ApplicationDataProxy;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 
+import java.util.Locale;
+
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Retrofit;
@@ -27,7 +30,8 @@ public class ApplicationLauncher {
     private static final String APP_ID_KEY = "Application-Id";
     private static final String APP_VERSION_KEY = "Application-Version";
     private static final String DEVICE_NAME_KEY = "Device-Name";
-    private static final String DEVIE_MODEL_KEY = "Device-Model";
+    private static final String DEVICE_MODEL_KEY = "Device-Model";
+    private static final String SYSTEM_LOCALE_KEY = "System-Locale";
     private static final String SYSTEM_NAME_KEY = "System-Name";
     private static final String SYSTEM_VERSION_KEY = "System-Version";
     private static final String CACHED_CURRENT_APP_VERSION_KEY = "Current-Application-Version";
@@ -210,6 +214,7 @@ public class ApplicationLauncher {
     }
 
     private void processErrorState(APIError error) {
+        Log.e("error", error);
         initComplete();
         EventBus.getDefault().post(new OnFailure(error));
     }
@@ -225,10 +230,12 @@ public class ApplicationLauncher {
 
     private void setHeaders() {
         try {
+            Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
             headers.add(APP_ID_KEY, resource.getIdentifier());
             headers.add(APP_VERSION_KEY, Application.getPackageVersionName());
             headers.add(DEVICE_NAME_KEY, Build.DEVICE);
-            headers.add(DEVIE_MODEL_KEY, Build.MODEL);
+            headers.add(DEVICE_MODEL_KEY, Build.MODEL);
+            headers.add(SYSTEM_LOCALE_KEY, locale.toLanguageTag());
             headers.add(SYSTEM_NAME_KEY, DeviceManager.SYSTEM_NAME);
             headers.add(SYSTEM_VERSION_KEY, Build.VERSION.RELEASE);
         } catch (Exception e) {
