@@ -141,20 +141,6 @@ public class AlbumCreateActivity extends PSActionBarActivity
     }
 
     @Override
-    public void onGlobalLayout() {
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        } else {
-            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-        }
-
-        albumFlipView.setPageWidth(rootLayout.getWidth() / 2);
-        albumFlipView.setPageHeight(rootLayout.getWidth() / 2);
-
-        setModel(createModel());
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Application.getTopActivity().getMenuInflater().inflate(R.menu.menu_album_create, menu);
         return true;
@@ -239,6 +225,22 @@ public class AlbumCreateActivity extends PSActionBarActivity
     // ================================================================================================
     //  Listener
     // ================================================================================================
+
+    /**
+     * ViewTreeObserver.OnGlobalLayoutListener
+     */
+    public void onGlobalLayout() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
+
+        albumFlipView.setPageWidth(rootLayout.getWidth() / 2);
+        albumFlipView.setPageHeight(rootLayout.getWidth() / 2);
+
+        setModel(createModel());
+    }
 
     /**
      * Button listener

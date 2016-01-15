@@ -33,7 +33,7 @@
         <activity
             android:name=".activity.SplashActivity"
             android:launchMode="singleTask"
-            android:theme="@style/SplashTheme" >
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -232,6 +232,12 @@
         <activity
             android:name=".activity.FindFriendsActivity"
             android:theme="@style/PurpleTheme">
+        </activity>
+
+        <activity
+            android:name=".activity.AlbumSlideShowActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/BlackTheme">
         </activity>
 
         <!-- orcllermodules -->

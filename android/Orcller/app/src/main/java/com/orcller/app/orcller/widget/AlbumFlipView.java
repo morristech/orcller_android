@@ -113,6 +113,9 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (model == null)
+            return super.onTouchEvent(event);
+
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 startPoint = new PointF(event.getRawX(), event.getRawY());
