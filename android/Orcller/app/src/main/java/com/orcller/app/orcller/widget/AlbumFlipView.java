@@ -49,11 +49,12 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private int pageHeight;
     private int pageWidth;
     private int pageIndex = -1;
+    private int slideDuration = 1500;
     private float originRotation;
     private PointF startPoint;
     private Delegate delegate;
     private Album model;
-    private Background background;
+    private View background;
     private PSFrameLayout container;
     private List<FlipView> visibleViews;
     private FlipView targetFlipView;
@@ -94,12 +95,11 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         pageIndex = -1;
         imageLoadType = MediaView.ImageLoadType.LowResolution.value();
         visibleViews = new ArrayList<>();
-        background = new Background(context);
         container = new PSFrameLayout(context);
         pageCountView = new AlbumPageCountView(context);
 
         setClipChildren(false);
-        addView(background);
+        setBackgroundView(new Background(context));
         addView(container, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
@@ -204,6 +204,19 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         this.allowsShowPageCount = allowsShowPageCount;
     }
 
+    public void setBackgroundView(View background) {
+        if (ObjectUtils.equals(background, this.background))
+            return;
+
+        if (this.background != null)
+            removeView(this.background);
+
+        this.background = background;
+
+        if (background != null)
+            addView(background, 0);
+    }
+
     public boolean isPlaying() {
         return playing;
     }
@@ -279,6 +292,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         stop();
         invalidateProperties();
+    }
+
+    public int getSlideDuration() {
+        return slideDuration;
+    }
+
+    public void setSlideDuration(int slideDuration) {
+        this.slideDuration = slideDuration;
     }
 
     public void loadRemainPages() {
@@ -530,14 +551,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                         public void run() {
                             stop();
                         }
-                    }, 1500);
+                    }, slideDuration);
                 } else {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             flipRight();
                         }
-                    }, 1500);
+                    }, slideDuration);
                 }
             }
         });
@@ -622,9 +643,11 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         params.width = pageWidth * PAGE_COUNT;
         params.height = pageHeight;
 
-        ViewGroup.LayoutParams bgparams = background.getLayoutParams();
-        bgparams.width = params.width;
-        bgparams.height = pageHeight;
+        if (background != null) {
+            ViewGroup.LayoutParams bgparams = background.getLayoutParams();
+            bgparams.width = params.width;
+            bgparams.height = pageHeight;
+        }
 
         for (FlipView view : visibleViews) {
             params = view.getLayoutParams();

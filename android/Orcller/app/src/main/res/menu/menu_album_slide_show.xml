@@ -11,5 +11,6 @@
         android:id="@+id/control"
         android:orderInCategory="100"
         android:icon="@drawable/icon_menu_play_normal"
+        android:enabled="false"
         app:showAsAction="ifRoom"/>
 </menu>

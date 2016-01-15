@@ -2,20 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipChildren="false">
     <SurfaceView
         android:layout_width="0px"
         android:layout_height="0px"
         android:visibility="gone" />
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:background="@color/theme_black_toolbar"
-        android:elevation="2dp"
-        android:minHeight="36dp"
-        android:theme="@style/BlackTheme.Toolbar"/>
 
     <com.orcller.app.orcller.widget.AlbumFlipView
         android:id="@+id/albumFlipView"
@@ -30,4 +22,13 @@
         android:layout_height="8dp"
         android:layout_gravity="center"
         style="@android:style/Widget.Material.ProgressBar.Horizontal" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:background="@color/theme_black_toolbar"
+        android:elevation="2dp"
+        android:minHeight="36dp"
+        android:theme="@style/BlackTheme.Toolbar"/>
 </FrameLayout>

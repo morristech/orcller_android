@@ -12,12 +12,17 @@ import com.facebook.FacebookSdk;
 import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.AlbumSlideShowActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
+import com.orcller.app.orcller.activity.UserPictureEditActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
+import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.PushNotificationObject;
+import com.orcller.app.orcller.model.api.ApiAlbum;
+import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.OpenUrlProxy;
 import com.orcller.app.orcller.service.GcmListenerService;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
@@ -31,6 +36,9 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ActivityManager;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by pisces on 11/28/15.

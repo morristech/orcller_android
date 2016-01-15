@@ -2,9 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'release_key'
+            keyPassword 'dhzmffj1!'
+            storeFile file('/Users/pisces/Documents/orcller/orcller_android_release.jks')
+            storePassword 'dhzmffj1!'
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
-
     defaultConfig {
         applicationId "com.orcller.app.orcller"
         minSdkVersion 15
@@ -15,16 +22,13 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 //    dexOptions{
 //        incremental true
 //        javaMaxHeapSize "4g"
 //    }
-
     sourceSets {
         uitest {
             java.srcDirs = ['src/main/java', 'src/uitest/java']
@@ -42,43 +46,39 @@ android {
             java.srcDirs = ['src/main/java', 'src/production/java']
         }
     }
-
     productFlavors {
         uitest {
             applicationId "com.orcller.app.orcller.uitest"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
             buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
         }
-
         dev {
             applicationId "com.orcller.app.orcller.dev"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
             buildConfigField 'String', 'TEST_SESSION_TOKEN', '"s9m8UqcXA5vZtDzjTS1C5yaizd7v673jDr9t64BeOwK1jw0njhmV+TGju36midH80OvpWMqn+rs6gjJRaCP4PEyhMxb2wwwq1ygpfkIS552h1FLLB3jLhpPN9q5+rWqe6uyCeP+JH7D5PyhU1Khu/3snEXt9gTfcCTk8LGZenLA="'
-
 //            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
 //            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"RXmCdDakJeeQD2/Jra07dWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0QlyV6nPXi3n5Cx6sivmUxFGRXRDqW2BHuFqAfFqqY1eU/t6ueakPZMF0xpt/JgsRQ\\u003d\\u003d"'
         }
-
         qa {
             applicationId "com.orcller.app.orcller.qa"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
             buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
         }
-
         production {
             applicationId "com.orcller.app.orcller"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
+            signingConfig signingConfigs.release
         }
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-//    testCompile 'junit:junit:4.12'
-    productionCompile project(path: ':orcllermodules', configuration: 'productionDebug')
+    testCompile 'junit:junit:4.12'
+    productionCompile project(path: ':orcllermodules', configuration: 'productionRelease')
     devCompile project(path: ':orcllermodules', configuration: 'devDebug')
     uitestCompile project(path: ':orcllermodules', configuration: 'devDebug')
-    qaCompile project(':orcllermodules')
+    qaCompile project(path: ':orcllermodules', configuration: 'productionDebug')
     compile 'com.amazonaws:aws-android-sdk-core:2.+'
     compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
     compile 'com.amazonaws:aws-android-sdk-s3:2.+'

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- End current session if app sleeps for a period of time -->
-    <integer name="ga_sessionTimeout">30</integer>
+    <integer name="ga_sessionTimeout">300</integer>
 
     <!-- Enable automatic Activity measurement -->
     <bool name="ga_autoActivityTracking">true</bool>
@@ -13,48 +13,4 @@
       See Project Structure -> Analytics -> Google Analytics -> Learn More
       to learn more about configuring this file.
     -->
-    <screenName name="pisces.psuikit.imagepicker.ImagePickerActivity">/picker/cameraroll/assets</screenName>
-    <screenName name="pisces.psuikit.imagepicker.ImagePickerViewActivity">/picker/cameraroll/assets/view</screenName>
-    <screenName name="pisces.instagram.sdk.activity.InstagramLoginActivity">/instagram/login</screenName>
-
-    <screenName name="com.orcller.app.orcller.fragment.MemberLoginFragment">/member/login</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.MemberJoinFragment">/member/join</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.TimelineFragment">/newsfeed</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.FindFriendsFragment">/findfriends</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.CoeditListFragment">/coediting/list</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.ActivityFragment">/activity/view</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.ProfileFragment">/profile/view/owner</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.UserAlbumGridFragment">/profile/albums</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.UserAlbumStarGridFragment">/profile/stars</screenName>
-    <screenName name="com.orcller.app.orcller.fragment.UserMediaGridFragment">/profile/medias</screenName>
-
-    <screenName name="com.orcller.app.orcller.activity.AlbumViewActivity">/album/view</screenName>
-    <screenName name="com.orcller.app.orcller.activity.AlbumCreateActivity">/album/create</screenName>
-    <screenName name="com.orcller.app.orcller.activity.AlbumEditActivity">/album/edit</screenName>
-    <screenName name="com.orcller.app.orcller.activity.CommentListActivity">/album/comments</screenName>
-    <screenName name="com.orcller.app.orcller.activity.AlbumStarListActivity">/album/stars</screenName>
-    <screenName name="com.orcller.app.orcller.activity.CoeditViewActivity">/coediting/view</screenName>
-    <screenName name="com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity">/picker/facebook/album</screenName>
-    <screenName name="com.orcller.app.orcller.activity.imagepicker.FBMediaGridActivity">/picker/facebook/media</screenName>
-    <screenName name="com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity">/picker/instagram/follower</screenName>
-    <screenName name="com.orcller.app.orcller.activity.imagepicker.IGMediaGridActivity">/picker/instagram/media</screenName>
-    <screenName name="com.orcller.app.orcller.activity.MemberJoinInputActivity">/member/join/input</screenName>
-    <screenName name="com.orcller.app.orcller.activity.ProfileActivity">/profile/view</screenName>
-    <screenName name="com.orcller.app.orcller.activity.PageListActivity">/slide/pages</screenName>
-    <screenName name="com.orcller.app.orcller.activity.MediaListActivity">/slide/medias</screenName>
-    <screenName name="com.orcller.app.orcller.activity.FollowingActivity">/profile/following</screenName>
-    <screenName name="com.orcller.app.orcller.activity.FollowersActivity">/profile/follower</screenName>
-    <screenName name="com.orcller.app.orcller.activity.ChangePasswordActivity">/options/password</screenName>
-    <screenName name="com.orcller.app.orcller.activity.AlbumPageOrderActivity">/page/order</screenName>
-    <screenName name="com.orcller.app.orcller.activity.AlbumPageDefaultActivity">/page/default</screenName>
-    <screenName name="com.orcller.app.orcller.activity.AlbumPageDeleteActivity">/page/delete</screenName>
-    <screenName name="com.orcller.app.orcller.activity.OptionsActivity">/options</screenName>
-    <screenName name="com.orcller.app.orcller.activity.UserPictureActivity">/profile/picture</screenName>
-    <screenName name="com.orcller.app.orcller.activity.UserPictureEditActivity">/profile/picture/edit</screenName>
-
-    <screenName name="com.orcller.app.orcller.dialog.ConnectedAccountsAlertDialogView">/options/idp</screenName>
-    <screenName name="com.orcller.app.orcller.dialog.PublicSettingsAlertDialogView">/options/permission</screenName>
-    <screenName name="com.orcller.app.orcller.dialog.PushSettingsAlertDialogView">/options/pns</screenName>
-    <screenName name="com.orcller.app.orcller.dialog.VersionInfoAlertDialogView">/options/version</screenName>
-
 </resources>

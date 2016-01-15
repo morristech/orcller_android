@@ -9,7 +9,7 @@
         android:title="@string/w_share_to_facebook"
         app:showAsAction="never" />
 
-    <!--<item android:id="@+id/slideShow"-->
-        <!--android:title="@string/w_slide_show"-->
-        <!--app:showAsAction="never" />-->
+    <item android:id="@+id/slideShow"
+        android:title="@string/w_slide_show"
+        app:showAsAction="never" />
 </menu>

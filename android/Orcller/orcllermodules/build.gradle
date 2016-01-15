@@ -2,10 +2,8 @@ apply plugin: 'com.android.library'
 
 android {
     publishNonDefault true
-
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
@@ -15,8 +13,16 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        dev {
+            java.srcDirs = ['src/main/java', 'src/dev/java']
+        }
+
+        production {
+            java.srcDirs = ['src/main/java', 'src/production/java']
         }
     }
     productFlavors {

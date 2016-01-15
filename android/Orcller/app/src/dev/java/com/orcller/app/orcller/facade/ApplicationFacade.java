@@ -171,26 +171,13 @@ public class ApplicationFacade {
     }
 
     private void startMainActivity() {
+        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
+                MainActivity.class : MemberActivity.class;
+        Intent intent = new Intent(Application.applicationContext(), activityClass);
 
-        AlbumDataProxy.getDefault().view(4, new Callback<ApiAlbum.AlbumRes>() {
-            @Override
-            public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {
-                AlbumSlideShowActivity.show(response.body().entity);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        });
-
-
-//        Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
-//                MainActivity.class : MemberActivity.class;
-//        Intent intent = new Intent(Application.applicationContext(), activityClass);
-//
-//        putPushNotificationExtra(intent);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//        Application.applicationContext().startActivity(intent);
-//        OpenUrlProxy.run(this.intent);
+        putPushNotificationExtra(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.applicationContext().startActivity(intent);
+        OpenUrlProxy.run(this.intent);
     }
 }

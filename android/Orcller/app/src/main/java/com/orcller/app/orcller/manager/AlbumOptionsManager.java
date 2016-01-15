@@ -13,6 +13,7 @@ import android.widget.PopupMenu;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumEditActivity;
+import com.orcller.app.orcller.activity.AlbumSlideShowActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.dialog.PublicSettingsAlertDialogView;
 import com.orcller.app.orcller.event.AlbumEvent;
@@ -95,9 +96,9 @@ public class AlbumOptionsManager extends PSObject {
                 share();
                 break;
 
-//            case R.id.slideShow:
-//                //TODO : Impl open slideshow activity
-//                break;
+            case R.id.slideShow:
+                AlbumSlideShowActivity.show(album);
+                break;
 
             case R.id.hide:
                 hide();

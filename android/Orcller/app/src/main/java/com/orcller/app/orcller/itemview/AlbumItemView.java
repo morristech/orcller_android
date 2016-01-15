@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
@@ -54,8 +55,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     private int buttonVisiblity = COEDIT | HEART | COMMENT | STAR;
     private Album model;
     private Delegate delegate;
-    private AlbumInfoProfileView albumInfoProfileView;
-    private AlbumFlipView albumFlipView;
+    private LinearLayout infoContainer;
     private TextView descriptionTextView;
     private TextView heartTextView;
     private TextView commentTextView;
@@ -65,6 +65,8 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     private PSButton heartButton;
     private PSButton commentButton;
     private PSButton starButton;
+    private AlbumInfoProfileView albumInfoProfileView;
+    private AlbumFlipView albumFlipView;
 
     public AlbumItemView(Context context) {
         super(context);
@@ -86,6 +88,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_album, this);
 
+        infoContainer = (LinearLayout) findViewById(R.id.infoContainer);
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);

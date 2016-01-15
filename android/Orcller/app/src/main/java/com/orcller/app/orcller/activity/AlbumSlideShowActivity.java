@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +47,7 @@ import pisces.psuikit.manager.ProgressBarManager;
 public class AlbumSlideShowActivity extends PSActionBarActivity implements
         AlbumFlipView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
+    private boolean actionBarHidden;
     private Album model;
     private FrameLayout rootLayout;
     private ProgressBar progressBar;
@@ -69,6 +71,9 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        albumFlipView.setAllowsShowPageCount(false);
+        albumFlipView.setBackgroundView(null);
+        albumFlipView.setSlideDuration(2000);
         albumFlipView.setDelegate(this);
     }
 
@@ -82,8 +87,7 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.cycle:
-                item.setChecked(!item.isChecked());
-                item.setIcon(item.isChecked() ? R.drawable.icon_menu_cycle_selected : R.drawable.icon_menu_cycle_normal);
+                setCycleMenuItemChecked(!item.isChecked());
                 return true;
 
             case R.id.control:
@@ -92,6 +96,19 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                if (albumFlipView.isPlaying()) {
+                    playOrPause();
+                    return true;
+                }
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -162,11 +179,13 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     }
 
     public void onPlay(AlbumFlipView view) {
-
+        setControlMenuItemChecked(true);
+        setActionBarHidden(true);
     }
 
     public void onPause(AlbumFlipView view) {
-
+        setControlMenuItemChecked(false);
+        setActionBarHidden(false);
     }
 
     public void onStartLoadRemainPages(AlbumFlipView view) {
@@ -178,20 +197,36 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     }
 
     public void onStop(AlbumFlipView view) {
+        setControlMenuItemChecked(false);
         albumFlipView.setPageIndex(0);
 
-        if (getCycleMenuItem().isChecked()) {
+        if (getCycleMenuItem().isChecked())
             albumFlipView.play();
-        }
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
-
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private boolean isActionBarHidden() {
+        return actionBarHidden;
+    }
+
+    private void setActionBarHidden(boolean actionBarHidden) {
+        if (actionBarHidden == this.actionBarHidden)
+            return;
+
+        this.actionBarHidden = actionBarHidden;
+
+        if (actionBarHidden) {
+            getSupportActionBar().hide();
+        } else {
+            getSupportActionBar().show();
+        }
+    }
 
     private MenuItem getControlMenuItem() {
         return getToolbar().getMenu().findItem(R.id.control);
@@ -208,46 +243,6 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
         this.model = model;
 
         prepare();
-    }
-
-    private void playOrPause() {
-        MenuItem item = getControlMenuItem();
-
-        item.setChecked(!item.isChecked());
-        item.setIcon(item.isChecked() ? R.drawable.icon_menu_pause_normal : R.drawable.icon_menu_play_normal);
-
-        if (albumFlipView.isPlaying()) {
-            albumFlipView.pause();
-        } else {
-            albumFlipView.play();
-        }
-    }
-
-    private void prepare() {
-        final Point p = new Point(0, model.pages.total_count);
-
-        final Runnable progress = new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setProgress(Math.round(++p.x * 100 / p.y));
-
-                if (p.x >= p.y) {
-                    progressBar.setVisibility(View.GONE);
-                    albumFlipView.setVisibility(View.VISIBLE);
-                    albumFlipView.setModel(model);
-                    albumFlipView.setPageIndex(0);
-                }
-            }
-        };
-
-        AlbumDataProxy.getDefault().remainPages(model, new AlbumDataProxy.CompleteHandler() {
-            @Override
-            public void onComplete(boolean isSuccess) {
-                for (Page page : model.pages.data) {
-                    loadImage(page.media.images.standard_resolution, progress);
-                }
-            }
-        });
     }
 
     private void loadImage(Image image, final Runnable runnable) {
@@ -278,5 +273,54 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
             if (BuildConfig.DEBUG)
                 Log.e("loadImage", image.url, e);
         }
+    }
+
+    private void playOrPause() {
+        setControlMenuItemChecked(!getControlMenuItem().isChecked());
+
+        if (albumFlipView.isPlaying()) {
+            albumFlipView.pause();
+        } else {
+            albumFlipView.play();
+        }
+    }
+
+    private void prepare() {
+        final Point p = new Point(0, model.pages.total_count);
+        final Runnable progress = new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setProgress(Math.round(++p.x * 100 / p.y));
+
+                if (p.x >= p.y) {
+                    progressBar.setVisibility(View.GONE);
+                    albumFlipView.setModel(model);
+                    albumFlipView.setPageIndex(0);
+                    albumFlipView.setVisibility(View.VISIBLE);
+                    getControlMenuItem().setEnabled(true);
+                }
+            }
+        };
+
+        AlbumDataProxy.getDefault().remainPages(model, new AlbumDataProxy.CompleteHandler() {
+            @Override
+            public void onComplete(boolean isSuccess) {
+                for (Page page : model.pages.data) {
+                    loadImage(page.media.images.standard_resolution, progress);
+                }
+            }
+        });
+    }
+
+    private void setControlMenuItemChecked(boolean checked) {
+        MenuItem item = getControlMenuItem();
+        item.setChecked(checked);
+        item.setIcon(item.isChecked() ? R.drawable.icon_menu_pause_normal : R.drawable.icon_menu_play_normal);
+    }
+
+    private void setCycleMenuItemChecked(boolean checked) {
+        MenuItem item = getCycleMenuItem();
+        item.setChecked(checked);
+        item.setIcon(item.isChecked() ? R.drawable.icon_menu_cycle_selected : R.drawable.icon_menu_cycle_normal);
     }
 }
