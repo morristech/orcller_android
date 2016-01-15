@@ -12,4 +12,8 @@
     <item android:id="@+id/report"
         android:title="@string/w_report_inappropriate"
         app:showAsAction="never" />
+
+    <item android:id="@+id/slideShow"
+        android:title="@string/w_slide_show"
+        app:showAsAction="never" />
 </menu>

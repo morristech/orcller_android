@@ -44,8 +44,6 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
 
-        setScaleEnabled(enabled);
-
         if (getVideoMediaView() != null)
             getVideoMediaView().setEnabled(enabled);
     }

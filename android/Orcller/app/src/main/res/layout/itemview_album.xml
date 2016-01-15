@@ -34,7 +34,6 @@
         android:visibility="gone" />
 
     <LinearLayout
-        android:id="@+id/infoContainer"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -101,12 +101,11 @@ public class ImagePickerViewActivity extends PSActionBarActivity
     //  Public
     // ================================================================================================
 
-    public static void startActivity(ArrayList<Media> items, int selectedIndex, ImageView imageView) {
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Application.getTopActivity(), Pair.create((View) imageView, "imageView"));
+    public static void startActivity(ArrayList<Media> items, int selectedIndex) {
         Intent intent = new Intent(Application.getTopActivity(), ImagePickerViewActivity.class);
         intent.putExtra(ITEMS_KEY, items);
         intent.putExtra(SELECTED_INDEX_KEY, selectedIndex);
-        Application.getTopActivity().startActivity(intent, options.toBundle());
+        Application.startActivity(intent, R.animator.fadein, R.animator.fadeout);
     }
 
     // ================================================================================================

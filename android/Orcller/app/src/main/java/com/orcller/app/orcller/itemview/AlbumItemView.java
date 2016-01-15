@@ -55,7 +55,6 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     private int buttonVisiblity = COEDIT | HEART | COMMENT | STAR;
     private Album model;
     private Delegate delegate;
-    private LinearLayout infoContainer;
     private TextView descriptionTextView;
     private TextView heartTextView;
     private TextView commentTextView;
@@ -88,7 +87,6 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_album, this);
 
-        infoContainer = (LinearLayout) findViewById(R.id.infoContainer);
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);

@@ -5,40 +5,30 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Handler;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
-import com.orcller.app.orcller.activity.AlbumSlideShowActivity;
 import com.orcller.app.orcller.activity.MainActivity;
 import com.orcller.app.orcller.activity.MemberActivity;
-import com.orcller.app.orcller.activity.UserPictureEditActivity;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
-import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.PushNotificationObject;
-import com.orcller.app.orcller.model.api.ApiAlbum;
-import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.OpenUrlProxy;
 import com.orcller.app.orcller.service.GcmListenerService;
-import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
-import pisces.psuikit.utils.AlertDialogUtils;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psuikit.manager.ActivityManager;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import pisces.psuikit.utils.AlertDialogUtils;
 
 /**
  * Created by pisces on 11/28/15.
@@ -169,6 +159,7 @@ public class ApplicationFacade {
     }
 
     private void startMainActivity() {
+        Log.d("AuthenticationCenter.getDefault()", AuthenticationCenter.getDefault().getUser());
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
                 MainActivity.class : MemberActivity.class;
         Intent intent = new Intent(Application.applicationContext(), activityClass);

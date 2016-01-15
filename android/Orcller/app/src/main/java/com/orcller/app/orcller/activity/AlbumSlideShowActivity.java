@@ -286,6 +286,7 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     }
 
     private void prepare() {
+        progressBar.setVisibility(View.VISIBLE);
         final Point p = new Point(0, model.pages.total_count);
         final Runnable progress = new Runnable() {
             @Override

@@ -119,8 +119,7 @@ public class ImagePickerActivity extends PSActionBarActivity
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        ImageView imageView = ((ImagePickerItemView) view).getImageView();
-        ImagePickerViewActivity.startActivity(items, position, imageView);
+        ImagePickerViewActivity.startActivity(items, position);
         return true;
     }
 

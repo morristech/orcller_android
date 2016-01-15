@@ -228,6 +228,7 @@ public class PageScrollView extends PSLinearLayout
 
     public void reload() {
         mediaScrollView.setModel(model.media);
+        mediaScrollView.setScaleEnabled(false);
         buttonContainer.setVisibility(model.id > 0 ? VISIBLE : GONE);
         albumInfoProfileView.setModel(model);
         descriptionInputView.setModel(model.getUser());
