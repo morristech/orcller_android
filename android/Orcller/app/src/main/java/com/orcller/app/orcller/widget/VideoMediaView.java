@@ -2,7 +2,6 @@ package com.orcller.app.orcller.widget;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
@@ -75,6 +74,14 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
                 playOrPause();
             }
         });
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        pause();
+        controlButton.setEnabled(enabled);
     }
 
     @Override
@@ -205,8 +212,8 @@ public class VideoMediaView extends MediaView implements PSVideoView.PlayStateLi
         int buttonWidth = Math.round(controlButtonSize.x * getControlButtonScale());
         int buttonHeight = Math.round(controlButtonSize.y * getControlButtonScale());
         int margin = (int) getResources().getDimension(R.dimen.videomediaview_controlbutton_margin);
-        return new Point(isPlaying ? getMeasuredWidth() - buttonWidth - margin : (getMeasuredWidth() - buttonWidth)/2,
-                isPlaying ? getMeasuredHeight() - buttonHeight - margin : (getMeasuredHeight() - buttonHeight)/2);
+        return new Point(isPlaying ? getWidth() - buttonWidth - margin : (getWidth() - buttonWidth)/2,
+                isPlaying ? getHeight() - buttonHeight - margin : (getHeight() - buttonHeight)/2);
     }
 
     private float getControlButtonScale() {

@@ -227,7 +227,6 @@ public class MainActivity extends PSActionBarActivity
             TabHost.TabSpec tabSpec = tabHost.newTabSpec(String.valueOf(i))
                     .setIndicator(indicator)
                     .setContent(new TabFactory(this));
-            indicator.setBackgroundResource(R.drawable.background_ripple_tabbar_main);
             indicator.setDrawableLeft(getTabIconRes(i));
             indicator.setDrawableBound(getTabIconBound(i));
             indicator.setOnTouchListener(this);

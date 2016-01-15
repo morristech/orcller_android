@@ -7,6 +7,8 @@ public class VideoMedia extends Media {
     public Videos videos;
 
     public VideoMedia() {
+        super();
+
         type = Type.Video.value();
     }
 }

@@ -175,16 +175,13 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
                     targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     originRotation = targetFlipView.getRotationY();
-                    targetFlipView.bringToFront();
-                    targetFlipView.invalidate();
                     loadRemainPages();
                 }
 
                 if (targetFlipView != null) {
-                    targetFlipView.bringToFront();
-
                     float mx = pageWidth * 0.65f;
                     float rotation = Math.min(0, Math.max(-180, originRotation + (180 * dx / mx * -1)));
+                    container.bringChildToFront(targetFlipView);
                     targetFlipView.rotate(rotation);
                 }
                 break;
@@ -352,7 +349,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     }
 
     public void play() {
-        if (playing || model == null)
+        if (playing || model == null || model.pages.total_count <= 1)
             return;
 
         playing = true;
@@ -429,8 +426,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     flipView.setPages(getPages(currentIndex));
                     container.moveChildToBack(flipView);
                 } else {
-                    flipView.bringToFront();
-                    flipView.invalidate();
+                    container.bringChildToFront(flipView);
                 }
 
                 flipView.setVisibility(flipView.getPages().size() < 1 ? INVISIBLE : VISIBLE);
@@ -458,8 +454,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     flipView.setPages(getPages(currentIndex));
                     container.moveChildToBack(flipView);
                 } else {
-                    flipView.bringToFront();
-                    flipView.invalidate();
+                    container.bringChildToFront(flipView);
                 }
 
                 flipView.setVisibility(flipView.getPages().size() < 1 ? INVISIBLE : VISIBLE);
@@ -467,8 +462,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         }
 
         if (targetFlipView != null) {
-            targetFlipView.bringToFront();
-            targetFlipView.invalidate();
+            container.bringChildToFront(targetFlipView);
         }
 
         alignContainer(pageIndex, duration, interpolator, true);
@@ -523,9 +517,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         targetFlipView = getSelectedFlipView();
         originRotation = targetFlipView.getRotationY();
 
-        targetFlipView.bringToFront();
-        targetFlipView.invalidate();
-
+        container.bringChildToFront(targetFlipView);
         targetFlipView.doFlip(FlipView.Direction.Right, new LinearInterpolator(), 1000, new FlipView.CompleteHandler() {
             @Override
             public void onComplete() {
@@ -590,8 +582,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                             view.setVisibility(pages.size() < 1 ? INVISIBLE : VISIBLE);
 
                             if (view.getDirection().equals(FlipView.Direction.Left)) {
-                                view.bringToFront();
-                                view.invalidate();
+                                container.bringChildToFront(view);
                             } else {
                                 container.moveChildToBack(view);
                             }

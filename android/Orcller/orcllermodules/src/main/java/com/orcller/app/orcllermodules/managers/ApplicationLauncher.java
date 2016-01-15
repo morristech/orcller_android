@@ -235,7 +235,7 @@ public class ApplicationLauncher {
             headers.add(APP_VERSION_KEY, Application.getPackageVersionName());
             headers.add(DEVICE_NAME_KEY, Build.DEVICE);
             headers.add(DEVICE_MODEL_KEY, Build.MODEL);
-            headers.add(SYSTEM_LOCALE_KEY, locale.toLanguageTag());
+            headers.add(SYSTEM_LOCALE_KEY, locale.getLanguage());
             headers.add(SYSTEM_NAME_KEY, DeviceManager.SYSTEM_NAME);
             headers.add(SYSTEM_VERSION_KEY, Build.VERSION.RELEASE);
         } catch (Exception e) {

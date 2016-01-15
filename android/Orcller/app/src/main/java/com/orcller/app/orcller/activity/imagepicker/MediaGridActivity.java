@@ -2,7 +2,7 @@ package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -13,9 +13,12 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.MediaListActivity;
+import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.ImagePickerMediaItemView;
 import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.converter.MediaConverter;
@@ -27,18 +30,22 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.model.Resources;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.widget.ExceptionView;
 
 /**
  * Created by pisces on 11/27/15.
  */
 abstract public class MediaGridActivity extends PSActionBarActivity
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SwipeRefreshLayout.OnRefreshListener {
     public static final String CHOICE_MODE_KEY = "choiceMode";
     protected ArrayList<Media> items = new ArrayList<>();
+    private Error loadError;
+    private RelativeLayout container;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private GridView gridView;
     private GridViewAdapter gridViewAdapter;
 
@@ -50,12 +57,20 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(getLayoutRes());
+        setContentView(R.layout.activity_mediagrid);
         setToolbar((Toolbar) findViewById(R.id.toolbar));
 
+        container = (RelativeLayout) findViewById(R.id.container);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         gridView = (GridView) findViewById(R.id.gridView);
         gridViewAdapter = new GridViewAdapter(this);
 
+        exceptionViewManager.add(
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NoListData, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.NetworkError, container),
+                ExceptionViewFactory.create(ExceptionViewFactory.Type.UnknownError, container));
+        swipeRefreshLayout.setColorSchemeResources(R.color.theme_purple_accent);
+        swipeRefreshLayout.setOnRefreshListener(this);
         gridView.setAdapter(gridViewAdapter);
         gridView.setOnItemClickListener(this);
         gridView.setOnItemLongClickListener(this);
@@ -96,7 +111,7 @@ abstract public class MediaGridActivity extends PSActionBarActivity
         super.onDestroy();
 
         EventBus.getDefault().unregister(this);
-        ProgressBarManager.hide(this);
+        endDataLoading();
         gridView.setOnItemClickListener(null);
         gridView.setOnItemLongClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
@@ -107,7 +122,45 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(this);
+        swipeRefreshLayout.setRefreshing(false);
+        exceptionViewManager.validate();
+    }
+
+    @Override
+    public void onClick(ExceptionView view) {
+        exceptionViewManager.clear();
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
+        loadContent();
+    }
+
+    @Override
+    public boolean shouldShowExceptionView(ExceptionView view) {
+        if (ExceptionViewFactory.Type.NoListData.equals(view.getTag()))
+            return loadError == null && items.size() < 1;
+
+        if (ExceptionViewFactory.Type.NetworkError.equals(view.getTag())) {
+            if (Application.isNetworkConnected())
+                return false;
+            if (items.size() > 0) {
+                Toast.makeText(
+                        Application.getTopActivity(),
+                        Resources.getString(R.string.m_exception_title_error_network_long),
+                        Toast.LENGTH_LONG)
+                        .show();
+                return false;
+            }
+            return true;
+        }
+
+        if (ExceptionViewFactory.Type.UnknownError.equals(view.getTag()))
+            return loadError != null;
+
+        return false;
     }
 
     // ================================================================================================
@@ -124,6 +177,10 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         MediaListActivity.show(items, position);
         return true;
+    }
+
+    public void onRefresh() {
+        loadContent();
     }
 
     public void onEventMainThread(Object event) {
@@ -143,8 +200,23 @@ abstract public class MediaGridActivity extends PSActionBarActivity
 
     abstract protected void loadMore(int loadMore);
 
-    protected @LayoutRes int getLayoutRes() {
-        return R.layout.activity_mediagrid;
+    protected boolean invalidDataLoading(String after) {
+        boolean invalid = invalidDataLoading();
+
+        if (!invalid) {
+            loadError = null;
+
+            if (isFirstLoading() && after == null) {
+                swipeRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(true);
+                    }
+                });
+            }
+        }
+
+        return invalid;
     }
 
     protected void loadComplete(final List<?> data, Error error, final boolean refresh) {
@@ -172,8 +244,12 @@ abstract public class MediaGridActivity extends PSActionBarActivity
                         }
                     }
                 });
+            } else {
+                endDataLoading();
             }
         } else {
+            loadError = items.size() < 1 ? error : null;
+
             endDataLoading();
         }
     }
@@ -241,7 +317,7 @@ abstract public class MediaGridActivity extends PSActionBarActivity
             if (convertView == null) {
                 itemView = new ImagePickerMediaItemView(context);
                 itemView.setAllowsShowIndicator(gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE);
-                itemView.setLayoutParams(new ViewGroup.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
+                itemView.setLayoutParams(new AbsListView.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
                 convertView = itemView;
             } else {
                 itemView = (ImagePickerMediaItemView) convertView;

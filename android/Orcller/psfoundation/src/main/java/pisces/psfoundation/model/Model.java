@@ -119,10 +119,6 @@ public class Model implements Cloneable, Serializable {
         }.execute();
     }
 
-    public Map<String, String> map() {
-        return GsonUtil.toMap(this);
-    }
-
     public void synchronize(Model other) {
         synchronize(other, null);
     }
@@ -169,6 +165,10 @@ public class Model implements Cloneable, Serializable {
 
     public String toJson() {
         return GsonUtil.toGsonString(this);
+    }
+
+    public Map<String, Object> toMap() {
+        return GsonUtil.toMap(this);
     }
 
     // ================================================================================================

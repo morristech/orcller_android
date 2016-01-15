@@ -67,7 +67,6 @@ public class UserListView extends PSListView {
         listAdapter = new ListAdapter(context);
 
         setDivider(null);
-        setAdapter(listAdapter);
     }
 
     // ================================================================================================
@@ -83,6 +82,9 @@ public class UserListView extends PSListView {
             return;
 
         this.dataSource = dataSource;
+
+        if (getAdapter() == null)
+            setAdapter(listAdapter);
 
         load(null);
     }

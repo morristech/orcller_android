@@ -47,7 +47,6 @@ public class FBShareProxy extends PSObject {
     }
 
     public void share(final Album album) {
-        Log.d("FBSDKRequestQueue.currentQueue().isValidAccessToken()", FBSDKRequestQueue.currentQueue().isValidAccessToken());
         if (FBSDKRequestQueue.currentQueue().isValidAccessToken()) {
             upload(album);
         } else {

@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Media;
@@ -113,7 +114,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     public void create(Album album, Callback<ApiAlbum.AlbumRes> callback) {
-        enqueueCall(service().create(album), callback);
+        enqueueCall(service().create(album.toMap()), callback);
     }
 
     public void delete(long albumId, Callback<ApiResult> callback) {
@@ -245,11 +246,11 @@ public class AlbumDataProxy extends AbstractDataProxy {
 
     public void update(Album album, Callback<ApiAlbum.AlbumRes> callback) {
         clearCache(album.id);
-        enqueueCall(service().update(album.id, album), callback);
+        enqueueCall(service().update(album.id, album.toMap()), callback);
     }
 
     public void updatePage(Page page, Callback<ApiResult> callback) {
-        enqueueCall(service().updatePage(page.id, page), callback);
+        enqueueCall(service().updatePage(page.id, page.toMap()), callback);
     }
 
     // ================================================================================================
@@ -302,7 +303,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
         Call<ApiAlbum.CommentsRes> commentOfPage(@Path("pageId") long pageId, @Field("message") String message);
 
         @POST("create")
-        Call<ApiAlbum.AlbumRes> create(@Body Album album);
+        Call<ApiAlbum.AlbumRes> create(@Body Map<String, Object> album);
 
         @DELETE("{albumId}")
         Call<ApiResult> delete(@Path("albumId") long albumId);
@@ -366,10 +367,10 @@ public class AlbumDataProxy extends AbstractDataProxy {
         Call<ApiAlbum.LikesRes> unlikePage(@Path("pageId") long pageId);
 
         @POST("update")
-        Call<ApiAlbum.AlbumRes> update(@Query("album_id") long albumId, @Body Album album);
+        Call<ApiAlbum.AlbumRes> update(@Query("album_id") long albumId, @Body Map<String, Object> album);
 
         @POST("page/{pageId}")
-        Call<ApiResult> updatePage(@Path("pageId") long pageId, @Body Page page);
+        Call<ApiResult> updatePage(@Path("pageId") long pageId, @Body Map<String, Object> page);
     }
 
     // ================================================================================================

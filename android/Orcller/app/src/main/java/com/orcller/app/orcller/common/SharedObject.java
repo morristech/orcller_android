@@ -176,7 +176,7 @@ public class SharedObject extends PSObject {
     public static String getShareContentUrl(String encryptedAlbumId) {
         try {
             return Application.applicationContext().getString(R.string.domain) +
-                    "/site/album/view?id=" + URLEncoder.encode(encryptedAlbumId, StandardCharsets.UTF_8.name());
+                    "/site/album/view?id=" + URLEncoder.encode(encryptedAlbumId, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             return null;
         }

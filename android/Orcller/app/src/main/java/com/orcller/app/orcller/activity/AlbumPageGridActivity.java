@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
@@ -155,7 +156,7 @@ public class AlbumPageGridActivity extends PSActionBarActivity implements Adapte
 
             if (convertView == null) {
                 itemView = new AlbumPageGridItemView(context);
-                itemView.setLayoutParams(new ViewGroup.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
+                itemView.setLayoutParams(new AbsListView.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
                 convertView = itemView;
             } else {
                 itemView = (AlbumPageGridItemView) convertView;

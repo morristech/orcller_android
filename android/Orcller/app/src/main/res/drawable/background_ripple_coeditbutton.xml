@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/textcolor_fb_selected">
-    <item android:id="@android:id/mask" android:drawable="@drawable/background_coeditbutton"/>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:drawable="@drawable/background_coeditbutton"/>
     <item android:drawable="@drawable/background_coeditbutton"/>
-</ripple>
+</selector>

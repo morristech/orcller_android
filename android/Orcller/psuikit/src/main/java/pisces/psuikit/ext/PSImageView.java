@@ -104,7 +104,7 @@ public class PSImageView extends ImageView implements PSComponent {
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (getParent() != null || immediatelyUpdating)
             commitProperties();
     }
 

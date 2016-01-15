@@ -96,7 +96,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        ProgressBarManager.hide(container);
+        ProgressBarManager.hide();
         listView.setOnItemClickListener(null);
         InstagramApplicationCenter.getDefault().clear();
     }
@@ -157,7 +157,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
 
     private void load() {
         if (InstagramApplicationCenter.getDefault().hasSession())
-            ProgressBarManager.show(container);
+            ProgressBarManager.show();
 
         loadError = null;
         Call<ApiInstagram.UserRes> call = InstagramApiProxy.getDefault().service().user("self");
@@ -168,7 +168,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
                     @Override
                     public void onError(InstagramSDKError error) {
                         loadError = error;
-                        ProgressBarManager.hide(container);
+                        ProgressBarManager.hide();
                         exceptionViewManager.validate();
                     }
 
@@ -189,7 +189,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
                     @Override
                     public void onError(InstagramSDKError error) {
                         loadError = error;
-                        ProgressBarManager.hide(container);
+                        ProgressBarManager.hide();
                         exceptionViewManager.validate();
                     }
 
@@ -204,7 +204,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
                         }, new Runnable() {
                             @Override
                             public void run() {
-                                ProgressBarManager.hide(container);
+                                ProgressBarManager.hide();
                                 listAdapter.notifyDataSetChanged();
                                 exceptionViewManager.validate();
                             }
@@ -235,7 +235,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
         public ApiInstagram.User getItem(int position) {
             if (getItemViewType(position) == HEADER)
                 return null;
-            return items.get(getItemPositon(position));
+            return items.get(getItemPosition(position));
         }
 
         @Override
@@ -276,7 +276,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
                     itemView = (IGImagePickerItemView) convertView;
                 }
 
-                int itemPosition = getItemPositon(position);
+                int itemPosition = getItemPosition(position);
 
                 itemView.setAllowsShowBackground(itemPosition > 0 && itemPosition < items.size() - 1);
                 itemView.setModel(getItem(position));
@@ -291,7 +291,7 @@ public class IGImagePickerActivity extends PSActionBarActivity
             return convertView;
         }
 
-        private int getItemPositon(int position) {
+        private int getItemPosition(int position) {
             return Math.min(items.size() - 1, Math.max(0, position - 2));
         }
 

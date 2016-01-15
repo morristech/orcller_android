@@ -262,7 +262,7 @@ public class UserDataGridView extends PSGridView implements AdapterView.OnItemCl
             if (convertView == null) {
                 try {
                     itemView = (AbstractDataGridItemView) itemViewClass.getConstructor(Context.class).newInstance(context);
-                    itemView.setLayoutParams(new ViewGroup.LayoutParams(getColumnWidth(), itemView.getColumnHeight(getColumnWidth())));
+                    itemView.setLayoutParams(new AbsListView.LayoutParams(getColumnWidth(), itemView.getColumnHeight(getColumnWidth())));
                 } catch (Exception e) {
                     if (BuildConfig.DEBUG)
                         Log.e(e.getMessage(), e);

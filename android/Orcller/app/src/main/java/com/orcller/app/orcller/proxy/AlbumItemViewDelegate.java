@@ -77,9 +77,6 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     public void onClick(AlbumItemView itemView, AlbumItemView.ButtonType type, View view) {
-        if (!AlbumItemView.ButtonType.Control.equals(type))
-            pauseAlbumFlipView();
-
         if (AlbumItemView.ButtonType.Coedit.equals(type)) {
             CoeditViewActivity.show(itemView.getModel());
         } else if (AlbumItemView.ButtonType.Comment.equals(type)) {

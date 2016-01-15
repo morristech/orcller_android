@@ -46,7 +46,7 @@ public class ApiMember {
 
         public BaseReq() {
             Locale locale = Application.applicationContext().getResources().getConfiguration().locale;
-            device_locale = locale.toLanguageTag();
+            device_locale = locale.getLanguage();
             device_name = Build.DEVICE;
             device_model = DeviceUtils.getDeviceModel();
             device_token = DeviceManager.getDefault().getDeviceToken();

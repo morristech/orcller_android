@@ -7,6 +7,7 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import pisces.psfoundation.utils.DataLoadValidator;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/19/15.
@@ -62,6 +63,14 @@ public class PSFrameLayout extends FrameLayout
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public void bringChildToFront(View child) {
+        int index = indexOfChild(child);
+        if (index >= 0 && index < getChildCount() - 1) {
+            detachViewFromParent(index);
+            addView(child, child.getLayoutParams());
+        }
+    }
 
     public void moveChildToBack(View child) {
         int index = indexOfChild(child);

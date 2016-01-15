@@ -18,6 +18,9 @@ import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.PushNotificationObject;
+import com.orcller.app.orcller.proxy.OpenUrlProxy;
+import com.orcller.app.orcller.service.GcmListenerService;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.managers.DeviceManager;
@@ -36,6 +39,7 @@ public class ApplicationFacade {
     private static ApplicationFacade uniqueInstance;
     private boolean initialized;
     private Context context;
+    private Intent intent;
     private PushNotificationObject pushNotificationObject;
 
     public ApplicationFacade() {
@@ -75,17 +79,19 @@ public class ApplicationFacade {
         DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId), true);
     }
 
-    public void run(PushNotificationObject pushNotificationObject) {
-        this.pushNotificationObject = pushNotificationObject;
+    public void run(Intent intent) {
+        this.intent = intent;
+        this.pushNotificationObject = (PushNotificationObject) intent.getSerializableExtra(GcmListenerService.PUSH_NOTIFICATION_OBJECT_KEY);
 
         if (initialized) {
             if (AuthenticationCenter.getDefault().hasSession() && ActivityManager.hasRunningActivity(MainActivity.class)) {
                 Activity activity = ActivityManager.getRunningActivity(MainActivity.class);
-                Intent intent = activity.getIntent();
-                putPushNotificationExtra(intent);
+                putPushNotificationExtra(activity.getIntent());
                 Application.moveToBack(activity);
                 SharedObject.get().loadNewsCountDireclty();
             }
+
+            OpenUrlProxy.run(this.intent);
         } else {
             try {
                 FacebookSdk.sdkInitialize(Application.applicationContext());
@@ -96,13 +102,10 @@ public class ApplicationFacade {
                     EventBus.getDefault().register(this);
 
                 if (ApplicationLauncher.getDefault().initialized()) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            startMainActivity();
-                        }
-                    }, 1000);
+                    startMainActivity();
                 } else {
+                    AuthenticationCenter.getDefault()
+                            .setTestUserSessionToken(BuildConfig.TEST_SESSION_TOKEN);
                     ApplicationLauncher.getDefault()
                             .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
                             .launch();
@@ -167,5 +170,6 @@ public class ApplicationFacade {
         putPushNotificationExtra(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
+        OpenUrlProxy.run(this.intent);
     }
 }

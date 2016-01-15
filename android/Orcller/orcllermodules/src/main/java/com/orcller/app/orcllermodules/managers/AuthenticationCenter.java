@@ -78,7 +78,7 @@ public class AuthenticationCenter extends PSObject {
     public void changePassword(ApiMember.ChangePasswordReq req, Api.CompleteHandler completeHandler) {
         final Api.CompleteHandler handler = newHandler(completeHandler);
 
-        MemberDataProxy.getDefault().changePassword(req.map(), new Callback<ApiMember.LoginRes>() {
+        MemberDataProxy.getDefault().changePassword(req, new Callback<ApiMember.LoginRes>() {
             @Override
             public void onResponse(Response<ApiMember.LoginRes> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
@@ -97,19 +97,19 @@ public class AuthenticationCenter extends PSObject {
     }
 
     public void join(ApiMember.JoinWithEmailReq req, Api.CompleteHandler completeHandler) {
-        requestLogin(MemberDataProxy.getDefault().service().joinByEmail(req.map()), completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().joinByEmail(req.toMap()), completeHandler);
     }
 
     public void join(ApiMember.JoinWithIdpReq req, Api.CompleteHandler completeHandler) {
-        requestLogin(MemberDataProxy.getDefault().service().joinByIdp(req.map()), completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().joinByIdp(req.toMap()), completeHandler);
     }
 
     public void login(ApiMember.LoginReq req, final Api.CompleteHandler completeHandler) {
-        requestLogin(MemberDataProxy.getDefault().service().login(req.map()), completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().login(req.toMap()), completeHandler);
     }
 
     public void login(ApiMember.LoginWithIdpReq req, final Api.CompleteHandler completeHandler) {
-        requestLogin(MemberDataProxy.getDefault().service().loginByIdp(req.map()), completeHandler);
+        requestLogin(MemberDataProxy.getDefault().service().loginByIdp(req.toMap()), completeHandler);
     }
 
     public void loginWithFacebook(
@@ -285,7 +285,7 @@ public class AuthenticationCenter extends PSObject {
     public void syncWithIdp(ApiMember.SyncWithIdpReq req, final Api.CompleteHandler completeHandler) {
         final Api.CompleteHandler handler = newHandler(completeHandler);
 
-        MemberDataProxy.getDefault().syncByIdp(req.map(), new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().syncByIdp(req, new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {
@@ -306,7 +306,7 @@ public class AuthenticationCenter extends PSObject {
         if (!hasSession())
             return;
 
-        MemberDataProxy.getDefault().updateDevice(new ApiMember.BaseReq().map(), new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().updateDevice(new ApiMember.BaseReq(), new Callback<ApiResult>() {
             @Override
             public void onResponse(Response<ApiResult> response, Retrofit retrofit) {
             }
@@ -320,7 +320,7 @@ public class AuthenticationCenter extends PSObject {
     public void updateUserOptions(final ApiMember.UpdateUserOptionsReq req, final Api.CompleteHandler completeHandler) {
         final Api.CompleteHandler handler = newHandler(completeHandler);
 
-        MemberDataProxy.getDefault().updateUserOptions(req.map(), new Callback<ApiResult>() {
+        MemberDataProxy.getDefault().updateUserOptions(req, new Callback<ApiResult>() {
             @Override
             public void onResponse(final Response<ApiResult> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body().isSuccess()) {

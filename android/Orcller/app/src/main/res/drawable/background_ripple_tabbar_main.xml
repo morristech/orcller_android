@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/background_tabbar_main_selected">
-    <item android:id="@android:id/mask">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
         <shape>
             <solid android:color="@color/background_tabbar_main_selected"/>
         </shape>
     </item>
     <item android:drawable="@drawable/background_tabbar_main"/>
-</ripple>
+</selector>

@@ -8,6 +8,7 @@ import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Image;
 import com.orcller.app.orcller.model.Page;
+import com.orcller.app.orcller.model.VideoMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
@@ -237,6 +238,7 @@ public class MediaUploadUnit implements Serializable {
 
     private void requestAlbumCreation() {
         final Object target = this;
+
         AlbumDataProxy.getDefault().create(model, new Callback<ApiAlbum.AlbumRes>() {
             @Override
             public void onResponse(Response<ApiAlbum.AlbumRes> response, Retrofit retrofit) {

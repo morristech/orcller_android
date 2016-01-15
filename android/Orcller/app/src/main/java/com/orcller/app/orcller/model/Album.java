@@ -136,7 +136,7 @@ public class Album extends AlbumInfo {
         Pattern pattern = Pattern.compile("(.*)ko(.*)");
         String formatString = "MMM d, yyyy aaa";
 
-        if (pattern.matcher(locale.toLanguageTag()).matches())
+        if (pattern.matcher(locale.getLanguage()).matches())
             formatString = "yyyy년 M월 d일 aaa";
 
         name = new SimpleDateFormat(formatString).format(new Date());

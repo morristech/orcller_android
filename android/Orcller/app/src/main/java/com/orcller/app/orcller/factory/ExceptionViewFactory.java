@@ -53,6 +53,8 @@ public class ExceptionViewFactory {
 
         ExceptionView view = new ExceptionView(parentView.getContext(), parentView);
 
+        view.setBackground(parentView.getBackground());
+
         if (Type.UnknownError.equals(type)) {
             view.setTitleText(R.string.m_exception_title_error_unknown);
             view.setDescriptionText(R.string.m_exception_desc_error_unknown);
@@ -104,7 +106,6 @@ public class ExceptionViewFactory {
             view.setDescriptionText(R.string.m_exception_desc_no_collaborations);
             view.setButtonText(R.string.w_title_ask_collaboration);
         } else if (Type.NoListData.equals(type)) {
-            view.setBackgroundResource(R.color.background_gridview_album_create);
             view.setTitleText(R.string.m_exception_title_no_list);
         } else if (Type.NoPermissionForAlbum.equals(type)) {
             view.setTitleText(R.string.m_exception_title_no_permissions);

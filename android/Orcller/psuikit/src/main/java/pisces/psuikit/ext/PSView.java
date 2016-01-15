@@ -65,7 +65,7 @@ public class PSView extends View implements PSComponent {
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (getParent() != null || immediatelyUpdating)
             commitProperties();
     }
 

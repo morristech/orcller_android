@@ -18,6 +18,7 @@ import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.model.PushNotificationObject;
+import com.orcller.app.orcller.proxy.OpenUrlProxy;
 import com.orcller.app.orcller.service.GcmListenerService;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.managers.ApplicationLauncher;
@@ -89,6 +90,8 @@ public class ApplicationFacade {
                 Application.moveToBack(activity);
                 SharedObject.get().loadNewsCountDireclty();
             }
+
+            OpenUrlProxy.run(this.intent);
         } else {
             try {
                 FacebookSdk.sdkInitialize(Application.applicationContext());
@@ -99,12 +102,7 @@ public class ApplicationFacade {
                     EventBus.getDefault().register(this);
 
                 if (ApplicationLauncher.getDefault().initialized()) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            startMainActivity();
-                        }
-                    }, 1000);
+                    startMainActivity();
                 } else {
                     ApplicationLauncher.getDefault()
                             .setResource(new ApplicationResource(Const.APPLICATION_IDENTIFIER))
@@ -170,17 +168,6 @@ public class ApplicationFacade {
         putPushNotificationExtra(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
-
-        Log.d("startMainActivity");
-
-
-        String scheme = this.intent.getData().getScheme();
-        String host = this.intent.getData().getHost();
-        int path = this.intent.getData().getPath();
-        String query = this.intent.getData().getQuery();
-
-        scheme +
-
-        Log.d("intent", this.intent.getData().getScheme(), this.intent.getData().getHost(), this.intent.getData().getQueryParameterNames());
+        OpenUrlProxy.run(this.intent);
     }
 }

@@ -375,6 +375,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     }
 
     private void modelChanged() {
+        controlButton.setVisibility(model == null || model.pages.total_count < 2 ? GONE : VISIBLE);
         albumFlipView.setModel(model);
         albumFlipView.setPageIndex(model.default_page_index);
         albumInfoProfileView.setModel(model);

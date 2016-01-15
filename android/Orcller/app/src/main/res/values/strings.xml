@@ -193,20 +193,20 @@
     <string name="m_validate_user_name_length">The user name is required at least 6 characters and maximum 16 characters!</string>
     <string name="m_validate_user_nickname_length">The user nickname must be a maximum of 16 characters!</string>
 
-    <string name="m_noty_album_create">has created an album.</string>
-    <string name="m_noty_album_modify">has been change an album.</string>
-    <string name="m_noty_collaboration_accept_invite">has accepted invitation album for collaboration.</string>
-    <string name="m_noty_collaboration_accept_ask">has accepted asking album for collaboration.</string>
-    <string name="m_noty_collaboration_ask">has asked joining album for collaboration.</string>
-    <string name="m_noty_collaboration_cancel_ask">was cancel asking album for collaboration.</string>
-    <string name="m_noty_collaboration_cancel_invite">was cancel invitation album for collaboration.</string>
-    <string name="m_noty_collaboration_invite">has invited you to album for collaboration.</string>
-    <string name="m_noty_comment">commented on the album.</string>
-    <string name="m_noty_star">stared the album.</string>
-    <string name="m_noty_start_follow">started to follow you.</string>
-    <string name="m_noty_heart">has represented the heart to your album.</string>
-    <string name="m_noty_page_comment">commented on the page of album.</string>
-    <string name="m_noty_page_heart">has represented the heart to the page of your album.</string>
+    <string name="m_noty_album_create">\u0020has created an album.</string>
+    <string name="m_noty_album_modify">\u0020has been change an album.</string>
+    <string name="m_noty_collaboration_accept_invite">\u0020has accepted invitation album for collaboration.</string>
+    <string name="m_noty_collaboration_accept_ask">\u0020has accepted asking album for collaboration.</string>
+    <string name="m_noty_collaboration_ask">\u0020has asked joining album for collaboration.</string>
+    <string name="m_noty_collaboration_cancel_ask">\u0020was cancel asking album for collaboration.</string>
+    <string name="m_noty_collaboration_cancel_invite">\u0020was cancel invitation album for collaboration.</string>
+    <string name="m_noty_collaboration_invite">\u0020has invited you to album for collaboration.</string>
+    <string name="m_noty_comment">\u0020commented on the album.</string>
+    <string name="m_noty_star">\u0020stared the album.</string>
+    <string name="m_noty_start_follow">\u0020started to follow you.</string>
+    <string name="m_noty_heart">\u0020has represented the heart to your album.</string>
+    <string name="m_noty_page_comment">\u0020commented on the page of album.</string>
+    <string name="m_noty_page_heart">\u0020has represented the heart to the page of your album.</string>
 
     <string name="m_exception_button_instagram_login">Login with Instagram</string>
     <string name="m_exception_button_no_album_coedit">Invite</string>
@@ -242,7 +242,7 @@
     <string name="m_exception_title_no_followers">There are no followers.</string>
     <string name="m_exception_title_no_following">There is no following.</string>
     <string name="m_exception_title_no_media">There are no photos in the this album yet.</string>
-    <string name="m_exception_title_no_list">There is no results.</string>
+    <string name="m_exception_title_no_list">No result</string>
     <string name="m_exception_title_no_permissions">You don\'t have any permission for the album.</string>
     <string name="m_exception_title_no_photos">There are no photos used in the album.</string>
     <string name="m_exception_title_no_recommendation">There is no recommendation of a friend.</string>

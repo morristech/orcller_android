@@ -2,8 +2,6 @@ package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.orcller.app.orcller.R;
 
@@ -12,17 +10,14 @@ import pisces.instagram.sdk.error.InstagramSDKError;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Call;
 
 /**
  * Created by pisces on 11/28/15.
  */
-public class IGPopularMediaGridActivity extends MediaGridActivity
-        implements SwipeRefreshLayout.OnRefreshListener {
+public class IGPopularMediaGridActivity extends MediaGridActivity {
     private static final int LOAD_LIMIT = 50;
     private ApiInstagram.MediaListRes lastRes;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     // ================================================================================================
     //  Overridden: MediaGridActivity
@@ -33,23 +28,6 @@ public class IGPopularMediaGridActivity extends MediaGridActivity
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setTitle(getString(R.string.w_popular));
-
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-
-        swipeRefreshLayout.setOnRefreshListener(this);
-    }
-
-    @Override
-    protected @LayoutRes
-    int getLayoutRes() {
-        return R.layout.activity_instagram_popular_mediagrid;
-    }
-
-    @Override
-    public void endDataLoading() {
-        super.endDataLoading();
-
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -74,24 +52,12 @@ public class IGPopularMediaGridActivity extends MediaGridActivity
     }
 
     // ================================================================================================
-    //  Listener
-    // ================================================================================================
-
-    @Override
-    public void onRefresh() {
-        load(null);
-    }
-
-    // ================================================================================================
     //  Private
     // ================================================================================================
 
     private void load(final String after) {
-        if (invalidDataLoading())
+        if (invalidDataLoading(after))
             return;
-
-        if (after == null && isFirstLoading())
-            ProgressBarManager.show(this);
 
         Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().
                 service().popularMedia(LOAD_LIMIT, after);

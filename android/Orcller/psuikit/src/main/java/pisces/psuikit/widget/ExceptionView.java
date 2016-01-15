@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,7 +42,7 @@ public class ExceptionView extends PSLinearLayout implements View.OnClickListene
         descTextView = (TextView) findViewById(R.id.descTextView);
         button = (Button) findViewById(R.id.button);
 
-        descTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        descTextView.setGravity(Gravity.CENTER);
         button.setOnClickListener(this);
         setBackgroundColor(Color.WHITE);
         setClickable(true);

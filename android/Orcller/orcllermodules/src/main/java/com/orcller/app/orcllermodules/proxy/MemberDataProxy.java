@@ -49,12 +49,12 @@ public class MemberDataProxy extends AbstractDataProxy {
     //  Public
     // ================================================================================================
 
-    public void changePassword(Map<String, String> parameters, Callback<ApiMember.LoginRes> callback) {
-        enqueueCall(service().changePassword(parameters), callback);
+    public void changePassword(ApiMember.ChangePasswordReq req, Callback<ApiMember.LoginRes> callback) {
+        enqueueCall(service().changePassword(req.toMap()), callback);
     }
 
-    public void login(Map<String, String> parameters, Callback<ApiMember.LoginRes> callback) {
-        enqueueCall(service().login(parameters), callback);
+    public void login(ApiMember.LoginReq req, Callback<ApiMember.LoginRes> callback) {
+        enqueueCall(service().login(req.toMap()), callback);
     }
 
     public void logout(Callback<ApiResult> callback) {
@@ -65,16 +65,16 @@ public class MemberDataProxy extends AbstractDataProxy {
         enqueueCall(service().sendCertificationEmail(email), callback);
     }
 
-    public void syncByIdp(Map<String, String> parameters, Callback<ApiResult> callback) {
-        enqueueCall(service().syncByIdp(parameters), callback);
+    public void syncByIdp(ApiMember.SyncWithIdpReq req, Callback<ApiResult> callback) {
+        enqueueCall(service().syncByIdp(req.toMap()), callback);
     }
 
-    public void updateDevice(Map<String, String> parameters, Callback<ApiResult> callback) {
-        enqueueCall(service().updateDevice(parameters), callback);
+    public void updateDevice(ApiMember.BaseReq req, Callback<ApiResult> callback) {
+        enqueueCall(service().updateDevice(req.toMap()), callback);
     }
 
-    public void updateUserOptions(Map<String, String> parameters, Callback<ApiResult> callback) {
-        enqueueCall(service().updateUserOptions(parameters), callback);
+    public void updateUserOptions(ApiMember.UpdateUserOptionsReq req, Callback<ApiResult> callback) {
+        enqueueCall(service().updateUserOptions(req.toMap()), callback);
     }
 
     public Service service() {
@@ -87,33 +87,33 @@ public class MemberDataProxy extends AbstractDataProxy {
 
     public interface Service {
         @FormUrlEncoded @POST("change_password")
-        Call<ApiMember.LoginRes> changePassword(@FieldMap Map<String, String> parameters);
+        Call<ApiMember.LoginRes> changePassword(@FieldMap Map<String, Object> parameters);
 
         @FormUrlEncoded @POST("login")
-        Call<ApiMember.LoginRes> login(@FieldMap Map<String, String> parameters);
+        Call<ApiMember.LoginRes> login(@FieldMap Map<String, Object> parameters);
 
         @FormUrlEncoded @POST("login_idp")
-        Call<ApiMember.LoginRes> loginByIdp(@FieldMap Map<String, String> parameters);
+        Call<ApiMember.LoginRes> loginByIdp(@FieldMap Map<String, Object> parameters);
 
         @GET("logout")
         Call<ApiResult> logout();
 
         @FormUrlEncoded @POST("join_email")
-        Call<ApiMember.LoginRes> joinByEmail(@FieldMap Map<String, String> parameters);
+        Call<ApiMember.LoginRes> joinByEmail(@FieldMap Map<String, Object> parameters);
 
         @FormUrlEncoded @POST("join_idp")
-        Call<ApiMember.LoginRes> joinByIdp(@FieldMap Map<String, String> parameters);
+        Call<ApiMember.LoginRes> joinByIdp(@FieldMap Map<String, Object> parameters);
 
         @FormUrlEncoded @POST("send_certification_email")
         Call<ApiResult> sendCertificationEmail(@Field("email")String email);
 
         @FormUrlEncoded @POST("sync_idp")
-        Call<ApiResult> syncByIdp(@FieldMap Map<String, String> parameters);
+        Call<ApiResult> syncByIdp(@FieldMap Map<String, Object> parameters);
 
         @FormUrlEncoded @POST("device")
-        Call<ApiResult> updateDevice(@FieldMap Map<String, String> parameters);
+        Call<ApiResult> updateDevice(@FieldMap Map<String, Object> parameters);
 
         @FormUrlEncoded @POST("user_options/update")
-        Call<ApiResult> updateUserOptions(@FieldMap Map<String, String> parameters);
+        Call<ApiResult> updateUserOptions(@FieldMap Map<String, Object> parameters);
     }
 }

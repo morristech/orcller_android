@@ -91,7 +91,7 @@ public class PSScrollView extends ScrollView implements PSComponent, Scrollable 
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (getParent() != null || immediatelyUpdating)
             commitProperties();
     }
 

@@ -3,8 +3,8 @@ package com.orcller.app.orcller.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.SearchView;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,12 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -32,17 +29,14 @@ import com.orcller.app.orcller.model.api.ApiRelationships;
 import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserListView;
-import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-
-import java.lang.reflect.Field;
 
 import de.greenrobot.event.EventBus;
 import pisces.instagram.sdk.InstagramApplicationCenter;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
-import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import pisces.psuikit.ext.PSView;
 import pisces.psuikit.itemview.ListBaseItemView;
 import pisces.psuikit.manager.ExceptionViewManager;
@@ -100,23 +94,13 @@ public class FindFriendsFragment extends MainTabFragment
         facebookItemView = (IdpListItemView) view.findViewById(R.id.facebookItemView);
         searchView = new SearchView(getContext());
         searchExceptionViewManager = new ExceptionViewManager(this);
-
         View headerView = new View(getContext());
-        int textViewId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText textView = (EditText) searchView.findViewById(textViewId);
+        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
 
-        try {
-            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
-            field.setAccessible(true);
-            field.set(textView, R.drawable.cursor_search);
-        } catch (Exception ignored) {
-        }
-
-        headerView.setLayoutParams(new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.MATCH_PARENT, GraphicUtils.convertDpToPixel(5)));
-        textView.setHintTextColor(getContext().getResources().getColor(R.color.background_button_purple_disabled));
-        textView.setTextColor(Color.WHITE);
-        textView.setTextSize(13);
+        searchEditText.setHintTextColor(Resources.getColor(R.color.background_button_purple_disabled));
+        searchEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+        searchEditText.setTextColor(Color.WHITE);
+        searchEditText.setTextSize(13);
         facebookItemView.setImageDrawable(getResources().getDrawable(R.drawable.icon_facebook_normal));
         facebookItemView.setLineDirection(ListBaseItemView.LINE_BOTTOM);
         facebookItemView.setTitleText(R.string.w_invite_facebook);
@@ -138,8 +122,6 @@ public class FindFriendsFragment extends MainTabFragment
         searchView.setQueryHint(getString(R.string.m_hint_search_friend));
         searchView.setOnQueryTextListener(this);
         facebookItemView.setOnClickListener(this);
-
-        SearchViewCompat.setInputType(searchView, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
         EventBus.getDefault().register(this);
     }
 
@@ -276,6 +258,7 @@ public class FindFriendsFragment extends MainTabFragment
      * SearchView.OnCloseListener
      */
     public boolean onClose() {
+        getActionBar().setDisplayShowTitleEnabled(true);
         searchListView.clear();
         searchExceptionViewManager.clear();
         secondViewContainer.setVisibility(View.GONE);

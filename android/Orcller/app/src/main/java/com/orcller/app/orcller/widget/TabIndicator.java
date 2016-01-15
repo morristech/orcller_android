@@ -46,7 +46,7 @@ public class TabIndicator extends PSButton {
         badge.setMinimumWidth(GraphicUtils.convertDpToPixel(18));
         badge.setTextColor(context.getResources().getColor(android.R.color.white));
         badge.setTextSize(12);
-        setBackground(context.getResources().getDrawable(R.drawable.background_ripple_tabbar_main));
+        setBackgroundResource(R.drawable.background_ripple_tabbar_main);
         addView(badge, params);
     }
 

@@ -1,9 +1,12 @@
 package com.orcller.app.orcller.widget;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
@@ -233,39 +236,57 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
 
         setPageVisibility();
         animate().cancel();
-        animate().setDuration(duration)
-                .setInterpolator(interpolator)
-                .rotationY(rotation)
-                .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        setPageVisibility();
-                    }
-                })
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animate().setUpdateListener(null);
-                        animate().setListener(null);
-                        setPageVisibility();
+        ValueAnimator.AnimatorUpdateListener updateListener = new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                setPageVisibility();
+            }
+        };
 
-                        if (runnable != null)
-                            runnable.run();
-                    }
+        Animator.AnimatorListener listener = new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
 
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    animate().setUpdateListener(null);
+                    animate().setListener(null);
+                }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                })
-                .start();
+                setPageVisibility();
+
+                if (runnable != null)
+                    runnable.run();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            animate().setDuration(duration)
+                    .setInterpolator(interpolator)
+                    .rotationY(rotation)
+                    .setUpdateListener(updateListener)
+                    .setListener(listener)
+                    .start();
+        } else {
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, View.ROTATION_Y, rotation)
+                    .setDuration(duration);
+            objectAnimator.setInterpolator(interpolator);
+            objectAnimator.addListener(listener);
+            objectAnimator.addUpdateListener(updateListener);
+            objectAnimator.start();
+        }
+
         return true;
     }
 

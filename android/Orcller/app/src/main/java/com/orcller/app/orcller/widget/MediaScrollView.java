@@ -9,6 +9,8 @@ import com.orcller.app.orcller.model.ImageMedia;
 import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.VideoMedia;
 
+import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -32,6 +34,20 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
 
     public MediaScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    // ================================================================================================
+    //  Overridden: PSFrameLayout
+    // ================================================================================================
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        setScaleEnabled(enabled);
+
+        if (getVideoMediaView() != null)
+            getVideoMediaView().setEnabled(enabled);
     }
 
     // ================================================================================================
@@ -113,15 +129,29 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
     private MediaView createMediaView(Media model) {
         if (model instanceof ImageMedia) {
             ImageMediaScrollView view = new ImageMediaScrollView(getContext());
+            LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            params.gravity = Gravity.CENTER;
+
+            view.setLayoutParams(params);
             view.setScaleAspectFill(scaleAspectFill);
             view.setScaleEnabled(scaleEnabled);
             view.setProgressBar(new ProgressBar(getContext(), null, android.R.attr.progressBarStyle));
+
             return view;
         }
         if (model instanceof VideoMedia) {
             VideoMediaView view = new VideoMediaView(getContext());
+            VideoMedia media = (VideoMedia) model;
+            float scale = (float) Application.getWindowWidth() / media.videos.standard_resolution.width;
+            int w = Math.round(media.videos.standard_resolution.width * scale);
+            int h = Math.round(media.videos.standard_resolution.height * scale);
+            LayoutParams params = new LayoutParams(w, h);
+            params.gravity = Gravity.CENTER;
+
             view.setImageLoadType(MediaView.ImageLoadType.LowResolution.value() | MediaView.ImageLoadType.StandardResoultion.value());
+            view.setLayoutParams(params);
             view.setProgressBar(new ProgressBar(getContext(), null, android.R.attr.progressBarStyle));
+
             return view;
         }
         return null;
@@ -145,11 +175,9 @@ public class MediaScrollView extends PSFrameLayout implements MediaContainer {
             mediaView = createMediaView(model);
 
             if (mediaView != null) {
-                LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                params.gravity = Gravity.CENTER;
                 mediaView.setClickEnabled(true);
                 mediaView.setDelegate(mediaViewDelegate);
-                addView(mediaView, 0, params);
+                addView(mediaView, 0);
             }
         }
 

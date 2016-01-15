@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 
 import com.orcller.app.orcller.R;
+
+import pisces.psfoundation.model.Resources;
 import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.model.User;
 import pisces.psuikit.keyboard.SoftKeyboardUtils;
@@ -54,6 +56,7 @@ public class DescriptionInputView extends PSLinearLayout {
             ta.recycle();
         }
 
+        userPictureView.setEnabled(false);
         EventBus.getDefault().register(this);
     }
 
@@ -63,7 +66,7 @@ public class DescriptionInputView extends PSLinearLayout {
 
         int pd = enabled ? GraphicUtils.convertDpToPixel(5) : 0;
 
-        editText.setBackground(enabled ? getResources().getDrawable(R.drawable.background_bordered_white, null) : null);
+        editText.setBackground(enabled ? Resources.getDrawable(R.drawable.background_bordered_white) : null);
         editText.setEnabled(enabled);
         editText.setPadding(pd, pd, pd, pd);
         userPictureView.setVisibility(enabled ? VISIBLE : GONE);

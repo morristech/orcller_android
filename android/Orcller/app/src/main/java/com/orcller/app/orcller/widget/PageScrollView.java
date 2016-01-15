@@ -1,7 +1,9 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ public class PageScrollView extends PSLinearLayout
     private ScrollView scrollView;
     private FrameLayout pageContainer;
     private LinearLayout buttonContainer;
+    private TextWatcher textWatcher;
     private AlbumInfoProfileView albumInfoProfileView;
     private PSButton commentButton;
     private PSButton heartButton;
@@ -68,6 +71,23 @@ public class PageScrollView extends PSLinearLayout
         heartButton = (PSButton) findViewById(R.id.heartButton);
         descriptionInputView = (DescriptionInputView) findViewById(R.id.descriptionInputView);
         commentListView = (PageCommentListView) findViewById(R.id.commentListView);
+
+        final PageScrollView self = this;
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (delegate != null)
+                    delegate.onDescriptionTextChanged(self, descriptionInputView.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        };
 
         mediaScrollView.setMediaViewDelegate(this);
         mediaScrollView.setScaleAspectFill(true);
@@ -250,12 +270,18 @@ public class PageScrollView extends PSLinearLayout
     // ================================================================================================
 
     private void editEnabledChanged() {
-        mediaScrollView.setScaleEnabled(!editEnabled);
+        mediaScrollView.setEnabled(!editEnabled);
         buttonContainer.setVisibility(editEnabled ? GONE : VISIBLE);
         albumInfoProfileView.setVisibility(editEnabled ? GONE : VISIBLE);
         commentListView.setVisibility(editEnabled ? GONE : VISIBLE);
         descriptionInputView.setEnabled(editEnabled);
         descriptionInputView.setVisibility(editEnabled || !TextUtils.isEmpty(model.desc) ? VISIBLE : GONE);
+
+        if (editEnabled) {
+            descriptionInputView.addTextChangedListener(textWatcher);
+        } else {
+            descriptionInputView.removeTextChangedListener(textWatcher);
+        }
     }
 
     // ================================================================================================
@@ -266,5 +292,6 @@ public class PageScrollView extends PSLinearLayout
         void onClickCommentButton(PageScrollView target);
         void onClickHeartButton(PageScrollView target);
         void onClickMediaView(PageScrollView target, MediaView mediaView);
+        void onDescriptionTextChanged(PageScrollView target, String text);
     }
 }

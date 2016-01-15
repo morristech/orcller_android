@@ -2,7 +2,6 @@ package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.AbsListView;
 
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.facebook.FBAlbum;
@@ -14,7 +13,6 @@ import com.orcller.app.orcllermodules.queue.FBSDKRequest;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import pisces.psfoundation.ext.Application;
-import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/26/15.
@@ -68,8 +66,6 @@ public class FBMediaGridActivity extends MediaGridActivity {
 
         if (after != null) {
             parameters.putString("after", after);
-        } else {
-            ProgressBarManager.show(this);
         }
 
         FBSDKRequestQueue.currentQueue().request(
@@ -81,7 +77,7 @@ public class FBMediaGridActivity extends MediaGridActivity {
     }
 
     private void loadMedia(final String after) {
-        if (album == null || invalidDataLoading())
+        if (album == null || invalidDataLoading(after))
             return;
 
         if (album instanceof FBVideoAlbum) {

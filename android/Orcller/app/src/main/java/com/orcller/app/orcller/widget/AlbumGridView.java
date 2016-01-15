@@ -192,7 +192,7 @@ public class AlbumGridView extends PSGridView implements AdapterView.OnItemClick
 
             if (convertView == null) {
                 itemView = new AlbumGridItemView(context);
-                itemView.setLayoutParams(new ViewGroup.LayoutParams(getColumnWidth(), getColumnWidth()));
+                itemView.setLayoutParams(new AbsListView.LayoutParams(getColumnWidth(), getColumnWidth()));
                 convertView = itemView;
             } else {
                 itemView = (AlbumGridItemView) convertView;

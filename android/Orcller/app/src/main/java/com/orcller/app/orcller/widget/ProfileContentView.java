@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -174,10 +175,11 @@ public class ProfileContentView extends PSTabHost
                     .setIndicator(indicator)
                     .setContent(new TabFactory(getContext()));
             indicator.setBackgroundResource(R.drawable.background_tab_profile_content);
+            indicator.setDrawableLeft(getTabIconRes(i));
+            indicator.setDrawableBound(getTabIconBound(i));
+            indicator.setDrawablePadding(GraphicUtils.convertDpToPixel(5));
             indicator.setTextColor(getResources().getColorStateList(R.drawable.color_tab_profile_content));
             indicator.setTextSize(GraphicUtils.convertDpToPixel(13));
-            indicator.setDrawableLeft(getTabIconRes(i));
-            indicator.setDrawablePadding(GraphicUtils.convertDpToPixel(5));
             tabHost.addTab(tabSpec);
         }
     }
@@ -185,19 +187,29 @@ public class ProfileContentView extends PSTabHost
     private int getTabIconRes(int position) {
         if (model.isMe()) {
             if (position == 0)
-                return R.drawable.icon_profile_tab_album;
+                return R.drawable.icon_profile_tabbar_album;
             if (position == 1)
-                return R.drawable.icon_profile_tab_star;
+                return R.drawable.icon_profile_tabbar_star;
             if (position == 2)
-                return R.drawable.icon_profile_tab_media;
+                return R.drawable.icon_profile_tabbar_media;
         }
 
         if (position == 0)
-            return R.drawable.icon_profile_tab_album;
+            return R.drawable.icon_profile_tabbar_album;
         if (position == 1)
-            return R.drawable.icon_profile_tab_media;
+            return R.drawable.icon_profile_tabbar_media;
 
         return 0;
+    }
+
+
+    private Rect getTabIconBound(int position) {
+        int resId = getTabIconRes(position);
+        if (resId == R.drawable.icon_profile_tabbar_album)
+            return new Rect(0, 0, GraphicUtils.convertDpToPixel(16), GraphicUtils.convertDpToPixel(16));
+        if (resId == R.drawable.icon_profile_tabbar_star)
+            return new Rect(0, 0, GraphicUtils.convertDpToPixel(17), GraphicUtils.convertDpToPixel(16));
+        return new Rect(0, 0, GraphicUtils.convertDpToPixel(17.5f), GraphicUtils.convertDpToPixel(16));
     }
 
     private String getTabTitle(ApiUsers.Counts counts, int position) {

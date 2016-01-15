@@ -1,11 +1,19 @@
 package com.orcller.app.orcller.utils;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.text.Html;
 import android.text.Spannable;
 
 import com.amazonaws.util.StringUtils;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.activity.AlbumCreateActivity;
+import com.orcller.app.orcller.activity.AlbumViewActivity;
+import com.orcller.app.orcller.activity.CoeditInviteActivity;
+import com.orcller.app.orcller.activity.CoeditViewActivity;
+import com.orcller.app.orcller.activity.MemberJoinInputActivity;
+import com.orcller.app.orcller.activity.OptionsActivity;
+import com.orcller.app.orcller.activity.ProfileActivity;
 import com.orcller.app.orcllermodules.model.BaseUser;
 import com.orcller.app.orcllermodules.model.User;
 
@@ -42,6 +50,10 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
+        public boolean equals(String value) {
+            return this.value.equals(value);
+        }
+
         public String value() {
             return value;
         }
@@ -58,18 +70,27 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
+        public boolean equals(int value) {
+            return this.value == value;
+        }
+
         public int value() {
             return value;
         }
     }
 
     public enum ViewTypeCoediting {
-        View(1);
+        View(1),
+        Invite(2);
 
         private int value;
 
         private ViewTypeCoediting(int value) {
             this.value = value;
+        }
+
+        public boolean equals(int value) {
+            return this.value == value;
         }
 
         public int value() {
@@ -86,6 +107,10 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
+        public boolean equals(int value) {
+            return this.value == value;
+        }
+
         public int value() {
             return value;
         }
@@ -100,6 +125,10 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
+        public boolean equals(int value) {
+            return this.value == value;
+        }
+
         public int value() {
             return value;
         }
@@ -112,6 +141,10 @@ public class CustomSchemeGenerator {
 
         private ViewTypeNotification(int value) {
             this.value = value;
+        }
+
+        public boolean equals(int value) {
+            return this.value == value;
         }
 
         public int value() {
@@ -130,6 +163,10 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
+        public boolean equals(int value) {
+            return this.value == value;
+        }
+
         public int value() {
             return value;
         }
@@ -144,6 +181,10 @@ public class CustomSchemeGenerator {
 
         private ViewTypeRelationships(int value) {
             this.value = value;
+        }
+
+        public boolean equals(int value) {
+            return this.value == value;
         }
 
         public int value() {
@@ -161,18 +202,13 @@ public class CustomSchemeGenerator {
             this.value = value;
         }
 
+        public boolean equals(int value) {
+            return this.value == value;
+        }
+
         public int value() {
             return value;
         }
-    }
-
-    public static String run(Intent intent) {
-        String scheme = intent.getData().getScheme();
-        String host = intent.getData().getHost();
-        int path = Integer.valueOf(intent.getData().getPath().replace("/", ""));
-        String query = intent.getData().getQuery();
-
-        // TODO: Custom Scheme 실행 구현
     }
 
     public static String create(Category category) {

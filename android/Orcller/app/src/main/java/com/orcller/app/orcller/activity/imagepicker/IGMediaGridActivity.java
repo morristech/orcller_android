@@ -8,7 +8,6 @@ import pisces.instagram.sdk.error.InstagramSDKError;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.instagram.sdk.proxy.InstagramApiProxy;
 import pisces.psfoundation.ext.Application;
-import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Call;
 
 /**
@@ -60,11 +59,8 @@ public class IGMediaGridActivity extends MediaGridActivity {
     // ================================================================================================
 
     private void load(final String after) {
-        if (user == null)
+        if (user == null || invalidDataLoading(after))
             return;
-
-        if (after == null)
-            ProgressBarManager.show(this);
 
         Call<ApiInstagram.MediaListRes> call = InstagramApiProxy.getDefault().
                 service().recentMedia(user.id, LOAD_LIMIT, after);

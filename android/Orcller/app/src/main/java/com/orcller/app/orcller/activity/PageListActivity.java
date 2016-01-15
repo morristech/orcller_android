@@ -33,6 +33,8 @@ import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageScrollView;
+
+import pisces.psfoundation.model.Resources;
 import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.model.ApiResult;
 import pisces.psuikit.utils.AlertDialogUtils;
@@ -290,6 +292,10 @@ public class PageListActivity extends PSActionBarActivity
         MediaListActivity.show(mediaList, selectedIndex);
     }
 
+    public void onDescriptionTextChanged(PageScrollView target, String text) {
+        getEditMenuItem().setEnabled(!ObjectUtils.equals(selectedView.getModel().desc, text));
+    }
+
     /**
      * CommentInputView.Delegate
      */
@@ -324,6 +330,10 @@ public class PageListActivity extends PSActionBarActivity
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private MenuItem getEditMenuItem() {
+        return getToolbar().getMenu().findItem(R.id.edit);
+    }
 
     private void setModel(final Album model) {
         if (ObjectUtils.equals(model, this.model))
@@ -514,9 +524,10 @@ public class PageListActivity extends PSActionBarActivity
         setRecyclerViewLayout();
         updateTitle();
 
-        Drawable icon = selectedView.isEditEnabled() ? null : getDrawable(R.drawable.icon_page_edit);
+        Drawable icon = selectedView.isEditEnabled() ? null : Resources.getDrawable(R.drawable.icon_page_edit);
         String title = selectedView.isEditEnabled() ? getString(R.string.w_save) : null;
-        MenuItem item = getToolbar().getMenu().findItem(R.id.edit);
+        MenuItem item = getEditMenuItem();
+        item.setEnabled(!selectedView.isEditEnabled());
         item.setIcon(icon);
         item.setTitle(title);
     }

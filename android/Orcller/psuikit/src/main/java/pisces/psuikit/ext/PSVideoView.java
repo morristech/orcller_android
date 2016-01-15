@@ -68,7 +68,7 @@ public class PSVideoView extends VideoView implements PSComponent {
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (getParent() != null || immediatelyUpdating)
             commitProperties();
     }
 

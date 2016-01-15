@@ -21,9 +21,9 @@ public class GsonUtil {
         return new Gson().toJson(object);
     }
 
-    public static Map<String, String> toMap(Object object) {
-        Type type = new TypeToken<Map<String, String>>(){}.getType();
-        return (Map<String, String>) fromJson(toGsonString(object), type);
+    public static Map<String, Object> toMap(Object object) {
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        return (Map<String, Object>) fromJson(toGsonString(object), type);
     }
 
     public static <T> T fromJson(String json, Class<T> classOfT) {

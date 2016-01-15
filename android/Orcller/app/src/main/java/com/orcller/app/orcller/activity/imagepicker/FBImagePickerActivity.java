@@ -76,7 +76,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        ProgressBarManager.hide(this);
+        ProgressBarManager.hide();
         listView.setOnItemClickListener(null);
         FBSDKRequestQueue.currentQueue().clear();
         FBPhotoCaches.getDefault().clear();
@@ -86,7 +86,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
     public void endDataLoading() {
         super.endDataLoading();
 
-        ProgressBarManager.hide(this);
+        ProgressBarManager.hide();
     }
 
     // ================================================================================================
@@ -126,7 +126,7 @@ public class FBImagePickerActivity extends PSActionBarActivity
         if (after != null) {
             parameters.putString("after", after);
         } else {
-            ProgressBarManager.show(this);
+            ProgressBarManager.show();
         }
 
         FBSDKRequestQueue.currentQueue().request(

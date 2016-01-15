@@ -108,6 +108,13 @@ public class TimelineFragment extends MainTabFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        albumItemViewDelegate.pauseAlbumFlipView();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

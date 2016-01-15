@@ -89,7 +89,7 @@ public class PSRecyclerViewPager extends RecyclerViewPager implements PSComponen
     }
 
     public void invalidateProperties() {
-        if (isAttachedToWindow() || immediatelyUpdating)
+        if (getParent() != null || immediatelyUpdating)
             commitProperties();
     }
 

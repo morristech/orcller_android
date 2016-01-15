@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.itemview.OptionsSectionHeaderView;
@@ -14,6 +15,7 @@ import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.Api;
 import com.orcller.app.orcllermodules.model.api.ApiMember;
 
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.itemview.ListSwitchItemView;
 import pisces.psuikit.widget.SectionedListView;
@@ -22,7 +24,7 @@ import pisces.psuikit.widget.SectionedListView;
  * Created by pisces on 12/24/15.
  */
 public class PushSettingsAlertDialogView extends PSFrameLayout
-        implements SectionedListView.DataSource, CompoundButton.OnCheckedChangeListener {
+        implements SectionedListView.DataSource, View.OnClickListener {
     private SectionedListView listView;
 
     public PushSettingsAlertDialogView(Context context) {
@@ -44,16 +46,21 @@ public class PushSettingsAlertDialogView extends PSFrameLayout
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.view_alertdialog_sectioned_list, this);
-
         listView = (SectionedListView) findViewById(R.id.listView);
 
         listView.setDataSource(this);
-        listView.reload();
     }
 
     // ================================================================================================
     //  Interface Implementation
     // ================================================================================================
+
+    /**
+     * View.OnClickListener
+     */
+    public void onClick(View v) {
+        save();
+    }
 
     /**
      * SectionedListView.DataSource
@@ -80,7 +87,7 @@ public class PushSettingsAlertDialogView extends PSFrameLayout
 
             view.setTitleText(getTitleTextResId(indexPath));
             view.getSwitch().setChecked(isSwitchChecked(indexPath));
-            view.getSwitch().setOnCheckedChangeListener(this);
+            view.getSwitch().setOnClickListener(this);
         }
 
         return convertView;
@@ -100,13 +107,6 @@ public class PushSettingsAlertDialogView extends PSFrameLayout
 
     public int getItemViewTypeCount(ListView listView) {
         return 1;
-    }
-
-    /**
-     * CompoundButton.OnCheckedChangeListener
-     */
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        save();
     }
 
     // ================================================================================================
@@ -160,8 +160,8 @@ public class PushSettingsAlertDialogView extends PSFrameLayout
         AuthenticationCenter.getDefault().updateUserOptions(req, new Api.CompleteHandler() {
             @Override
             public void onComplete(Object result, APIError error) {
-                endDataLoading();
                 listView.reload();
+                endDataLoading();
             }
         });
     }

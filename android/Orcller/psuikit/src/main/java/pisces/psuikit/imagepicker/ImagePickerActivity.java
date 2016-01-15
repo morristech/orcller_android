@@ -239,7 +239,7 @@ public class ImagePickerActivity extends PSActionBarActivity
             if (convertView == null) {
                 itemView = new ImagePickerItemView(context);
                 itemView.setAllowsShowIndicator(gridView.getChoiceMode() > AbsListView.CHOICE_MODE_SINGLE);
-                itemView.setLayoutParams(new ViewGroup.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
+                itemView.setLayoutParams(new AbsListView.LayoutParams(gridView.getColumnWidth(), gridView.getColumnWidth()));
                 convertView = itemView;
             } else {
                 itemView = (ImagePickerItemView) convertView;
