@@ -114,7 +114,6 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
     }
 
     @Override

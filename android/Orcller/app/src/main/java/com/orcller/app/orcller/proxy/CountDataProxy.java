@@ -1,9 +1,11 @@
 package com.orcller.app.orcller.proxy;
 
+import com.facebook.AccessToken;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.model.api.ApiCount;
 import com.orcller.app.orcllermodules.proxy.AbstractDataProxy;
 
+import pisces.instagram.sdk.InstagramApplicationCenter;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -48,7 +50,10 @@ public class CountDataProxy extends AbstractDataProxy {
         enqueueCall(service().news(
                 UserDataProxy.getDefault().getLastViewDate(),
                 TimelineDataProxy.getDefault().getLastViewDate(),
-                ActivityDataProxy.getDefault().getLastViewDate()), callback);
+                ActivityDataProxy.getDefault().getLastViewDate(),
+                AccessToken.getCurrentAccessToken() != null ? AccessToken.getCurrentAccessToken().getToken() : null,
+                InstagramApplicationCenter.getDefault().getAccessToken()
+                ), callback);
     }
 
     // ================================================================================================
@@ -68,6 +73,8 @@ public class CountDataProxy extends AbstractDataProxy {
         Call<ApiCount.NewsCountRes> news(
                 @Query("coediting_time") long coediting_time,
                 @Query("newsfeed_time") long newsfeed_time,
-                @Query("notification_time") long notification_time);
+                @Query("notification_time") long notification_time,
+                @Query(value = "fb_access_token", encoded = true) String fb_access_token,
+                @Query(value = "ig_access_token", encoded = true) String ig_access_token);
     }
 }

@@ -5,6 +5,7 @@
 
     <!-- Enable automatic Activity measurement -->
     <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
 
     <!--  The property id associated with this analytics tracker -->
     <string name="ga_trackingId">UA-66236286-1</string>

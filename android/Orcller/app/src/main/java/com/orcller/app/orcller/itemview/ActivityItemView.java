@@ -155,8 +155,8 @@ public class ActivityItemView extends PSLinearLayout implements FollowButton.Del
     private void modelChanged() {
         String senders = isDuplicatedType() ?
                 CustomSchemeGenerator.createNotificationSenders(model.senders.data, 3) :
-                CustomSchemeGenerator.createLinkTag(model.senders.getFirstUser());
-        String content = senders + Resources.getString(R.string.w_user_honorific) + Resources.getString(getContentResId());
+                CustomSchemeGenerator.createLinkTag(model.senders.getFirstUser()) + Resources.getString(R.string.w_user_honorific);
+        String content = senders + Resources.getString(getContentResId());
 
         Glide.clear(contentImageView);
         userPictureView.setModel(model.senders.getFirstUser());
@@ -164,7 +164,7 @@ public class ActivityItemView extends PSLinearLayout implements FollowButton.Del
         dateTextView.setText(DateUtil.getRelativeTimeSpanString(model.created_time));
         followButton.setModel(model.senders.getFirstUser());
         followButton.setVisibility(Notification.Type.Follow.equals(model.type) && !model.senders.getFirstUser().isFollowing() ? VISIBLE : GONE);
-        contentImageView.setVisibility(PSView.isShown(followButton) ? GONE : VISIBLE);
+        contentImageView.setVisibility(Notification.Type.Follow.equals(model.type) ? GONE : VISIBLE);
         loadContentImage();
     }
 }

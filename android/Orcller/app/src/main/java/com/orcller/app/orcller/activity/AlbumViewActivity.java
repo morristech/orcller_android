@@ -10,14 +10,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
+import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.Comments;
@@ -25,6 +27,7 @@ import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.widget.AlbumFlipView;
+import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
 import com.orcller.app.orcller.widget.FlipView;
@@ -32,24 +35,23 @@ import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
-import pisces.psfoundation.model.Resources;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 import pisces.psuikit.manager.ProgressBarManager;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-
-import static com.orcller.app.orcller.BuildConfig.DEBUG;
-import static pisces.psfoundation.utils.Log.e;
 
 /**
  * Created by pisces on 12/7/15.
@@ -60,6 +62,7 @@ public class AlbumViewActivity extends PSActionBarActivity
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "album_id";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
+    private Queue<Event> eventQueue = new ConcurrentLinkedQueue<>();
     private Error loadError;
     private Album model;
     private AlbumOptionsManager albumOptionsManager;
@@ -68,6 +71,7 @@ public class AlbumViewActivity extends PSActionBarActivity
     private RelativeLayout container;
     private PSScrollView scrollView;
     private AlbumItemView albumItemView;
+    private TempAlbumItemView tempAlbumItemView;
     private CommentListView commentListView;
     private CommentInputView commentInputView;
 
@@ -113,14 +117,10 @@ public class AlbumViewActivity extends PSActionBarActivity
     }
 
     @Override
-    public void onGlobalLayout() {
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        } else {
-            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-        }
+    public void onResume() {
+        super.onResume();
 
-        load();
+        dequeueEvent();
     }
 
     @Override
@@ -213,7 +213,34 @@ public class AlbumViewActivity extends PSActionBarActivity
             IndexChangeEvent casted = (IndexChangeEvent) event;
             albumItemView.getAlbumFlipView().setPageIndex(
                     SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
+        } else if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+
+            if (AlbumEvent.MODIFY.equals(casted.getType())) {
+                eventQueue.offer((Event) event);
+                dequeueEvent();
+            }
+        } else if (event instanceof MediaUploadUnit.Event) {
+            MediaUploadUnit.Event casted = (MediaUploadUnit.Event) event;
+
+            if (MediaUploadUnit.Event.START_UPLOADING.equals(casted.getType())) {
+                eventQueue.offer((Event) event);
+                dequeueEvent();
+            }
         }
+    }
+
+    /**
+     * ViewTreeObserver.OnGlobalLayoutListener
+     */
+    public void onGlobalLayout() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
+
+        load();
     }
 
     /**
@@ -266,6 +293,47 @@ public class AlbumViewActivity extends PSActionBarActivity
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private void dequeueEvent() {
+        if (!isActive() || eventQueue.size() < 1)
+            return;
+
+        Event event = eventQueue.poll();
+        String type = event.getType();
+        Object target = event.getTarget();
+        ViewGroup parent = (ViewGroup) albumItemView.getParent();
+
+        if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
+            final MediaUploadUnit unit = (MediaUploadUnit) target;
+
+            if (unit.isCancelled()) {
+                dequeueEvent();
+            } else {
+                if (!MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
+                    if (tempAlbumItemView == null) {
+                        albumItemView.setVisibility(View.GONE);
+                        tempAlbumItemView = new TempAlbumItemView(this);
+                        tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.USER_NICKNAME);
+                        tempAlbumItemView.setUnit(unit);
+                        parent.addView(tempAlbumItemView, 0, new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        getSupportActionBar().setTitle(unit.getModel().name);
+                    }
+                }
+
+                dequeueEvent();
+            }
+        } else if (target instanceof MediaUploadUnit && AlbumEvent.MODIFY.equals(type)) {
+            if (tempAlbumItemView != null) {
+                parent.removeView(tempAlbumItemView);
+                tempAlbumItemView = null;
+            }
+
+            setModel((Album) event.getObject());
+            albumItemView.setVisibility(View.VISIBLE);
+            dequeueEvent();
+        }
+    }
 
     private void load() {
         if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {

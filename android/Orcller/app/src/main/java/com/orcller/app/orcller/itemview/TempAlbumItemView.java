@@ -61,7 +61,7 @@ public class TempAlbumItemView extends PSLinearLayout
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
 
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
-        albumInfoProfileView.setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
+        setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
         retryButton.setOnClickListener(this);
     }
 
@@ -88,6 +88,14 @@ public class TempAlbumItemView extends PSLinearLayout
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public int getDescriptionMode() {
+        return albumInfoProfileView.getDescriptionMode();
+    }
+
+    public void setDescriptionMode(int descriptionMode) {
+        albumInfoProfileView.setDescriptionMode(descriptionMode);
+    }
 
     public MediaUploadUnit getUnit() {
         return unit;

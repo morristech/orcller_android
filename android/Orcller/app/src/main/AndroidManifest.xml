@@ -14,6 +14,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -33,6 +34,7 @@
         <activity
             android:name=".activity.SplashActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,6 +55,7 @@
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -67,50 +70,59 @@
         <activity
             android:name=".activity.MemberActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
         <activity
             android:name=".activity.MemberJoinInputActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.MediaListActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/BlackTheme">
         </activity>
 
         <activity
             android:name=".activity.imagepicker.FBImagePickerActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme">
         </activity>
         <activity
             android:name=".activity.imagepicker.FBMediaGridActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme">
         </activity>
 
         <activity
             android:name=".activity.imagepicker.IGImagePickerActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme">
         </activity>
         <activity
             android:name=".activity.imagepicker.IGMediaGridActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme">
         </activity>
         <activity
             android:name=".activity.imagepicker.IGPopularMediaGridActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme">
         </activity>
 
         <activity
             android:name=".activity.AlbumCreateActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/WhiteTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -124,51 +136,61 @@
         <activity
             android:name=".activity.AlbumEditActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/WhiteTheme">
         </activity>
         <activity
             android:name=".activity.AlbumViewActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
         <activity
             android:name=".activity.AlbumPageOrderActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:theme="@style/WhiteTheme">
         </activity>
         <activity
             android:name=".activity.AlbumPageDefaultActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:theme="@style/WhiteTheme">
         </activity>
         <activity
             android:name=".activity.AlbumPageDeleteActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:theme="@style/WhiteTheme">
         </activity>
 
         <activity
             android:name=".activity.PageListActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/WhiteTheme">
         </activity>
 
         <activity
             android:name=".activity.CommentListActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.AlbumHeartListActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.AlbumStarListActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.ProfileActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -182,55 +204,66 @@
 
         <activity
             android:name=".activity.UserPictureActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/BlackTheme">
         </activity>
 
         <activity
             android:name=".activity.UserPictureEditActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/BlackTheme">
         </activity>
 
         <activity
             android:name=".activity.FollowingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.FollowersActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.CoeditListActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
         <activity
             android:name=".activity.CoeditViewActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.OptionsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.ChangePasswordActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.CoeditAskActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.CoeditInviteActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
         <activity
             android:name=".activity.FindFriendsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
         </activity>
 
@@ -243,6 +276,7 @@
         <!-- orcllermodules -->
         <activity
             android:name="com.orcller.app.orcllermodules.activity.WebViewActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/PurpleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -258,6 +292,7 @@
         <activity
             android:name="pisces.psuikit.imagepicker.ImagePickerActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme">
         </activity>
 

@@ -37,6 +37,8 @@ import com.orcller.app.orcller.widget.PageScrollView;
 import pisces.psfoundation.model.Resources;
 import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.model.ApiResult;
+
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
 import pisces.psuikit.utils.AlertDialogUtils;
 import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
@@ -154,13 +156,13 @@ public class PageListActivity extends PSActionBarActivity
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        setRecyclerViewLayout();
-
         if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
             setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
         } else if (getIntent().getLongExtra(PAGE_ID_KEY, 0) > 0) {
             load(getIntent().getLongExtra(PAGE_ID_KEY, 0));
         }
+
+        setRecyclerViewLayout();
     }
 
     @Override
@@ -468,6 +470,9 @@ public class PageListActivity extends PSActionBarActivity
     private void requestUpdatePage(final Page page) {
         if (invalidDataLoading())
             return;
+
+        if (selectedView != null)
+            SoftKeyboardUtils.hide(selectedView.getDescriptionInputView());
 
         progressDialog = ProgressDialog.show(this, null, getString(R.string.w_processing));
 

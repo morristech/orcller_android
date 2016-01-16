@@ -255,10 +255,11 @@ public class CustomSchemeGenerator {
         int difference = senders.size() - links.length;
         String endfix = difference > 0 ?
                 " " + Resources.getString(R.string.w_et_al)
+                        + " "
                         + String.valueOf(difference)
                         + Resources.getString(R.string.w_people)
                 : "";
-        return StringUtils.join(", ", links) + endfix;
+        return StringUtils.join(", ", links) + Resources.getString(R.string.w_user_honorific) + endfix;
     }
 
     public static String createLinkTag(BaseUser user) {

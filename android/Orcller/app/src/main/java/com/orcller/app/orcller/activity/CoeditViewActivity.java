@@ -14,20 +14,29 @@ import android.widget.RelativeLayout;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
+import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.itemview.AlbumItemView;
+import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
+import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.widget.AlbumFlipView;
+import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CoeditButton;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.ContributorListView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import pisces.psfoundation.event.Event;
 import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import de.greenrobot.event.EventBus;
@@ -53,12 +62,14 @@ public class CoeditViewActivity extends PSActionBarActivity
         implements AlbumItemViewDelegate.Invoker, ContributorListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
+    private Queue<Event> eventQueue = new ConcurrentLinkedQueue<>();
     private Album model;
     private AlbumItemViewDelegate albumItemViewDelegate;
     private AlbumOptionsManager albumOptionsManager;
     private LinearLayout rootLayout;
     private PSScrollView scrollView;
     private AlbumItemView albumItemView;
+    private TempAlbumItemView tempAlbumItemView;
     private ContributorListView contributorListView;
     private CoeditButton coeditButton;
 
@@ -93,21 +104,6 @@ public class CoeditViewActivity extends PSActionBarActivity
     }
 
     @Override
-    public void onGlobalLayout() {
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        } else {
-            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-        }
-
-        if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
-            setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
-        } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
-            load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (albumOptionsManager != null)
             return albumOptionsManager.onCreateOptionsMenu(menu);
@@ -119,6 +115,13 @@ public class CoeditViewActivity extends PSActionBarActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         FBSDKRequestQueue.currentQueue().onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        dequeueEvent();
     }
 
     @Override
@@ -175,6 +178,37 @@ public class CoeditViewActivity extends PSActionBarActivity
             IndexChangeEvent casted = (IndexChangeEvent) event;
             albumItemView.getAlbumFlipView().setPageIndex(
                     SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
+        } else if (event instanceof AlbumEvent) {
+            AlbumEvent casted = (AlbumEvent) event;
+
+            if (AlbumEvent.MODIFY.equals(casted.getType())) {
+                eventQueue.offer((Event) event);
+                dequeueEvent();
+            }
+        } else if (event instanceof MediaUploadUnit.Event) {
+            MediaUploadUnit.Event casted = (MediaUploadUnit.Event) event;
+
+            if (MediaUploadUnit.Event.START_UPLOADING.equals(casted.getType())) {
+                eventQueue.offer((Event) event);
+                dequeueEvent();
+            }
+        }
+    }
+
+    /**
+     * ViewTreeObserver.OnGlobalLayoutListener
+     */
+    public void onGlobalLayout() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
+
+        if (getIntent().getSerializableExtra(ALBUM_KEY) != null) {
+            setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
+        } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
+            load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
         }
     }
 
@@ -229,6 +263,47 @@ public class CoeditViewActivity extends PSActionBarActivity
         this.model = model;
 
         modelChanged();
+    }
+
+    private void dequeueEvent() {
+        if (!isActive() || eventQueue.size() < 1)
+            return;
+
+        Event event = eventQueue.poll();
+        String type = event.getType();
+        Object target = event.getTarget();
+        ViewGroup parent = (ViewGroup) albumItemView.getParent();
+
+        if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
+            final MediaUploadUnit unit = (MediaUploadUnit) target;
+
+            if (unit.isCancelled()) {
+                dequeueEvent();
+            } else {
+                if (!MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
+                    if (tempAlbumItemView == null) {
+                        albumItemView.setVisibility(View.GONE);
+                        tempAlbumItemView = new TempAlbumItemView(this);
+                        tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.USER_NICKNAME);
+                        tempAlbumItemView.setUnit(unit);
+                        parent.addView(tempAlbumItemView, 0, new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        getSupportActionBar().setTitle(unit.getModel().name);
+                    }
+                }
+
+                dequeueEvent();
+            }
+        } else if (target instanceof MediaUploadUnit && AlbumEvent.MODIFY.equals(type)) {
+            if (tempAlbumItemView != null) {
+                parent.removeView(tempAlbumItemView);
+                tempAlbumItemView = null;
+            }
+
+            setModel((Album) event.getObject());
+            albumItemView.setVisibility(View.VISIBLE);
+            dequeueEvent();
+        }
     }
 
     private void load(long albumId) {
