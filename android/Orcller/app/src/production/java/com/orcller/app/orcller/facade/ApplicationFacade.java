@@ -89,7 +89,7 @@ public class ApplicationFacade {
                 SharedObject.get().loadNewsCountDireclty();
             }
 
-            OpenUrlProxy.run(this.intent);
+            startActivityByIntent();
         } else {
             try {
                 FacebookSdk.sdkInitialize(Application.applicationContext());
@@ -158,6 +158,13 @@ public class ApplicationFacade {
         }
     }
 
+    private void startActivityByIntent() {
+        if (this.intent != null) {
+            OpenUrlProxy.run(this.intent);
+            this.intent = null;
+        }
+    }
+
     private void startMainActivity() {
         Class activityClass = AuthenticationCenter.getDefault().hasSession() ?
                 MainActivity.class : MemberActivity.class;
@@ -166,6 +173,6 @@ public class ApplicationFacade {
         putPushNotificationExtra(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.applicationContext().startActivity(intent);
-        OpenUrlProxy.run(this.intent);
+        startActivityByIntent();
     }
 }

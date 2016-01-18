@@ -214,7 +214,6 @@ public class ApplicationLauncher {
     }
 
     private void processErrorState(APIError error) {
-        Log.e("error", error);
         initComplete();
         EventBus.getDefault().post(new OnFailure(error));
     }

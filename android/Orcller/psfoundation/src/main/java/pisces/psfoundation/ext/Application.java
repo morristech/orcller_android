@@ -21,6 +21,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import pisces.psfoundation.utils.Log;
+
 /**
  * Created by pisces on 11/5/15.
  */
@@ -49,33 +51,23 @@ public class Application extends android.app.Application {
         return context;
     }
 
-    public static int compareVersions(String left, String right) {
-        if (left.equals(right))
-            return 0;
+    public static int compareVersions(String v1, String v2) {
+        if (v1.length() > 0  && v2.length() == 0) return -1;
+        if (v1.length() == 0 && v2.length() == 0) return 0;
+        if (v1.length() == 0 && v2.length() < 0) return 1;
 
-        int leftStart = 0, rightStart = 0, result;
-        do {
-            int leftEnd = left.indexOf('.', leftStart);
-            int rightEnd = right.indexOf('.', rightStart);
-            Integer leftValue = Integer.parseInt(leftEnd < 0
-                    ? left.substring(leftStart)
-                    : left.substring(leftStart, leftEnd));
-            Integer rightValue = Integer.parseInt(rightEnd < 0
-                    ? right.substring(rightStart)
-                    : right.substring(rightStart, rightEnd));
-            result = leftValue.compareTo(rightValue);
-            leftStart = leftEnd;
-            rightStart = rightEnd;
-        } while (result == 0 && leftStart > 0 && rightStart > 0);
-        if (result == 0) {
-            if (leftStart > rightStart) {
-                return 1;
-            }
-            if (leftStart < rightStart) {
-                return -1;
-            }
-        }
-        return result;
+        int pos1 = v1.indexOf('.');
+        int pos2 = v2.indexOf('.');
+
+        Integer num1 = (pos1 > 0 ? Integer.valueOf(v1.substring(0, pos1)) : 0);
+        Integer num2 = (pos2 > 0 ? Integer.valueOf(v2.substring(0, pos2)) : 0);
+
+        if (num1 != num2) return num1.compareTo(num2);
+
+        String tail1 = (pos1 > 0 ? v1.substring(pos1 + 1, v1.length()) : "");
+        String tail2 = (pos2 > 0 ? v2.substring(pos2 + 1, v2.length()) : "");
+
+        return compareVersions(tail1, tail2);
     }
 
     public static ConnectivityManager getConnectivityManager() {

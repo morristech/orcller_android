@@ -21,6 +21,7 @@ import java.util.List;
 import pisces.instagram.sdk.model.ApiInstagram;
 import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.GsonUtil;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 11/26/15.
