@@ -3,6 +3,7 @@ package com.orcller.app.orcller.activity;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -157,8 +158,10 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        albumFlipView.setPageWidth(rootLayout.getWidth() / 2);
-        albumFlipView.setPageHeight(rootLayout.getWidth() / 2);
+        albumFlipView.getLayoutParams().width = rootLayout.getWidth();
+        albumFlipView.getLayoutParams().height = rootLayout.getWidth()/2;
+        albumFlipView.setPageWidth(rootLayout.getWidth()/2);
+        albumFlipView.setPageHeight(rootLayout.getWidth()/2);
         setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
     }
 
@@ -199,8 +202,14 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
         setControlMenuItemChecked(false);
         albumFlipView.setPageIndex(0);
 
-        if (getCycleMenuItem().isChecked())
-            albumFlipView.play();
+        if (getCycleMenuItem().isChecked()) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    albumFlipView.play();
+                }
+            }, 1500);
+        }
     }
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {

@@ -31,6 +31,7 @@ import pisces.psuikit.widget.ExceptionView;
 abstract public class UserDataGridFragment extends PSFragment
         implements SwipeRefreshLayout.OnRefreshListener, UserDataGridView.Delegate {
     private boolean modelChanged;
+    private boolean shouldReloadData;
     private User model;
     private Delegate delegate;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -75,6 +76,13 @@ abstract public class UserDataGridFragment extends PSFragment
         gridView.setDataSource(createDataSource());
         gridView.setDelegate(this);
         AnalyticsTrackers.getInstance().trackScreen(AnalyticsTrackers.Target.APP, getClass().getName());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        invalidateLoading();
     }
 
     @Override
@@ -166,14 +174,17 @@ abstract public class UserDataGridFragment extends PSFragment
      */
     abstract protected Class getItemViewClass();
 
-    protected void reset() {
-        modelChanged = true;
-
-        invalidateProperties();
+    protected void invalidateLoading() {
+        if (isActive() && shouldReloadData) {
+            shouldReloadData = false;
+            gridView.reload();
+        }
     }
 
     protected void modelChanged() {
-        gridView.reload();
+        shouldReloadData = true;
+
+        invalidateLoading();
     }
 
     // ================================================================================================

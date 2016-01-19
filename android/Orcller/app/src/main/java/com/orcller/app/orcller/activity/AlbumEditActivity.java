@@ -99,7 +99,7 @@ public class AlbumEditActivity extends AlbumCreateActivity {
                         setModel(response.body().entity);
                     } else {
                         if (BuildConfig.DEBUG)
-                            Log.d("Api Error", response.body());
+                            Log.e("Api Error", response.body());
                     }
 
                     endDataLoading();
@@ -108,7 +108,7 @@ public class AlbumEditActivity extends AlbumCreateActivity {
                 @Override
                 public void onFailure(Throwable t) {
                     if (BuildConfig.DEBUG)
-                        Log.d("onFailure", t);
+                        Log.e("onFailure", t);
 
                     endDataLoading();
                 }

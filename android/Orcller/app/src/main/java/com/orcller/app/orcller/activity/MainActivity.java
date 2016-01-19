@@ -345,7 +345,7 @@ public class MainActivity extends PSActionBarActivity
                 return fragment;
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.d("e", e);
+                    Log.e("e", e);
                 return null;
             }
         }

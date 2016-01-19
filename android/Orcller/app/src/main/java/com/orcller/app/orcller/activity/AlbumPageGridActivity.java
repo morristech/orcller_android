@@ -119,7 +119,7 @@ public class AlbumPageGridActivity extends PSActionBarActivity implements Adapte
             gridViewAdapter.setModel(clonedModel);
         } catch (CloneNotSupportedException e) {
             if (BuildConfig.DEBUG)
-                Log.d(e.getMessage());
+                Log.e("clone error", e.getMessage());
         }
     }
 

@@ -105,6 +105,10 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         return rotation == -180 ? FlipView.Direction.Left : FlipView.Direction.Right;
     }
 
+    public ImageView getShadowImageView() {
+        return shadowImageView;
+    }
+
     public void doFlip(Direction direction) {
         doFlip(direction, null);
     }

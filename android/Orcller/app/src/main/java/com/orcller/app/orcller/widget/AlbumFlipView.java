@@ -28,7 +28,6 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -82,11 +81,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             shouldLoadPages = false;
             pageIndexChanged();
         }
-
-        if (shouldResizePages) {
-            shouldResizePages = false;
-            resizePages();
-        }
     }
 
     @Override
@@ -101,8 +95,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         setClipChildren(false);
         setBackgroundView(new Background(context));
         addView(container, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
@@ -236,8 +230,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public void setPageHeight(int pageHeight) {
         this.pageHeight = pageHeight;
         shouldResizePages = true;
-
-        invalidateProperties();
     }
 
     public int getPageWidth() {
@@ -247,8 +239,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public void setPageWidth(int pageWidth) {
         this.pageWidth = pageWidth;
         shouldResizePages = true;
-
-        invalidateProperties();
     }
 
     public int getPageIndex() {
@@ -446,7 +436,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     int currentIndex = pageIndex - (2 - i);
 
                     flipView.setDirection(FlipView.Direction.Left);
-                    flipView.setImageLoadType(imageLoadType);
                     flipView.setPages(getPages(currentIndex));
                     container.moveChildToBack(flipView);
                 } else {
@@ -474,7 +463,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     int currentIndex = pageIndex + (i - startIndex) + 1;
 
                     flipView.setDirection(FlipView.Direction.Right);
-                    flipView.setImageLoadType(imageLoadType);
                     flipView.setPages(getPages(currentIndex));
                     container.moveChildToBack(flipView);
                 } else {
@@ -516,12 +504,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         int x;
+        int cw = pageWidth * PAGE_COUNT;
+
         if (pageIndex == 0)
-            x = (getWidth() - container.getWidth())/2 - (pageWidth/2);
+            x = (getWidth() - cw)/2 - (pageWidth/2);
         else if ((pageIndex * 2) + 1 > model.pages.count)
-            x = (getWidth() - container.getWidth())/2 + (pageWidth/2);
+            x = (getWidth() - cw)/2 + (pageWidth/2);
         else
-            x = (getWidth() - container.getWidth())/2;
+            x = (getWidth() - cw)/2;
 
         if (animated) {
             container.animate()
@@ -599,9 +589,19 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     Application.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (shouldResizePages) {
+                                view.setDirection(FlipView.Direction.Right);
+                                view.setVisibility(VISIBLE);
+                                view.getLayoutParams().width = pageWidth;
+                                view.getLayoutParams().height = pageHeight;
+                                view.setX(pageWidth);
+                            }
+
                             if (!view.equals(targetFlipView))
                                 view.setDirection(direction);
 
+                            view.getShadowImageView().setVisibility(model.pages.total_count < 2 ? GONE : VISIBLE);
+                            view.setImageLoadType(imageLoadType);
                             view.setPages(pages);
                             view.setVisibility(pages.size() < 1 ? INVISIBLE : VISIBLE);
 
@@ -617,6 +617,12 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 Application.runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (shouldResizePages) {
+                            shouldResizePages = false;
+                            container.getLayoutParams().width = pageWidth * PAGE_COUNT;
+                            container.getLayoutParams().height = pageHeight;
+                        }
+
                         alignContainer(pageIndex, false);
                         updatePageCountView();
                     }
@@ -632,31 +638,10 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             view.setDirection(FlipView.Direction.Right);
             view.setImageLoadType(imageLoadType);
             view.setTag(i);
-            container.addView(view, 0, new ViewGroup.LayoutParams(pageWidth, pageHeight));
+            container.addView(view, 0);
             visibleViews.add(view);
             view.setX(pageWidth);
         }
-    }
-
-    private void resizePages() {
-        ViewGroup.LayoutParams params = getLayoutParams();
-        params.width = pageWidth * PAGE_COUNT;
-        params.height = pageHeight;
-
-        if (background != null) {
-            ViewGroup.LayoutParams bgparams = background.getLayoutParams();
-            bgparams.width = params.width;
-            bgparams.height = pageHeight;
-        }
-
-        for (FlipView view : visibleViews) {
-            params = view.getLayoutParams();
-            params.width = pageWidth;
-            params.height = pageHeight;
-            view.setX(pageWidth);
-        }
-
-        alignContainer(pageIndex, false);
     }
 
     private void stop(boolean resetPages) {

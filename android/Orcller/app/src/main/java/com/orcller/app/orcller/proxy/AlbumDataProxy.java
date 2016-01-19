@@ -159,7 +159,7 @@ public class AlbumDataProxy extends AbstractDataProxy {
     }
 
     public void remainPages(final Album album, final CompleteHandler completeHandler) {
-        if (album.pages.count >= album.pages.total_count && completeHandler != null) {
+        if (album.pages.data.size() >= album.pages.total_count && completeHandler != null) {
             completeHandler.onComplete(true);
             return;
         }

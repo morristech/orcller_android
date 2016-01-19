@@ -24,6 +24,7 @@ import java.util.Map;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
 import pisces.psfoundation.utils.HtmlUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.MapUtils;
 
 /**

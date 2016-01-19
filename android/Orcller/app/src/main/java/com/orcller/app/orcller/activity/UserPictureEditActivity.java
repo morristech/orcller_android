@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
@@ -30,7 +32,6 @@ import com.orcller.app.orcller.proxy.UserDataProxy;
 import com.orcller.app.orcller.widget.UserPictureCropGuideView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
-import pisces.psuikit.utils.AlertDialogUtils;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
@@ -38,6 +39,7 @@ import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psfoundation.utils.URLUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.manager.ProgressBarManager;
+import pisces.psuikit.utils.AlertDialogUtils;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -48,9 +50,10 @@ import static pisces.psfoundation.utils.Log.e;
 /**
  * Created by pisces on 12/12/15.
  */
-public class UserPictureEditActivity extends PSActionBarActivity {
+public class UserPictureEditActivity extends PSActionBarActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String MEDIA_KEY = "media";
     private Media model;
+    private FrameLayout rootLayout;
     private ProgressDialog progressDialog;
     private SubsamplingScaleImageView imageView;
     private UserPictureCropGuideView guideView;
@@ -67,14 +70,14 @@ public class UserPictureEditActivity extends PSActionBarActivity {
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        rootLayout = (FrameLayout) findViewById(R.id.rootLayout);
         imageView = (SubsamplingScaleImageView) findViewById(R.id.imageView);
         guideView = (UserPictureCropGuideView) findViewById(R.id.guideView);
 
+        rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         imageView.setDoubleTapZoomScale(3f);
         imageView.setMaxScale(6f);
         imageView.setPanLimit(SubsamplingScaleImageView.PAN_LIMIT_CENTER);
-
-        setModel((Media) getIntent().getSerializableExtra(MEDIA_KEY));
     }
 
     @Override
@@ -122,6 +125,23 @@ public class UserPictureEditActivity extends PSActionBarActivity {
     }
 
     // ================================================================================================
+    //  Interface Implementation
+    // ================================================================================================
+
+    /**
+     * ViewTreeObserver.OnGlobalLayoutListener
+     */
+    public void onGlobalLayout() {
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            rootLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
+
+        setModel((Media) getIntent().getSerializableExtra(MEDIA_KEY));
+    }
+
+    // ================================================================================================
     //  Private
     // ================================================================================================
 
@@ -154,6 +174,7 @@ public class UserPictureEditActivity extends PSActionBarActivity {
             @Override
             protected Bitmap doInBackground(Void... params) {
                 BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inScaled = false;
                 options.inSampleSize = 2;
                 return BitmapFactory.decodeFile(image.url, options);
             }
@@ -163,7 +184,9 @@ public class UserPictureEditActivity extends PSActionBarActivity {
                 super.onPostExecute(result);
 
                 imageView.setImage(ImageSource.cachedBitmap(result));
-                getSaveItem().setEnabled(true);
+
+                if (getSaveItem() != null)
+                    getSaveItem().setEnabled(true);
             }
         }.execute();
     }
@@ -187,7 +210,10 @@ public class UserPictureEditActivity extends PSActionBarActivity {
                     public boolean onResourceReady(GlideDrawable resource, Object model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         Bitmap bitmap = ((GlideBitmapDrawable) resource).getBitmap();
                         imageView.setImage(ImageSource.cachedBitmap(bitmap));
-                        getSaveItem().setEnabled(true);
+
+                        if (getSaveItem() != null)
+                            getSaveItem().setEnabled(true);
+
                         ProgressBarManager.hide();
                         return true;
                     }

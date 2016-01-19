@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone">
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/errorTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -58,4 +58,18 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:alpha="0.5"/>
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:autoLink="web"
+        android:enabled="false"
+        android:textColor="@android:color/black"
+        android:textColorLink="@color/textcolor_dark_blue"
+        android:textSize="14dp"
+        android:visibility="gone" />
 </pisces.psuikit.ext.PSLinearLayout>

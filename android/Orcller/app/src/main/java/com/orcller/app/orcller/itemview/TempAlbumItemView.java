@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
+import com.orcller.app.orcller.widget.MediaView;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
@@ -27,7 +29,8 @@ public class TempAlbumItemView extends PSLinearLayout
         implements MediaUploadUnit.Delegate, View.OnClickListener {
     private MediaUploadUnit unit;
     private LinearLayout errorContainer;
-    private TextView textView;
+    private TextView errorTextView;
+    private TextView descriptionTextView;
     private Button retryButton;
     private ProgressBar progressBar;
     private AlbumInfoProfileView albumInfoProfileView;
@@ -54,7 +57,8 @@ public class TempAlbumItemView extends PSLinearLayout
         inflate(context, R.layout.itemview_temp_album, this);
 
         errorContainer = (LinearLayout) findViewById(R.id.errorContainer);
-        textView = (TextView) findViewById(R.id.textView);
+        errorTextView = (TextView) findViewById(R.id.textView);
+        descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
         retryButton = (Button) findViewById(R.id.retryButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
@@ -63,16 +67,6 @@ public class TempAlbumItemView extends PSLinearLayout
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
         setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
         retryButton.setOnClickListener(this);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        if (albumFlipView.getPageWidth() < 1) {
-            albumFlipView.setPageWidth(getWidth() / 2);
-            albumFlipView.setPageHeight(getWidth() / 2);
-        }
     }
 
     @Override
@@ -109,8 +103,25 @@ public class TempAlbumItemView extends PSLinearLayout
 
         unit.setDelegate(this);
         albumInfoProfileView.setModel(unit.getModel());
+        albumFlipView.setPageWidth(getAlbumHeight());
+        albumFlipView.setPageHeight(getAlbumHeight());
+        albumFlipView.setImageLoadType(unit.getModel().pages.total_count > 1 ?
+                MediaView.ImageLoadType.LowResolution.value() :
+                MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
         albumFlipView.setModel(unit.getModel());
         albumFlipView.setPageIndex(unit.getModel().default_page_index);
+        albumFlipView.getLayoutParams().width = Application.getWindowWidth();
+        albumFlipView.getLayoutParams().height = getAlbumHeight();
+        descriptionTextView.setText(unit.getModel().desc);
+        descriptionTextView.setVisibility(TextUtils.isEmpty(unit.getModel().desc) ? GONE : VISIBLE);
+    }
+
+    // ================================================================================================
+    //  Private
+    // ================================================================================================
+
+    private int getAlbumHeight() {
+        return unit.getModel().pages.count > 1 ? Application.getWindowWidth() / 2 : Application.getWindowWidth();
     }
 
     // ================================================================================================
@@ -132,7 +143,7 @@ public class TempAlbumItemView extends PSLinearLayout
     }
 
     public void onFailUploading(MediaUploadUnit unit) {
-        textView.setText(Application.isNetworkConnected() ? R.string.m_fail_post_an_error : R.string.m_fail_post_no_connection);
+        errorTextView.setText(Application.isNetworkConnected() ? R.string.m_fail_post_an_error : R.string.m_fail_post_no_connection);
         progressBar.setVisibility(GONE);
         errorContainer.setVisibility(VISIBLE);
     }

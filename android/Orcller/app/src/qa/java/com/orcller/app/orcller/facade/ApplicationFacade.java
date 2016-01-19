@@ -110,7 +110,7 @@ public class ApplicationFacade {
                 initialized = true;
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.d("ApplicationFacade Run", e);
+                    Log.e("ApplicationFacade Run", e);
             }
         }
     }

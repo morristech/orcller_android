@@ -118,7 +118,7 @@ public class CoeditListItemView extends PSLinearLayout implements CoeditButton.D
             coeditButton.setModel(model);
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
-                Log.d(e.getMessage(), e);
+                Log.e("modelChanged", e);
         }
 
         updateDisplayList();

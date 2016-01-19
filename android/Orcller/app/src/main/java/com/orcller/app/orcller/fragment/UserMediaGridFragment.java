@@ -102,14 +102,14 @@ public class UserMediaGridFragment extends UserDataGridFragment {
 
             if (CoeditEvent.CHANGE.equals(casted.getType()) &&
                     CoeditEvent.SYNC.equals(casted.getType()))
-                reset();
+                modelChanged();
         } else if (event instanceof AlbumEvent) {
             AlbumEvent casted = (AlbumEvent) event;
 
-            if (AlbumEvent.CREATE.equals(casted.getType()) &&
-                    AlbumEvent.CREATE.equals(casted.getType()) &&
+            if (AlbumEvent.CREATE.equals(casted.getType()) ||
+                    AlbumEvent.DELETE.equals(casted.getType()) ||
                     AlbumEvent.MODIFY.equals(casted.getType()))
-                reset();
+                modelChanged();
         }
     }
 }
