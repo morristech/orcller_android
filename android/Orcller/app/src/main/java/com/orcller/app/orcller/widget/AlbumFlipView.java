@@ -103,7 +103,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
     @Override
     protected void setUpSubviews(Context context) {
-        readyPages();
         EventBus.getDefault().register(this);
     }
 
@@ -170,8 +169,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     originRotation = targetFlipView.getRotationY();
 
-                    if (isLastPageIndex() && targetFlipView.getDirection().equals(FlipView.Direction.Right))
-                        Toast.makeText(Application.applicationContext(), R.string.m_hint_album_last_page, Toast.LENGTH_LONG).show();
+                    showLastPageToast();
 
                     if (delegate != null)
                         delegate.onStartPanning(this, targetFlipView);
@@ -217,8 +215,17 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             addView(background, 0);
     }
 
-    public boolean isLastPageIndex() {
-        return SharedObject.convertPageIndexToPosition(pageIndex) >= model.pages.total_count - 1;
+    public void showLastPageToast() {
+        if (targetFlipView == null)
+            return;
+
+        List<Page> pages = targetFlipView.getPages();
+        if (pages != null && pages.size() > 0) {
+            Page page = pages.get(pages.size() - 1);
+
+            if (page.equals(model.pages.getLastPage()) && targetFlipView.getDirection().equals(FlipView.Direction.Right))
+                Toast.makeText(Application.applicationContext(), R.string.m_hint_album_last_page, Toast.LENGTH_LONG).show();
+        }
     }
 
     public boolean isPlaying() {
@@ -586,19 +593,32 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         if (model == null || pageIndex < 0)
             return;
 
+        final AlbumFlipView self = this;
+
         Application.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 int startPageIndex = pageIndex - 2;
 
-                for (int i=0; i<visibleViews.size(); i++) {
-                    final FlipView view = visibleViews.get(i);
+                for (int i=0; i<COUNT_OF_VISIBLE_VIEWS; i++) {
                     final FlipView.Direction direction = i < CENTER_INDEX_OF_VISIBLE_VIEWS ? FlipView.Direction.Left : FlipView.Direction.Right;
                     final List<Page> pages = getPages(startPageIndex + i);
+                    final int idx = i;
 
                     Application.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            FlipView view;
+                            if (visibleViews.size() > idx) {
+                                view = visibleViews.get(idx);
+                            } else {
+                                view = new FlipView(getContext());
+                                view.setDelegate(self);
+                                view.setTag(idx);
+                                container.addView(view, 0);
+                                visibleViews.add(view);
+                            }
+
                             if (shouldResizePages) {
                                 view.setDirection(FlipView.Direction.Right);
                                 view.setVisibility(VISIBLE);
@@ -639,19 +659,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 });
             }
         });
-    }
-
-    private void readyPages() {
-        for (int i=0; i<COUNT_OF_VISIBLE_VIEWS; i++) {
-            FlipView view = new FlipView(getContext());
-            view.setDelegate(this);
-            view.setDirection(FlipView.Direction.Right);
-            view.setImageLoadType(imageLoadType);
-            view.setTag(i);
-            container.addView(view, 0);
-            visibleViews.add(view);
-            view.setX(pageWidth);
-        }
     }
 
     private void stop(boolean resetPages) {
