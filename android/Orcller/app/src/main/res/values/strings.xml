@@ -65,6 +65,7 @@
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
     <string name="w_follow">Follow</string>
+    <string name="w_follow_plus">+ Follow</string>
     <string name="w_followers">Followers</string>
     <string name="w_following">Following</string>
     <string name="w_hide_all_albums">Hide all Albums</string>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
@@ -18,12 +19,14 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import pisces.android.R;
 import pisces.psfoundation.ext.Application;
+import pisces.psfoundation.utils.BitmapUtils;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
@@ -169,6 +172,12 @@ public class ImagePickerActivity extends PSActionBarActivity
                     item.width = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH));
                     item.height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT));
                     item.date = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN));
+
+                    try {
+                        ExifInterface exifInterface = new ExifInterface(item.path);
+                        item.orientation = Integer.parseInt(exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION));
+                    } catch (IOException e) {
+                    }
 
                     items.add(item);
                 }

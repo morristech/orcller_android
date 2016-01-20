@@ -37,6 +37,7 @@
     <string name="w_facebook">페이스북</string>
     <string name="w_facebook_photos">페이스북 사진</string>
     <string name="w_follow">팔로우</string>
+    <string name="w_follow_plus">+ 팔로우</string>
     <string name="w_followers">팔로워</string>
     <string name="w_following">팔로잉</string>
     <string name="w_hide_all_albums">모든 앨범 숨기기</string>

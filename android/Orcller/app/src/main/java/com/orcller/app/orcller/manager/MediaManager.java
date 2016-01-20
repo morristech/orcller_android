@@ -222,8 +222,9 @@ public class MediaManager {
             @Override
             protected Void doInBackground(Void... params) {
                 BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inScaled = false;
                 options.inSampleSize = 2;
-                Bitmap bitmap = BitmapFactory.decodeFile(source.path, options);
+                Bitmap bitmap = BitmapUtils.rotateBitmap(BitmapFactory.decodeFile(source.path, options), source.orientation);
 
                 saveTempImages(bitmap, media);
 
