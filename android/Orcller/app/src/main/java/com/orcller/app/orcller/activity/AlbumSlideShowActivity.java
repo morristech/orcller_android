@@ -194,7 +194,7 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
 
     }
 
-    public void onStartPanning(AlbumFlipView view) {
+    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
 
     }
 

@@ -1,14 +1,17 @@
 package com.orcller.app.orcller.proxy;
 
 import android.view.View;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
+import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumHeartListActivity;
 import com.orcller.app.orcller.activity.AlbumStarListActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
+import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.Album;
@@ -19,6 +22,7 @@ import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
 
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
 import retrofit.Callback;
@@ -128,7 +132,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     public void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view) {
     }
 
-    public void onStartPanning(AlbumItemView itemView, AlbumFlipView view) {
+    public void onStartPanning(AlbumItemView itemView, AlbumFlipView view, FlipView flipView) {
         invoker.onChangePanningState(true);
     }
 

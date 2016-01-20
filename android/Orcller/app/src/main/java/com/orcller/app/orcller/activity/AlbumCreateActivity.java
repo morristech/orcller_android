@@ -380,7 +380,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
     public void onStartLoadRemainPages(AlbumFlipView view) {
     }
 
-    public void onStartPanning(AlbumFlipView view) {
+    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
         scrollView.setScrollable(false);
     }
 

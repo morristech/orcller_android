@@ -127,6 +127,7 @@
     <string name="m_activity_close_message">변경된 내용이 있습니다.\n정말로 닫으시겠습니까?</string>
     <string name="m_has_new_version">플레이 스토어에 새로운 버전이 있습니다.</string>
     <string name="m_hint_album_description">이 앨범에 대해...</string>
+    <string name="m_hint_album_last_page">마지막 페이지입니다.</string>
     <string name="m_hint_album_title">제목을 입력하세요.</string>
     <string name="m_hint_comment_input">댓글을 입력하세요.</string>
     <string name="m_hint_current_password">현재 비밀번호</string>

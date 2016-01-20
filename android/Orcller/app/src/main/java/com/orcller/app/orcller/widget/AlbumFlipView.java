@@ -14,6 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -28,6 +29,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -165,13 +167,17 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     break;
 
                 if (targetFlipView == null && Math.abs(dy) < Math.abs(dx)) {
+                    targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    originRotation = targetFlipView.getRotationY();
+
+                    if (isLastPageIndex() && targetFlipView.getDirection().equals(FlipView.Direction.Right))
+                        Toast.makeText(Application.applicationContext(), R.string.m_hint_album_last_page, Toast.LENGTH_LONG).show();
+
                     if (delegate != null)
-                        delegate.onStartPanning(this);
+                        delegate.onStartPanning(this, targetFlipView);
 
                     EventBus.getDefault().post(new AlbumFlipViewEvent(AlbumFlipViewEvent.START_PANNING, this));
 
-                    targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
-                    originRotation = targetFlipView.getRotationY();
                     loadRemainPages();
                 }
 
@@ -209,6 +215,10 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         if (background != null)
             addView(background, 0);
+    }
+
+    public boolean isLastPageIndex() {
+        return SharedObject.convertPageIndexToPosition(pageIndex) >= model.pages.total_count - 1;
     }
 
     public boolean isPlaying() {
@@ -752,7 +762,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         void onPlay(AlbumFlipView view);
         void onPause(AlbumFlipView view);
         void onStartLoadRemainPages(AlbumFlipView view);
-        void onStartPanning(AlbumFlipView view);
+        void onStartPanning(AlbumFlipView view, FlipView flipView);
         void onStop(AlbumFlipView view);
         void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
     }

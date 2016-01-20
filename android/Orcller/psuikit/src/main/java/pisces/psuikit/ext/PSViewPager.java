@@ -76,21 +76,29 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!pagingEnabled)
-            return false;
+        try {
+            if (!pagingEnabled)
+                return false;
+            return super.onInterceptTouchEvent(ev);
+        } catch (Exception e) {
+        }
         return super.onInterceptTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                if (pagingEnabled)
+        try {
+            switch (ev.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (pagingEnabled)
+                        return super.onTouchEvent(ev);
+                    return pagingEnabled;
+                default:
                     return super.onTouchEvent(ev);
-                return pagingEnabled;
-            default:
-                return super.onTouchEvent(ev);
+            }
+        } catch (Exception e) {
         }
+        return super.onTouchEvent(ev);
     }
 
     // ================================================================================================
