@@ -15,10 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Length;
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcllermodules.error.APIError;
 import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
@@ -40,7 +42,7 @@ import pisces.psuikit.widget.ClearableEditText;
 /**
  * Created by pisces on 11/12/15.
  */
-public class MemberJoinInputActivity extends PSActionBarActivity implements Validator.ValidationListener {
+public class MemberJoinInputActivity extends BaseActionBarActivity implements Validator.ValidationListener {
     private static final String EMAIL_KEY = "email";
     private static final String USER_KEY = "user";
 
@@ -95,6 +97,9 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
         descTextView.setMovementMethod(LinkMovementMethod.getInstance());
         loadExtra();
         setListeners();
+
+        if (AuthenticationCenter.getDefault().hasSession())
+            finish();
     }
 
     @Override
@@ -124,6 +129,12 @@ public class MemberJoinInputActivity extends PSActionBarActivity implements Vali
             ProgressDialogManager.show(R.string.w_processing);
 
         return result;
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Member, CustomSchemeGenerator.ViewTypeMember.JoinInputView.value());
     }
 
     // ================================================================================================

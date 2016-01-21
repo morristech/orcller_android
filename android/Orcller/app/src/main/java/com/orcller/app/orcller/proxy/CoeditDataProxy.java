@@ -71,7 +71,7 @@ public class CoeditDataProxy extends AbstractDataProxy {
     public interface Service {
         @FormUrlEncoded
         @POST("accept")
-        Call<ApiCoedit.ContributorsRes> accept(@Field("contributorId") String contributorId);
+        Call<ApiCoedit.ContributorsRes> accept(@Field("id") String contributorId);
 
         @POST("{albumId}/ask")
         Call<ApiCoedit.ContributorsRes> ask(@Path("albumId") long albumId);

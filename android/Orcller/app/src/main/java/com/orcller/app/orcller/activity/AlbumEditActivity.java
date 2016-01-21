@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.google.android.gms.appindexing.Action;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.manager.MediaManager;
@@ -11,6 +12,7 @@ import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
@@ -59,6 +61,12 @@ public class AlbumEditActivity extends AlbumCreateActivity {
             ProgressBarManager.show();
 
         return invalid;
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Album, CustomSchemeGenerator.ViewTypeAlbum.Modify.value());
     }
 
     @Override

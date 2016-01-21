@@ -21,6 +21,7 @@ import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
+import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
@@ -59,7 +60,7 @@ import static pisces.psfoundation.utils.Log.e;
  * Created by pisces on 12/14/15.
  */
 public class CoeditViewActivity extends PSActionBarActivity
-        implements AlbumItemViewDelegate.Invoker, ContributorListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+        implements AlbumItemViewDelegate.Invoker, CoeditButton.Delegate, ContributorListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
     private Queue<Event> eventQueue = new ConcurrentLinkedQueue<>();
@@ -96,6 +97,7 @@ public class CoeditViewActivity extends PSActionBarActivity
         albumItemView.setButtonVisiblity(AlbumItemView.HEART | AlbumItemView.COMMENT | AlbumItemView.STAR);
         albumItemViewDelegate.setCommentActionType(AlbumItemViewDelegate.COMMENT_ACTION_OPEN_COMMENTS);
         contributorListView.setDelegate(this);
+        coeditButton.setDelegate(this);
         coeditButton.setSelected(true);
         coeditButton.setTextSize(GraphicUtils.convertDpToPixel(13));
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
@@ -210,6 +212,18 @@ public class CoeditViewActivity extends PSActionBarActivity
         } else if (getIntent().getLongExtra(ALBUM_ID_KEY, 0) > 0) {
             load(getIntent().getLongExtra(ALBUM_ID_KEY, 0));
         }
+    }
+
+
+    /**
+     * CoeditButton.Delegate
+     */
+    public void onChange(CoeditButton target, Contributors contributors) {
+        setScrollViewLayout();
+    }
+
+    public void onSync(CoeditButton target, Contributors contributors) {
+        setScrollViewLayout();
     }
 
     // ================================================================================================

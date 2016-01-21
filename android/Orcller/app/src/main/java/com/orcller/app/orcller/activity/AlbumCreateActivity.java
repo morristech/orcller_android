@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Length;
@@ -29,6 +30,7 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.event.PageListEvent;
+import com.orcller.app.orcller.facade.ApplicationFacade;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.manager.ImagePickerManager;
 import com.orcller.app.orcller.manager.MediaManager;
@@ -37,6 +39,7 @@ import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.converter.MediaConverter;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcller.widget.DescriptionInputView;
@@ -67,7 +70,7 @@ import pisces.psuikit.widget.PSButton;
 /**
  * Created by pisces on 11/28/15.
  */
-public class AlbumCreateActivity extends PSActionBarActivity
+public class AlbumCreateActivity extends BaseActionBarActivity
         implements AdapterView.OnItemSelectedListener, AlbumFlipView.Delegate, AlbumGridView.Delegate,
         Validator.ValidationListener, View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
     private static final int PAGE_COUNT_MIN = 1;
@@ -211,6 +214,12 @@ public class AlbumCreateActivity extends PSActionBarActivity
         if (ExceptionViewFactory.Type.NoMedia.equals(view.getTag()))
             return clonedModel != null && clonedModel.pages.count < 1;
         return false;
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Album, CustomSchemeGenerator.ViewTypeAlbum.Create.value());
     }
 
     // ================================================================================================

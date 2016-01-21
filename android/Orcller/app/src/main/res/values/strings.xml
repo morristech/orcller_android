@@ -3,6 +3,8 @@
     <!-- properties -->
     <string name="app_name">Orcller</string>
     <string name="app_scheme">orcller</string>
+    <string name="app_base_uri">android-app://com.orcller.app.orcller/http/orcller.com/app/</string>
+    <string name="web_base_uri">http://orcller.com/app/</string>
     <string name="domain">https://www.orcller.com</string>
     <string name="facebook_app_id">470721986412373</string>
     <string name="facebook_invite_preview_image_path">resources/site/images/preview_fbinvite.png</string>
@@ -13,7 +15,7 @@
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
     <!-- custom scheme -->
-    <string name="host">www.orcller.com</string>
+    <string name="host">orcller.com</string>
     <string name="host_album">album</string>
     <string name="host_coediting">coediting</string>
     <string name="host_feed">feed</string>
@@ -28,8 +30,6 @@
     <!-- site path -->
     <string name="path_private_polcy">/site/policy/private_policy</string>
     <string name="path_terms">/site/policy/terms</string>
-
-    <string name="facebook_share_content_title">UStory - Live and Put Together</string>
 
     <!-- words -->
     <string name="w_filter_title">Orcller - Album Collaboration</string>
@@ -135,10 +135,11 @@
     <string name="w_title_collaborations">Collaborations</string>
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
+    <string name="w_title_edit_profile">Edit Profile</string>
     <string name="w_title_find_friends">Find Friends</string>
     <string name="w_title_new_album">New Album</string>
     <string name="w_title_options">Options</string>
-    <string name="w_title_profile">Edit Profile</string>
+    <string name="w_title_profile">Profile</string>
     <string name="w_title_timeline">Orcller</string>
     <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>

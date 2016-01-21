@@ -4,16 +4,13 @@ import android.os.Bundle;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.facade.ApplicationFacade;
-import com.orcller.app.orcller.model.PushNotificationObject;
-import com.orcller.app.orcller.service.GcmListenerService;
 
 import pisces.psuikit.ext.PSActivity;
 
 public class SplashActivity extends PSActivity {
-    private PushNotificationObject data;
 
     // ================================================================================================
-    //  Overridden: Activity
+    //  Overridden: PSActivity
     // ================================================================================================
 
     @Override
@@ -21,7 +18,7 @@ public class SplashActivity extends PSActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-        ApplicationFacade.getDefault().run(getIntent());
+        ApplicationFacade.getDefault().run(this, getIntent());
     }
 
     @Override

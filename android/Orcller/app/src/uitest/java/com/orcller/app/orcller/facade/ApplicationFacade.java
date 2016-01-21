@@ -133,7 +133,7 @@ public class ApplicationFacade {
         }
     }
 
-    public void run() {
+    public void run(Activity invoker, Intent intent) {
         FacebookSdk.sdkInitialize(Application.applicationContext());
         EventBus.getDefault().register(this);
 

@@ -106,10 +106,11 @@
     <string name="w_title_collaborations">공동편집</string>
     <string name="w_title_edit_album">앨범 편집</string>
     <string name="w_title_edit_page">페이지 편집</string>
+    <string name="w_title_edit_profile">프로필 편집</string>
     <string name="w_title_find_friends">친구찾기</string>
     <string name="w_title_new_album">새 앨범</string>
     <string name="w_title_options">옵션</string>
-    <string name="w_title_profile">프로필 편집</string>
+    <string name="w_title_profile">프로필</string>
     <string name="w_title_timeline">Orcller</string>
     <string name="w_yes">예</string>
     <string name="w_video">비디오</string>

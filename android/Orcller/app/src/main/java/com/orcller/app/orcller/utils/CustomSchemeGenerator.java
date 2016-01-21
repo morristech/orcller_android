@@ -31,7 +31,9 @@ import pisces.psfoundation.utils.MapUtils;
  * Created by pisces on 12/7/15.
  */
 public class CustomSchemeGenerator {
-    public static final String SCHEMA = Application.applicationContext().getString(R.string.app_scheme);
+    public static final String APP_BASE_URI = Application.applicationContext().getString(R.string.app_base_uri);
+    public static final String WEB_BASE_URI = Application.applicationContext().getString(R.string.web_base_uri);
+    public static final String SCHEME = Application.applicationContext().getString(R.string.app_scheme);
 
     public enum Category {
         Album(Resources.getString(R.string.host_album)),
@@ -221,9 +223,17 @@ public class CustomSchemeGenerator {
     }
 
     public static String create(Category category, int viewType, Map<String, String> param) {
-        return SCHEMA + "://" + category.value() +
+        return SCHEME + "://" + category.value() +
                 (viewType > -1 ? "/" + String.valueOf(viewType) : "") +
                 (param != null ? "?" + MapUtils.toQueryString(param) : "");
+    }
+
+    public static Uri createAppUri(Category category, int viewType) {
+        return Uri.parse(APP_BASE_URI + category.value + "/" + String.valueOf(viewType));
+    }
+
+    public static Uri createWebUri(Category category, int viewType) {
+        return Uri.parse(WEB_BASE_URI + category.value + "/" + String.valueOf(viewType));
     }
 
     public static CharSequence createContributorsHtml(User master, List users) {
@@ -297,5 +307,19 @@ public class CustomSchemeGenerator {
 
     public static String createWebLink(Map<String, String> param) {
         return create(Category.Web, -1, param);
+    }
+
+    // ================================================================================================
+    //  Class: ViewInfo
+    // ================================================================================================
+
+    public static class ViewInfo {
+        public Category category;
+        public int viewType;
+
+        public ViewInfo(Category category, int viewType) {
+            this.category = category;
+            this.viewType = viewType;
+        }
     }
 }

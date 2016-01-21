@@ -27,10 +27,9 @@ import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.TabIndicator;
-import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +38,11 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import pisces.psuikit.ext.PSViewPager;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
-public class MainActivity extends PSActionBarActivity
+public class MainActivity extends BaseActionBarActivity
         implements MainTabFragment.Delegate, TabHost.OnTabChangeListener, View.OnTouchListener, ViewPager.OnPageChangeListener {
     public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private static final int TAB_COUNT = 5;
@@ -129,6 +129,12 @@ public class MainActivity extends PSActionBarActivity
         super.onBackPressed();
 
         ApplicationFacade.clear();
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Main, 0);
     }
 
     // ================================================================================================

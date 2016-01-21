@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.appindexing.Action;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -26,6 +27,7 @@ import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
@@ -56,7 +58,7 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/7/15.
  */
-public class AlbumViewActivity extends PSActionBarActivity
+public class AlbumViewActivity extends BaseActionBarActivity
         implements AlbumItemViewDelegate.Invoker, CommentInputView.Delegate,
         CommentListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
@@ -181,6 +183,12 @@ public class AlbumViewActivity extends PSActionBarActivity
             return loadError != null;
 
         return false;
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Album, CustomSchemeGenerator.ViewTypeAlbum.View.value());
     }
 
     // ================================================================================================

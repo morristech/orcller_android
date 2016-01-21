@@ -39,6 +39,7 @@ public class ApplicationFacade {
     private Context context;
     private Intent intent;
     private PushNotificationObject pushNotificationObject;
+    private Activity invoker;
 
     public ApplicationFacade() {
         context = Application.getTopActivity();
@@ -77,12 +78,17 @@ public class ApplicationFacade {
         DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId), true);
     }
 
-    public void run(Intent intent) {
+    public void run(Activity invoker, Intent intent) {
+        this.invoker = invoker;
         this.intent = intent;
         this.pushNotificationObject = (PushNotificationObject) intent.getSerializableExtra(GcmListenerService.PUSH_NOTIFICATION_OBJECT_KEY);
 
         if (initialized) {
-            if (AuthenticationCenter.getDefault().hasSession() && ActivityManager.hasRunningActivity(MainActivity.class)) {
+            invoker.finish();
+
+            if (this.pushNotificationObject != null &&
+                    AuthenticationCenter.getDefault().hasSession() &&
+                    ActivityManager.hasRunningActivity(MainActivity.class)) {
                 Activity activity = ActivityManager.getRunningActivity(MainActivity.class);
                 putPushNotificationExtra(activity.getIntent());
                 Application.moveToBack(activity);
