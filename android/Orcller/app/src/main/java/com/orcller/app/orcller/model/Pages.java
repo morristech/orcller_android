@@ -26,6 +26,6 @@ public class Pages extends ListEntity<Page> {
     }
 
     public Page getLastPage() {
-        return data != null && data.size() > 0 ? data.get(data.size() - 1) : null;
+        return data != null && data.size() == total_count ? data.get(total_count - 1) : null;
     }
 }

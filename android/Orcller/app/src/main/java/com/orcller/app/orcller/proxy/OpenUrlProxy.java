@@ -11,6 +11,8 @@ import com.orcller.app.orcller.activity.OptionsActivity;
 import com.orcller.app.orcller.activity.ProfileActivity;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 
+import java.util.Arrays;
+
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 
@@ -22,8 +24,17 @@ public class OpenUrlProxy {
         if (intent == null || intent.getData() == null)
             return;
 
-        String category = intent.getData().getHost();
-        int viewType = Integer.valueOf(intent.getData().getPath().replace("/", ""));
+        String category;
+        int viewType;
+        String[] paths = intent.getData().getPath().split("/");
+
+        if (intent.getData().getScheme().equals("http")) {
+            category = paths.length > 0 ? paths[0] : null;
+            viewType = paths.length > 1 ? Integer.valueOf(paths[1]) : 0;
+        } else {
+            category = intent.getData().getHost();
+            viewType = paths.length > 0 ? Integer.valueOf(paths[0]) : 0;
+        }
 
         if (category == null || viewType < 1)
             return;

@@ -29,7 +29,6 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -44,7 +43,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
     private boolean allowsShowPageCount;
     private boolean playing;
-    private boolean shouldLoadPages;
     private boolean shouldResizePages;
     private int imageLoadType;
     private int pageHeight;
@@ -76,14 +74,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     // ================================================================================================
     //  Overridden: PSFrameLayout
     // ================================================================================================
-
-    @Override
-    protected void commitProperties() {
-        if (shouldLoadPages) {
-            shouldLoadPages = false;
-            pageIndexChanged();
-        }
-    }
 
     @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -169,14 +159,13 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     originRotation = targetFlipView.getRotationY();
 
-                    showLastPageToast();
-
                     if (delegate != null)
                         delegate.onStartPanning(this, targetFlipView);
 
                     EventBus.getDefault().post(new AlbumFlipViewEvent(AlbumFlipViewEvent.START_PANNING, this));
 
                     loadRemainPages();
+                    showLastPageToast();
                 }
 
                 if (targetFlipView != null) {
@@ -213,19 +202,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         if (background != null)
             addView(background, 0);
-    }
-
-    public void showLastPageToast() {
-        if (targetFlipView == null)
-            return;
-
-        List<Page> pages = targetFlipView.getPages();
-        if (pages != null && pages.size() > 0) {
-            Page page = pages.get(pages.size() - 1);
-
-            if (page.equals(model.pages.getLastPage()) && targetFlipView.getDirection().equals(FlipView.Direction.Right))
-                Toast.makeText(Application.applicationContext(), R.string.m_hint_album_last_page, Toast.LENGTH_LONG).show();
-        }
     }
 
     public boolean isPlaying() {
@@ -269,9 +245,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         this.pageIndex = pageIndex;
-        shouldLoadPages = true;
 
-        invalidateProperties();
+        pageIndexChanged();
     }
 
     public FrameLayout getContainer() {
@@ -295,10 +270,11 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         this.model = model;
-        shouldLoadPages = true;
 
         stop();
-        invalidateProperties();
+
+        if (pageIndex > -1)
+            pageIndexChanged();
     }
 
     public int getSlideDuration() {
@@ -677,6 +653,15 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         if (delegate != null)
             delegate.onStop(this);
+    }
+
+    private void showLastPageToast() {
+        if (targetFlipView == null)
+            return;
+
+        if (targetFlipView.getDirection().equals(FlipView.Direction.Right) &&
+                (targetFlipView.getCurrentPageView().getModel() == null || ObjectUtils.equals(targetFlipView.getCurrentPageView().getModel(), model.pages.getLastPage())))
+            Toast.makeText(Application.applicationContext(), R.string.m_hint_album_last_page, Toast.LENGTH_LONG).show();
     }
 
     private void updatePageCountView() {

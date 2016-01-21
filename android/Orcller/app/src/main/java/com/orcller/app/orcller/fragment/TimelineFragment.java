@@ -317,8 +317,14 @@ public class TimelineFragment extends MainTabFragment
 
         if (scrollState == SCROLL_STATE_FLING) {
             startPoint = getScrollPoint();
+        } else if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+            if (getDelegate() != null)
+                getDelegate().onStartScroll();
         } else if (scrollState == SCROLL_STATE_IDLE) {
             startPoint = null;
+
+            if (getDelegate() != null)
+                getDelegate().onFinishScroll();
         }
     }
 

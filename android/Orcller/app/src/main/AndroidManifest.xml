@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.orcller.app.orcller"
     android:installLocation="auto"
-    android:versionCode="1"
+    android:versionCode="3"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -41,13 +41,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter>
+            <intent-filter android:label="@string/w_filter_title">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:host="@string/host_main" android:scheme="@string/app_scheme" />
                 <data android:host="@string/host_album" android:path="/1" android:scheme="@string/app_scheme" />
                 <data android:host="@string/host_member" android:path="/1" android:scheme="@string/app_scheme" />
+            </intent-filter>
+
+            <intent-filter android:label="@string/w_filter_title">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="@string/host" android:scheme="http" />
+                <data android:host="@string/host" android:path="/album/1" android:scheme="http" />
+                <data android:host="@string/host" android:path="/member/1" android:scheme="http" />
             </intent-filter>
         </activity>
 

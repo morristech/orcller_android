@@ -95,6 +95,7 @@ public class ApplicationFacade {
                 FacebookSdk.sdkInitialize(Application.applicationContext());
                 DeviceManager.getDefault().registerDeviceToken(context.getString(R.string.gcm_defaultSenderId));
                 MediaManager.getDefault().clearUnnecessaryItems();
+                AnalyticsTrackers.init();
 
                 if (!EventBus.getDefault().isRegistered(this))
                     EventBus.getDefault().register(this);

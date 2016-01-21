@@ -13,6 +13,7 @@
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
     <!-- custom scheme -->
+    <string name="host">www.orcller.com</string>
     <string name="host_album">album</string>
     <string name="host_coediting">coediting</string>
     <string name="host_feed">feed</string>
@@ -31,6 +32,7 @@
     <string name="facebook_share_content_title">UStory - Live and Put Together</string>
 
     <!-- words -->
+    <string name="w_filter_title">Orcller - Album Collaboration</string>
     <string name="w_about">About</string>
     <string name="w_account">Account</string>
     <string name="w_accept">Accept</string>

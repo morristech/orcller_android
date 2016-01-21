@@ -43,7 +43,7 @@ import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSViewPager;
 
 public class MainActivity extends PSActionBarActivity
-        implements TabHost.OnTabChangeListener, View.OnTouchListener, ViewPager.OnPageChangeListener {
+        implements MainTabFragment.Delegate, TabHost.OnTabChangeListener, View.OnTouchListener, ViewPager.OnPageChangeListener {
     public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private static final int TAB_COUNT = 5;
     private Map<String, MainTabFragment> fragmentMap = new HashMap<>();
@@ -69,7 +69,7 @@ public class MainActivity extends PSActionBarActivity
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPager = (PSViewPager) findViewById(R.id.viewPager);
         emblemImageView = (ImageView) findViewById(R.id.emblemImageView);
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
 
         tabHost.setup();
         tabHost.setOnTabChangedListener(this);
@@ -217,6 +217,17 @@ public class MainActivity extends PSActionBarActivity
         activedFragment.setActive(true);
     }
 
+    /**
+     * MainTabFragment.Delegate
+     */
+    public void onFinishScroll() {
+        viewPager.setPagingEnabled(true);
+    }
+
+    public void onStartScroll() {
+        viewPager.setPagingEnabled(false);
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -305,8 +316,12 @@ public class MainActivity extends PSActionBarActivity
     // ================================================================================================
 
     private class PagerAdapter extends FragmentPagerAdapter {
-        public PagerAdapter(FragmentManager fm) {
+        private MainTabFragment.Delegate delegate;
+
+        public PagerAdapter(MainTabFragment.Delegate delegate, FragmentManager fm) {
             super(fm);
+
+            this.delegate = delegate;
         }
 
         @Override
@@ -339,6 +354,7 @@ public class MainActivity extends PSActionBarActivity
                 } else {
                     fragment = (MainTabFragment) fragmentClass.newInstance();
                     fragment.setActionBar(getSupportActionBar());
+                    fragment.setDelegate(delegate);
                     fragmentMap.put(key, fragment);
                 }
 
