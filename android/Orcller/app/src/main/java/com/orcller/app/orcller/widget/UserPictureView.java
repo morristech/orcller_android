@@ -158,7 +158,7 @@ public class UserPictureView extends PSFrameLayout implements View.OnClickListen
 
     private void modelChanged() {
         Glide.clear(imageView);
-        Glide.with(getContext())
+        Glide.with(Application.applicationContext())
                 .load(SharedObject.toUserPictureUrl(model.user_picture, sizeType))
                 .placeholder(getPlaceholderImage())
                 .error(getPlaceholderImage())
