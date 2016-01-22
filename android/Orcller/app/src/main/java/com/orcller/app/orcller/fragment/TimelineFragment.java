@@ -71,7 +71,7 @@ import retrofit.Retrofit;
  */
 public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
-        SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+        SwipeRefreshLayout.OnRefreshListener, TempAlbumItemView.Delegate, View.OnClickListener {
     private static final int LIST_COUNT = 10;
     private boolean isCreateButtonAnimating;
     private boolean shouldReload = true;
@@ -382,6 +382,15 @@ public class TimelineFragment extends MainTabFragment
 
     public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
         selectedAlbumFlipView = view;
+    }
+
+    /**
+     * TempAlbumItemView.Delegate
+     */
+    public void onClickDeleteButton(TempAlbumItemView itemView) {
+        MediaManager.getDefault().clearItem(itemView.getUnit());
+        items.remove(itemView.getUnit());
+        listAdapter.notifyDataSetChanged();
     }
 
     // ================================================================================================
@@ -712,6 +721,7 @@ public class TimelineFragment extends MainTabFragment
                     case TEMP:
                         TempAlbumItemView tempAlbumItemView = new TempAlbumItemView(context);
                         tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
+                        tempAlbumItemView.setDelegate(this);
                         convertView = tempAlbumItemView;
                         break;
                 }

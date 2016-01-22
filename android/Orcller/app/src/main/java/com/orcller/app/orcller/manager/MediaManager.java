@@ -87,10 +87,9 @@ public class MediaManager {
             public void run() {
                 for (MediaUploadUnit unit : cachedUploadUnits) {
                     unit.clearAll();
+                    cachedUploadUnits.remove(unit);
+                    cachedUploadUnitMap.remove(unit);
                 }
-
-                cachedUploadUnits.clear();
-                cachedUploadUnitMap.clear();
             }
         }, new Runnable() {
             @Override
@@ -100,6 +99,13 @@ public class MediaManager {
         });
     }
 
+    public void clearItem(MediaUploadUnit unit) {
+        unit.clearAll();
+        cachedUploadUnits.remove(unit);
+        cachedUploadUnitMap.remove(unit);
+        saveCacheFile();
+    }
+
     public void clearUnnecessaryItems() {
         Application.run(new Runnable() {
             @Override
@@ -107,11 +113,12 @@ public class MediaManager {
                 for (MediaUploadUnit unit : cachedUploadUnits) {
                     if (unit.getCompletionState().equals(MediaUploadUnit.CompletionState.None)) {
                         unit.clearAll();
+                        cachedUploadUnits.remove(unit);
+                        cachedUploadUnitMap.remove(unit);
+                    } else {
+                        unit.pauseAll();
                     }
                 }
-
-                cachedUploadUnits.clear();
-                cachedUploadUnitMap.clear();
 
                 for (Image image : cachedErrorImageList) {
                     deleteFile(image, false);

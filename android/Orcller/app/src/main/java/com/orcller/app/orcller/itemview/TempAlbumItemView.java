@@ -21,20 +21,24 @@ import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
+import pisces.psuikit.widget.PSButton;
 
 /**
  * Created by pisces on 12/17/15.
  */
 public class TempAlbumItemView extends PSLinearLayout
         implements MediaUploadUnit.Delegate, View.OnClickListener {
+    private boolean unitChanged;
     private MediaUploadUnit unit;
     private LinearLayout errorContainer;
     private TextView errorTextView;
     private TextView descriptionTextView;
-    private Button retryButton;
+    private PSButton deleteButton;
+    private PSButton retryButton;
     private ProgressBar progressBar;
     private AlbumInfoProfileView albumInfoProfileView;
     private AlbumFlipView albumFlipView;
+    private Delegate delegate;
 
     public TempAlbumItemView(Context context) {
         super(context);
@@ -53,13 +57,35 @@ public class TempAlbumItemView extends PSLinearLayout
     // ================================================================================================
 
     @Override
+    protected void commitProperties() {
+        if (unitChanged) {
+            unitChanged = false;
+
+            unit.setDelegate(this);
+            albumInfoProfileView.setModel(unit.getModel());
+            albumFlipView.setPageWidth(getAlbumHeight());
+            albumFlipView.setPageHeight(getAlbumHeight());
+            albumFlipView.setImageLoadType(unit.getModel().pages.total_count > 1 ?
+                    MediaView.ImageLoadType.LowResolution.value() :
+                    MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
+            albumFlipView.setModel(unit.getModel());
+            albumFlipView.setPageIndex(unit.getModel().default_page_index);
+            albumFlipView.getLayoutParams().width = Application.getWindowWidth();
+            albumFlipView.getLayoutParams().height = getAlbumHeight();
+            descriptionTextView.setText(unit.getModel().desc);
+            descriptionTextView.setVisibility(TextUtils.isEmpty(unit.getModel().desc) ? GONE : VISIBLE);
+        }
+    }
+
+    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_temp_album, this);
 
         errorContainer = (LinearLayout) findViewById(R.id.errorContainer);
-        errorTextView = (TextView) findViewById(R.id.textView);
+        errorTextView = (TextView) findViewById(R.id.errorTextView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
-        retryButton = (Button) findViewById(R.id.retryButton);
+        retryButton = (PSButton) findViewById(R.id.retryButton);
+        deleteButton = (PSButton) findViewById(R.id.deleteButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
@@ -67,6 +93,7 @@ public class TempAlbumItemView extends PSLinearLayout
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
         setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
         retryButton.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
     }
 
     @Override
@@ -82,6 +109,14 @@ public class TempAlbumItemView extends PSLinearLayout
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
+    }
 
     public int getDescriptionMode() {
         return albumInfoProfileView.getDescriptionMode();
@@ -100,20 +135,9 @@ public class TempAlbumItemView extends PSLinearLayout
             return;
 
         this.unit = unit;
+        unitChanged = true;
 
-        unit.setDelegate(this);
-        albumInfoProfileView.setModel(unit.getModel());
-        albumFlipView.setPageWidth(getAlbumHeight());
-        albumFlipView.setPageHeight(getAlbumHeight());
-        albumFlipView.setImageLoadType(unit.getModel().pages.total_count > 1 ?
-                MediaView.ImageLoadType.LowResolution.value() :
-                MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
-        albumFlipView.setModel(unit.getModel());
-        albumFlipView.setPageIndex(unit.getModel().default_page_index);
-        albumFlipView.getLayoutParams().width = Application.getWindowWidth();
-        albumFlipView.getLayoutParams().height = getAlbumHeight();
-        descriptionTextView.setText(unit.getModel().desc);
-        descriptionTextView.setVisibility(TextUtils.isEmpty(unit.getModel().desc) ? GONE : VISIBLE);
+        invalidateProperties();
     }
 
     // ================================================================================================
@@ -132,8 +156,13 @@ public class TempAlbumItemView extends PSLinearLayout
      * View.OnClickListener
      */
     public void onClick(View v) {
-        progressBar.setProgress(0);
-        MediaManager.getDefault().startUploading(unit.getModel());
+        if (retryButton.equals(v)) {
+            progressBar.setProgress(0);
+            MediaManager.getDefault().startUploading(unit.getModel());
+        } else if (deleteButton.equals(v)) {
+            if (delegate != null)
+                delegate.onClickDeleteButton(this);
+        }
     }
 
     /**
@@ -149,12 +178,20 @@ public class TempAlbumItemView extends PSLinearLayout
     }
 
     public void onProcessUploading(MediaUploadUnit unit) {
-        progressBar.setProgress(Math.round(unit.getProcess() * 100));
+        progressBar.setProgress(Math.round(unit.getProgress() * 100));
     }
 
     public void onStartUploading(MediaUploadUnit unit) {
         errorContainer.setVisibility(GONE);
         progressBar.setVisibility(VISIBLE);
-        progressBar.setProgress(Math.round(unit.getProcess() * 100));
+        progressBar.setProgress(Math.round(unit.getProgress() * 100));
+    }
+
+    // ================================================================================================
+    //  Delegate
+    // ================================================================================================
+
+    public interface Delegate {
+        void onClickDeleteButton(TempAlbumItemView itemView);
     }
 }

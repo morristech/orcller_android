@@ -33,13 +33,24 @@
                 android:textColor="@color/button_follow"
                 android:textSize="13dp"/>
 
-            <Button
+            <pisces.psuikit.widget.PSButton
                 android:id="@+id/retryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/background_ripple_followbutton"
                 android:text="@string/w_retry"
+                android:textAllCaps="false"
+                android:textColor="@color/button_follow"
+                android:textSize="13dp"/>
+
+            <pisces.psuikit.widget.PSButton
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/background_ripple_followbutton"
+                android:text="@string/w_delete"
                 android:textAllCaps="false"
                 android:textColor="@color/button_follow"
                 android:textSize="13dp"/>

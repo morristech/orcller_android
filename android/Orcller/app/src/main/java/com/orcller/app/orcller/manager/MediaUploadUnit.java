@@ -8,7 +8,6 @@ import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Image;
 import com.orcller.app.orcller.model.Page;
-import com.orcller.app.orcller.model.VideoMedia;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
@@ -41,12 +40,13 @@ public class MediaUploadUnit implements Serializable {
 
     private boolean cancelled;
     private boolean processing;
-    private float process;
-    private int total;
+    private float progressFloat;
+    private int progress;
     private int current;
+    private int total;
     private CompletionState completionState = CompletionState.None;
     private ConcurrentLinkedQueue<Image> queue = new ConcurrentLinkedQueue<>();
-    private HashMap<String, Image> map = new HashMap<>();
+    private HashMap<String, Integer> map = new HashMap<>();
     private transient Delegate delegate;
     private Album model;
 
@@ -92,8 +92,8 @@ public class MediaUploadUnit implements Serializable {
         queue.clear();
     }
 
-    public float getProcess() {
-        return process;
+    public float getProgress() {
+        return progressFloat;
     }
 
     public void clearAll() {
@@ -109,48 +109,67 @@ public class MediaUploadUnit implements Serializable {
         });
     }
 
+    public void pauseAll() {
+        AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
+        map.clear();
+        processing = false;
+    }
+
     public void upload() {
-        if (!isProcessing()) {
-            if (delegate != null)
-                delegate.onStartUploading(this);
+        if (isProcessing())
+            return;
 
-            EventBus.getDefault().post(new Event(Event.START_UPLOADING, this));
-        }
+        if (delegate != null)
+            delegate.onStartUploading(this);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                for (Page page : model.pages.data) {
-                    enqueue(page.media.images.standard_resolution);
-                    enqueue(page.media.images.low_resolution);
-                    enqueue(page.media.images.thumbnail);
+        EventBus.getDefault().post(new Event(Event.START_UPLOADING, this));
+
+        if (queue.size() > 0) {
+            startUploading();
+        } else {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    for (Page page : model.pages.data) {
+                        enqueue(page.media.images.standard_resolution);
+                        enqueue(page.media.images.low_resolution);
+                        enqueue(page.media.images.thumbnail);
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
+                @Override
+                protected void onPostExecute(Void result) {
+                    super.onPostExecute(result);
 
-                startUploading();
-            }
-        }.execute();
+                    startUploading();
+                }
+            }.execute();
+        }
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
-    private void checkCompletion() {
+    private boolean checkCompletion() {
         if (delegate != null)
             delegate.onProcessUploading(this);
 
         EventBus.getDefault().post(new Event(Event.PROCESS_UPLOADING, this));
 
+        if (progress < total)
+            return false;
+
         if (current >= total) {
             executeCompletionState();
             processing = false;
+            return true;
         }
+
+        startUploading();
+
+        return false;
     }
 
     private void enqueue(Image image) {
@@ -159,8 +178,7 @@ public class MediaUploadUnit implements Serializable {
     }
 
     private void errorState() {
-        cancelAll();
-        queue.clear();
+        AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
 
         if (delegate != null)
             delegate.onFailUploading(this);
@@ -183,12 +201,16 @@ public class MediaUploadUnit implements Serializable {
     }
 
     private void executeUploading() {
-        while (!queue.isEmpty()) {
-            final Image image = queue.poll();
-            final String key = String.valueOf(image.hashCode());
+        ConcurrentLinkedQueue<Image> copiedQueue = new ConcurrentLinkedQueue<>(queue);
+        int count = copiedQueue.size();
 
-            if (!map.containsKey(key) && image != null) {
-                map.put(key, image);
+        for (int i=0; i<count; i++) {
+            final Image image = copiedQueue.poll();
+            final String key = String.valueOf(image.hashCode());
+            int retryCount = map.containsKey(key) ? map.get(key) : 0;
+
+            if (retryCount < 3) {
+                map.put(key, retryCount + 1);
 
                 MediaDataProxy.getDefault().getUploadInfo(new Callback<ApiMedia.UploadInfoRes>() {
                     @Override
@@ -202,37 +224,44 @@ public class MediaUploadUnit implements Serializable {
                                     new MediaManager.CompleteHandler() {
                                         @Override
                                         public void onComplete(Error error) {
-                                            if (error == null) {
-                                                processUploading();
-                                            } else {
-                                                errorState();
-                                            }
+                                            queue.remove(image);
 
-                                            map.remove(key);
+                                            if (error != null)
+                                                queue.offer(image);
+
+                                            processUploading(error == null);
                                         }
                                     });
                         } else {
-                            errorState();
-                            map.remove(key);
+                            queue.remove(image);
+                            queue.offer(image);
+                            processUploading(false);
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-                        errorState();
-                        map.remove(key);
+                        queue.remove(image);
+                        queue.offer(image);
+                        processUploading(false);
                     }
                 });
+            } else {
+                map.clear();
+                errorState();
+                break;
             }
         }
     }
 
-    private void processUploading() {
+    private void processUploading(Boolean isSuccess) {
+        if (isSuccess)
+            current++;
+
+        progress++;
+        progressFloat = (float) current / total;
+
         MediaManager.getDefault().saveCacheFile();
-
-        current++;
-        process = (float) current / total;
-
         checkCompletion();
     }
 
@@ -285,13 +314,11 @@ public class MediaUploadUnit implements Serializable {
 
     private void startUploading() {
         processing = true;
-        total = queue.size();
         current = 0;
+        progress = 0;
+        total = queue.size();
 
-        if (current >= total) {
-            process = 1.0f;
-            checkCompletion();
-        } else {
+        if (!checkCompletion()) {
             executeUploading();
         }
     }

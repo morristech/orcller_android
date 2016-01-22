@@ -81,8 +81,8 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
                 return false;
             return super.onInterceptTouchEvent(ev);
         } catch (Exception e) {
+            return super.onInterceptTouchEvent(ev);
         }
-        return super.onInterceptTouchEvent(ev);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
                     return super.onTouchEvent(ev);
             }
         } catch (Exception e) {
+            return super.onTouchEvent(ev);
         }
-        return super.onTouchEvent(ev);
     }
 
     // ================================================================================================
