@@ -343,22 +343,14 @@ public class PageListActivity extends PSActionBarActivity
 
         this.model = model;
 
-        Application.run(new Runnable() {
-            @Override
-            public void run() {
-                mediaList.clear();
+        mediaList.clear();
 
-                for (Page page : model.pages.data) {
-                    mediaList.add(page.media);
-                }
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                modelChanged();
-                loadRemainPages();
-            }
-        });
+        for (Page page : model.pages.data) {
+            mediaList.add(page.media);
+        }
+
+        modelChanged();
+        loadRemainPages();
     }
 
     private void setSelectedIndex(int selectedIndex) {

@@ -29,6 +29,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -51,11 +52,11 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private int slideDuration = 1500;
     private float originRotation;
     private PointF startPoint;
+    private List<FlipView> visibleViews;
     private Delegate delegate;
     private Album model;
     private View background;
     private PSFrameLayout container;
-    private List<FlipView> visibleViews;
     private FlipView targetFlipView;
     private AlbumPageCountView pageCountView;
 
@@ -155,7 +156,7 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 if (dx == 0)
                     break;
 
-                if (targetFlipView == null && Math.abs(dy) < Math.abs(dx)) {
+                if (targetFlipView == null && Math.abs(dy) < Math.abs(dx) && Math.abs(dx) > 10) {
                     targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
                     originRotation = targetFlipView.getRotationY();
 
