@@ -91,6 +91,7 @@ public class TimelineFragment extends MainTabFragment
     private PSListView listView;
     private FloatingActionButton createButton;
     private AlbumFlipView selectedAlbumFlipView;
+    private TimelineFragment self = this;
 
     public TimelineFragment() {
         super();
@@ -388,6 +389,7 @@ public class TimelineFragment extends MainTabFragment
      * TempAlbumItemView.Delegate
      */
     public void onClickDeleteButton(TempAlbumItemView itemView) {
+        Log.d("onClickDeleteButton");
         MediaManager.getDefault().clearItem(itemView.getUnit());
         items.remove(itemView.getUnit());
         listAdapter.notifyDataSetChanged();
@@ -721,7 +723,7 @@ public class TimelineFragment extends MainTabFragment
                     case TEMP:
                         TempAlbumItemView tempAlbumItemView = new TempAlbumItemView(context);
                         tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
-                        tempAlbumItemView.setDelegate(this);
+                        tempAlbumItemView.setDelegate(self);
                         convertView = tempAlbumItemView;
                         break;
                 }

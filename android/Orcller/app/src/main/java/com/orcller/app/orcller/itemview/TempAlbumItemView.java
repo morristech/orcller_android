@@ -98,10 +98,7 @@ public class TempAlbumItemView extends PSLinearLayout
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getX() >= retryButton.getX() &&
-                event.getX() <= retryButton.getX() + retryButton.getWidth() &&
-                event.getY() >= retryButton.getY() &&
-                event.getY() <= retryButton.getY() + retryButton.getHeight())
+        if (hitTest(retryButton, event) || hitTest(deleteButton, event))
             return super.dispatchTouchEvent(event);
         return false;
     }
@@ -146,6 +143,13 @@ public class TempAlbumItemView extends PSLinearLayout
 
     private int getAlbumHeight() {
         return unit.getModel().pages.count > 1 ? Application.getWindowWidth() / 2 : Application.getWindowWidth();
+    }
+
+    private boolean hitTest(View view, MotionEvent event) {
+        return event.getX() >= view.getX() &&
+                event.getX() <= view.getX() + view.getWidth() &&
+                event.getY() >= view.getY() &&
+                event.getY() <= view.getY() + view.getHeight();
     }
 
     // ================================================================================================
