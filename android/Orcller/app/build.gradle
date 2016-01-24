@@ -16,7 +16,7 @@ android {
         applicationId "com.orcller.app.orcller"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 5
+        versionCode 6
         versionName "1.0.3"
         multiDexEnabled false
     }
