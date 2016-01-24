@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.BitmapUtils;
@@ -102,7 +104,7 @@ public class MediaManager {
     public void clearItem(MediaUploadUnit unit) {
         unit.clearAll();
         cachedUploadUnits.remove(unit);
-        cachedUploadUnitMap.remove(unit);
+        cachedUploadUnitMap.remove(String.valueOf(unit.getModel().id));
         saveCacheFile();
     }
 
@@ -114,7 +116,7 @@ public class MediaManager {
                     if (unit.getCompletionState().equals(MediaUploadUnit.CompletionState.None)) {
                         unit.clearAll();
                         cachedUploadUnits.remove(unit);
-                        cachedUploadUnitMap.remove(unit);
+                        cachedUploadUnitMap.remove(String.valueOf(unit.getModel().id));
                     } else {
                         unit.pauseAll();
                     }

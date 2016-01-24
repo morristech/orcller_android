@@ -389,7 +389,6 @@ public class TimelineFragment extends MainTabFragment
      * TempAlbumItemView.Delegate
      */
     public void onClickDeleteButton(TempAlbumItemView itemView) {
-        Log.d("onClickDeleteButton");
         MediaManager.getDefault().clearItem(itemView.getUnit());
         items.remove(itemView.getUnit());
         listAdapter.notifyDataSetChanged();
