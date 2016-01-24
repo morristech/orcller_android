@@ -212,7 +212,10 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
         }
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
     }
 
     // ================================================================================================

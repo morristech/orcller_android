@@ -21,6 +21,7 @@ import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSLinearLayout;
+import pisces.psuikit.ext.PSView;
 import pisces.psuikit.widget.PSButton;
 
 /**
@@ -98,7 +99,7 @@ public class TempAlbumItemView extends PSLinearLayout
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (hitTest(retryButton, event) || hitTest(deleteButton, event))
+        if (PSView.hitTest(retryButton, event) || PSView.hitTest(deleteButton, event))
             return super.dispatchTouchEvent(event);
         return false;
     }
@@ -143,13 +144,6 @@ public class TempAlbumItemView extends PSLinearLayout
 
     private int getAlbumHeight() {
         return unit.getModel().pages.count > 1 ? Application.getWindowWidth() / 2 : Application.getWindowWidth();
-    }
-
-    private boolean hitTest(View view, MotionEvent event) {
-        return event.getX() >= view.getX() &&
-                event.getX() <= view.getX() + view.getWidth() &&
-                event.getY() >= view.getY() &&
-                event.getY() <= view.getY() + view.getHeight();
     }
 
     // ================================================================================================

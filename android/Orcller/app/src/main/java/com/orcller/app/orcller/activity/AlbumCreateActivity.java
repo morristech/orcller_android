@@ -396,7 +396,10 @@ public class AlbumCreateActivity extends BaseActionBarActivity
     public void onStop(AlbumFlipView view) {
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
     }
 
     /**

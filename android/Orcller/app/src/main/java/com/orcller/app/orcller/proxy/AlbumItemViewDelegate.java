@@ -139,8 +139,12 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     public void onStop(AlbumItemView itemView, AlbumFlipView view) {
     }
 
-    public void onTap(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView) {
-        invoker.onTap(view, flipView, pageView);
+    public void onTap(AlbumItemView itemView, AlbumFlipView view) {
+        invoker.onTap(view);
+    }
+
+    public void onTapFlipView(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView) {
+        invoker.onTapFlipView(view, flipView, pageView);
         PageListActivity.show(view.getModel(), view.getModel().pages.getPageIndex(pageView.getModel()));
     }
 
@@ -232,6 +236,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
         void onAlbumSynchronize(AlbumItemView itemView);
         void onChangePanningState(boolean isPanning);
-        void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
+        void onTap(AlbumFlipView view);
+        void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

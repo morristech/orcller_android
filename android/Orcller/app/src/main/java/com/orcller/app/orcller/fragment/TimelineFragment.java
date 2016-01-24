@@ -381,7 +381,11 @@ public class TimelineFragment extends MainTabFragment
         swipeRefreshLayout.setEnabled(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+        AlbumViewActivity.show(view.getModel().id, false);
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
         selectedAlbumFlipView = view;
     }
 

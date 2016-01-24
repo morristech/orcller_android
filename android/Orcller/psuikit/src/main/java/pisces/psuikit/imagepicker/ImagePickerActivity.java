@@ -17,7 +17,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,11 +25,9 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.android.R;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.BitmapUtils;
 import pisces.psuikit.event.ImagePickerEvent;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.manager.ProgressBarManager;
 
 /**
  * Created by pisces on 11/24/15.
@@ -141,7 +138,6 @@ public class ImagePickerActivity extends PSActionBarActivity
 
     private void init() {
         gridView.setVisibility(View.INVISIBLE);
-        ProgressBarManager.show(this);
 
         String[] projection = {
                 MediaStore.Images.Media.DATA,
@@ -185,7 +181,6 @@ public class ImagePickerActivity extends PSActionBarActivity
         }, new Runnable() {
             @Override
             public void run() {
-                ProgressBarManager.hide(self);
                 gridView.setVisibility(View.VISIBLE);
                 gridView.setAdapter(new ImageAdapter(self));
             }

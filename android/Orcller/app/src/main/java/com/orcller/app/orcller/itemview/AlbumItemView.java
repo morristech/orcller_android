@@ -330,9 +330,14 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
             delegate.onStop(this, view);
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
         if (delegate != null)
-            delegate.onTap(this, view, flipView, pageView);
+            delegate.onTap(this, view);
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+        if (delegate != null)
+            delegate.onTapFlipView(this, view, flipView, pageView);
     }
 
     // ================================================================================================
@@ -473,6 +478,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view);
         void onStartPanning(AlbumItemView itemView, AlbumFlipView view, FlipView flipView);
         void onStop(AlbumItemView itemView, AlbumFlipView view);
-        void onTap(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView);
+        void onTap(AlbumItemView itemView, AlbumFlipView view);
+        void onTapFlipView(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

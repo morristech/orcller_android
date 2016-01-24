@@ -295,7 +295,10 @@ public class AlbumViewActivity extends BaseActionBarActivity
         scrollView.setScrollable(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
     }
 
     // ================================================================================================

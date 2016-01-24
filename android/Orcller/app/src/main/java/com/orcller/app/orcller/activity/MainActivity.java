@@ -77,6 +77,7 @@ public class MainActivity extends BaseActionBarActivity
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageMargin(GraphicUtils.convertDpToPixel(15));
         viewPager.setPageMarginDrawable(R.color.theme_lightgray_primary);
+        viewPager.setPagingEnabled(false);
         viewPager.addOnPageChangeListener(this);
         addTabs();
         EventBus.getDefault().register(this);
@@ -156,14 +157,6 @@ public class MainActivity extends BaseActionBarActivity
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 tabHost.getTabWidget().setVisibility(View.VISIBLE);
             }
-        } else if (event instanceof AlbumFlipViewEvent) {
-            AlbumFlipViewEvent casted = (AlbumFlipViewEvent) event;
-
-            if (AlbumFlipViewEvent.CANCEL_PANNING.equals(casted.getType()) ||
-                    AlbumFlipViewEvent.PAGE_INDEX_CHANGE.equals(casted.getType()))
-                viewPager.setPagingEnabled(true);
-            else if (AlbumFlipViewEvent.START_PANNING.equals(casted.getType()))
-                viewPager.setPagingEnabled(false);
         }
     }
 
@@ -227,11 +220,9 @@ public class MainActivity extends BaseActionBarActivity
      * MainTabFragment.Delegate
      */
     public void onFinishScroll() {
-        viewPager.setPagingEnabled(true);
     }
 
     public void onStartScroll() {
-        viewPager.setPagingEnabled(false);
     }
 
     // ================================================================================================
