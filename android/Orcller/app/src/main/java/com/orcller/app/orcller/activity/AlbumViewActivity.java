@@ -129,7 +129,7 @@ public class AlbumViewActivity extends BaseActionBarActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         if (albumOptionsManager != null)
             return albumOptionsManager.onCreateOptionsMenu(menu);
-        return false;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
