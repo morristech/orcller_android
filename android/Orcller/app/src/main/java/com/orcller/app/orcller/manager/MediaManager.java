@@ -290,6 +290,7 @@ public class MediaManager {
     }
 
     public void startUploading(Album model) {
+        saveCacheFile();
         getUnit(model).upload();
     }
 
