@@ -74,28 +74,6 @@ public class Album extends AlbumInfo {
         init(user);
     }
 
-    public boolean addPage(Page page) {
-        if (page == null || pages.data.contains(page))
-            return false;
-
-        page.order = pages.total_count + 1;
-        pages.data.add(page);
-        pages.count = pages.total_count = pages.data.size();
-
-        Collections.sort(pages.data, new Comparator<Page>() {
-            @Override
-            public int compare(Page lhs, Page rhs) {
-                if (lhs.order > rhs.order)
-                    return 1;
-                if (lhs.order < rhs.order)
-                    return -1;
-                return 0;
-            }
-        });
-
-        return true;
-    }
-
     public Page getCover() {
         return pages.data.size() > 0 ? pages.data.get(0) : null;
     }
@@ -104,31 +82,6 @@ public class Album extends AlbumInfo {
         return TextUtils.isEmpty(name) ?
                 Application.applicationContext().getResources().getString(R.string.w_untitled) :
                 name;
-    }
-
-    public boolean insertPage(Page page, int index) {
-        if (page == null || pages.data.contains(page))
-            return false;
-
-        pages.data.add(index, page);
-        pages.count = pages.total_count = pages.data.size();
-
-        return true;
-    }
-
-    public void removeAllPages() {
-        pages.data.clear();
-        pages.count = pages.total_count = pages.data.size();
-    }
-
-    public boolean removePage(Page page) {
-        return pages.data.remove(page);
-    }
-
-    public boolean removePage(int index) {
-        if (index < 0 || index >= pages.data.size())
-            return false;
-        return pages.data.remove(index) != null;
     }
 
     private void init(User user) {

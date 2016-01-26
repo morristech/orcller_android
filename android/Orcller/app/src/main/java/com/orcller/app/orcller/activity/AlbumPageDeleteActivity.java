@@ -7,9 +7,11 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.event.PageListEvent;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Page;
 
+import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 
 /**
@@ -32,9 +34,6 @@ public class AlbumPageDeleteActivity extends AlbumPageGridActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.done:
-                for (Object page : gridView.getCheckedItems()) {
-                    getClonedModel().removePage((Page) page);
-                }
                 break;
         }
 
@@ -44,6 +43,11 @@ public class AlbumPageDeleteActivity extends AlbumPageGridActivity {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         getDoneItem().setEnabled(gridView.getCheckedItemCount() > 0);
+    }
+
+    @Override
+    protected void done() {
+        EventBus.getDefault().post(new PageListEvent(PageListEvent.PAGE_DELETE_COMPLETE, this, gridView.getCheckedItems()));
     }
 
     // ================================================================================================

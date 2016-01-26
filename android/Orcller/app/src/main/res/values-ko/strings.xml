@@ -45,6 +45,7 @@
     <string name="w_hide_album">앨범 숨김</string>
     <string name="w_heart">하트</string>
     <string name="w_hearts">하트</string>
+    <string name="w_importing">사진을 가져오는 중...</string>
     <string name="w_instagram">인스타그램</string>
     <string name="w_instagram_photos">인스타그램 사진</string>
     <string name="w_invite">초대</string>

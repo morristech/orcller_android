@@ -1,6 +1,7 @@
 package pisces.psuikit.manager;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Resources;
@@ -25,15 +26,23 @@ public class ProgressDialogManager {
         return showing;
     }
 
+    public static void show(Context context, int messageResId) {
+        show(context, Resources.getString(messageResId));
+    }
+
     public static void show(int messageResId) {
         show(Resources.getString(messageResId));
     }
 
     public static void show(String message) {
+        show(Application.getTopActivity(), message);
+    }
+
+    public static void show(Context context, String message) {
         if (showing)
             hide();
 
-        progressDialog = ProgressDialog.show(Application.getTopActivity(), null, message);
+        progressDialog = ProgressDialog.show(context, null, message);
         showing = true;
     }
 }

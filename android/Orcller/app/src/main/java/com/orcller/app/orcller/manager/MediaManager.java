@@ -294,15 +294,17 @@ public class MediaManager {
         getUnit(model).upload();
     }
 
-    public void uploadImage(final Image image, String filename, final CompleteHandler completeHandler) {
+    public int uploadImage(final Image image, String filename, final CompleteHandler completeHandler) {
         if (image == null) {
             completeHandler.onComplete(new Error());
-            return;
+            return 0;
         }
 
         final String key = SharedObject.getImageUploadPath(filename, new Point(image.width, image.height));
         final File file = new File(image.url);
         TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
+
+        Log.d("file", file.exists());
 
         observer.setTransferListener(new TransferListener() {
             @Override
@@ -310,10 +312,10 @@ public class MediaManager {
                 if (state == TransferState.COMPLETED) {
                     image.url = key;
 
+                    completeHandler.onComplete(null);
+
                     if (file.exists() && !file.delete())
                         addErrorImage(image);
-
-                    completeHandler.onComplete(null);
                 }
             }
 
@@ -329,6 +331,8 @@ public class MediaManager {
                 completeHandler.onComplete(new Error(ex.getMessage()));
             }
         });
+
+        return observer.getId();
     }
 
     public void uploadImageDirectly(Bitmap bitmap, Callback<ApiMedia.UploadInfoRes> callback) {

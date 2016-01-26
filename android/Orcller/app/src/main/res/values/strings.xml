@@ -74,6 +74,7 @@
     <string name="w_hide_album">Hide Album</string>
     <string name="w_heart">Heart</string>
     <string name="w_hearts">Hearts</string>
+    <string name="w_importing">Importing Photos...</string>
     <string name="w_instagram">Instagram</string>
     <string name="w_instagram_photos">Instagram Photos</string>
     <string name="w_invite">Invite</string>

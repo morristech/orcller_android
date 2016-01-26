@@ -139,7 +139,7 @@ public class ImagePickerManager {
     //  Interface: CompleteHandler
     // ================================================================================================
 
-    public static interface CompleteHandler {
+    public interface CompleteHandler {
         void onComplete(List result);
     }
 }

@@ -53,7 +53,7 @@ android {
             buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
         }
         dev {
-            applicationId "com.orcller.app.orcller.dev"
+            applicationId "com.orcller.app.orcller"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
             buildConfigField 'String', 'TEST_SESSION_TOKEN', '"s9m8UqcXA5vZtDzjTS1C5yaizd7v673jDr9t64BeOwK1jw0njhmV+TGju36midH80OvpWMqn+rs6gjJRaCP4PEyhMxb2wwwq1ygpfkIS552h1FLLB3jLhpPN9q5+rWqe6uyCeP+JH7D5PyhU1Khu/3snEXt9gTfcCTk8LGZenLA="'
 //            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'

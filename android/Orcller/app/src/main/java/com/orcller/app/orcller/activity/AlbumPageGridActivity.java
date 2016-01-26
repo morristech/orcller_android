@@ -28,12 +28,12 @@ import pisces.psuikit.ext.PSGridView;
 /**
  * Created by pisces on 12/1/15.
  */
-public class AlbumPageGridActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
+abstract public class AlbumPageGridActivity extends PSActionBarActivity implements AdapterView.OnItemClickListener {
     protected static final String ALBUM_KEY = "album";
     protected GridViewAdapter gridViewAdapter;
     protected PSGridView gridView;
+    protected Album clonedModel;
     private Album model;
-    private Album clonedModel;
 
     // ================================================================================================
     //  Overridden: PSActionBarActivity
@@ -65,8 +65,8 @@ public class AlbumPageGridActivity extends PSActionBarActivity implements Adapte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.done:
-                EventBus.getDefault().post(new PageListEvent(PageListEvent.PAGE_EDIT_COMPLETE, this, clonedModel));
                 finish();
+                done();
                 return true;
         }
 
@@ -112,6 +112,8 @@ public class AlbumPageGridActivity extends PSActionBarActivity implements Adapte
 
         modelChanged();
     }
+
+    abstract protected void done();
 
     protected void modelChanged() {
         try {

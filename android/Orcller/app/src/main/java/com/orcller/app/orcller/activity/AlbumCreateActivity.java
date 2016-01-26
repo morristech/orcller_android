@@ -21,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Length;
@@ -30,7 +29,6 @@ import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.event.PageListEvent;
-import com.orcller.app.orcller.facade.ApplicationFacade;
 import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.manager.ImagePickerManager;
 import com.orcller.app.orcller.manager.MediaManager;
@@ -45,12 +43,8 @@ import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcller.widget.DescriptionInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
-import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import pisces.psuikit.utils.AlertDialogUtils;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
-import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -61,8 +55,12 @@ import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import pisces.psuikit.ext.PSScrollView;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
+import pisces.psuikit.manager.ProgressDialogManager;
+import pisces.psuikit.utils.AlertDialogUtils;
 import pisces.psuikit.widget.ClearableEditText;
 import pisces.psuikit.widget.ExceptionView;
 import pisces.psuikit.widget.PSButton;
@@ -293,28 +291,13 @@ public class AlbumCreateActivity extends BaseActionBarActivity
             }
         } else if (event instanceof PageListEvent) {
             PageListEvent casted = (PageListEvent) event;
-            final Album model = (Album) casted.getObject();
 
-            if (casted.getType() == PageListEvent.PAGE_EDIT_COMPLETE) {
-                Application.run(new Runnable() {
-                    @Override
-                    public void run() {
-                        clonedModel.removeAllPages();
-
-                        for (Page page : model.pages.data) {
-                            clonedModel.addPage(page);
-                        }
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedIndexForAppending = 0;
-                        reload();
-                        setPostItemEnabled();
-                        setOtherButtonsEnabled();
-                    }
-                });
+            if (casted.getType() == PageListEvent.PAGE_DELETE_COMPLETE) {
+                deletePages((List<Page>) casted.getObject());
+            } else if (casted.getType() == PageListEvent.PAGE_ORDER_CHANGE_COMPLETE) {
+                changePagesOrder((List<Page>) casted.getObject());
             } else if (casted.getType() == PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE) {
+                Album model = (Album) casted.getObject();
                 clonedModel.default_page_index = model.default_page_index;
                 selectedIndexForAppending = SharedObject.convertPageIndexToPosition(model.default_page_index);
                 reload();
@@ -462,45 +445,80 @@ public class AlbumCreateActivity extends BaseActionBarActivity
         selectedIndexForAppending = clonedModel.pages.data.size();
         processCountForAppending = 0;
 
+        ProgressDialogManager.show(this, R.string.w_importing);
+
         final AppendPage appendPage = new AppendPage() {
             @Override
             public void append(Page page) {
-                clonedModel.addPage(page);
+                clonedModel.pages.addPage(page, false);
 
-                Application.runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        reload();
-
-                        if (++processCountForAppending >= list.size()) {
-                            setPostItemEnabled();
-                            setOtherButtonsEnabled();
-                            MediaManager.getDefault().startUploading(clonedModel);
-                        }
-                    }
-                });
+                if (++processCountForAppending >= list.size()) {
+                    clonedModel.pages.sortByOrder(true);
+                    reload();
+                    setPostItemEnabled();
+                    setOtherButtonsEnabled();
+                    MediaManager.getDefault().startUploading(clonedModel);
+                    ProgressDialogManager.hide();
+                }
             }
         };
 
-        Application.runOnBackgroundThread(new Runnable() {
+        for (Object object : list) {
+            if (object instanceof Media) {
+                appendPage.append(Page.create((Media) object));
+            } else if (object instanceof pisces.psuikit.imagepicker.Media) {
+                final Media media = MediaConverter.convert(object);
+
+                MediaManager.getDefault().saveToTemp(
+                        (pisces.psuikit.imagepicker.Media) object,
+                        media, new MediaManager.CompleteHandler() {
+                            @Override
+                            public void onComplete(Error error) {
+                                appendPage.append(Page.create(media));
+                            }
+                        });
+            }
+        }
+    }
+
+    private void changePagesOrder(final List<Page> pages) {
+        Application.run(new Runnable() {
             @Override
             public void run() {
-                for (Object object : list) {
-                    if (object instanceof Media) {
-                        appendPage.append(Page.create((Media) object));
-                    } else if (object instanceof pisces.psuikit.imagepicker.Media) {
-                        final Media media = MediaConverter.convert(object);
-
-                        MediaManager.getDefault().saveToTemp(
-                                (pisces.psuikit.imagepicker.Media) object,
-                                media, new MediaManager.CompleteHandler() {
-                                    @Override
-                                    public void onComplete(Error error) {
-                                        appendPage.append(Page.create(media));
-                                    }
-                                });
-                    }
+                for (Page p : pages) {
+                    Page page = clonedModel.pages.getPageById(p.id);
+                    if (page != null)
+                        page.order = p.order;
                 }
+
+                clonedModel.pages.sortByOrder(true);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                selectedIndexForAppending = 0;
+                reload();
+                setPostItemEnabled();
+            }
+        });
+    }
+
+    private void deletePages(final List<Page> pages) {
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                for (Page page : pages) {
+                    clonedModel.pages.removePageById(page.id);
+                    MediaManager.getDefault().getUnit(clonedModel).clear(page);
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                selectedIndexForAppending = 0;
+                reload();
+                setPostItemEnabled();
+                setOtherButtonsEnabled();
             }
         });
     }

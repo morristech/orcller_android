@@ -46,7 +46,8 @@ public class MediaUploadUnit implements Serializable {
     private int total;
     private CompletionState completionState = CompletionState.None;
     private ConcurrentLinkedQueue<Image> queue = new ConcurrentLinkedQueue<>();
-    private HashMap<String, Integer> map = new HashMap<>();
+    private HashMap<Integer, Integer> requestMap = new HashMap<>();
+    private HashMap<Integer, Integer> uploadMap = new HashMap<>();
     private transient Delegate delegate;
     private Album model;
 
@@ -85,15 +86,40 @@ public class MediaUploadUnit implements Serializable {
         return model;
     }
 
+    public float getProgress() {
+        return progressFloat;
+    }
+
     public void cancelAll() {
         cancelled = true;
         AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
-        map.clear();
+        requestMap.clear();
+        uploadMap.clear();
         queue.clear();
+        total = queue.size();
     }
 
-    public float getProgress() {
-        return progressFloat;
+    public void clear(Page page) {
+        if (page != null) {
+            clear(page.media.images.thumbnail);
+            clear(page.media.images.low_resolution);
+            clear(page.media.images.standard_resolution);
+        }
+    }
+
+    public void clear(Image image) {
+        if (image != null) {
+            int key = image.hashCode();
+            int uploadId = uploadMap.containsKey(key) ? uploadMap.get(key) : 0;
+
+            if (uploadId > 0)
+                AWSManager.getTransferUtility().cancel(uploadId);
+
+            uploadMap.remove(key);
+            requestMap.remove(key);
+            queue.remove(image);
+            total = queue.size();
+        }
     }
 
     public void clearAll() {
@@ -103,7 +129,8 @@ public class MediaUploadUnit implements Serializable {
             @Override
             public void run() {
                 for (Page page : model.pages.data) {
-                    MediaManager.getDefault().deleteFiles(page.media.images);
+                    if (page.media.id < 1)
+                        MediaManager.getDefault().deleteFiles(page.media.images);
                 }
             }
         });
@@ -111,7 +138,8 @@ public class MediaUploadUnit implements Serializable {
 
     public void pauseAll() {
         AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
-        map.clear();
+        requestMap.clear();
+        uploadMap.clear();
         processing = false;
     }
 
@@ -162,6 +190,9 @@ public class MediaUploadUnit implements Serializable {
             return false;
 
         if (current >= total) {
+            requestMap.clear();
+            uploadMap.clear();
+            queue.clear();
             executeCompletionState();
             processing = false;
             return true;
@@ -206,25 +237,33 @@ public class MediaUploadUnit implements Serializable {
 
         for (int i=0; i<count; i++) {
             final Image image = copiedQueue.poll();
-            final String key = String.valueOf(image.hashCode());
-            int retryCount = map.containsKey(key) ? map.get(key) : 0;
+            final int key = image.hashCode();
 
+            Log.d("URLUtils.isLocal(image.url)", URLUtils.isLocal(image.url), image.url);
+            if (!URLUtils.isLocal(image.url)) {
+                queue.remove(image);
+                processUploading(true);
+                continue;
+            }
+
+            int retryCount = requestMap.containsKey(key) ? requestMap.get(key) : 0;
             if (retryCount < 3) {
-                map.put(key, retryCount + 1);
+                requestMap.put(key, retryCount + 1);
 
                 MediaDataProxy.getDefault().getUploadInfo(new Callback<ApiMedia.UploadInfoRes>() {
                     @Override
                     public void onResponse(Response<ApiMedia.UploadInfoRes> response, Retrofit retrofit) {
-                        if (response.isSuccess() && response.body().isSuccess()) {
+                        if (requestMap.containsKey(key) && response.isSuccess() && response.body().isSuccess()) {
                             ApiMedia.UploadInfoEntity entity = response.body().entity;
 
-                            MediaManager.getDefault().uploadImage(
+                            int uploadId = MediaManager.getDefault().uploadImage(
                                     image,
                                     entity.filename,
                                     new MediaManager.CompleteHandler() {
                                         @Override
                                         public void onComplete(Error error) {
                                             queue.remove(image);
+                                            uploadMap.remove(key);
 
                                             if (error != null)
                                                 queue.offer(image);
@@ -232,6 +271,8 @@ public class MediaUploadUnit implements Serializable {
                                             processUploading(error == null);
                                         }
                                     });
+
+                            uploadMap.put(key, uploadId);
                         } else {
                             queue.remove(image);
                             queue.offer(image);
@@ -247,7 +288,7 @@ public class MediaUploadUnit implements Serializable {
                     }
                 });
             } else {
-                map.clear();
+                requestMap.clear();
                 errorState();
                 break;
             }
@@ -318,9 +359,8 @@ public class MediaUploadUnit implements Serializable {
         progress = 0;
         total = queue.size();
 
-        if (!checkCompletion()) {
+        if (!checkCompletion())
             executeUploading();
-        }
     }
 
     // ================================================================================================
