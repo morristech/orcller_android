@@ -36,6 +36,7 @@ import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.Page;
+import com.orcller.app.orcller.model.Pages;
 import com.orcller.app.orcller.model.converter.MediaConverter;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
@@ -46,6 +47,7 @@ import com.orcller.app.orcller.widget.PageView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -402,7 +404,7 @@ public class AlbumCreateActivity extends BaseActionBarActivity
 
     protected void doRequest() {
         MediaManager.getDefault().getUnit(clonedModel).setCompletionState(MediaUploadUnit.CompletionState.Creation);
-        MediaManager.getDefault().startUploading(clonedModel);
+        MediaManager.getDefault().continueUploading(clonedModel);
     }
 
     protected MenuItem getPostItem() {
@@ -444,41 +446,56 @@ public class AlbumCreateActivity extends BaseActionBarActivity
     private void appendPages(final List list) {
         selectedIndexForAppending = clonedModel.pages.data.size();
         processCountForAppending = 0;
+        final List<Page> pages = new ArrayList<>();
 
         ProgressDialogManager.show(this, R.string.w_importing);
 
         final AppendPage appendPage = new AppendPage() {
             @Override
             public void append(Page page) {
+                page.id = page.hashCode();
                 clonedModel.pages.addPage(page, false);
+                pages.add(page);
 
                 if (++processCountForAppending >= list.size()) {
+                    Pages.sortByOrder(pages, true);
                     clonedModel.pages.sortByOrder(true);
-                    reload();
-                    setPostItemEnabled();
-                    setOtherButtonsEnabled();
-                    MediaManager.getDefault().startUploading(clonedModel);
-                    ProgressDialogManager.hide();
+
+                    Application.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            reload();
+                            MediaManager.getDefault().getUnit(clonedModel).enqueue(pages);
+                            setPostItemEnabled();
+                            setOtherButtonsEnabled();
+                            ProgressDialogManager.hide();
+                        }
+                    });
                 }
             }
         };
 
-        for (Object object : list) {
-            if (object instanceof Media) {
-                appendPage.append(Page.create((Media) object));
-            } else if (object instanceof pisces.psuikit.imagepicker.Media) {
-                final Media media = MediaConverter.convert(object);
+        Application.runOnBackgroundThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Object object : list) {
+                    if (object instanceof Media) {
+                        appendPage.append(Page.create((Media) object));
+                    } else if (object instanceof pisces.psuikit.imagepicker.Media) {
+                        final Media media = MediaConverter.convert(object);
 
-                MediaManager.getDefault().saveToTemp(
-                        (pisces.psuikit.imagepicker.Media) object,
-                        media, new MediaManager.CompleteHandler() {
-                            @Override
-                            public void onComplete(Error error) {
-                                appendPage.append(Page.create(media));
-                            }
-                        });
+                        MediaManager.getDefault().saveToTemp(
+                                (pisces.psuikit.imagepicker.Media) object,
+                                media, new MediaManager.CompleteHandler() {
+                                    @Override
+                                    public void onComplete(Error error) {
+                                        appendPage.append(Page.create(media));
+                                    }
+                                });
+                    }
+                }
             }
-        }
+        });
     }
 
     private void changePagesOrder(final List<Page> pages) {
@@ -504,17 +521,23 @@ public class AlbumCreateActivity extends BaseActionBarActivity
     }
 
     private void deletePages(final List<Page> pages) {
+        final List<Page> deletePages = new ArrayList<>();
+
         Application.run(new Runnable() {
             @Override
             public void run() {
                 for (Page page : pages) {
-                    clonedModel.pages.removePageById(page.id);
-                    MediaManager.getDefault().getUnit(clonedModel).clear(page);
+                    Page deletePage = clonedModel.pages.getPageById(page.id);
+                    if (deletePage != null) {
+                        clonedModel.pages.removePage(deletePage);
+                        deletePages.add(deletePage);
+                    }
                 }
             }
         }, new Runnable() {
             @Override
             public void run() {
+                MediaManager.getDefault().getUnit(clonedModel).remove(deletePages);
                 selectedIndexForAppending = 0;
                 reload();
                 setPostItemEnabled();

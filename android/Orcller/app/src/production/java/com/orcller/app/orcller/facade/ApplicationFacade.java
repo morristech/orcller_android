@@ -143,6 +143,8 @@ public class ApplicationFacade {
                     }
                 }
             }, context.getString(R.string.w_dismiss), context.getString(R.string.w_update));
+        } else if (event instanceof ApplicationLauncher.ApplicationWillRemoveCaches) {
+            MediaManager.getDefault().clearAll();
         }
     }
 

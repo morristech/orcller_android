@@ -89,9 +89,9 @@ public class MediaManager {
             public void run() {
                 for (MediaUploadUnit unit : cachedUploadUnits) {
                     unit.clearAll();
-                    cachedUploadUnits.remove(unit);
-                    cachedUploadUnitMap.remove(unit);
                 }
+                cachedUploadUnits.clear();
+                cachedUploadUnitMap.clear();
             }
         }, new Runnable() {
             @Override
@@ -154,10 +154,41 @@ public class MediaManager {
             @Override
             public void run() {
                 for (MediaUploadUnit unit : cachedUploadUnits) {
-                    unit.upload();
+                    unit.retryUploading();
                 }
             }
         });
+    }
+
+    public void continueUploading(Album model) {
+        saveCacheFile();
+        getUnit(model).continueUploading();
+    }
+
+    public void deleteFile(Image image, boolean allowsEnqueueError) {
+        if (URLUtils.isLocal(image.url)) {
+            File file = new File(image.url);
+
+            if (file.exists()) {
+                if (file.delete()) {
+                    removeErrorImage(image);
+                } else if (allowsEnqueueError) {
+                    addErrorImage(image);
+                }
+            }
+        } else {
+            try {
+                DeleteObjectRequest objectRequest = new DeleteObjectRequest(AWSManager.S3_BUCKET_NAME, image.url);
+                AWSManager.getS3Client().deleteObject(objectRequest);
+                removeErrorImage(image);
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    Log.e("deleteFile Error", e.getMessage());
+
+                if (allowsEnqueueError)
+                    addErrorImage(image);
+            }
+        }
     }
 
     public void deleteFiles(Images images) {
@@ -289,33 +320,37 @@ public class MediaManager {
         }
     }
 
-    public void startUploading(Album model) {
-        saveCacheFile();
-        getUnit(model).upload();
-    }
-
     public int uploadImage(final Image image, String filename, final CompleteHandler completeHandler) {
         if (image == null) {
             completeHandler.onComplete(new Error());
             return 0;
         }
 
+        if (!URLUtils.isLocal(image.url))
+            return 0;
+
         final String key = SharedObject.getImageUploadPath(filename, new Point(image.width, image.height));
         final File file = new File(image.url);
-        TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
 
-        Log.d("file", file.exists());
+        final Runnable delete = new Runnable() {
+            @Override
+            public void run() {
+                if (file.exists() && !file.delete())
+                    addErrorImage(image);
+            }
+        };
+
+        TransferObserver observer = AWSManager.getTransferUtility().upload(AWSManager.S3_BUCKET_NAME, key, file);
 
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.COMPLETED) {
+                if (state == TransferState.CANCELED) {
+                    delete.run();
+                } else if (state == TransferState.COMPLETED) {
+                    delete.run();
                     image.url = key;
-
                     completeHandler.onComplete(null);
-
-                    if (file.exists() && !file.delete())
-                        addErrorImage(image);
                 }
             }
 
@@ -399,32 +434,6 @@ public class MediaManager {
         if (image != null && !cachedErrorImageList.contains(image)) {
             cachedErrorImageList.add(image);
             saveCacheErrorFile();
-        }
-    }
-
-    private void deleteFile(Image image, boolean allowsEnqueueError) {
-        if (URLUtils.isLocal(image.url)) {
-            File file = new File(image.url);
-
-            if (file.exists()) {
-                if (file.delete()) {
-                    removeErrorImage(image);
-                } else if (allowsEnqueueError) {
-                    addErrorImage(image);
-                }
-            }
-        } else {
-            try {
-                DeleteObjectRequest objectRequest = new DeleteObjectRequest(AWSManager.S3_BUCKET_NAME, image.url);
-                AWSManager.getS3Client().deleteObject(objectRequest);
-                removeErrorImage(image);
-            } catch (Exception e) {
-                if (BuildConfig.DEBUG)
-                    Log.e("deleteFile Error", e.getMessage());
-
-                if (allowsEnqueueError)
-                    addErrorImage(image);
-            }
         }
     }
 

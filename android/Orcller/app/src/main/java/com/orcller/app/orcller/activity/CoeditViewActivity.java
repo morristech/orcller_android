@@ -294,7 +294,7 @@ public class CoeditViewActivity extends PSActionBarActivity
         if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
             final MediaUploadUnit unit = (MediaUploadUnit) target;
 
-            if (unit.isCancelled()) {
+            if (MediaUploadUnit.UploadState.Cancelled.equals(unit.getUploadState())) {
                 dequeueEvent();
             } else {
                 if (!MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {

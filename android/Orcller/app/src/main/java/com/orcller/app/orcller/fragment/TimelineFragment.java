@@ -451,7 +451,7 @@ public class TimelineFragment extends MainTabFragment
         if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
             final MediaUploadUnit unit = (MediaUploadUnit) target;
 
-            if (unit.isCancelled()) {
+            if (MediaUploadUnit.UploadState.Cancelled.equals(unit.getUploadState())) {
                 dequeueEvent();
             } else {
                 deleteAlbum(unit.getModel().id);

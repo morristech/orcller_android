@@ -2,11 +2,31 @@ package com.orcller.app.orcller.model;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by pisces on 11/16/15.
  */
 public class Pages extends ListEntity<Page> {
+    public static void sortByOrder(List<Page> pages, boolean ascending) {
+        if (pages == null)
+            return;
+
+        final int left = ascending ? 1 : -1;
+        final int right = ascending ? -1 : 1;
+
+        Collections.sort(pages, new Comparator<Page>() {
+            @Override
+            public int compare(Page lhs, Page rhs) {
+                if (lhs.order > rhs.order)
+                    return left;
+                if (lhs.order < rhs.order)
+                    return right;
+                return 0;
+            }
+        });
+    }
+
     public void deleteHeavyData() {
         if (data != null && data.size() > 3) {
             data.subList(3, data.size()).clear();
@@ -97,21 +117,6 @@ public class Pages extends ListEntity<Page> {
     }
 
     public void sortByOrder(boolean ascending) {
-        if (data == null)
-            return;
-
-        final int left = ascending ? 1 : -1;
-        final int right = ascending ? -1 : 1;
-
-        Collections.sort(data, new Comparator<Page>() {
-            @Override
-            public int compare(Page lhs, Page rhs) {
-                if (lhs.order > rhs.order)
-                    return left;
-                if (lhs.order < rhs.order)
-                    return right;
-                return 0;
-            }
-        });
+        sortByOrder(data, ascending);
     }
 }

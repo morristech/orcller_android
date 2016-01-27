@@ -156,7 +156,7 @@ public class TempAlbumItemView extends PSLinearLayout
     public void onClick(View v) {
         if (retryButton.equals(v)) {
             progressBar.setProgress(0);
-            MediaManager.getDefault().startUploading(unit.getModel());
+            MediaManager.getDefault().continueUploading(unit.getModel());
         } else if (deleteButton.equals(v)) {
             if (delegate != null)
                 delegate.onClickDeleteButton(this);

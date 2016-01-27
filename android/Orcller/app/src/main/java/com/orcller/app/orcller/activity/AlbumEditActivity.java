@@ -77,7 +77,7 @@ public class AlbumEditActivity extends AlbumCreateActivity {
     @Override
     protected void doRequest() {
         MediaManager.getDefault().getUnit(clonedModel).setCompletionState(MediaUploadUnit.CompletionState.Modification);
-        MediaManager.getDefault().startUploading(clonedModel);
+        MediaManager.getDefault().continueUploading(clonedModel);
     }
 
     // ================================================================================================

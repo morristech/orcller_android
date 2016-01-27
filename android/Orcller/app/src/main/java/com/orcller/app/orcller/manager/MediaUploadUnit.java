@@ -13,8 +13,10 @@ import com.orcller.app.orcller.model.api.ApiMedia;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.MediaDataProxy;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.greenrobot.event.EventBus;
@@ -38,13 +40,22 @@ public class MediaUploadUnit implements Serializable {
         Modification
     }
 
-    private boolean cancelled;
-    private boolean processing;
+    public enum UploadState {
+        None,
+        Cancelled,
+        Failed,
+        Processing,
+        Complete
+    }
+
     private float progressFloat;
     private int progress;
     private int current;
     private int total;
     private CompletionState completionState = CompletionState.None;
+    private UploadState uploadState = UploadState.None;
+    private ConcurrentLinkedQueue<Image> cachedQueue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Image> deleteQueue = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Image> queue = new ConcurrentLinkedQueue<>();
     private HashMap<Integer, Integer> requestMap = new HashMap<>();
     private HashMap<Integer, Integer> uploadMap = new HashMap<>();
@@ -58,14 +69,6 @@ public class MediaUploadUnit implements Serializable {
     // ================================================================================================
     //  Public
     // ================================================================================================
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public boolean isProcessing() {
-        return processing;
-    }
 
     public CompletionState getCompletionState() {
         return completionState;
@@ -90,13 +93,26 @@ public class MediaUploadUnit implements Serializable {
         return progressFloat;
     }
 
+    public UploadState getUploadState() {
+        return uploadState;
+    }
+
+    public void setUploadMap(UploadState uploadState) {
+        this.uploadState = uploadState;
+    }
+
     public void cancelAll() {
-        cancelled = true;
         AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
         requestMap.clear();
         uploadMap.clear();
         queue.clear();
-        total = queue.size();
+        cachedQueue.clear();
+        deleteQueue.clear();
+
+        uploadState = UploadState.Cancelled;
+        current = 0;
+        progress = 0;
+        total = 0;
     }
 
     public void clear(Page page) {
@@ -108,17 +124,27 @@ public class MediaUploadUnit implements Serializable {
     }
 
     public void clear(Image image) {
-        if (image != null) {
-            int key = image.hashCode();
-            int uploadId = uploadMap.containsKey(key) ? uploadMap.get(key) : 0;
+        if (image == null || deleteQueue.contains(image))
+            return;
 
-            if (uploadId > 0)
-                AWSManager.getTransferUtility().cancel(uploadId);
+        int key = image.hashCode();
+        int uploadId = uploadMap.containsKey(key) ? uploadMap.get(key) : 0;
 
-            uploadMap.remove(key);
-            requestMap.remove(key);
-            queue.remove(image);
-            total = queue.size();
+        if (uploadId > 0)
+            AWSManager.getTransferUtility().cancel(uploadId);
+
+        uploadMap.remove(key);
+        requestMap.remove(key);
+        queue.remove(image);
+        cachedQueue.remove(image);
+        deleteQueue.add(image);
+
+        if (URLUtils.isLocal(image.url) &&
+                new File(image.url).exists()) {
+            MediaManager.getDefault().deleteFile(image, true);
+
+            if (total > 0)
+                total--;
         }
     }
 
@@ -136,76 +162,173 @@ public class MediaUploadUnit implements Serializable {
         });
     }
 
-    public void pauseAll() {
-        AWSManager.getTransferUtility().cancelAllWithType(TransferType.UPLOAD);
-        requestMap.clear();
-        uploadMap.clear();
-        processing = false;
+    public void continueUploading() {
+        if (UploadState.Processing.equals(uploadState)) {
+            if (progress < total)
+                dequeue();
+        } else {
+            if (delegate != null)
+                delegate.onStartUploading(this);
+
+            EventBus.getDefault().post(new Event(Event.START_UPLOADING, this));
+
+            if (!validateCompletion() && queue.size() > 0)
+                startUploading();
+        }
     }
 
-    public void upload() {
-        if (isProcessing())
-            return;
-
-        if (delegate != null)
-            delegate.onStartUploading(this);
-
-        EventBus.getDefault().post(new Event(Event.START_UPLOADING, this));
-
-        if (queue.size() > 0) {
-            startUploading();
-        } else {
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    for (Page page : model.pages.data) {
-                        enqueue(page.media.images.standard_resolution);
-                        enqueue(page.media.images.low_resolution);
-                        enqueue(page.media.images.thumbnail);
-                    }
-                    return null;
+    public void enqueue(final List<Page> pages) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                for (Page page : pages) {
+                    enqueue(page.media.images.standard_resolution);
+                    enqueue(page.media.images.low_resolution);
+                    enqueue(page.media.images.thumbnail);
                 }
+                return null;
+            }
 
-                @Override
-                protected void onPostExecute(Void result) {
-                    super.onPostExecute(result);
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
 
-                    startUploading();
-                }
-            }.execute();
+                continueUploading();
+            }
+        }.execute();
+    }
+
+    public void pauseAll() {
+        AWSManager.getTransferUtility().pauseAllWithType(TransferType.UPLOAD);
+        requestMap.clear();
+        uploadMap.clear();
+
+        uploadState = UploadState.None;
+    }
+
+    public void remove(List<Page> pages) {
+        for (Page page : pages) {
+            clear(page);
         }
+    }
+
+    public void retryUploading() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                for (Image image : cachedQueue) {
+                    queue.offer(image);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+
+                continueUploading();
+            }
+        }.execute();
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
 
-    private boolean checkCompletion() {
+    private void checkCompletion() {
+        if (!UploadState.Processing.equals(uploadState))
+            return;
+
         if (delegate != null)
             delegate.onProcessUploading(this);
 
         EventBus.getDefault().post(new Event(Event.PROCESS_UPLOADING, this));
 
-        if (progress < total)
-            return false;
-
-        if (current >= total) {
-            requestMap.clear();
-            uploadMap.clear();
-            queue.clear();
-            executeCompletionState();
-            processing = false;
-            return true;
-        }
+        if (validateCompletion())
+            return;
 
         startUploading();
+    }
 
-        return false;
+    private void dequeue() {
+        if (queue.size() < 1)
+            return;
+
+        final Image image = queue.poll();
+        final int key = image.hashCode();
+
+        if (URLUtils.isLocal(image.url)) {
+            int retryCount = requestMap.containsKey(key) ? requestMap.get(key) : 0;
+            if (retryCount < 3) {
+                requestMap.put(key, retryCount + 1);
+
+                MediaDataProxy.getDefault().getUploadInfo(new Callback<ApiMedia.UploadInfoRes>() {
+                    @Override
+                    public void onResponse(Response<ApiMedia.UploadInfoRes> response, Retrofit retrofit) {
+                        if (!deleteQueue.contains(image)) {
+                            if (response.isSuccess() && response.body().isSuccess()) {
+                                ApiMedia.UploadInfoEntity entity = response.body().entity;
+
+                                int uploadId = MediaManager.getDefault().uploadImage(
+                                        image,
+                                        entity.filename,
+                                        new MediaManager.CompleteHandler() {
+                                            @Override
+                                            public void onComplete(Error error) {
+                                                cachedQueue.remove(image);
+                                                uploadMap.remove(key);
+
+                                                if (error != null) {
+                                                    cachedQueue.offer(image);
+                                                    queue.offer(image);
+                                                }
+
+                                                processUploading(error == null);
+                                            }
+                                        });
+
+                                if (uploadId > 0)
+                                    uploadMap.put(key, uploadId);
+                            } else {
+                                cachedQueue.remove(image);
+                                cachedQueue.offer(image);
+                                queue.offer(image);
+                                processUploading(false);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        if (!deleteQueue.contains(image)) {
+                            cachedQueue.remove(image);
+                            cachedQueue.offer(image);
+                            queue.offer(image);
+                            processUploading(false);
+                        }
+                    }
+                });
+            } else {
+                requestMap.clear();
+                errorState();
+                return;
+            }
+        } else {
+            cachedQueue.remove(image);
+            processUploading(true);
+        }
+
+        dequeue();
     }
 
     private void enqueue(Image image) {
-        if (URLUtils.isLocal(image.url) && !queue.contains(image))
+        if (URLUtils.isLocal(image.url) &&
+                !queue.contains(image) &&
+                !deleteQueue.contains(image)) {
             queue.offer(image);
+            cachedQueue.offer(image);
+            total++;
+        }
     }
 
     private void errorState() {
@@ -215,92 +338,35 @@ public class MediaUploadUnit implements Serializable {
             delegate.onFailUploading(this);
 
         EventBus.getDefault().post(new Event(Event.FAILED_UPLOADING, this));
-        processing = false;
+        uploadState = UploadState.Failed;
     }
 
     private void executeCompletionState() {
+        uploadState = UploadState.Complete;
+
         if (delegate != null)
             delegate.onCompleteUploading(this);
 
         EventBus.getDefault().post(new Event(Event.COMPLETE_UPLOADING, this));
 
-        if (completionState.equals(CompletionState.Creation)) {
+        if (CompletionState.Creation.equals(completionState)) {
             requestAlbumCreation();
-        } else if (completionState.equals(CompletionState.Modification)) {
+        } else if (CompletionState.Modification.equals(completionState)) {
             requestAlbumModification();
         }
     }
 
-    private void executeUploading() {
-        ConcurrentLinkedQueue<Image> copiedQueue = new ConcurrentLinkedQueue<>(queue);
-        int count = copiedQueue.size();
-
-        for (int i=0; i<count; i++) {
-            final Image image = copiedQueue.poll();
-            final int key = image.hashCode();
-
-            Log.d("URLUtils.isLocal(image.url)", URLUtils.isLocal(image.url), image.url);
-            if (!URLUtils.isLocal(image.url)) {
-                queue.remove(image);
-                processUploading(true);
-                continue;
-            }
-
-            int retryCount = requestMap.containsKey(key) ? requestMap.get(key) : 0;
-            if (retryCount < 3) {
-                requestMap.put(key, retryCount + 1);
-
-                MediaDataProxy.getDefault().getUploadInfo(new Callback<ApiMedia.UploadInfoRes>() {
-                    @Override
-                    public void onResponse(Response<ApiMedia.UploadInfoRes> response, Retrofit retrofit) {
-                        if (requestMap.containsKey(key) && response.isSuccess() && response.body().isSuccess()) {
-                            ApiMedia.UploadInfoEntity entity = response.body().entity;
-
-                            int uploadId = MediaManager.getDefault().uploadImage(
-                                    image,
-                                    entity.filename,
-                                    new MediaManager.CompleteHandler() {
-                                        @Override
-                                        public void onComplete(Error error) {
-                                            queue.remove(image);
-                                            uploadMap.remove(key);
-
-                                            if (error != null)
-                                                queue.offer(image);
-
-                                            processUploading(error == null);
-                                        }
-                                    });
-
-                            uploadMap.put(key, uploadId);
-                        } else {
-                            queue.remove(image);
-                            queue.offer(image);
-                            processUploading(false);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        queue.remove(image);
-                        queue.offer(image);
-                        processUploading(false);
-                    }
-                });
-            } else {
-                requestMap.clear();
-                errorState();
-                break;
-            }
-        }
-    }
-
     private void processUploading(Boolean isSuccess) {
+        if (!UploadState.Processing.equals(uploadState))
+            return;
+
         if (isSuccess)
             current++;
 
         progress++;
         progressFloat = (float) current / total;
+
+        Log.d("current, progress, total", current, progress, total);
 
         MediaManager.getDefault().saveCacheFile();
         checkCompletion();
@@ -354,13 +420,27 @@ public class MediaUploadUnit implements Serializable {
     }
 
     private void startUploading() {
-        processing = true;
-        current = 0;
-        progress = 0;
-        total = queue.size();
+        uploadState = UploadState.Processing;
 
-        if (!checkCompletion())
-            executeUploading();
+        if (progress < total)
+            dequeue();
+    }
+
+    private boolean validateCompletion() {
+        if (current >= total) {
+            requestMap.clear();
+            uploadMap.clear();
+            queue.clear();
+            cachedQueue.clear();
+            deleteQueue.clear();
+            executeCompletionState();
+
+            current = 0;
+            progress = 0;
+            total = 0;
+            return true;
+        }
+        return false;
     }
 
     // ================================================================================================
