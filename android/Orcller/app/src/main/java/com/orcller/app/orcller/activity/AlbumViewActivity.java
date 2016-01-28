@@ -20,6 +20,7 @@ import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
@@ -60,7 +61,7 @@ import retrofit.Retrofit;
  */
 public class AlbumViewActivity extends BaseActionBarActivity
         implements AlbumItemViewDelegate.Invoker, CommentInputView.Delegate,
-        CommentListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+        CommentListView.Delegate, TempAlbumItemView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "album_id";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
@@ -301,9 +302,32 @@ public class AlbumViewActivity extends BaseActionBarActivity
     public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
     }
 
+    /**
+     * TempAlbumItemView.Delegate
+     */
+    public void onClickCancelButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
+    public void onClickDeleteButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private void clearUnit(MediaUploadUnit unit) {
+        MediaManager.getDefault().clearItem(unit);
+
+        if (tempAlbumItemView != null) {
+            ViewGroup parent = (ViewGroup) albumItemView.getParent();
+            parent.removeView(tempAlbumItemView);
+            tempAlbumItemView = null;
+        }
+
+        albumItemView.setVisibility(View.VISIBLE);
+    }
 
     private void dequeueEvent() {
         if (!isActive() || eventQueue.size() < 1)
@@ -325,6 +349,7 @@ public class AlbumViewActivity extends BaseActionBarActivity
                         albumItemView.setVisibility(View.GONE);
                         tempAlbumItemView = new TempAlbumItemView(this);
                         tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.USER_NICKNAME);
+                        tempAlbumItemView.setDelegate(this);
                         tempAlbumItemView.setUnit(unit);
                         parent.addView(tempAlbumItemView, 0, new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));

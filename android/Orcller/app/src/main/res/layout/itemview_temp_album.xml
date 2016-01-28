@@ -10,12 +10,35 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
-        <ProgressBar
-            android:id="@+id/progressBar"
+        android:padding="8dp"
+        android:clickable="true">
+        <LinearLayout
+            android:id="@+id/progressContainer"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="8dp"
-            style="@android:style/Widget.Material.ProgressBar.Horizontal" />
+            android:layout_height="wrap_content">
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                style="@android:style/Widget.Material.ProgressBar.Horizontal" />
+
+            <pisces.psuikit.widget.PSButton
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/background_ripple_followbutton"
+                android:text="@string/w_cancel"
+                android:textAllCaps="false"
+                android:textColor="@color/button_follow"
+                android:textSize="13dp"/>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/errorContainer"
@@ -36,10 +59,10 @@
             <pisces.psuikit.widget.PSButton
                 android:id="@+id/retryButton"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:background="@drawable/background_ripple_followbutton"
                 android:text="@string/w_retry"
                 android:textAllCaps="false"
@@ -49,13 +72,13 @@
             <pisces.psuikit.widget.PSButton
                 android:id="@+id/deleteButton"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:background="@drawable/background_ripple_followbutton"
-                android:text="@string/w_delete"
+                android:text="@string/w_cancel"
                 android:textAllCaps="false"
                 android:textColor="@color/button_follow"
                 android:textSize="13dp"/>

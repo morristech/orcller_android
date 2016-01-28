@@ -31,9 +31,11 @@ public class TempAlbumItemView extends PSLinearLayout
         implements MediaUploadUnit.Delegate, View.OnClickListener {
     private boolean unitChanged;
     private MediaUploadUnit unit;
+    private LinearLayout progressContainer;
     private LinearLayout errorContainer;
     private TextView errorTextView;
     private TextView descriptionTextView;
+    private PSButton cancelButton;
     private PSButton deleteButton;
     private PSButton retryButton;
     private ProgressBar progressBar;
@@ -82,24 +84,27 @@ public class TempAlbumItemView extends PSLinearLayout
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         inflate(context, R.layout.itemview_temp_album, this);
 
+        progressContainer = (LinearLayout) findViewById(R.id.progressContainer);
         errorContainer = (LinearLayout) findViewById(R.id.errorContainer);
         errorTextView = (TextView) findViewById(R.id.errorTextView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
-        retryButton = (PSButton) findViewById(R.id.retryButton);
+        cancelButton = (PSButton) findViewById(R.id.cancelButton);
         deleteButton = (PSButton) findViewById(R.id.deleteButton);
+        retryButton = (PSButton) findViewById(R.id.retryButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
         albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
 
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
         setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
-        retryButton.setOnClickListener(this);
+        cancelButton.setOnClickListener(this);
         deleteButton.setOnClickListener(this);
+        retryButton.setOnClickListener(this);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (PSView.hitTest(retryButton, event) || PSView.hitTest(deleteButton, event))
+        if (PSView.hitTest(retryButton, event) || PSView.hitTest(deleteButton, event) || PSView.hitTest(cancelButton, event))
             return super.dispatchTouchEvent(event);
         return false;
     }
@@ -160,6 +165,9 @@ public class TempAlbumItemView extends PSLinearLayout
         } else if (deleteButton.equals(v)) {
             if (delegate != null)
                 delegate.onClickDeleteButton(this);
+        } else if (cancelButton.equals(v)) {
+            if (delegate != null)
+                delegate.onClickCancelButton(this);
         }
     }
 
@@ -171,7 +179,7 @@ public class TempAlbumItemView extends PSLinearLayout
 
     public void onFailUploading(MediaUploadUnit unit) {
         errorTextView.setText(Application.isNetworkConnected() ? R.string.m_fail_post_an_error : R.string.m_fail_post_no_connection);
-        progressBar.setVisibility(GONE);
+        progressContainer.setVisibility(GONE);
         errorContainer.setVisibility(VISIBLE);
     }
 
@@ -181,7 +189,7 @@ public class TempAlbumItemView extends PSLinearLayout
 
     public void onStartUploading(MediaUploadUnit unit) {
         errorContainer.setVisibility(GONE);
-        progressBar.setVisibility(VISIBLE);
+        progressContainer.setVisibility(VISIBLE);
         progressBar.setProgress(Math.round(unit.getProgress() * 100));
     }
 
@@ -190,6 +198,7 @@ public class TempAlbumItemView extends PSLinearLayout
     // ================================================================================================
 
     public interface Delegate {
+        void onClickCancelButton(TempAlbumItemView itemView);
         void onClickDeleteButton(TempAlbumItemView itemView);
     }
 }

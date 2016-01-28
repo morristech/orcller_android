@@ -366,8 +366,6 @@ public class MediaUploadUnit implements Serializable {
         progress++;
         progressFloat = (float) current / total;
 
-        Log.d("current, progress, total", current, progress, total);
-
         MediaManager.getDefault().saveCacheFile();
         checkCompletion();
     }

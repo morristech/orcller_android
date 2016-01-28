@@ -18,6 +18,7 @@ import com.orcller.app.orcller.event.AlbumEvent;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
@@ -60,7 +61,7 @@ import static pisces.psfoundation.utils.Log.e;
  * Created by pisces on 12/14/15.
  */
 public class CoeditViewActivity extends PSActionBarActivity
-        implements AlbumItemViewDelegate.Invoker, CoeditButton.Delegate, ContributorListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+        implements AlbumItemViewDelegate.Invoker, CoeditButton.Delegate, ContributorListView.Delegate, TempAlbumItemView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "albumId";
     private Queue<Event> eventQueue = new ConcurrentLinkedQueue<>();
@@ -269,6 +270,17 @@ public class CoeditViewActivity extends PSActionBarActivity
         ProgressBarManager.hide((ViewGroup) listView.getParent());
     }
 
+    /**
+     * TempAlbumItemView.Delegate
+     */
+    public void onClickCancelButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
+    public void onClickDeleteButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
     // ================================================================================================
     //  Private
     // ================================================================================================
@@ -280,6 +292,18 @@ public class CoeditViewActivity extends PSActionBarActivity
         this.model = model;
 
         modelChanged();
+    }
+
+    private void clearUnit(MediaUploadUnit unit) {
+        MediaManager.getDefault().clearItem(unit);
+
+        if (tempAlbumItemView != null) {
+            ViewGroup parent = (ViewGroup) albumItemView.getParent();
+            parent.removeView(tempAlbumItemView);
+            tempAlbumItemView = null;
+        }
+
+        albumItemView.setVisibility(View.VISIBLE);
     }
 
     private void dequeueEvent() {
@@ -302,6 +326,7 @@ public class CoeditViewActivity extends PSActionBarActivity
                         albumItemView.setVisibility(View.GONE);
                         tempAlbumItemView = new TempAlbumItemView(this);
                         tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.USER_NICKNAME);
+                        tempAlbumItemView.setDelegate(this);
                         tempAlbumItemView.setUnit(unit);
                         parent.addView(tempAlbumItemView, 0, new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));

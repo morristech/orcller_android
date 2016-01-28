@@ -392,10 +392,12 @@ public class TimelineFragment extends MainTabFragment
     /**
      * TempAlbumItemView.Delegate
      */
+    public void onClickCancelButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
     public void onClickDeleteButton(TempAlbumItemView itemView) {
-        MediaManager.getDefault().clearItem(itemView.getUnit());
-        items.remove(itemView.getUnit());
-        listAdapter.notifyDataSetChanged();
+        clearUnit(itemView.getUnit());
     }
 
     // ================================================================================================
@@ -415,6 +417,12 @@ public class TimelineFragment extends MainTabFragment
             TimelineDataProxy.getDefault().setLastViewDate(lastEntity.time);
             ModelFileCacheManager.save(ModelFileCacheManager.Type.Timeline, items);
         }
+    }
+
+    private void clearUnit(MediaUploadUnit unit) {
+        MediaManager.getDefault().clearItem(unit);
+        items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
+        listAdapter.notifyDataSetChanged();
     }
 
     private void deleteAlbum(long albumId) {
@@ -464,7 +472,6 @@ public class TimelineFragment extends MainTabFragment
 
                 dequeueEvent();
                 exceptionViewManager.validate();
-                cacheItems();
             }
         } else if (target instanceof MediaUploadUnit &&
                 (AlbumEvent.CREATE.equals(type) || AlbumEvent.MODIFY.equals(type))) {
@@ -737,6 +744,7 @@ public class TimelineFragment extends MainTabFragment
             if (convertView instanceof AlbumItemView) {
                 ((AlbumItemView) convertView).setModel((Album) item);
             } else if (convertView instanceof TempAlbumItemView) {
+
                 ((TempAlbumItemView) convertView).setUnit((MediaUploadUnit) item);
             }
 
