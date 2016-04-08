@@ -1,6 +1,7 @@
 package com.orcller.app.orcller.activity.imagepicker;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -259,27 +260,42 @@ abstract public class MediaGridActivity extends PSActionBarActivity
     // ================================================================================================
 
     public void select() {
-        final List<Media> list = new ArrayList<>();
         final Object self = this;
 
-        Application.run(new Runnable() {
+        new AsyncTask<Void, Void, List<Media>>() {
             @Override
-            public void run() {
+            protected List<Media> doInBackground(Void... params) {
+                final List<Media> list = new ArrayList<>();
+
                 SparseBooleanArray array = gridView.getCheckedItemPositions();
                 for (int i=0; i<array.size(); i++) {
                     int key = array.keyAt(i);
                     if (array.get(key))
                         list.add(items.get(key));
                 }
+
+                return list;
             }
-        }, new Runnable() {
+
             @Override
-            public void run() {
+            protected void onPostExecute(List<Media> result) {
+                super.onPostExecute(result);
+
                 EventBus.getDefault().post(
                         new ImagePickerEvent(
                                 ImagePickerEvent.COMPLETE_SELECTION,
                                 self,
-                                list));
+                                result));
+            }
+        }.execute();
+
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
             }
         });
     }

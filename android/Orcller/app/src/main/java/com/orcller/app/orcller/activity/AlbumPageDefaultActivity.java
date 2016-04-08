@@ -144,7 +144,7 @@ public class AlbumPageDefaultActivity extends PSActionBarActivity implements Alb
             gridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
         } catch (CloneNotSupportedException e) {
             if (BuildConfig.DEBUG)
-                Log.d(e.getMessage());
+                Log.e("clone error", e.getMessage());
         }
     }
 

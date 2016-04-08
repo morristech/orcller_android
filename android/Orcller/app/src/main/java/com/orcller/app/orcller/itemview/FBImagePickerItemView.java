@@ -2,13 +2,9 @@ package com.orcller.app.orcller.itemview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcllermodules.caches.FBPhotoCaches;
 import com.orcller.app.orcllermodules.error.APIError;
@@ -100,8 +96,10 @@ public class FBImagePickerItemView extends PSLinearLayout {
                     model.cover_photo.id, new FBSDKRequest.CompleteHandler<FBPhoto>() {
                         @Override
                         public void onComplete(FBPhoto result, APIError error) {
-                            if (error == null)
-                                loadImage(result.images.get(3));
+                            if (error == null) {
+                                FBPhotoImage image = result.images.size() > 3 ? result.images.get(3) : result.images.get(result.images.size() - 1);
+                                loadImage(image);
+                            }
                         }
                     }
             );

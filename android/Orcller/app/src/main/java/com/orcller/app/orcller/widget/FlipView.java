@@ -16,6 +16,7 @@ import com.orcller.app.orcller.model.Page;
 
 import java.util.List;
 
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -103,6 +104,10 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
 
     public static Direction rotationToDirection(float rotation) {
         return rotation == -180 ? FlipView.Direction.Left : FlipView.Direction.Right;
+    }
+
+    public ImageView getShadowImageView() {
+        return shadowImageView;
     }
 
     public void doFlip(Direction direction) {

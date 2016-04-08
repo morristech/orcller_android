@@ -14,6 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -31,6 +32,7 @@ import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
+import pisces.psuikit.ext.PSView;
 import pisces.psuikit.manager.ProgressBarManager;
 
 /**
@@ -43,7 +45,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
     private boolean allowsShowPageCount;
     private boolean playing;
-    private boolean shouldLoadPages;
     private boolean shouldResizePages;
     private int imageLoadType;
     private int pageHeight;
@@ -52,11 +53,11 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     private int slideDuration = 1500;
     private float originRotation;
     private PointF startPoint;
+    private List<FlipView> visibleViews;
     private Delegate delegate;
     private Album model;
     private View background;
     private PSFrameLayout container;
-    private List<FlipView> visibleViews;
     private FlipView targetFlipView;
     private AlbumPageCountView pageCountView;
 
@@ -77,19 +78,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-        if (shouldLoadPages) {
-            shouldLoadPages = false;
-            pageIndexChanged();
-        }
-
-        if (shouldResizePages) {
-            shouldResizePages = false;
-            resizePages();
-        }
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         allowsShowPageCount = true;
         pageIndex = -1;
@@ -101,13 +89,12 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         setClipChildren(false);
         setBackgroundView(new Background(context));
         addView(container, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
     protected void setUpSubviews(Context context) {
-        readyPages();
         EventBus.getDefault().register(this);
     }
 
@@ -149,14 +136,19 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     }
                 } else {
                     FlipView flipView;
-                    if (pageIndex == 0)
+                    if (pageIndex == 0) {
                         flipView = getSelectedFlipView();
-                    else if ((pageIndex * 2) + 1 > model.pages.total_count)
+                    } else if ((pageIndex * 2) + 1 > model.pages.total_count) {
                         flipView = visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
-                    else
+                    } else {
                         flipView = startPoint.x > pageWidth ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    }
 
-                    onTap(flipView, flipView.getCurrentPageView());
+                    if (hitTest(flipView, event)) {
+                        onTapFlipView(flipView, flipView.getCurrentPageView());
+                    } else {
+                        onTap();
+                    }
                 }
 
                 startPoint = null;
@@ -170,15 +162,17 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 if (dx == 0)
                     break;
 
-                if (targetFlipView == null && Math.abs(dy) < Math.abs(dx)) {
+                if (targetFlipView == null && Math.abs(dy) < Math.abs(dx) && Math.abs(dx) > 10) {
+                    targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
+                    originRotation = targetFlipView.getRotationY();
+
                     if (delegate != null)
-                        delegate.onStartPanning(this);
+                        delegate.onStartPanning(this, targetFlipView);
 
                     EventBus.getDefault().post(new AlbumFlipViewEvent(AlbumFlipViewEvent.START_PANNING, this));
 
-                    targetFlipView = dx > 0 ? getSelectedFlipView() : visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS - 1);
-                    originRotation = targetFlipView.getRotationY();
                     loadRemainPages();
+                    showLastPageToast();
                 }
 
                 if (targetFlipView != null) {
@@ -236,8 +230,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public void setPageHeight(int pageHeight) {
         this.pageHeight = pageHeight;
         shouldResizePages = true;
-
-        invalidateProperties();
     }
 
     public int getPageWidth() {
@@ -247,8 +239,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public void setPageWidth(int pageWidth) {
         this.pageWidth = pageWidth;
         shouldResizePages = true;
-
-        invalidateProperties();
     }
 
     public int getPageIndex() {
@@ -262,9 +252,8 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         this.pageIndex = pageIndex;
-        shouldLoadPages = true;
 
-        invalidateProperties();
+        pageIndexChanged();
     }
 
     public FrameLayout getContainer() {
@@ -288,10 +277,11 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         this.model = model;
-        shouldLoadPages = true;
 
         stop();
-        invalidateProperties();
+
+        if (pageIndex > -1)
+            pageIndexChanged();
     }
 
     public int getSlideDuration() {
@@ -418,13 +408,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
     public void onError(FlipView view, PageView pageView) {
     }
 
-    public void onTap(FlipView view, PageView pageView) {
-        pause();
-
-        if (delegate != null)
-            delegate.onTap(this, view, pageView);
-    }
-
     public void willChangeDirection(FlipView view, FlipView.Direction direction, int duration, Interpolator interpolator) {
         FlipView reuseView;
         FlipView flipView;
@@ -446,7 +429,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     int currentIndex = pageIndex - (2 - i);
 
                     flipView.setDirection(FlipView.Direction.Left);
-                    flipView.setImageLoadType(imageLoadType);
                     flipView.setPages(getPages(currentIndex));
                     container.moveChildToBack(flipView);
                 } else {
@@ -474,7 +456,6 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                     int currentIndex = pageIndex + (i - startIndex) + 1;
 
                     flipView.setDirection(FlipView.Direction.Right);
-                    flipView.setImageLoadType(imageLoadType);
                     flipView.setPages(getPages(currentIndex));
                     container.moveChildToBack(flipView);
                 } else {
@@ -516,12 +497,14 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
             return;
 
         int x;
+        int cw = pageWidth * PAGE_COUNT;
+
         if (pageIndex == 0)
-            x = (getWidth() - container.getWidth())/2 - (pageWidth/2);
+            x = (getWidth() - cw)/2 - (pageWidth/2);
         else if ((pageIndex * 2) + 1 > model.pages.count)
-            x = (getWidth() - container.getWidth())/2 + (pageWidth/2);
+            x = (getWidth() - cw)/2 + (pageWidth/2);
         else
-            x = (getWidth() - container.getWidth())/2;
+            x = (getWidth() - cw)/2;
 
         if (animated) {
             container.animate()
@@ -582,26 +565,75 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 visibleViews.get(CENTER_INDEX_OF_VISIBLE_VIEWS) : null;
     }
 
+    private boolean hitTest(FlipView view, MotionEvent event) {
+        int addendX = view.getDirection().equals(FlipView.Direction.Left) ? -view.getWidth() : 0;
+        float xMin = container.getX() + view.getX() + addendX;
+        float xMax = container.getX() + view.getX() + addendX + view.getWidth();
+        float yMin = container.getY() + view.getY();
+        float yMax = container.getY() + view.getY() + view.getHeight();
+        return event.getX() >= xMin &&
+                event.getX() <= xMax &&
+                event.getY() >= yMin &&
+                event.getY() <= yMax;
+    }
+
+    private void onTap() {
+        pause();
+
+        if (delegate != null)
+            delegate.onTap(this);
+    }
+
+    private void onTapFlipView(FlipView view, PageView pageView) {
+        pause();
+
+        if (delegate != null)
+            delegate.onTapFlipView(this, view, pageView);
+    }
+
     private void pageIndexChanged() {
         if (model == null || pageIndex < 0)
             return;
+
+        final AlbumFlipView self = this;
 
         Application.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 int startPageIndex = pageIndex - 2;
 
-                for (int i=0; i<visibleViews.size(); i++) {
-                    final FlipView view = visibleViews.get(i);
+                for (int i=0; i<COUNT_OF_VISIBLE_VIEWS; i++) {
                     final FlipView.Direction direction = i < CENTER_INDEX_OF_VISIBLE_VIEWS ? FlipView.Direction.Left : FlipView.Direction.Right;
                     final List<Page> pages = getPages(startPageIndex + i);
+                    final int idx = i;
 
                     Application.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            FlipView view;
+                            if (visibleViews.size() > idx) {
+                                view = visibleViews.get(idx);
+                            } else {
+                                view = new FlipView(getContext());
+                                view.setDelegate(self);
+                                view.setTag(idx);
+                                container.addView(view, 0);
+                                visibleViews.add(view);
+                            }
+
+                            if (shouldResizePages) {
+                                view.setDirection(FlipView.Direction.Right);
+                                view.setVisibility(VISIBLE);
+                                view.getLayoutParams().width = pageWidth;
+                                view.getLayoutParams().height = pageHeight;
+                                view.setX(pageWidth);
+                            }
+
                             if (!view.equals(targetFlipView))
                                 view.setDirection(direction);
 
+                            view.getShadowImageView().setVisibility(model.pages.total_count < 2 ? GONE : VISIBLE);
+                            view.setImageLoadType(imageLoadType);
                             view.setPages(pages);
                             view.setVisibility(pages.size() < 1 ? INVISIBLE : VISIBLE);
 
@@ -617,46 +649,18 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
                 Application.runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (shouldResizePages) {
+                            shouldResizePages = false;
+                            container.getLayoutParams().width = pageWidth * PAGE_COUNT;
+                            container.getLayoutParams().height = pageHeight;
+                        }
+
                         alignContainer(pageIndex, false);
                         updatePageCountView();
                     }
                 });
             }
         });
-    }
-
-    private void readyPages() {
-        for (int i=0; i<COUNT_OF_VISIBLE_VIEWS; i++) {
-            FlipView view = new FlipView(getContext());
-            view.setDelegate(this);
-            view.setDirection(FlipView.Direction.Right);
-            view.setImageLoadType(imageLoadType);
-            view.setTag(i);
-            container.addView(view, 0, new ViewGroup.LayoutParams(pageWidth, pageHeight));
-            visibleViews.add(view);
-            view.setX(pageWidth);
-        }
-    }
-
-    private void resizePages() {
-        ViewGroup.LayoutParams params = getLayoutParams();
-        params.width = pageWidth * PAGE_COUNT;
-        params.height = pageHeight;
-
-        if (background != null) {
-            ViewGroup.LayoutParams bgparams = background.getLayoutParams();
-            bgparams.width = params.width;
-            bgparams.height = pageHeight;
-        }
-
-        for (FlipView view : visibleViews) {
-            params = view.getLayoutParams();
-            params.width = pageWidth;
-            params.height = pageHeight;
-            view.setX(pageWidth);
-        }
-
-        alignContainer(pageIndex, false);
     }
 
     private void stop(boolean resetPages) {
@@ -675,6 +679,15 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
 
         if (delegate != null)
             delegate.onStop(this);
+    }
+
+    private void showLastPageToast() {
+        if (targetFlipView == null)
+            return;
+
+        if (targetFlipView.getDirection().equals(FlipView.Direction.Right) &&
+                (targetFlipView.getCurrentPageView().getModel() == null || ObjectUtils.equals(targetFlipView.getCurrentPageView().getModel(), model.pages.getLastPage())))
+            Toast.makeText(Application.applicationContext(), R.string.m_hint_album_last_page, Toast.LENGTH_LONG).show();
     }
 
     private void updatePageCountView() {
@@ -767,8 +780,9 @@ public class AlbumFlipView extends PSFrameLayout implements FlipView.FlipViewDel
         void onPlay(AlbumFlipView view);
         void onPause(AlbumFlipView view);
         void onStartLoadRemainPages(AlbumFlipView view);
-        void onStartPanning(AlbumFlipView view);
+        void onStartPanning(AlbumFlipView view, FlipView flipView);
         void onStop(AlbumFlipView view);
-        void onTap(AlbumFlipView view, FlipView flipView, PageView pageView);
+        void onTap(AlbumFlipView view);
+        void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

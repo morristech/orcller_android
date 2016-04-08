@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/cycle"
-        android:orderInCategory="100"
-        android:icon="@drawable/icon_menu_cycle_normal"
-        app:showAsAction="ifRoom"/>
-
-    <item
         android:id="@+id/control"
         android:orderInCategory="100"
         android:icon="@drawable/icon_menu_play_normal"
         android:enabled="false"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/cycle"
+        android:orderInCategory="100"
+        android:icon="@drawable/icon_menu_cycle_normal"
         app:showAsAction="ifRoom"/>
 </menu>

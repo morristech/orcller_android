@@ -4,7 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.orcller.app.orcller.R;
@@ -20,9 +19,11 @@ import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.FlipView;
+import com.orcller.app.orcller.widget.MediaView;
 import com.orcller.app.orcller.widget.PageView;
 
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.ObjectUtils;
@@ -113,16 +114,6 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         EventBus.getDefault().register(this);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        if (albumFlipView.getPageWidth() < 1) {
-            albumFlipView.setPageWidth(getWidth() / 2);
-            albumFlipView.setPageHeight(getWidth() / 2);
-        }
-    }
-
     // ================================================================================================
     //  Public
     // ================================================================================================
@@ -207,6 +198,9 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     }
 
     public void updateDisplayList() {
+        albumFlipView.getLayoutParams().width = Application.getWindowWidth();
+        albumFlipView.getLayoutParams().height = getAlbumHeight();
+
         descriptionTextView.setText(model.desc);
         descriptionTextView.setVisibility(TextUtils.isEmpty(model.desc) ? GONE : VISIBLE);
         heartTextView.setText(getInfoText(heartTextView));
@@ -324,9 +318,9 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
             delegate.onStartLoadRemainPages(this, view);
     }
 
-    public void onStartPanning(AlbumFlipView view) {
+    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
         if (delegate != null)
-            delegate.onStartPanning(this, view);
+            delegate.onStartPanning(this, view, flipView);
     }
 
     public void onStop(AlbumFlipView view) {
@@ -336,9 +330,14 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
             delegate.onStop(this, view);
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
         if (delegate != null)
-            delegate.onTap(this, view, flipView, pageView);
+            delegate.onTap(this, view);
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+        if (delegate != null)
+            delegate.onTapFlipView(this, view, flipView, pageView);
     }
 
     // ================================================================================================
@@ -355,6 +354,10 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         if (entity instanceof Likes)
             return model.likes;
         return null;
+    }
+
+    private int getAlbumHeight() {
+        return model.pages.count > 1 ? Application.getWindowWidth() / 2 : Application.getWindowWidth();
     }
 
     private String getButtonText(PSButton button) {
@@ -377,6 +380,12 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
 
     private void modelChanged() {
         controlButton.setVisibility(model == null || model.pages.total_count < 2 ? GONE : VISIBLE);
+
+        albumFlipView.setPageWidth(getAlbumHeight());
+        albumFlipView.setPageHeight(getAlbumHeight());
+        albumFlipView.setImageLoadType(model.pages.total_count > 1 ?
+                MediaView.ImageLoadType.LowResolution.value() :
+                MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
         albumFlipView.setModel(model);
         albumFlipView.setPageIndex(model.default_page_index);
         albumInfoProfileView.setModel(model);
@@ -467,8 +476,9 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         void onPause(AlbumItemView itemView, AlbumFlipView view);
         void onPlay(AlbumItemView itemView, AlbumFlipView view);
         void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view);
-        void onStartPanning(AlbumItemView itemView, AlbumFlipView view);
+        void onStartPanning(AlbumItemView itemView, AlbumFlipView view, FlipView flipView);
         void onStop(AlbumItemView itemView, AlbumFlipView view);
-        void onTap(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView);
+        void onTap(AlbumItemView itemView, AlbumFlipView view);
+        void onTapFlipView(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView);
     }
 }

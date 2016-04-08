@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 
+import com.bumptech.glide.Glide;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.model.ApiApplication;
 import com.orcller.app.orcllermodules.model.ApplicationResource;
@@ -219,11 +220,13 @@ public class ApplicationLauncher {
     }
 
     private void removeCaches() {
-
+        EventBus.getDefault().post(new ApplicationWillRemoveCaches());
+        Application.clearBadge(Application.applicationContext());
+        cacheAppVersion();
     }
 
     private void removeCachesAfterVersionChecking() {
-        if (originAppVersion != null && !Application.equalsAppVersion(originAppVersion))
+//        if (originAppVersion != null && !Application.equalsAppVersion(originAppVersion))
             removeCaches();
     }
 
@@ -259,6 +262,10 @@ public class ApplicationLauncher {
 
         public ApiApplication.Version.Entity getEntity() {
             return entity;
+        }
+    }
+    public class ApplicationWillRemoveCaches {
+        public ApplicationWillRemoveCaches() {
         }
     }
     public class OnFailure {

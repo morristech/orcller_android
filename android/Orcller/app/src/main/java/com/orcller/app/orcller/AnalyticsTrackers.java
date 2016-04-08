@@ -37,6 +37,10 @@ public final class AnalyticsTrackers {
         sInstance = null;
     }
 
+    public static void init() {
+        getInstance().get(Target.APP);
+    }
+
     public static synchronized AnalyticsTrackers getInstance() {
         if(sInstance == null) {
             synchronized(TransferUtility.class) {

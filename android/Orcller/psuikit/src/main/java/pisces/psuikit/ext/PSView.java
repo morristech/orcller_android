@@ -2,6 +2,7 @@ package pisces.psuikit.ext;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import pisces.psfoundation.utils.DataLoadValidator;
@@ -51,6 +52,13 @@ public class PSView extends View implements PSComponent {
     // ================================================================================================
     //  Public
     // ================================================================================================
+
+    public static boolean hitTest(View view, MotionEvent event) {
+        return event.getX() >= view.getX() &&
+                event.getX() <= view.getX() + view.getWidth() &&
+                event.getY() >= view.getY() &&
+                event.getY() <= view.getY() + view.getHeight();
+    }
 
     public static boolean isShown(View view) {
         return view != null ? view.getVisibility() == View.VISIBLE : false;

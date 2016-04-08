@@ -36,19 +36,18 @@ import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.Media;
 import com.orcller.app.orcller.model.Page;
+import com.orcller.app.orcller.model.Pages;
 import com.orcller.app.orcller.model.converter.MediaConverter;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
 import com.orcller.app.orcller.widget.DescriptionInputView;
 import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
-import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import pisces.psuikit.utils.AlertDialogUtils;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
-import pisces.psuikit.keyboard.SoftKeyboardUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,8 +57,12 @@ import pisces.psfoundation.model.Model;
 import pisces.psfoundation.utils.DateUtil;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import pisces.psuikit.ext.PSScrollView;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
+import pisces.psuikit.keyboard.SoftKeyboardUtils;
+import pisces.psuikit.manager.ProgressDialogManager;
+import pisces.psuikit.utils.AlertDialogUtils;
 import pisces.psuikit.widget.ClearableEditText;
 import pisces.psuikit.widget.ExceptionView;
 import pisces.psuikit.widget.PSButton;
@@ -67,7 +70,7 @@ import pisces.psuikit.widget.PSButton;
 /**
  * Created by pisces on 11/28/15.
  */
-public class AlbumCreateActivity extends PSActionBarActivity
+public class AlbumCreateActivity extends BaseActionBarActivity
         implements AdapterView.OnItemSelectedListener, AlbumFlipView.Delegate, AlbumGridView.Delegate,
         Validator.ValidationListener, View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
     private static final int PAGE_COUNT_MIN = 1;
@@ -213,6 +216,12 @@ public class AlbumCreateActivity extends PSActionBarActivity
         return false;
     }
 
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Album, CustomSchemeGenerator.ViewTypeAlbum.Create.value());
+    }
+
     // ================================================================================================
     //  Public
     // ================================================================================================
@@ -284,28 +293,13 @@ public class AlbumCreateActivity extends PSActionBarActivity
             }
         } else if (event instanceof PageListEvent) {
             PageListEvent casted = (PageListEvent) event;
-            final Album model = (Album) casted.getObject();
 
-            if (casted.getType() == PageListEvent.PAGE_EDIT_COMPLETE) {
-                Application.run(new Runnable() {
-                    @Override
-                    public void run() {
-                        clonedModel.removeAllPages();
-
-                        for (Page page : model.pages.data) {
-                            clonedModel.addPage(page);
-                        }
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedIndexForAppending = 0;
-                        reload();
-                        setPostItemEnabled();
-                        setOtherButtonsEnabled();
-                    }
-                });
+            if (casted.getType() == PageListEvent.PAGE_DELETE_COMPLETE) {
+                deletePages((List<Page>) casted.getObject());
+            } else if (casted.getType() == PageListEvent.PAGE_ORDER_CHANGE_COMPLETE) {
+                changePagesOrder((List<Page>) casted.getObject());
             } else if (casted.getType() == PageListEvent.PAGE_DEFAULT_CHANGE_COMPLETE) {
+                Album model = (Album) casted.getObject();
                 clonedModel.default_page_index = model.default_page_index;
                 selectedIndexForAppending = SharedObject.convertPageIndexToPosition(model.default_page_index);
                 reload();
@@ -380,14 +374,17 @@ public class AlbumCreateActivity extends PSActionBarActivity
     public void onStartLoadRemainPages(AlbumFlipView view) {
     }
 
-    public void onStartPanning(AlbumFlipView view) {
+    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
         scrollView.setScrollable(false);
     }
 
     public void onStop(AlbumFlipView view) {
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
     }
 
     /**
@@ -407,7 +404,7 @@ public class AlbumCreateActivity extends PSActionBarActivity
 
     protected void doRequest() {
         MediaManager.getDefault().getUnit(clonedModel).setCompletionState(MediaUploadUnit.CompletionState.Creation);
-        MediaManager.getDefault().startUploading(clonedModel);
+        MediaManager.getDefault().continueUploading(clonedModel);
     }
 
     protected MenuItem getPostItem() {
@@ -449,24 +446,32 @@ public class AlbumCreateActivity extends PSActionBarActivity
     private void appendPages(final List list) {
         selectedIndexForAppending = clonedModel.pages.data.size();
         processCountForAppending = 0;
+        final List<Page> pages = new ArrayList<>();
+
+        ProgressDialogManager.show(this, R.string.w_importing);
 
         final AppendPage appendPage = new AppendPage() {
             @Override
             public void append(Page page) {
-                clonedModel.addPage(page);
+                page.id = page.hashCode();
+                clonedModel.pages.addPage(page, false);
+                pages.add(page);
 
-                Application.runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        reload();
+                if (++processCountForAppending >= list.size()) {
+                    Pages.sortByOrder(pages, true);
+                    clonedModel.pages.sortByOrder(true);
 
-                        if (++processCountForAppending >= list.size()) {
+                    Application.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            reload();
+                            MediaManager.getDefault().getUnit(clonedModel).enqueue(pages);
                             setPostItemEnabled();
                             setOtherButtonsEnabled();
-                            MediaManager.getDefault().startUploading(clonedModel);
+                            ProgressDialogManager.hide();
                         }
-                    }
-                });
+                    });
+                }
             }
         };
 
@@ -489,6 +494,54 @@ public class AlbumCreateActivity extends PSActionBarActivity
                                 });
                     }
                 }
+            }
+        });
+    }
+
+    private void changePagesOrder(final List<Page> pages) {
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                for (Page p : pages) {
+                    Page page = clonedModel.pages.getPageById(p.id);
+                    if (page != null)
+                        page.order = p.order;
+                }
+
+                clonedModel.pages.sortByOrder(true);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                selectedIndexForAppending = 0;
+                reload();
+                setPostItemEnabled();
+            }
+        });
+    }
+
+    private void deletePages(final List<Page> pages) {
+        final List<Page> deletePages = new ArrayList<>();
+
+        Application.run(new Runnable() {
+            @Override
+            public void run() {
+                for (Page page : pages) {
+                    Page deletePage = clonedModel.pages.getPageById(page.id);
+                    if (deletePage != null) {
+                        clonedModel.pages.removePage(deletePage);
+                        deletePages.add(deletePage);
+                    }
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                MediaManager.getDefault().getUnit(clonedModel).remove(deletePages);
+                selectedIndexForAppending = 0;
+                reload();
+                setPostItemEnabled();
+                setOtherButtonsEnabled();
             }
         });
     }

@@ -3,6 +3,7 @@ package pisces.psuikit.imagepicker;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -13,7 +14,11 @@ import android.widget.ProgressBar;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import java.io.IOException;
+
 import pisces.android.R;
+import pisces.psfoundation.utils.BitmapUtils;
+import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.ext.PSFrameLayout;
 
@@ -94,8 +99,9 @@ public class ImagePickerImageView extends PSFrameLayout {
             @Override
             protected Bitmap doInBackground(Void... params) {
                 BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inScaled = false;
                 options.inSampleSize = 2;
-                return BitmapFactory.decodeFile(media.path, options);
+                return BitmapUtils.rotateBitmap(BitmapFactory.decodeFile(media.path, options), media.orientation);
             }
 
             @Override

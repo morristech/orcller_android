@@ -1,5 +1,6 @@
 package com.orcller.app.orcller.facade;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.orcller.app.orcller.AnalyticsTrackers;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
@@ -46,7 +48,6 @@ import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.FBShareProxy;
-import com.orcller.app.orcller.proxy.RelationshipsDataProxy;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.utils.ImageGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
@@ -80,6 +81,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psuikit.imagepicker.ImagePickerActivity;
+import pisces.psuikit.manager.ActivityManager;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -116,6 +118,16 @@ public class ApplicationFacade {
         return uniqueInstance;
     }
 
+    public static void clear() {
+        if (EventBus.getDefault().isRegistered(uniqueInstance))
+            EventBus.getDefault().unregister(uniqueInstance);
+
+        AnalyticsTrackers.clear();
+        ActivityManager.clear();
+
+        uniqueInstance = null;
+    }
+
     public void onTokenRefresh() {
         if (GooglePlayServiceManager.getDefault().checkPlayServices(context)) {
             InstanceID instanceID = InstanceID.getInstance(context);
@@ -133,7 +145,7 @@ public class ApplicationFacade {
         }
     }
 
-    public void run() {
+    public void run(Activity invoker, Intent intent) {
         FacebookSdk.sdkInitialize(Application.applicationContext());
         EventBus.getDefault().register(this);
 
@@ -155,11 +167,6 @@ public class ApplicationFacade {
     public void onEventMainThread(Object event) {
         if (event instanceof ApplicationLauncher.ApplicationInitialized) {
             runTestSuite();
-        } else if (event instanceof ApplicationLauncher.ApplicationHasNewVersion) {
-        } else if (event instanceof ApplicationLauncher.OnFailure) {
-            ((ApplicationLauncher.OnFailure) event).getError().printStackTrace();
-        } else if (event instanceof AuthenticationCenter.OnFailure) {
-            ((ApplicationLauncher.OnFailure) event).getError().printStackTrace();
         }
     }
 
@@ -172,7 +179,7 @@ public class ApplicationFacade {
 //        testVideoMediaView();
 //        testPageView();
 //        testFlipView();
-//        testAlbumFlipView();
+        testAlbumFlipView();
 //        testImageMediaScrollView();
 //        testMediaScrollView();
 //        testMediaListActivity();
@@ -208,7 +215,7 @@ public class ApplicationFacade {
 //        testUserPictureEditActivity();
 //        testCoeditListActivity();
 //        testCoeditViewActivity();
-        testMainActivity();
+//        testMainActivity();
 //        testTempAlbumItemView();
     }
 

@@ -2,6 +2,7 @@ package com.orcller.app.orcller.proxy;
 
 import android.content.Intent;
 
+import com.google.android.gms.appindexing.Action;
 import com.orcller.app.orcller.activity.AlbumCreateActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CoeditInviteActivity;
@@ -11,6 +12,8 @@ import com.orcller.app.orcller.activity.OptionsActivity;
 import com.orcller.app.orcller.activity.ProfileActivity;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 
+import java.util.Arrays;
+
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 
@@ -19,11 +22,20 @@ import pisces.psfoundation.utils.Log;
  */
 public class OpenUrlProxy {
     public static void run(Intent intent) {
-        if (intent == null || intent.getData() == null)
+        if (intent == null || intent.getData() == null || !Intent.ACTION_VIEW.equals(intent.getAction()))
             return;
 
-        String category = intent.getData().getHost();
-        int viewType = Integer.valueOf(intent.getData().getPath().replace("/", ""));
+        String category;
+        int viewType;
+        String[] paths = intent.getData().getPath().split("/");
+
+        if (intent.getData().getScheme().equals("http")) {
+            category = paths.length > 2 ? paths[2] : null;
+            viewType = paths.length > 3 ? Integer.valueOf(paths[3]) : 0;
+        } else {
+            category = intent.getData().getHost();
+            viewType = paths.length > 1 ? Integer.valueOf(paths[1]) : 0;
+        }
 
         if (category == null || viewType < 1)
             return;

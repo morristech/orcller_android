@@ -3,6 +3,8 @@
     <!-- properties -->
     <string name="app_name">Orcller</string>
     <string name="app_scheme">orcller</string>
+    <string name="app_base_uri">android-app://com.orcller.app.orcller/http/orcller.com/app/</string>
+    <string name="web_base_uri">http://orcller.com/app/</string>
     <string name="domain">https://www.orcller.com</string>
     <string name="facebook_app_id">470721986412373</string>
     <string name="facebook_invite_preview_image_path">resources/site/images/preview_fbinvite.png</string>
@@ -13,6 +15,7 @@
     <string name="s3_domain">https://d7far00nxgmur.cloudfront.net</string>
 
     <!-- custom scheme -->
+    <string name="host">orcller.com</string>
     <string name="host_album">album</string>
     <string name="host_coediting">coediting</string>
     <string name="host_feed">feed</string>
@@ -28,9 +31,8 @@
     <string name="path_private_polcy">/site/policy/private_policy</string>
     <string name="path_terms">/site/policy/terms</string>
 
-    <string name="facebook_share_content_title">UStory - Live and Put Together</string>
-
     <!-- words -->
+    <string name="w_filter_title">Orcller - Album Collaboration</string>
     <string name="w_about">About</string>
     <string name="w_account">Account</string>
     <string name="w_accept">Accept</string>
@@ -65,12 +67,14 @@
     <string name="w_facebook">Facebook</string>
     <string name="w_facebook_photos">Facebook Photos</string>
     <string name="w_follow">Follow</string>
+    <string name="w_follow_plus">+ Follow</string>
     <string name="w_followers">Followers</string>
     <string name="w_following">Following</string>
     <string name="w_hide_all_albums">Hide all Albums</string>
     <string name="w_hide_album">Hide Album</string>
     <string name="w_heart">Heart</string>
     <string name="w_hearts">Hearts</string>
+    <string name="w_importing">Importing Photos...</string>
     <string name="w_instagram">Instagram</string>
     <string name="w_instagram_photos">Instagram Photos</string>
     <string name="w_invite">Invite</string>
@@ -132,10 +136,11 @@
     <string name="w_title_collaborations">Collaborations</string>
     <string name="w_title_edit_album">Edit Album</string>
     <string name="w_title_edit_page">Edit Page</string>
+    <string name="w_title_edit_profile">Edit Profile</string>
     <string name="w_title_find_friends">Find Friends</string>
     <string name="w_title_new_album">New Album</string>
     <string name="w_title_options">Options</string>
-    <string name="w_title_profile">Edit Profile</string>
+    <string name="w_title_profile">Profile</string>
     <string name="w_title_timeline">Orcller</string>
     <string name="w_yes">Yes</string>
     <string name="w_video">Video</string>
@@ -154,6 +159,7 @@
     <string name="m_activity_close_message">This information may have changed.\nAre you sure you want to leave this screen?</string>
     <string name="m_has_new_version">There is a new version on the App Store.</string>
     <string name="m_hint_album_description">Say something about this album...</string>
+    <string name="m_hint_album_last_page">The last page of this album.</string>
     <string name="m_hint_album_title">Enter the album title here.</string>
     <string name="m_hint_comment_input">Please enter your comment.</string>
     <string name="m_hint_current_password">Current Password</string>

@@ -15,6 +15,7 @@ import com.orcller.app.orcller.widget.UserDataGridView;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.model.Model;
+import pisces.psfoundation.utils.Log;
 import pisces.psuikit.widget.ExceptionView;
 import retrofit.Call;
 
@@ -113,10 +114,11 @@ public class UserAlbumGridFragment extends UserDataGridFragment {
         if (event instanceof AlbumEvent) {
             AlbumEvent casted = (AlbumEvent) event;
 
-            if (AlbumEvent.CREATE.equals(casted.getType()) &&
-                    AlbumEvent.CREATE.equals(casted.getType()) &&
-                    AlbumEvent.MODIFY.equals(casted.getType()))
-                reset();
+            if (AlbumEvent.CREATE.equals(casted.getType()) ||
+                    AlbumEvent.DELETE.equals(casted.getType()) ||
+                    AlbumEvent.MODIFY.equals(casted.getType())) {
+                modelChanged();
+            }
         }
     }
 }

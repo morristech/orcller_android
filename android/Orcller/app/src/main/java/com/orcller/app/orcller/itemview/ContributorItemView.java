@@ -134,7 +134,7 @@ public class ContributorItemView  extends PSLinearLayout {
             coeditButton.setModel(model, albumId);
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
-                Log.d(e.getMessage(), e);
+                Log.e("modelChanged", e);
         }
 
         coeditButton.setVisibility(allowsShowCoeditButton ? coeditButton.getVisibility() : GONE);

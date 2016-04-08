@@ -180,7 +180,7 @@ public class ActivityFragment extends MainTabFragment
         Notification model = items.get(position);
 
         if (Notification.Type.PageComment.equals(model.type) ||
-                Notification.Type.PageComment.equals(model.type)) {
+                Notification.Type.PageLike.equals(model.type)) {
             PageListActivity.show(model.content_id);
         } else if (Notification.Type.CoeditingAccept.equals(model.type) ||
                 Notification.Type.CoeditingAsk.equals(model.type) ||

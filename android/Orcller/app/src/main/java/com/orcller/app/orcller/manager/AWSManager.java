@@ -44,7 +44,7 @@ public class AWSManager {
                     s3Client = new AmazonS3Client(new BasicAWSCredentials(awsAccessKey, awsSecretKey), config);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (BuildConfig.DEBUG)
-                        Log.d(e.getMessage());
+                        Log.e("getS3Client", e.getMessage());
                 }
             }
         }

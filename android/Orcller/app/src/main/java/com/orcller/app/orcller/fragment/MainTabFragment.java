@@ -13,6 +13,7 @@ import pisces.psuikit.ext.PSFragment;
 abstract public class MainTabFragment extends PSFragment {
     private boolean shouldStartFragment;
     private ActionBar actionBar;
+    private Delegate delegate;
 
     // ================================================================================================
     //  Overridden: PSFragment
@@ -59,6 +60,14 @@ abstract public class MainTabFragment extends PSFragment {
         this.actionBar = actionBar;
     }
 
+    public Delegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
+    }
+
     public void invalidateFragment() {
         shouldStartFragment = true;
 
@@ -80,5 +89,14 @@ abstract public class MainTabFragment extends PSFragment {
 
     private void trackFragment() {
         AnalyticsTrackers.getInstance().trackScreen(AnalyticsTrackers.Target.APP, getClass().getName());
+    }
+
+    // ================================================================================================
+    //  Interface: Delegate
+    // ================================================================================================
+
+    public interface Delegate {
+        void onFinishScroll();
+        void onStartScroll();
     }
 }

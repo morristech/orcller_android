@@ -14,13 +14,13 @@ import com.orcller.app.orcller.fragment.UserAlbumStarGridFragment;
 import com.orcller.app.orcller.fragment.UserDataGridFragment;
 import com.orcller.app.orcller.fragment.UserMediaGridFragment;
 import com.orcller.app.orcller.proxy.UserDataProxy;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.FollowButton;
 import com.orcller.app.orcller.widget.ProfileContentView;
 import com.orcller.app.orcller.widget.ProfileHearderView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.model.User;
 import com.orcller.app.orcllermodules.model.api.ApiUser;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
@@ -40,7 +40,7 @@ import static pisces.psfoundation.utils.Log.e;
 /**
  * Created by pisces on 12/10/15.
  */
-public class ProfileActivity extends PSActionBarActivity
+public class ProfileActivity extends BaseActionBarActivity
         implements ProfileHearderView.Delegate, ProfileContentView.DataSource {
     private static final String USER_UID_KEY = "user_uid";
     private long userId;
@@ -61,10 +61,12 @@ public class ProfileActivity extends PSActionBarActivity
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setTitle(null);
 
-        userId = Long.valueOf(getIntent().getData().getQueryParameter(USER_UID_KEY));
         fragments = createFragments();
         profileHearderView = (ProfileHearderView) findViewById(R.id.profileHearderView);
         profileContentView = (ProfileContentView) findViewById(R.id.profileContentView);
+
+        String userIdString = getIntent().getData() != null ? getIntent().getData().getQueryParameter(USER_UID_KEY) : null;
+        userId = userIdString != null ? Long.valueOf(userIdString) : 0;
 
         if (User.isMe(userId)) {
             setModel(AuthenticationCenter.getDefault().getUser());
@@ -80,7 +82,7 @@ public class ProfileActivity extends PSActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (model == null)
-            return false;
+            return super.onCreateOptionsMenu(menu);
 
         if (model.isMe()) {
             int res = profileHearderView.isEditing() ? R.menu.menu_save : R.menu.menu_profile;
@@ -129,6 +131,12 @@ public class ProfileActivity extends PSActionBarActivity
         super.endDataLoading();
 
         ProgressBarManager.hide(this);
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Users, CustomSchemeGenerator.ViewTypeUsers.Profile.value());
     }
 
     // ================================================================================================
@@ -230,6 +238,6 @@ public class ProfileActivity extends PSActionBarActivity
     }
 
     private void setToolbarTitle() {
-        getSupportActionBar().setTitle(profileHearderView.isEditing() ? getString(R.string.w_title_profile) : model.user_id);
+        getSupportActionBar().setTitle(profileHearderView.isEditing() ? getString(R.string.w_title_edit_profile) : model.user_id);
     }
 }

@@ -16,8 +16,8 @@ android {
         applicationId "com.orcller.app.orcller"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 8
+        versionName "1.0.4"
         multiDexEnabled false
     }
     buildTypes {
@@ -50,10 +50,10 @@ android {
         uitest {
             applicationId "com.orcller.app.orcller.uitest"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
-            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
+            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"s9m8UqcXA5vZtDzjTS1C5yaizd7v673jDr9t64BeOwK1jw0njhmV+TGju36midH80OvpWMqn+rs6gjJRaCP4PEyhMxb2wwwq1ygpfkIS552h1FLLB3jLhpPN9q5+rWqe6uyCeP+JH7D5PyhU1Khu/3snEXt9gTfcCTk8LGZenLA="'
         }
         dev {
-            applicationId "com.orcller.app.orcller.dev"
+            applicationId "com.orcller.app.orcller"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
             buildConfigField 'String', 'TEST_SESSION_TOKEN', '"s9m8UqcXA5vZtDzjTS1C5yaizd7v673jDr9t64BeOwK1jw0njhmV+TGju36midH80OvpWMqn+rs6gjJRaCP4PEyhMxb2wwwq1ygpfkIS552h1FLLB3jLhpPN9q5+rWqe6uyCeP+JH7D5PyhU1Khu/3snEXt9gTfcCTk8LGZenLA="'
 //            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.10.100/apis"'
@@ -62,7 +62,7 @@ android {
         qa {
             applicationId "com.orcller.app.orcller.qa"
             buildConfigField 'String', 'API_BASE_URL', '"https://www.orcller.com/apis"'
-            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"8mhO9Ra6lVENUYvLj50QdWVpcvzUYk+8nt2yec4b/7knfvNYhO61ziJ5hWykaJpfG2Xfm5DxQc37Uo1oVtUi0Vfi1HmBMJ8LQ864fHr83fP0WH00Hs7ifi2LNAG5a1GFZguPQBcVgHhRisvD/Z0XGQ=="'
+            buildConfigField 'String', 'TEST_SESSION_TOKEN', '"s9m8UqcXA5vZtDzjTS1C5yaizd7v673jDr9t64BeOwK1jw0njhmV+TGju36midH80OvpWMqn+rs6gjJRaCP4PEyhMxb2wwwq1ygpfkIS552h1FLLB3jLhpPN9q5+rWqe6uyCeP+JH7D5PyhU1Khu/3snEXt9gTfcCTk8LGZenLA="'
         }
         production {
             applicationId "com.orcller.app.orcller"
@@ -85,5 +85,6 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-ddb:2.+'
     compile 'com.mobsandgeeks:android-saripaar:2.0.3'
     compile 'com.google.android.gms:play-services-analytics:8.1.0'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
     compile 'in.srain.cube:ultra-ptr:1.0.11'
 }

@@ -15,6 +15,7 @@ public class Media extends Model {
     public int dataColumnIndex;
     public int height;
     public int width;
+    public int orientation;
     public long date;
     public String path;
 

@@ -3,6 +3,7 @@
     <string name="app_name">Orcller</string>
 
     <!-- words -->
+    <string name="w_filter_title">Orcller - 공동편집 앨범</string>
     <string name="w_about">About</string>
     <string name="w_account">계정</string>
     <string name="w_accept">수락</string>
@@ -37,12 +38,14 @@
     <string name="w_facebook">페이스북</string>
     <string name="w_facebook_photos">페이스북 사진</string>
     <string name="w_follow">팔로우</string>
+    <string name="w_follow_plus">+ 팔로우</string>
     <string name="w_followers">팔로워</string>
     <string name="w_following">팔로잉</string>
     <string name="w_hide_all_albums">모든 앨범 숨기기</string>
     <string name="w_hide_album">앨범 숨김</string>
     <string name="w_heart">하트</string>
     <string name="w_hearts">하트</string>
+    <string name="w_importing">사진을 가져오는 중...</string>
     <string name="w_instagram">인스타그램</string>
     <string name="w_instagram_photos">인스타그램 사진</string>
     <string name="w_invite">초대</string>
@@ -104,10 +107,11 @@
     <string name="w_title_collaborations">공동편집</string>
     <string name="w_title_edit_album">앨범 편집</string>
     <string name="w_title_edit_page">페이지 편집</string>
+    <string name="w_title_edit_profile">프로필 편집</string>
     <string name="w_title_find_friends">친구찾기</string>
     <string name="w_title_new_album">새 앨범</string>
     <string name="w_title_options">옵션</string>
-    <string name="w_title_profile">프로필 편집</string>
+    <string name="w_title_profile">프로필</string>
     <string name="w_title_timeline">Orcller</string>
     <string name="w_yes">예</string>
     <string name="w_video">비디오</string>
@@ -126,6 +130,7 @@
     <string name="m_activity_close_message">변경된 내용이 있습니다.\n정말로 닫으시겠습니까?</string>
     <string name="m_has_new_version">플레이 스토어에 새로운 버전이 있습니다.</string>
     <string name="m_hint_album_description">이 앨범에 대해...</string>
+    <string name="m_hint_album_last_page">마지막 페이지입니다.</string>
     <string name="m_hint_album_title">제목을 입력하세요.</string>
     <string name="m_hint_comment_input">댓글을 입력하세요.</string>
     <string name="m_hint_current_password">현재 비밀번호</string>

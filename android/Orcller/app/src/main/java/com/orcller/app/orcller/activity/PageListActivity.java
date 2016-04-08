@@ -271,7 +271,7 @@ public class PageListActivity extends PSActionBarActivity
                     page.likes.synchronize(response.body().entity, true);
                 } else {
                     if (BuildConfig.DEBUG)
-                        Log.d("Api Error", response.body());
+                        Log.e("Api Error", response.body());
                 }
 
                 endDataLoading();
@@ -280,7 +280,7 @@ public class PageListActivity extends PSActionBarActivity
             @Override
             public void onFailure(Throwable t) {
                 if (BuildConfig.DEBUG)
-                    Log.d("onFailure", t);
+                    Log.e("onFailure", t);
 
                 endDataLoading();
             }
@@ -343,22 +343,14 @@ public class PageListActivity extends PSActionBarActivity
 
         this.model = model;
 
-        Application.run(new Runnable() {
-            @Override
-            public void run() {
-                mediaList.clear();
+        mediaList.clear();
 
-                for (Page page : model.pages.data) {
-                    mediaList.add(page.media);
-                }
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                modelChanged();
-                loadRemainPages();
-            }
-        });
+        for (Page page : model.pages.data) {
+            mediaList.add(page.media);
+        }
+
+        modelChanged();
+        loadRemainPages();
     }
 
     private void setSelectedIndex(int selectedIndex) {

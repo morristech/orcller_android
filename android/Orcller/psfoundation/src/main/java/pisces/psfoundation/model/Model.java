@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.greenrobot.event.EventBus;
+import pisces.android.psfoundation.BuildConfig;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GsonUtil;
 import pisces.psfoundation.utils.Log;
@@ -95,7 +96,8 @@ public class Model implements Cloneable, Serializable {
 
             return true;
         } catch (Exception e) {
-            Log.d("Exception", e);
+            if (BuildConfig.DEBUG)
+                Log.e("Exception", e);
             e.printStackTrace();
         }
 

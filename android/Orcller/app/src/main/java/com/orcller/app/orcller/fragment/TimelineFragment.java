@@ -71,7 +71,7 @@ import retrofit.Retrofit;
  */
 public class TimelineFragment extends MainTabFragment
         implements AbsListView.OnScrollListener, AlbumItemViewDelegate.Invoker, AdapterView.OnItemClickListener,
-        SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+        SwipeRefreshLayout.OnRefreshListener, TempAlbumItemView.Delegate, View.OnClickListener {
     private static final int LIST_COUNT = 10;
     private boolean isCreateButtonAnimating;
     private boolean shouldReload = true;
@@ -91,6 +91,7 @@ public class TimelineFragment extends MainTabFragment
     private PSListView listView;
     private FloatingActionButton createButton;
     private AlbumFlipView selectedAlbumFlipView;
+    private TimelineFragment self = this;
 
     public TimelineFragment() {
         super();
@@ -224,10 +225,8 @@ public class TimelineFragment extends MainTabFragment
 
     @Override
     protected void startFragment() {
-        if (listView.getAdapter() == null) {
-            items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
+        if (listView.getAdapter() == null)
             listView.setAdapter(listAdapter);
-        }
 
         invalidateLoading();
     }
@@ -319,8 +318,14 @@ public class TimelineFragment extends MainTabFragment
 
         if (scrollState == SCROLL_STATE_FLING) {
             startPoint = getScrollPoint();
+        } else if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+            if (getDelegate() != null)
+                getDelegate().onStartScroll();
         } else if (scrollState == SCROLL_STATE_IDLE) {
             startPoint = null;
+
+            if (getDelegate() != null)
+                getDelegate().onFinishScroll();
         }
     }
 
@@ -376,8 +381,23 @@ public class TimelineFragment extends MainTabFragment
         swipeRefreshLayout.setEnabled(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+        AlbumViewActivity.show(view.getModel().id, false);
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
         selectedAlbumFlipView = view;
+    }
+
+    /**
+     * TempAlbumItemView.Delegate
+     */
+    public void onClickCancelButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
+    public void onClickDeleteButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
     }
 
     // ================================================================================================
@@ -399,28 +419,33 @@ public class TimelineFragment extends MainTabFragment
         }
     }
 
-    private void deleteItem(Object item) {
-        if (items.contains(item)) {
-            items.remove(item);
+    private void clearUnit(MediaUploadUnit unit) {
+        MediaManager.getDefault().clearItem(unit);
+        items = ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items);
+        listAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteAlbum(long albumId) {
+        Album target = null;
+
+        for (Object item : items) {
+            if (item instanceof Album && ((Album) item).id == albumId) {
+                target = (Album) item;
+                break;
+            }
+        }
+
+        if (target != null) {
+            items.remove(target);
             listAdapter.notifyDataSetChanged();
         }
     }
 
-    private void deleteItem(final MediaUploadUnit unit, Runnable runnable) {
-        if (unit == null)
-            return;
-
-        Application.run(new Runnable() {
-            @Override
-            public void run() {
-                for (Object item : items) {
-                    if (item instanceof Album && ((Album) item).id == unit.getModel().id) {
-                        items.remove(item);
-                        break;
-                    }
-                }
-            }
-        }, runnable);
+    private void deleteUnit(MediaUploadUnit unit) {
+        if (items.contains(unit)) {
+            items.remove(unit);
+            listAdapter.notifyDataSetChanged();
+        }
     }
 
     private void dequeueEvent() {
@@ -434,30 +459,31 @@ public class TimelineFragment extends MainTabFragment
         if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
             final MediaUploadUnit unit = (MediaUploadUnit) target;
 
-            if (unit.isCancelled()) {
+            if (MediaUploadUnit.UploadState.Cancelled.equals(unit.getUploadState())) {
                 dequeueEvent();
             } else {
-                deleteItem(unit, new Runnable() {
-                    @Override
-                    public void run() {
-                        if (MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
-                            listAdapter.notifyDataSetChanged();
-                        } else {
-                            addItem(unit);
-                        }
+                deleteAlbum(unit.getModel().id);
 
-                        dequeueEvent();
-                    }
-                });
+                if (MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
+                    listAdapter.notifyDataSetChanged();
+                } else {
+                    addItem(unit);
+                }
+
+                dequeueEvent();
+                exceptionViewManager.validate();
             }
         } else if (target instanceof MediaUploadUnit &&
                 (AlbumEvent.CREATE.equals(type) || AlbumEvent.MODIFY.equals(type))) {
-            deleteItem(target);
+            deleteUnit((MediaUploadUnit) target);
             addItem(event.getObject());
+            exceptionViewManager.validate();
             cacheItems();
             dequeueEvent();
         } else if (AlbumEvent.DELETE.equals(type)) {
-            deleteItem(event.getObject());
+            Album album = (Album) event.getObject();
+            deleteAlbum(album.id);
+            exceptionViewManager.validate();
             cacheItems();
             dequeueEvent();
         }
@@ -569,7 +595,11 @@ public class TimelineFragment extends MainTabFragment
                     if (BuildConfig.DEBUG)
                         Log.e("Api Error", response.body());
 
+                    items = items.size() < 1 ? ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items) : items;
                     loadError = items.size() < 1 ? new APIError(response.body()) : null;
+
+                    if (loadError == null)
+                        listAdapter.notifyDataSetChanged();
 
                     endDataLoading();
                 }
@@ -580,7 +610,11 @@ public class TimelineFragment extends MainTabFragment
                 if (BuildConfig.DEBUG)
                     Log.e("onFailure", t);
 
+                items = items.size() < 1 ? ModelFileCacheManager.load(ModelFileCacheManager.Type.Timeline, items) : items;
                 loadError = items.size() < 1 ? new Error(t.getMessage()) : null;
+
+                if (loadError == null)
+                    listAdapter.notifyDataSetChanged();
 
                 endDataLoading();
             }
@@ -698,6 +732,8 @@ public class TimelineFragment extends MainTabFragment
 
                     case TEMP:
                         TempAlbumItemView tempAlbumItemView = new TempAlbumItemView(context);
+                        tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.ALBUM_NAME);
+                        tempAlbumItemView.setDelegate(self);
                         convertView = tempAlbumItemView;
                         break;
                 }
@@ -708,6 +744,7 @@ public class TimelineFragment extends MainTabFragment
             if (convertView instanceof AlbumItemView) {
                 ((AlbumItemView) convertView).setModel((Album) item);
             } else if (convertView instanceof TempAlbumItemView) {
+
                 ((TempAlbumItemView) convertView).setUnit((MediaUploadUnit) item);
             }
 

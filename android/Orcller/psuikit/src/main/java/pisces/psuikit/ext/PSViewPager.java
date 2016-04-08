@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import pisces.android.R;
 import pisces.psfoundation.utils.DataLoadValidator;
+import pisces.psfoundation.utils.Log;
 
 /**
  * Created by pisces on 12/11/15.
@@ -76,20 +77,28 @@ public class PSViewPager extends ViewPager implements PSComponent, DataLoadValid
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!pagingEnabled)
-            return false;
-        return super.onInterceptTouchEvent(ev);
+        try {
+            if (!pagingEnabled)
+                return false;
+            return super.onInterceptTouchEvent(ev);
+        } catch (Exception e) {
+            return pagingEnabled;
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                if (pagingEnabled)
+        try {
+            switch (ev.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (pagingEnabled)
+                        return super.onTouchEvent(ev);
+                    return pagingEnabled;
+                default:
                     return super.onTouchEvent(ev);
-                return pagingEnabled;
-            default:
-                return super.onTouchEvent(ev);
+            }
+        } catch (Exception e) {
+            return pagingEnabled;
         }
     }
 

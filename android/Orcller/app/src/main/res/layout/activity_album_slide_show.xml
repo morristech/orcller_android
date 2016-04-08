@@ -3,7 +3,8 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false">
+    android:clipChildren="false"
+    android:background="@android:color/black">
     <SurfaceView
         android:layout_width="0px"
         android:layout_height="0px"
@@ -28,7 +29,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="36dp"
-        android:background="@color/theme_black_toolbar"
+        android:background="@android:color/transparent"
         android:elevation="2dp"
         android:minHeight="36dp"
         android:theme="@style/BlackTheme.Toolbar"/>

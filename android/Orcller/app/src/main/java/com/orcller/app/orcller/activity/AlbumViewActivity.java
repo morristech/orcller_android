@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.appindexing.Action;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -19,6 +20,7 @@ import com.orcller.app.orcller.factory.ExceptionViewFactory;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
+import com.orcller.app.orcller.manager.MediaManager;
 import com.orcller.app.orcller.manager.MediaUploadUnit;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
@@ -26,6 +28,7 @@ import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
 import com.orcller.app.orcller.widget.CommentInputView;
@@ -56,9 +59,9 @@ import retrofit.Retrofit;
 /**
  * Created by pisces on 12/7/15.
  */
-public class AlbumViewActivity extends PSActionBarActivity
+public class AlbumViewActivity extends BaseActionBarActivity
         implements AlbumItemViewDelegate.Invoker, CommentInputView.Delegate,
-        CommentListView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
+        CommentListView.Delegate, TempAlbumItemView.Delegate, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String ALBUM_KEY = "album";
     private static final String ALBUM_ID_KEY = "album_id";
     private static final String ALLOWS_COMMENT_INPUT_FOCUS = "allowsCommentInputFocus";
@@ -127,7 +130,7 @@ public class AlbumViewActivity extends PSActionBarActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         if (albumOptionsManager != null)
             return albumOptionsManager.onCreateOptionsMenu(menu);
-        return false;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -181,6 +184,12 @@ public class AlbumViewActivity extends PSActionBarActivity
             return loadError != null;
 
         return false;
+    }
+
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Album, CustomSchemeGenerator.ViewTypeAlbum.View.value());
     }
 
     // ================================================================================================
@@ -287,12 +296,38 @@ public class AlbumViewActivity extends PSActionBarActivity
         scrollView.setScrollable(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTap(AlbumFlipView view) {
+    }
+
+    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    }
+
+    /**
+     * TempAlbumItemView.Delegate
+     */
+    public void onClickCancelButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
+    }
+
+    public void onClickDeleteButton(TempAlbumItemView itemView) {
+        clearUnit(itemView.getUnit());
     }
 
     // ================================================================================================
     //  Private
     // ================================================================================================
+
+    private void clearUnit(MediaUploadUnit unit) {
+        MediaManager.getDefault().clearItem(unit);
+
+        if (tempAlbumItemView != null) {
+            ViewGroup parent = (ViewGroup) albumItemView.getParent();
+            parent.removeView(tempAlbumItemView);
+            tempAlbumItemView = null;
+        }
+
+        albumItemView.setVisibility(View.VISIBLE);
+    }
 
     private void dequeueEvent() {
         if (!isActive() || eventQueue.size() < 1)
@@ -306,7 +341,7 @@ public class AlbumViewActivity extends PSActionBarActivity
         if (MediaUploadUnit.Event.START_UPLOADING.equals(type)) {
             final MediaUploadUnit unit = (MediaUploadUnit) target;
 
-            if (unit.isCancelled()) {
+            if (MediaUploadUnit.UploadState.Cancelled.equals(unit.getUploadState())) {
                 dequeueEvent();
             } else {
                 if (!MediaUploadUnit.CompletionState.None.equals(unit.getCompletionState())) {
@@ -314,6 +349,7 @@ public class AlbumViewActivity extends PSActionBarActivity
                         albumItemView.setVisibility(View.GONE);
                         tempAlbumItemView = new TempAlbumItemView(this);
                         tempAlbumItemView.setDescriptionMode(AlbumInfoProfileView.USER_NICKNAME);
+                        tempAlbumItemView.setDelegate(this);
                         tempAlbumItemView.setUnit(unit);
                         parent.addView(tempAlbumItemView, 0, new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));

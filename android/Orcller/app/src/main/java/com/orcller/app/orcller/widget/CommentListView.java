@@ -16,6 +16,8 @@ import com.orcller.app.orcller.model.Comments;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcllermodules.error.APIError;
+
+import pisces.psuikit.manager.ProgressDialogManager;
 import pisces.psuikit.utils.AlertDialogUtils;
 
 import java.util.ArrayList;
@@ -162,7 +164,7 @@ public class CommentListView extends PSListView
         if (invalidDataLoading())
             return;
 
-        ProgressBarManager.show();
+        ProgressDialogManager.show(R.string.w_processing);
 
         final Comment comment = target.getModel();
         final Runnable error = new Runnable() {
@@ -194,7 +196,7 @@ public class CommentListView extends PSListView
                             items.remove(comment);
                             listAdapter.notifyDataSetChanged();
                             endDataLoading();
-                            ProgressBarManager.hide();
+                            ProgressDialogManager.hide();
                             performChange();
                         } else {
                             if (DEBUG)

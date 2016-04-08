@@ -26,7 +26,7 @@ public class MapUtils {
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_DOCUMENT) {
-                    Log.d("utils", "Start document");
+                    Log.e("utils", "Start document");
                 }
                 else if (eventType == XmlPullParser.START_TAG) {
                     if (parser.getName().equals("map")) {

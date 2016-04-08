@@ -27,10 +27,9 @@ import com.orcller.app.orcller.fragment.FindFriendsFragment;
 import com.orcller.app.orcller.fragment.MainTabFragment;
 import com.orcller.app.orcller.fragment.ProfileFragment;
 import com.orcller.app.orcller.fragment.TimelineFragment;
+import com.orcller.app.orcller.utils.CustomSchemeGenerator;
 import com.orcller.app.orcller.widget.TabIndicator;
-import pisces.psuikit.event.SoftKeyboardEvent;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +38,12 @@ import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
-import pisces.psuikit.ext.PSActionBarActivity;
+import pisces.psuikit.event.SoftKeyboardEvent;
 import pisces.psuikit.ext.PSViewPager;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 
-public class MainActivity extends PSActionBarActivity
-        implements TabHost.OnTabChangeListener, View.OnTouchListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends BaseActionBarActivity
+        implements MainTabFragment.Delegate, TabHost.OnTabChangeListener, View.OnTouchListener, ViewPager.OnPageChangeListener {
     public static final String SELECTED_INDEX_KEY = "selectedIndex";
     private static final int TAB_COUNT = 5;
     private Map<String, MainTabFragment> fragmentMap = new HashMap<>();
@@ -69,7 +69,7 @@ public class MainActivity extends PSActionBarActivity
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPager = (PSViewPager) findViewById(R.id.viewPager);
         emblemImageView = (ImageView) findViewById(R.id.emblemImageView);
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
 
         tabHost.setup();
         tabHost.setOnTabChangedListener(this);
@@ -77,6 +77,7 @@ public class MainActivity extends PSActionBarActivity
         viewPager.setAdapter(pagerAdapter);
         viewPager.setPageMargin(GraphicUtils.convertDpToPixel(15));
         viewPager.setPageMarginDrawable(R.color.theme_lightgray_primary);
+        viewPager.setPagingEnabled(false);
         viewPager.addOnPageChangeListener(this);
         addTabs();
         EventBus.getDefault().register(this);
@@ -131,6 +132,12 @@ public class MainActivity extends PSActionBarActivity
         ApplicationFacade.clear();
     }
 
+    @Override
+    protected CustomSchemeGenerator.ViewInfo createViewInfo() {
+        return new CustomSchemeGenerator.ViewInfo(
+                CustomSchemeGenerator.Category.Main, 0);
+    }
+
     // ================================================================================================
     //  Interface Implementation
     // ================================================================================================
@@ -150,14 +157,6 @@ public class MainActivity extends PSActionBarActivity
             } else if (casted.getType().equals(SoftKeyboardEvent.HIDE)) {
                 tabHost.getTabWidget().setVisibility(View.VISIBLE);
             }
-        } else if (event instanceof AlbumFlipViewEvent) {
-            AlbumFlipViewEvent casted = (AlbumFlipViewEvent) event;
-
-            if (AlbumFlipViewEvent.CANCEL_PANNING.equals(casted.getType()) ||
-                    AlbumFlipViewEvent.PAGE_INDEX_CHANGE.equals(casted.getType()))
-                viewPager.setPagingEnabled(true);
-            else if (AlbumFlipViewEvent.START_PANNING.equals(casted.getType()))
-                viewPager.setPagingEnabled(false);
         }
     }
 
@@ -215,6 +214,15 @@ public class MainActivity extends PSActionBarActivity
 
         activedFragment.invalidateFragment();
         activedFragment.setActive(true);
+    }
+
+    /**
+     * MainTabFragment.Delegate
+     */
+    public void onFinishScroll() {
+    }
+
+    public void onStartScroll() {
     }
 
     // ================================================================================================
@@ -305,8 +313,12 @@ public class MainActivity extends PSActionBarActivity
     // ================================================================================================
 
     private class PagerAdapter extends FragmentPagerAdapter {
-        public PagerAdapter(FragmentManager fm) {
+        private MainTabFragment.Delegate delegate;
+
+        public PagerAdapter(MainTabFragment.Delegate delegate, FragmentManager fm) {
             super(fm);
+
+            this.delegate = delegate;
         }
 
         @Override
@@ -339,13 +351,14 @@ public class MainActivity extends PSActionBarActivity
                 } else {
                     fragment = (MainTabFragment) fragmentClass.newInstance();
                     fragment.setActionBar(getSupportActionBar());
+                    fragment.setDelegate(delegate);
                     fragmentMap.put(key, fragment);
                 }
 
                 return fragment;
             } catch (Exception e) {
                 if (BuildConfig.DEBUG)
-                    Log.d("e", e);
+                    Log.e("e", e);
                 return null;
             }
         }
