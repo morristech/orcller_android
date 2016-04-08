@@ -25,10 +25,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-//    dexOptions{
+    dexOptions{
 //        incremental true
-//        javaMaxHeapSize "4g"
-//    }
+        javaMaxHeapSize "4g"
+    }
     sourceSets {
         uitest {
             java.srcDirs = ['src/main/java', 'src/uitest/java']
