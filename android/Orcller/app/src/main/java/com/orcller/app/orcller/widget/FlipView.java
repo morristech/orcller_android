@@ -12,31 +12,19 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 
 import com.orcller.app.orcller.R;
+import com.orcller.app.orcller.animator.AnimationOptions;
 import com.orcller.app.orcller.model.Page;
 
-import java.util.List;
-
-import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
-import pisces.psuikit.ext.PSFrameLayout;
 
 /**
  * Created by pisces on 11/19/15.
  */
-public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate {
-    public enum Direction {
-        Left,
-        Right
-    }
-
+public class FlipView extends TemplateView {
     public static final int FLIP_DURATION = 250;
-    private boolean imageLoadTypeChanged;
-    private int imageLoadType;
-    private List<Page> pages;
     private PageView frontPageView;
     private PageView backPageView;
     private ImageView shadowImageView;
-    private FlipViewDelegate delegate;
 
     public FlipView(Context context) {
         super(context);
@@ -55,18 +43,10 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
     // ================================================================================================
 
     @Override
-    protected void commitProperties() {
-        if (imageLoadTypeChanged) {
-            imageLoadTypeChanged = false;
-            frontPageView.setImageLoadType(imageLoadType);
-            backPageView.setImageLoadType(imageLoadType);
-        }
-    }
-
-    @Override
     protected void initProperties(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        frontPageView = new PageView(context);
-        frontPageView.setDelegate(this);
+        super.initProperties(context, attrs, defStyleAttr, defStyleRes);
+
+        frontPageView = pageView;
 
         backPageView = new PageView(context);
         backPageView.setDelegate(this);
@@ -81,7 +61,6 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         shadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         setPivotX(0);
-        addView(frontPageView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addView(backPageView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addView(shadowImageView, (int) getResources().getDimension(R.dimen.flipview_shadow_image_width), getMeasuredHeight());
     }
@@ -94,110 +73,12 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         shadowImageView.getLayoutParams().height = getMeasuredHeight();
     }
 
-    // ================================================================================================
-    //  Public
-    // ================================================================================================
-
-    public static float directionToRotation(Direction direction) {
-        return direction.equals(Direction.Left) ? -180 : 0;
-    }
-
-    public static Direction rotationToDirection(float rotation) {
-        return rotation == -180 ? FlipView.Direction.Left : FlipView.Direction.Right;
-    }
-
-    public ImageView getShadowImageView() {
-        return shadowImageView;
-    }
-
-    public void doFlip(Direction direction) {
-        doFlip(direction, null);
-    }
-
-    public void doFlip(Direction direction, Interpolator interpolator) {
-        doFlip(direction, interpolator, null);
-    }
-
-    public void doFlip(Direction direction, Interpolator interpolator, CompleteHandler completeHandler) {
-        doFlip(direction, interpolator, FLIP_DURATION, completeHandler);
-    }
-
-    public void doFlip(final Direction direction, Interpolator interpolator, int duration, final CompleteHandler completeHandler) {
-        if (pages == null || pages.size() < 2)
-            return;
-
-        if (delegate != null)
-            delegate.willChangeDirection(this, direction, duration, interpolator);
-
-        final FlipView self = this;
-
-        rotateAnimated(direction.equals(Direction.Left) ? 0 : -180, duration, interpolator, new Runnable() {
-            @Override
-            public void run() {
-                if (completeHandler != null)
-                    completeHandler.onComplete();
-
-                if (delegate != null)
-                    delegate.onChangeDirection(self, direction);
-            }
-        });
-    }
-
+    @Override
     public PageView getCurrentPageView() {
         return getDirection().equals(Direction.Left) ? backPageView : frontPageView;
     }
 
-    public FlipViewDelegate getDelegate() {
-        return delegate;
-    }
-
-    public void setDelegate(FlipViewDelegate delegate) {
-        this.delegate = delegate;
-    }
-
-    public Direction getDirection() {
-        return getRotationY() == -180 ? Direction.Left : Direction.Right;
-    }
-
-    public void setDirection(Direction direction) {
-        frontPageView.setVisibility(direction.equals(Direction.Left) ? INVISIBLE : VISIBLE);
-        backPageView.setVisibility(direction.equals(Direction.Right) ? INVISIBLE : VISIBLE);
-        setRotationY(direction.equals(Direction.Left) ? -180 : 0);
-    }
-
-    public int getImageLoadType() {
-        return imageLoadType;
-    }
-
-    public void setImageLoadType(int imageLoadType) {
-        if (imageLoadType == this.imageLoadType)
-            return;
-
-        this.imageLoadType = imageLoadType;
-        imageLoadTypeChanged = true;
-
-        invalidateProperties();
-    }
-
-    public List<Page> getPages() {
-        return pages;
-    }
-
-    public void setPages(List<Page> pages) {
-        if (pages.equals(this.pages))
-            return;
-
-        this.pages = pages;
-
-        if (frontPageView.hasVideoMediaView())
-            frontPageView.getVideoMediaView().stop();
-
-        if (backPageView.hasVideoMediaView())
-            backPageView.getVideoMediaView().stop();
-
-        render();
-    }
-
+    @Override
     public PageView getPageView(Page model) {
         if (ObjectUtils.equals(frontPageView.getModel(), model))
             return frontPageView;
@@ -206,8 +87,54 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
         return null;
     }
 
+    @Override
+    protected void imageLoadTypeChanged() {
+        frontPageView.setImageLoadType(getImageLoadType());
+        backPageView.setImageLoadType(getImageLoadType());
+    }
+
+    @Override
+    protected void pagesChanged() {
+        if (frontPageView.hasVideoMediaView())
+            frontPageView.getVideoMediaView().stop();
+
+        if (backPageView.hasVideoMediaView())
+            backPageView.getVideoMediaView().stop();
+
+        if (getPages() != null) {
+            frontPageView.setModel(getPages().size() > 0 ? getPages().get(0) : null);
+            backPageView.setModel(getPages().size() > 1 ? getPages().get(1) : null);
+        }
+    }
+
+    // ================================================================================================
+    //  Public
+    // ================================================================================================
+
+    public static float directionToRotation(AnimationOptions.Direction direction) {
+        return direction.equals(AnimationOptions.Direction.Left) ? -180 : 0;
+    }
+
+    public static AnimationOptions.Direction rotationToDirection(float rotation) {
+        return rotation == -180 ? AnimationOptions.Direction.Left : AnimationOptions.Direction.Right;
+    }
+
+    public ImageView getShadowImageView() {
+        return shadowImageView;
+    }
+
+    public AnimationOptions.Direction getDirection() {
+        return getRotationY() == -180 ? AnimationOptions.Direction.Left : AnimationOptions.Direction.Right;
+    }
+
+    public void setDirection(AnimationOptions.Direction direction) {
+        frontPageView.setVisibility(direction.equals(AnimationOptions.Direction.Left) ? INVISIBLE : VISIBLE);
+        backPageView.setVisibility(direction.equals(AnimationOptions.Direction.Right) ? INVISIBLE : VISIBLE);
+        setRotationY(direction.equals(AnimationOptions.Direction.Left) ? -180 : 0);
+    }
+
     public void rotate(float rotation) {
-        if (pages == null || pages.size() < 2)
+        if (getPages() == null || getPages().size() < 2)
             return;
 
         animate().cancel();
@@ -236,7 +163,7 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
     }
 
     public boolean rotateAnimated(float rotation, int duration, Interpolator interpolator, final Runnable runnable) {
-        if (pages == null || pages.size() < 2)
+        if (getPages() == null || getPages().size() < 2)
             return false;
 
         setPageVisibility();
@@ -296,41 +223,11 @@ public class FlipView extends PSFrameLayout implements PageView.PageViewDelegate
     }
 
     // ================================================================================================
-    //  Listener
-    // ================================================================================================
-
-    public void onCompleteImageLoad(PageView view) {
-        if (delegate != null)
-            delegate.onCompleteImageLoad(this, view);
-    }
-
-    public void onError(PageView view) {
-        if (delegate != null)
-            delegate.onError(this, view);
-    }
-
-    // ================================================================================================
     //  Private
     // ================================================================================================
-
-    private void render() {
-        frontPageView.setModel(pages.size() > 0 ? pages.get(0) : null);
-        backPageView.setModel(pages.size() > 1 ? pages.get(1) : null);
-    }
 
     private void setPageVisibility() {
         frontPageView.setVisibility(getRotationY() <= -90 ? INVISIBLE : VISIBLE);
         backPageView.setVisibility(getRotationY() > -90 ? INVISIBLE : VISIBLE);
-    }
-
-    public interface CompleteHandler {
-        void onComplete();
-    }
-
-    public interface FlipViewDelegate {
-        void onChangeDirection(FlipView view, Direction direction);
-        void onCompleteImageLoad(FlipView view, PageView pageView);
-        void onError(FlipView view, PageView pageView);
-        void willChangeDirection(FlipView view, Direction direction, int duration, Interpolator interpolator);
     }
 }

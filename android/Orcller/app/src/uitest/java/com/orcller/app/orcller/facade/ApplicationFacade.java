@@ -178,8 +178,8 @@ public class ApplicationFacade {
 //        testImageMediaView();
 //        testVideoMediaView();
 //        testPageView();
-//        testFlipView();
-        testAlbumFlipView();
+        testFlipView();
+//        testAlbumFlipView();
 //        testImageMediaScrollView();
 //        testMediaScrollView();
 //        testMediaListActivity();
