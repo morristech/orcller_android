@@ -11,7 +11,6 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.appindexing.Action;
 import com.orcller.app.orcller.BuildConfig;
 import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.common.SharedObject;
@@ -29,12 +28,12 @@ import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
-import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.CommentListView;
-import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
@@ -47,7 +46,6 @@ import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
-import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
 import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 import pisces.psuikit.manager.ProgressBarManager;
@@ -220,7 +218,7 @@ public class AlbumViewActivity extends BaseActionBarActivity
     public void onEventMainThread(Object event) {
         if (event instanceof IndexChangeEvent) {
             IndexChangeEvent casted = (IndexChangeEvent) event;
-            albumItemView.getAlbumFlipView().setPageIndex(
+            albumItemView.getAlbumView().setPageIndex(
                     SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
         } else if (event instanceof AlbumEvent) {
             AlbumEvent casted = (AlbumEvent) event;
@@ -296,10 +294,10 @@ public class AlbumViewActivity extends BaseActionBarActivity
         scrollView.setScrollable(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view) {
+    public void onTap(AlbumView view) {
     }
 
-    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView) {
     }
 
     /**

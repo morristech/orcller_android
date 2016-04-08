@@ -16,11 +16,10 @@ import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.Favorites;
 import com.orcller.app.orcller.model.Likes;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
-import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
-import com.orcller.app.orcller.widget.FlipView;
-import com.orcller.app.orcller.widget.MediaView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 
 import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
@@ -33,7 +32,7 @@ import pisces.psuikit.widget.PSButton;
 /**
  * Created by pisces on 12/6/15.
  */
-public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Delegate, View.OnClickListener {
+public class AlbumItemView extends PSLinearLayout implements AlbumView.Delegate, View.OnClickListener {
     public static final int COEDIT = 1<<0;
     public static final int HEART = 1<<1;
     public static final int COMMENT = 1<<2;
@@ -66,7 +65,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     private PSButton commentButton;
     private PSButton starButton;
     private AlbumInfoProfileView albumInfoProfileView;
-    private AlbumFlipView albumFlipView;
+    private AlbumView albumView;
 
     public AlbumItemView(Context context) {
         super(context);
@@ -89,7 +88,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         inflate(context, R.layout.itemview_album, this);
 
         albumInfoProfileView = (AlbumInfoProfileView) findViewById(R.id.albumInfoProfileView);
-        albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
+//        albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
         heartTextView = (TextView) findViewById(R.id.heartTextView);
         commentTextView = (TextView) findViewById(R.id.commentTextView);
@@ -102,7 +101,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
 
         albumInfoProfileView.setBackgroundResource(R.drawable.background_bordered_white);
         albumInfoProfileView.getOptionsIcon().setOnClickListener(this);
-        albumFlipView.setDelegate(this);
+//        albumFlipView.setDelegate(this);
         controlButton.setOnClickListener(this);
         heartTextView.setOnClickListener(this);
         commentTextView.setOnClickListener(this);
@@ -122,8 +121,8 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         return albumInfoProfileView;
     }
 
-    public AlbumFlipView getAlbumFlipView() {
-        return albumFlipView;
+    public AlbumView getAlbumView() {
+        return albumView;
     }
 
     public Delegate getDelegate() {
@@ -188,18 +187,18 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     }
 
     public void loadRemainPages() {
-        albumFlipView.loadRemainPages();
+        albumView.loadRemainPages();
     }
 
     public void reload() {
-        albumFlipView.reload();
+        albumView.reload();
         albumInfoProfileView.reload();
         updateDisplayList();
     }
 
     public void updateDisplayList() {
-        albumFlipView.getLayoutParams().width = Application.getWindowWidth();
-        albumFlipView.getLayoutParams().height = getAlbumHeight();
+//        albumFlipView.getLayoutParams().width = Application.getWindowWidth();
+//        albumFlipView.getLayoutParams().height = getAlbumHeight();
 
         descriptionTextView.setText(model.desc);
         descriptionTextView.setVisibility(TextUtils.isEmpty(model.desc) ? GONE : VISIBLE);
@@ -284,60 +283,60 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
      * AlbumFlipView.Delegate
      */
 
-    public void onCancelPanning(AlbumFlipView view) {
+    public void onCancelPanning(AlbumView view) {
         if (delegate != null)
             delegate.onCancelPanning(this, view);
     }
 
-    public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
+    public void onChangePageIndex(AlbumView view, int pageIndex) {
         if (delegate != null)
             delegate.onChangePageIndex(this, view, pageIndex);
     }
 
-    public void onLoadRemainPages(AlbumFlipView view) {
+    public void onLoadRemainPages(AlbumView view) {
         if (delegate != null)
             delegate.onLoadRemainPages(this, view);
     }
 
-    public void onPlay(AlbumFlipView view) {
+    public void onPlay(AlbumView view) {
         controlButton.setSelected(true);
 
         if (delegate != null)
             delegate.onPlay(this, view);
     }
 
-    public void onPause(AlbumFlipView view) {
+    public void onPause(AlbumView view) {
         controlButton.setSelected(false);
 
         if (delegate != null)
             delegate.onPause(this, view);
     }
 
-    public void onStartLoadRemainPages(AlbumFlipView view) {
+    public void onStartLoadRemainPages(AlbumView view) {
         if (delegate != null)
             delegate.onStartLoadRemainPages(this, view);
     }
 
-    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
+    public void onStartPanning(AlbumView view, TemplateView templateView) {
         if (delegate != null)
-            delegate.onStartPanning(this, view, flipView);
+            delegate.onStartPanning(this, view, templateView);
     }
 
-    public void onStop(AlbumFlipView view) {
+    public void onStop(AlbumView view) {
         controlButton.setSelected(false);
 
         if (delegate != null)
             delegate.onStop(this, view);
     }
 
-    public void onTap(AlbumFlipView view) {
+    public void onTap(AlbumView view) {
         if (delegate != null)
             delegate.onTap(this, view);
     }
 
-    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView) {
         if (delegate != null)
-            delegate.onTapFlipView(this, view, flipView, pageView);
+            delegate.onTapTemplateView(this, view, templateView, pageView);
     }
 
     // ================================================================================================
@@ -381,13 +380,13 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     private void modelChanged() {
         controlButton.setVisibility(model == null || model.pages.total_count < 2 ? GONE : VISIBLE);
 
-        albumFlipView.setPageWidth(getAlbumHeight());
-        albumFlipView.setPageHeight(getAlbumHeight());
-        albumFlipView.setImageLoadType(model.pages.total_count > 1 ?
-                MediaView.ImageLoadType.LowResolution.value() :
-                MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
-        albumFlipView.setModel(model);
-        albumFlipView.setPageIndex(model.default_page_index);
+//        albumFlipView.setPageWidth(getAlbumHeight());
+//        albumFlipView.setPageHeight(getAlbumHeight());
+//        albumFlipView.setImageLoadType(model.pages.total_count > 1 ?
+//                MediaView.ImageLoadType.LowResolution.value() :
+//                MediaView.ImageLoadType.Thumbnail.value() | MediaView.ImageLoadType.StandardResoultion.value());
+//        albumFlipView.setModel(model);
+//        albumFlipView.setPageIndex(model.default_page_index);
         albumInfoProfileView.setModel(model);
         updateDisplayList();
     }
@@ -400,7 +399,7 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
     }
 
     private void postPageChangeEvent() {
-        albumFlipView.reload();
+//        albumFlipView.reload();
 
         if (delegate != null)
             delegate.onPageChange(this);
@@ -469,16 +468,16 @@ public class AlbumItemView extends PSLinearLayout implements AlbumFlipView.Deleg
         void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
         void onAlbumSynchronize(AlbumItemView itemView);
         void onClick(AlbumItemView itemView, ButtonType type, View view);
-        void onCancelPanning(AlbumItemView itemView, AlbumFlipView view);
-        void onChangePageIndex(AlbumItemView itemView, AlbumFlipView view, int pageIndex);
-        void onLoadRemainPages(AlbumItemView itemView, AlbumFlipView view);
+        void onCancelPanning(AlbumItemView itemView, AlbumView view);
+        void onChangePageIndex(AlbumItemView itemView, AlbumView view, int pageIndex);
+        void onLoadRemainPages(AlbumItemView itemView, AlbumView view);
         void onPageChange(AlbumItemView itemView);
-        void onPause(AlbumItemView itemView, AlbumFlipView view);
-        void onPlay(AlbumItemView itemView, AlbumFlipView view);
-        void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view);
-        void onStartPanning(AlbumItemView itemView, AlbumFlipView view, FlipView flipView);
-        void onStop(AlbumItemView itemView, AlbumFlipView view);
-        void onTap(AlbumItemView itemView, AlbumFlipView view);
-        void onTapFlipView(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView);
+        void onPause(AlbumItemView itemView, AlbumView view);
+        void onPlay(AlbumItemView itemView, AlbumView view);
+        void onStartLoadRemainPages(AlbumItemView itemView, AlbumView view);
+        void onStartPanning(AlbumItemView itemView, AlbumView view, TemplateView templateView);
+        void onStop(AlbumItemView itemView, AlbumView view);
+        void onTap(AlbumItemView itemView, AlbumView view);
+        void onTapTemplateView(AlbumItemView itemView, AlbumView view, TemplateView templateView, PageView pageView);
     }
 }

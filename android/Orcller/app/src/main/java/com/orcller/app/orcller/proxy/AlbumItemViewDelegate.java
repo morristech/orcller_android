@@ -1,28 +1,24 @@
 package com.orcller.app.orcller.proxy;
 
 import android.view.View;
-import android.widget.Toast;
 
 import com.orcller.app.orcller.BuildConfig;
-import com.orcller.app.orcller.R;
 import com.orcller.app.orcller.activity.AlbumHeartListActivity;
 import com.orcller.app.orcller.activity.AlbumStarListActivity;
 import com.orcller.app.orcller.activity.AlbumViewActivity;
 import com.orcller.app.orcller.activity.CoeditViewActivity;
 import com.orcller.app.orcller.activity.CommentListActivity;
 import com.orcller.app.orcller.activity.PageListActivity;
-import com.orcller.app.orcller.common.SharedObject;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.manager.AlbumOptionsManager;
 import com.orcller.app.orcller.model.Album;
 import com.orcller.app.orcller.model.AlbumAdditionalListEntity;
 import com.orcller.app.orcller.model.api.ApiAlbum;
-import com.orcller.app.orcller.widget.AlbumFlipView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.CommentInputView;
-import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 
-import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.ext.PSObject;
 import pisces.psfoundation.utils.Log;
 import retrofit.Callback;
@@ -38,7 +34,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     public static final int COMMENT_ACTION_OPEN_COMMENTS = 3;
     private int commentActionType = COMMENT_ACTION_OPEN_ALBUM_VIEW;
     private Invoker invoker;
-    private AlbumFlipView playedAlbumFlipView;
+    private AlbumView playedAlbumView;
 
     public AlbumItemViewDelegate(Invoker invoker) {
         this.invoker = invoker;
@@ -57,9 +53,9 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
     }
 
     public void pauseAlbumFlipView() {
-        if (playedAlbumFlipView != null) {
-            playedAlbumFlipView.pause();
-            playedAlbumFlipView = null;
+        if (playedAlbumView != null) {
+            playedAlbumView.pause();
+            playedAlbumView = null;
         }
     }
 
@@ -98,53 +94,53 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         } else if (AlbumItemView.ButtonType.StarList.equals(type)) {
             AlbumStarListActivity.show(itemView.getModel().id);
         } else if (AlbumItemView.ButtonType.Control.equals(type)) {
-            if (itemView.getAlbumFlipView().isPlaying())
-                itemView.getAlbumFlipView().pause();
+            if (itemView.getAlbumView().isPlaying())
+                itemView.getAlbumView().pause();
             else
-                itemView.getAlbumFlipView().play();
+                itemView.getAlbumView().play();
         }
     }
 
     public void onPageChange(AlbumItemView itemView) {
     }
 
-    public void onCancelPanning(AlbumItemView itemView, AlbumFlipView view) {
+    public void onCancelPanning(AlbumItemView itemView, AlbumView view) {
         invoker.onChangePanningState(false);
     }
 
-    public void onChangePageIndex(AlbumItemView itemView, AlbumFlipView view, int pageIndex) {
+    public void onChangePageIndex(AlbumItemView itemView, AlbumView view, int pageIndex) {
         invoker.onChangePanningState(false);
     }
 
-    public void onLoadRemainPages(AlbumItemView itemView, AlbumFlipView view) {
+    public void onLoadRemainPages(AlbumItemView itemView, AlbumView view) {
     }
 
-    public void onPause(AlbumItemView itemView, AlbumFlipView view) {
-        playedAlbumFlipView = null;
+    public void onPause(AlbumItemView itemView, AlbumView view) {
+        playedAlbumView = null;
     }
 
-    public void onPlay(AlbumItemView itemView, AlbumFlipView view) {
+    public void onPlay(AlbumItemView itemView, AlbumView view) {
         pauseAlbumFlipView();
 
-        playedAlbumFlipView = view;
+        playedAlbumView = view;
     }
 
-    public void onStartLoadRemainPages(AlbumItemView itemView, AlbumFlipView view) {
+    public void onStartLoadRemainPages(AlbumItemView itemView, AlbumView view) {
     }
 
-    public void onStartPanning(AlbumItemView itemView, AlbumFlipView view, FlipView flipView) {
+    public void onStartPanning(AlbumItemView itemView, AlbumView view, TemplateView templateView) {
         invoker.onChangePanningState(true);
     }
 
-    public void onStop(AlbumItemView itemView, AlbumFlipView view) {
+    public void onStop(AlbumItemView itemView, AlbumView view) {
     }
 
-    public void onTap(AlbumItemView itemView, AlbumFlipView view) {
+    public void onTap(AlbumItemView itemView, AlbumView view) {
         invoker.onTap(view);
     }
 
-    public void onTapFlipView(AlbumItemView itemView, AlbumFlipView view, FlipView flipView, PageView pageView) {
-        invoker.onTapFlipView(view, flipView, pageView);
+    public void onTapTemplateView(AlbumItemView itemView, AlbumView view, TemplateView templateView, PageView pageView) {
+        invoker.onTapTemplateView(view, templateView, pageView);
         PageListActivity.show(view.getModel(), view.getModel().pages.getPageIndex(pageView.getModel()));
     }
 
@@ -236,7 +232,7 @@ public class AlbumItemViewDelegate extends PSObject implements AlbumItemView.Del
         void onAlbumInfoSynchronize(AlbumItemView itemView, AlbumAdditionalListEntity model);
         void onAlbumSynchronize(AlbumItemView itemView);
         void onChangePanningState(boolean isPanning);
-        void onTap(AlbumFlipView view);
-        void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView);
+        void onTap(AlbumView view);
+        void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView);
     }
 }

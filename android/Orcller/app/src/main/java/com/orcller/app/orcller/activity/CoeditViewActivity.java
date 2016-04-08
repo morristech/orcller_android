@@ -26,22 +26,20 @@ import com.orcller.app.orcller.model.Contributors;
 import com.orcller.app.orcller.model.api.ApiAlbum;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
-import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.CoeditButton;
 import com.orcller.app.orcller.widget.CommentInputView;
 import com.orcller.app.orcller.widget.ContributorListView;
-import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import pisces.psfoundation.event.Event;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
-
 import de.greenrobot.event.EventBus;
+import pisces.psfoundation.event.Event;
 import pisces.psfoundation.ext.Application;
 import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
@@ -49,6 +47,7 @@ import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psuikit.event.IndexChangeEvent;
 import pisces.psuikit.ext.PSActionBarActivity;
 import pisces.psuikit.ext.PSScrollView;
+import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 import pisces.psuikit.manager.ProgressBarManager;
 import retrofit.Callback;
 import retrofit.Response;
@@ -179,7 +178,7 @@ public class CoeditViewActivity extends PSActionBarActivity
     public void onEventMainThread(Object event) {
         if (event instanceof IndexChangeEvent) {
             IndexChangeEvent casted = (IndexChangeEvent) event;
-            albumItemView.getAlbumFlipView().setPageIndex(
+            albumItemView.getAlbumView().setPageIndex(
                     SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
         } else if (event instanceof AlbumEvent) {
             AlbumEvent casted = (AlbumEvent) event;
@@ -248,10 +247,10 @@ public class CoeditViewActivity extends PSActionBarActivity
         scrollView.setScrollable(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view) {
+    public void onTap(AlbumView view) {
     }
 
-    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView) {
     }
 
     /**

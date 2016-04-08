@@ -39,11 +39,11 @@ import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.model.Pages;
 import com.orcller.app.orcller.model.converter.MediaConverter;
 import com.orcller.app.orcller.utils.CustomSchemeGenerator;
-import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumGridView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.DescriptionInputView;
-import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 import com.orcller.app.orcllermodules.managers.AuthenticationCenter;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
@@ -71,7 +71,7 @@ import pisces.psuikit.widget.PSButton;
  * Created by pisces on 11/28/15.
  */
 public class AlbumCreateActivity extends BaseActionBarActivity
-        implements AdapterView.OnItemSelectedListener, AlbumFlipView.Delegate, AlbumGridView.Delegate,
+        implements AdapterView.OnItemSelectedListener, AlbumView.Delegate, AlbumGridView.Delegate,
         Validator.ValidationListener, View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
     private static final int PAGE_COUNT_MIN = 1;
     private int selectedIndexForAppending;
@@ -93,7 +93,7 @@ public class AlbumCreateActivity extends BaseActionBarActivity
     private PSButton defaultButton;
     private PSButton deleteButton;
     private DescriptionInputView descriptionInputView;
-    private AlbumFlipView albumFlipView;
+    private AlbumView albumView;
     private AlbumGridView albumGridView;
 
     protected Album clonedModel;
@@ -117,7 +117,6 @@ public class AlbumCreateActivity extends BaseActionBarActivity
         titleEditText = (ClearableEditText) findViewById(R.id.titleEditText);
         descriptionInputView = (DescriptionInputView) findViewById(R.id.descriptionInputView);
         albumContainer = (FrameLayout) findViewById(R.id.albumContainer);
-        albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
         albumGridView = (AlbumGridView) findViewById(R.id.albumGridView);
         buttonContainer = (LinearLayout) findViewById(R.id.buttonContainer);
         addButton = (PSButton) findViewById(R.id.addButton);
@@ -132,7 +131,6 @@ public class AlbumCreateActivity extends BaseActionBarActivity
                 ExceptionViewFactory.create(ExceptionViewFactory.Type.NoMedia, albumContainer));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        albumFlipView.setAllowsShowPageCount(false);
         setListeners();
     }
 
@@ -245,9 +243,6 @@ public class AlbumCreateActivity extends BaseActionBarActivity
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        albumFlipView.setPageWidth(rootLayout.getWidth() / 2);
-        albumFlipView.setPageHeight(rootLayout.getWidth() / 2);
-
         setModel(createModel());
     }
 
@@ -353,45 +348,45 @@ public class AlbumCreateActivity extends BaseActionBarActivity
     /**
      * AlbumFlipView delegate
      */
-    public void onCancelPanning(AlbumFlipView view) {
+    public void onCancelPanning(AlbumView view) {
         scrollView.setScrollable(true);
     }
 
-    public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
+    public void onChangePageIndex(AlbumView view, int pageIndex) {
         scrollView.setScrollable(true);
         albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(pageIndex));
     }
 
-    public void onLoadRemainPages(AlbumFlipView view) {
+    public void onLoadRemainPages(AlbumView view) {
     }
 
-    public void onPause(AlbumFlipView view) {
+    public void onPause(AlbumView view) {
     }
 
-    public void onPlay(AlbumFlipView view) {
+    public void onPlay(AlbumView view) {
     }
 
-    public void onStartLoadRemainPages(AlbumFlipView view) {
+    public void onStartLoadRemainPages(AlbumView view) {
     }
 
-    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
+    public void onStartPanning(AlbumView view, TemplateView templateView) {
         scrollView.setScrollable(false);
     }
 
-    public void onStop(AlbumFlipView view) {
+    public void onStop(AlbumView view) {
     }
 
-    public void onTap(AlbumFlipView view) {
+    public void onTap(AlbumView view) {
     }
 
-    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView) {
     }
 
     /**
      * AlbumGridView delegate
      */
     public void onSelect(int position) {
-        albumFlipView.setPageIndex(SharedObject.convertPositionToPageIndex(position));
+        albumView.setPageIndex(SharedObject.convertPositionToPageIndex(position));
     }
 
     // ================================================================================================
@@ -554,9 +549,9 @@ public class AlbumCreateActivity extends BaseActionBarActivity
         descriptionInputView.setVisibility(clonedModel.isMine() ? View.VISIBLE : View.GONE);
         descriptionInputView.setText(clonedModel.desc);
         descriptionInputView.setModel(clonedModel.getUser());
-        albumFlipView.setModel(clonedModel);
-        albumFlipView.setPageIndex(clonedModel.default_page_index);
-        albumFlipView.setVisibility(View.VISIBLE);
+        albumView.setModel(clonedModel);
+        albumView.setPageIndex(clonedModel.default_page_index);
+        albumView.setVisibility(View.VISIBLE);
         albumGridView.setModel(clonedModel);
         albumGridView.setSelectedIndex(SharedObject.convertPageIndexToPosition(clonedModel.default_page_index));
         scrollView.setBackgroundResource(spinnerContainer.getVisibility() == View.VISIBLE ? 0 : R.drawable.background_bordered_lightgray);
@@ -572,17 +567,17 @@ public class AlbumCreateActivity extends BaseActionBarActivity
     }
 
     private void reload() {
-        albumFlipView.reload();
+        albumView.reload();
         albumGridView.reload();
-        albumFlipView.setPageIndex(SharedObject.convertPositionToPageIndex(selectedIndexForAppending));
-        albumFlipView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
+        albumView.setPageIndex(SharedObject.convertPositionToPageIndex(selectedIndexForAppending));
+        albumView.setVisibility(clonedModel.pages.count > 0 ? View.VISIBLE : View.GONE);
         albumGridView.setSelectedIndex(selectedIndexForAppending);
         exceptionViewManager.validate();
     }
 
     private void setListeners() {
         spinner.setOnItemSelectedListener(this);
-        albumFlipView.setDelegate(this);
+        albumView.setDelegate(this);
         albumGridView.setDelegate(this);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
         addButton.setOnClickListener(this);

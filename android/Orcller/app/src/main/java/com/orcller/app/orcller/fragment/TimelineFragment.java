@@ -40,11 +40,11 @@ import com.orcller.app.orcller.model.api.ApiUsers;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.proxy.AlbumItemViewDelegate;
 import com.orcller.app.orcller.proxy.TimelineDataProxy;
-import com.orcller.app.orcller.widget.AlbumFlipView;
 import com.orcller.app.orcller.widget.AlbumInfoProfileView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.CommentInputView;
-import com.orcller.app.orcller.widget.FlipView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 import com.orcller.app.orcllermodules.error.APIError;
 import com.orcller.app.orcllermodules.queue.FBSDKRequestQueue;
 
@@ -90,7 +90,7 @@ public class TimelineFragment extends MainTabFragment
     private LoadMoreFooterView listFooterView;
     private PSListView listView;
     private FloatingActionButton createButton;
-    private AlbumFlipView selectedAlbumFlipView;
+    private AlbumView selectedAlbumView;
     private TimelineFragment self = this;
 
     public TimelineFragment() {
@@ -248,8 +248,8 @@ public class TimelineFragment extends MainTabFragment
         if (event instanceof IndexChangeEvent) {
             IndexChangeEvent casted = (IndexChangeEvent) event;
 
-            if ((casted.getTarget() instanceof PageListActivity) && selectedAlbumFlipView != null)
-                selectedAlbumFlipView.setPageIndex(
+            if ((casted.getTarget() instanceof PageListActivity) && selectedAlbumView != null)
+                selectedAlbumView.setPageIndex(
                         SharedObject.convertPositionToPageIndex(casted.getSelectedIndex()));
         } else if (event instanceof AlbumEvent) {
             AlbumEvent casted = (AlbumEvent) event;
@@ -381,12 +381,12 @@ public class TimelineFragment extends MainTabFragment
         swipeRefreshLayout.setEnabled(!isPanning);
     }
 
-    public void onTap(AlbumFlipView view) {
+    public void onTap(AlbumView view) {
         AlbumViewActivity.show(view.getModel().id, false);
     }
 
-    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
-        selectedAlbumFlipView = view;
+    public void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView) {
+        selectedAlbumView = view;
     }
 
     /**

@@ -37,6 +37,7 @@ import com.orcller.app.orcller.activity.UserPictureEditActivity;
 import com.orcller.app.orcller.activity.imagepicker.FBImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGImagePickerActivity;
 import com.orcller.app.orcller.activity.imagepicker.IGPopularMediaGridActivity;
+import com.orcller.app.orcller.animator.LabelAnimator;
 import com.orcller.app.orcller.common.Const;
 import com.orcller.app.orcller.itemview.AlbumItemView;
 import com.orcller.app.orcller.itemview.TempAlbumItemView;
@@ -178,8 +179,8 @@ public class ApplicationFacade {
 //        testImageMediaView();
 //        testVideoMediaView();
 //        testPageView();
-        testFlipView();
-//        testAlbumFlipView();
+//        testFlipView();
+        testAlbumFlipView();
 //        testImageMediaScrollView();
 //        testMediaScrollView();
 //        testMediaListActivity();
@@ -301,9 +302,9 @@ public class ApplicationFacade {
 
                 Application.getTopActivity().addContentView(view, new ViewGroup.LayoutParams(480, 480));
                 view.setPages(pages);
-                view.setX(480);
+                view.setX(0);
 
-                view.doFlip(FlipView.Direction.Right);
+//                view.doFlip(FlipView.Direction.Right);
             }
 
             @Override
@@ -323,6 +324,7 @@ public class ApplicationFacade {
                 view.setPageHeight(pw);
                 view.setModel(response.body().entity);
                 view.setPageIndex(0);
+                view.setLabelAnimator(new LabelAnimator(view));
 
                 Application.getTopActivity().addContentView(view, new LinearLayout.LayoutParams(w, pw));
             }

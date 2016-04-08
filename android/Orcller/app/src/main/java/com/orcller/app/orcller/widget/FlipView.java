@@ -39,7 +39,7 @@ public class FlipView extends TemplateView {
     }
 
     // ================================================================================================
-    //  Overridden: PSView
+    //  Overridden: TemplateView
     // ================================================================================================
 
     @Override
@@ -75,7 +75,7 @@ public class FlipView extends TemplateView {
 
     @Override
     public PageView getCurrentPageView() {
-        return getDirection().equals(Direction.Left) ? backPageView : frontPageView;
+        return getDirection().equals(AnimationOptions.Direction.Left) ? backPageView : frontPageView;
     }
 
     @Override

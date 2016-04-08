@@ -26,20 +26,18 @@ import com.orcller.app.orcller.model.Image;
 import com.orcller.app.orcller.model.Page;
 import com.orcller.app.orcller.proxy.AlbumDataProxy;
 import com.orcller.app.orcller.widget.AlbumFlipView;
-import com.orcller.app.orcller.widget.FlipView;
+import com.orcller.app.orcller.widget.AlbumView;
 import com.orcller.app.orcller.widget.PageView;
+import com.orcller.app.orcller.widget.TemplateView;
 
 import java.io.File;
 import java.net.URL;
 
-import de.greenrobot.event.EventBus;
 import pisces.psfoundation.ext.Application;
-import pisces.psfoundation.utils.GraphicUtils;
 import pisces.psfoundation.utils.Log;
 import pisces.psfoundation.utils.ObjectUtils;
 import pisces.psfoundation.utils.URLUtils;
 import pisces.psuikit.ext.PSActionBarActivity;
-import pisces.psuikit.keyboard.SoftKeyboardNotifier;
 import pisces.psuikit.manager.ProgressBarManager;
 
 /**
@@ -52,7 +50,7 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     private Album model;
     private FrameLayout rootLayout;
     private ProgressBar progressBar;
-    private AlbumFlipView albumFlipView;
+    private AlbumView albumView;
 
     // ================================================================================================
     //  Overridden: AlbumCreateActivity
@@ -68,14 +66,14 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
 
         rootLayout = (FrameLayout) findViewById(R.id.rootLayout);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
+//        albumFlipView = (AlbumFlipView) findViewById(R.id.albumFlipView);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        albumFlipView.setAllowsShowPageCount(false);
-        albumFlipView.setBackgroundView(null);
-        albumFlipView.setSlideDuration(2000);
-        albumFlipView.setDelegate(this);
+//        albumFlipView.setAllowsShowPageCount(false);
+//        albumFlipView.setBackgroundView(null);
+//        albumFlipView.setSlideDuration(2000);
+//        albumFlipView.setDelegate(this);
     }
 
     @Override
@@ -103,7 +101,7 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (albumFlipView.isPlaying()) {
+                if (albumView.isPlaying()) {
                     playOrPause();
                     return true;
                 }
@@ -158,64 +156,64 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
             rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
 
-        albumFlipView.getLayoutParams().width = rootLayout.getWidth();
-        albumFlipView.getLayoutParams().height = rootLayout.getWidth()/2;
-        albumFlipView.setPageWidth(rootLayout.getWidth()/2);
-        albumFlipView.setPageHeight(rootLayout.getWidth()/2);
+//        albumFlipView.getLayoutParams().width = rootLayout.getWidth();
+//        albumFlipView.getLayoutParams().height = rootLayout.getWidth()/2;
+//        albumFlipView.setPageWidth(rootLayout.getWidth()/2);
+//        albumFlipView.setPageHeight(rootLayout.getWidth()/2);
         setModel((Album) getIntent().getSerializableExtra(ALBUM_KEY));
     }
 
     /**
      * AlbumFlipView.Delegate
      */
-    public void onCancelPanning(AlbumFlipView view) {
+    public void onCancelPanning(AlbumView view) {
 
     }
 
-    public void onChangePageIndex(AlbumFlipView view, int pageIndex) {
+    public void onChangePageIndex(AlbumView view, int pageIndex) {
 
     }
 
-    public void onLoadRemainPages(AlbumFlipView view) {
+    public void onLoadRemainPages(AlbumView view) {
 
     }
 
-    public void onPlay(AlbumFlipView view) {
+    public void onPlay(AlbumView view) {
         setControlMenuItemChecked(true);
         setActionBarHidden(true);
     }
 
-    public void onPause(AlbumFlipView view) {
+    public void onPause(AlbumView view) {
         setControlMenuItemChecked(false);
         setActionBarHidden(false);
     }
 
-    public void onStartLoadRemainPages(AlbumFlipView view) {
+    public void onStartLoadRemainPages(AlbumView view) {
 
     }
 
-    public void onStartPanning(AlbumFlipView view, FlipView flipView) {
+    public void onStartPanning(AlbumView view, TemplateView templateView) {
 
     }
 
-    public void onStop(AlbumFlipView view) {
+    public void onStop(AlbumView view) {
         setControlMenuItemChecked(false);
-        albumFlipView.setPageIndex(0);
+        albumView.setPageIndex(0);
 
         if (getCycleMenuItem().isChecked()) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    albumFlipView.play();
+                    albumView.play();
                 }
             }, 1500);
         }
     }
 
-    public void onTap(AlbumFlipView view) {
+    public void onTap(AlbumView view) {
     }
 
-    public void onTapFlipView(AlbumFlipView view, FlipView flipView, PageView pageView) {
+    public void onTapTemplateView(AlbumView view, TemplateView templateView, PageView pageView) {
     }
 
     // ================================================================================================
@@ -289,10 +287,10 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
     private void playOrPause() {
         setControlMenuItemChecked(!getControlMenuItem().isChecked());
 
-        if (albumFlipView.isPlaying()) {
-            albumFlipView.pause();
+        if (albumView.isPlaying()) {
+            albumView.pause();
         } else {
-            albumFlipView.play();
+            albumView.play();
         }
     }
 
@@ -306,9 +304,9 @@ public class AlbumSlideShowActivity extends PSActionBarActivity implements
 
                 if (p.x >= p.y) {
                     progressBar.setVisibility(View.GONE);
-                    albumFlipView.setModel(model);
-                    albumFlipView.setPageIndex(0);
-                    albumFlipView.setVisibility(View.VISIBLE);
+                    albumView.setModel(model);
+                    albumView.setPageIndex(0);
+                    albumView.setVisibility(View.VISIBLE);
                     getControlMenuItem().setEnabled(true);
                 }
             }
